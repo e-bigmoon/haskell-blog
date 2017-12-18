@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>BIG MOON</title>
+    <link href="https://haskell.e-bigmoon.com/feed.xml" rel="self" />
+    <link href="https://haskell.e-bigmoon.com" />
+    <id>https://haskell.e-bigmoon.com/feed.xml</id>
+    <author>
+        <name>BIG MOON</name>
+        <email>it@e-bigmoon.com</email>
+    </author>
+    <updated>2017-09-18T00:00:00Z</updated>
+    <entry>
+    <title>Haskell で暗号学的ハッシュを扱う</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2017-09-18-cryptographic-hashing-haskell.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2017-09-18-cryptographic-hashing-haskell.html</id>
+    <published>2017-09-18T00:00:00Z</published>
+    <updated>2017-09-18T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Great original post: <a href="https://www.fpcomplete.com/blog/2017/09/cryptographic-hashing-haskell">CRYPTOGRAPHIC HASHING IN HASKELL.</a>.</p>
+<p>2017年 9月 18日 Michael Snoyman</p>
+<p><a href="https://www.stackage.org/package/cryptonite">cryptonite</a> は現在、Haskell で暗号を扱う際のデファクトスタンダードです。 一般的に安全な乱数、共通鍵・公開鍵暗号、MAC (メッセージ認証符号)等をサポートしていて、その中には今日の話題、暗号学的ハッシュも含まれています。</p>
+<p>まず、ハッシュ関数について軽く説明しましょう。ハッシュ関数とは、任意長のデータを固定長のデータに変換するものです。暗号学的ハッシュ関数は、暗号を扱う上で望ましい性質をそなえたハッシュ関数です (詳しくは <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function">Wikipedia</a> を参照)。 一般的な暗号学的ハッシュ関数の使われ方の一例として、ダウンロードされたファイルが改ざんされていないことを保証するための、チェックサムを提供する、というものがあります。 今日使われている暗号学的ハッシュ関数には、SHA256、Skein512、そしてまぁ、ちょっと古いですが MD5 などがあります。</p>
+<p><code>cryptonite</code> は <a href="https://www.stackage.org/package/memory">memory</a> というライブラリの一番上の階層にあります。この <code>memory</code> ライブラリは、Byte 配列を扱うための型クラスと便利な関数を提供しています。 「全て <code>ByteString</code> でいいのでは?」と思うかもしれませんが、後ほどこの型クラスの便利さを示します。</p>
+<!--more-->
+<p>一旦これら 2つのライブラリに慣れれば、簡単に使いこなすことができます。 ですが、API のドキュメントを見るだけでは、部分部分がどう組み合わさるのか理解するのは至難の技です。特に、どこで明示的な型シグネチャが必要になるのかの理解が難しい。 この記事では、理解に必要な部分について1つ1つの簡単な例を、実行可能なコードで紹介します。 読み進める中で、API のドキュメントについてざっくりと理解していってください。</p>
+<p>この記事のコードの例は、全て <code>Stack</code> のスクリプトインタプリタ機能を使っています。 まず <code>Stack</code> を<a href="https://haskell-lang.org/get-started">インストール</a>して、次の手順で実行してください。</p>
+<ul>
+<li><code>Main.hs</code> にコードをコピペする</li>
+<li><code>stack Main.hs</code> を実行</li>
+</ul>
+<h2 id="基本的な型クラス">基本的な型クラス</h2>
+<p>文字列っぽい型を扱うのは慣れているでしょう? 正格・遅延評価される <code>ByteString</code> や <code>Text</code> や普通の <code>String</code> などです。 正格なバイトシーケンスを表現する際、<code>Data.ByteString.ByteString</code> を思い浮かべるのではないでしょうか。 しかし、これから見るように、バイトシーケンスとして扱いたい型はいろいろ見つかります。</p>
+<p><code>memory</code> はこの要望に答えるべく、以下の 2つの型クラスを定義しています。</p>
+<ul>
+<li><code>ByteArrayAccess</code> ある型のバイトへ、読み取り専用のアクセスを提供</li>
+<li><code>ByteArray</code> 読み / 書きのアクセスを提供する。<code>ByteArrayAccess</code> の子クラス</li>
+</ul>
+<p>例えば、以下に示すコードは、意味もなく <code>ByteString</code> と <code>Byte</code> の変換をしています。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="ot">{-# LANGUAGE OverloadedStrings #-}</span>
+<span class="kw">import qualified</span> <span class="dt">Data.ByteArray</span> <span class="kw">as</span> <span class="dt">BA</span>
+<span class="kw">import </span><span class="dt">Data.ByteString</span> (<span class="dt">ByteString</span>)
+<span class="kw">import qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span>
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  B.writeFile <span class="st">&quot;test.txt&quot;</span> <span class="st">&quot;This is a test&quot;</span>
+  byteString <span class="ot">&lt;-</span> B.readFile <span class="st">&quot;test.txt&quot;</span>
+  <span class="kw">let</span><span class="ot"> bytes ::</span> <span class="dt">BA.Bytes</span>
+      bytes <span class="fu">=</span> BA.convert byteString
+  print bytes</code></pre></div>
+<p><code>bytestring</code> ライブラリを使ってファイルの入出力から話を始めたのは、<a href="http://www.snoyman.com/blog/2016/12/beware-of-readfile">入出力は bytestring でやるべき</a> だからです。 <code>convert</code>関数を使うと、<code>ByteString</code> を <code>Bytes</code> に変換することができます。</p>
+<p><strong>練習問題</strong> 上の2つの型クラスの説明を踏まえて <code>convert</code> の型シグネチャは何だと思いますか? 答えは<a href="https://www.stackage.org/haddock/lts-9.4/memory-0.14.7/Data-ByteArray.html#v:convert">こちら</a>。</p>
+<p><code>bytes</code> の値につけた、明示的な型シグネチャに気がつきましたか? えーと、<code>memory</code> と <code>cryptonite</code> を使っていく上で、これは大事です。 こうして、よく GHC に、型推論についてのヒントを与えてやらないといけなくなります。 なぜなら、これらのライブラリの中のかなり多くの関数が、具体的な型ではなく、型クラスを使っているからです。</p>
+<p>さて、<code>ByteArrayAccess</code> に属する型の例をお見せしましたが、それは<code>ByteArray</code> についての例ではありませんでした。 今は型クラスを分ける意味が分からないかもしれませんが、実際にハッシュを使う段階で、型クラスを分けることの利点が見えてくると思います。 ちょっと待ってくださいね。</p>
+<h3 id="なぜ違う型があるのか">なぜ違う型があるのか</h3>
+<p>当然、<code>memory</code> の中になぜ <code>Bytes</code> という型があるのか、疑問に思う人もいるでしょうね。 <code>ByteString</code> と同じじゃないの? ってね。 まぁ違うんですけどね。 <code>Bytes</code> はメモリスライスのオフセットと長さを追跡しないことで、メモリのオーバーヘッドを小さくしています。 その代わりに、<code>Bytes</code> の値をスライスすることは許されません。 言い換えれば、<code>Bytes</code> に関する <code>drop</code>関数は、バッファの新しいコピーを作らなければならないということです。</p>
+<p>まぁつまり、これはパフォーマンスの問題です。暗号を扱うライブラリは、一般的にパフォーマンスを重視する必要がありますからね。</p>
+<p>また別の <code>memory</code> のおもしろい型に、<a href="https://www.stackage.org/haddock/lts-9.4/memory-0.14.7/Data-ByteArray.html#t:ScrubbedBytes"><code>ScrubbedBytes</code></a> というものがあります。 この型は、3つの特別な性質を有しています。 <code>Haddock</code> によると、</p>
+<ul>
+<li>スコープの範囲から出るとゴシゴシされる</li>
+<li><code>Show</code> インスタンスは、中身を何1つとして出力しない</li>
+<li>定数時間の <code>Eq</code> インスタンス</li>
+</ul>
+<p>つまり、これらの性質は何か機密性の高いデータを扱うとき、ありふれた脆弱性をいくつも塞いでくれるものです。</p>
+<p>うん、コードがあまりない説明になりましたね。 もっと楽しいことをしよう!</p>
+<h2 id="base16-エンコードデコード">Base16 エンコード/デコード</h2>
+<p>ユーザの入力を、Base16 (16進数) に変換してみましょう。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import qualified</span> <span class="dt">Data.ByteArray</span>          <span class="kw">as</span> <span class="dt">BA</span>
+<span class="kw">import           </span><span class="dt">Data.ByteArray.Encoding</span> (convertToBase, <span class="dt">Base</span> (<span class="dt">Base16</span>))
+<span class="kw">import           </span><span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)
+<span class="kw">import           </span><span class="dt">Data.Text.Encoding</span>      (encodeUtf8)
+<span class="kw">import qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span>
+<span class="kw">import           </span><span class="dt">System.IO</span>               (hFlush, stdout)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  putStr <span class="st">&quot;Enter some text: &quot;</span>
+  hFlush stdout
+  text <span class="ot">&lt;-</span> TIO.getLine
+  <span class="kw">let</span> bs <span class="fu">=</span> encodeUtf8 text
+  putStrLn <span class="fu">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="fu">++</span> show bs
+  <span class="kw">let</span> encoded <span class="fu">=</span> convertToBase <span class="dt">Base16</span><span class="ot"> bs ::</span> <span class="dt">ByteString</span>
+  putStrLn <span class="fu">$</span> <span class="st">&quot;Converted to base 16: &quot;</span> <span class="fu">++</span> show encoded</code></pre></div>
+<p><code>convertToBase</code> は、どんな <code>ByteArrayAccess</code> も、与えられた基数を使って <code>ByteArray</code> に変換することができます。Base16 以外の基数には、Base64 などがあります。</p>
+<p>見てお分かりの通り、上の例では明示的に <code>ByteString</code> の型シグネチャを指定する必要がありました。なぜならそうしなければ、GHC が<code>ByteArrayAccess</code> のインスタンスの内、どれを使うべきなのか判断できないからです。</p>
+<p>既にお分かりかもしれませんが、全く逆の変換を行う、<code>convertFromBase</code>関数も存在します。 この関数は、入力のフォーマットが正しくなかった場合にも対応できるように、<code>Either String ByteArray</code> の値を返します。</p>
+<p><strong>練習問題</strong> 入力に対して、Base16 のデコードを行うプログラムを書いてください (解答はすぐ下)。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import qualified</span> <span class="dt">Data.ByteArray</span>          <span class="kw">as</span> <span class="dt">BA</span>
+<span class="kw">import           </span><span class="dt">Data.ByteArray.Encoding</span> (convertFromBase, <span class="dt">Base</span> (<span class="dt">Base16</span>))
+<span class="kw">import           </span><span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)
+<span class="kw">import           </span><span class="dt">Data.Text.Encoding</span>      (encodeUtf8)
+<span class="kw">import qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span>
+<span class="kw">import           </span><span class="dt">System.IO</span>               (hFlush, stdout)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  putStr <span class="st">&quot;Enter some hexadecimal text: &quot;</span>
+  hFlush stdout
+  text <span class="ot">&lt;-</span> TIO.getLine
+  <span class="kw">let</span> bs <span class="fu">=</span> encodeUtf8 text
+  putStrLn <span class="fu">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="fu">++</span> show bs
+  <span class="kw">case</span> convertFromBase <span class="dt">Base16</span> bs <span class="kw">of</span>
+    <span class="dt">Left</span> e <span class="ot">-&gt;</span> error <span class="fu">$</span> <span class="st">&quot;Invalid input: &quot;</span> <span class="fu">++</span> e
+    <span class="dt">Right</span> decoded <span class="ot">-&gt;</span>
+      putStrLn <span class="fu">$</span> <span class="st">&quot;Converted from base 16: &quot;</span> <span class="fu">++</span> show (<span class="ot">decoded ::</span> <span class="dt">ByteString</span>)</code></pre></div>
+<p><em>練習問題</em> Base16 の入力を、Base64 のエンコードに変換するプログラムを書いてください。</p>
+<h2 id="正格な-bytestring-のハッシュ">正格な <code>ByteString</code> のハッシュ</h2>
+<p>よし、<code>memory</code> ライブラリに関する説明はもう十分でしょう。 これからは実際に暗号的なものをやっていきます。ユーザの入力を、SHA256 のハッシュ値 (ダイジェスト) に変換してみましょう。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import           </span><span class="dt">Crypto.Hash</span>             (hash, <span class="dt">SHA256</span> (..), <span class="dt">Digest</span>)
+<span class="kw">import           </span><span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)
+<span class="kw">import           </span><span class="dt">Data.Text.Encoding</span>      (encodeUtf8)
+<span class="kw">import qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span>
+<span class="kw">import           </span><span class="dt">System.IO</span>               (hFlush, stdout)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  putStr <span class="st">&quot;Enter some text: &quot;</span>
+  hFlush stdout
+  text <span class="ot">&lt;-</span> TIO.getLine
+  <span class="kw">let</span> bs <span class="fu">=</span> encodeUtf8 text
+  putStrLn <span class="fu">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="fu">++</span> show bs
+  <span class="kw">let</span><span class="ot"> digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>
+      digest <span class="fu">=</span> hash bs
+  putStrLn <span class="fu">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="fu">++</span> show digest</code></pre></div>
+<p>たった今、<code>ByteString</code> (かもしくは <code>ByteArrayAccess</code> のインスタンス) を <code>Digest SHA256</code> に変換するために <code>hash</code> 関数を使いました。 実際、SHA256 以外のハッシュアルゴリズムも指定することができます。</p>
+<p>今回の例では、<code>Digest SHA256</code> という型シグネチャが大事でした。GHC にどんなハッシュを使うのか知らせるためです。しかし次の例では、その代わりの関数が登場します。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import           </span><span class="dt">Crypto.Hash</span>             (hashWith, <span class="dt">SHA256</span> (..))
+<span class="kw">import           </span><span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)
+<span class="kw">import           </span><span class="dt">Data.Text.Encoding</span>      (encodeUtf8)
+<span class="kw">import qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span>
+<span class="kw">import           </span><span class="dt">System.IO</span>               (hFlush, stdout)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  putStr <span class="st">&quot;Enter some text: &quot;</span>
+  hFlush stdout
+  text <span class="ot">&lt;-</span> TIO.getLine
+  <span class="kw">let</span> bs <span class="fu">=</span> encodeUtf8 text
+  putStrLn <span class="fu">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="fu">++</span> show bs
+  <span class="kw">let</span> digest <span class="fu">=</span> hashWith <span class="dt">SHA256</span> bs
+  putStrLn <span class="fu">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="fu">++</span> show digest</code></pre></div>
+<p><code>Digest</code> の <code>Show</code> インスタンスは、ダイジェストを16進数 (Base16) で表示します。これはいいですね。 しかし、これをBase64 で表示したい欲求にかられたらどうでしょう? 考えてみましょう。 <code>Digest</code> は <code>ByteArrayAccess</code> のインスタンスです。なので、<code>convertToBase</code> を使うことができます (そして、<code>Digest</code> は <code>ByteArray</code>のインスタンスではありません。そうしてしまったら問題が生じるのですが、それはなぜでしょうか? 行き詰まったら、<a href="https://www.stackage.org/haddock/lts-9.3/cryptonite-0.23/Crypto-Hash.html#v:digestFromByteString">この関数のドキュメント</a>を読んでみましょう。答えが載っています。)。</p>
+<p><strong>練習問題</strong> ダイジェストを Base64 でエンコードされた文字列として出力してみましょう (答えはすぐ下)。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import           </span><span class="dt">Crypto.Hash</span>             (hashWith, <span class="dt">SHA256</span> (..))
+<span class="kw">import           </span><span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)
+<span class="kw">import           </span><span class="dt">Data.ByteArray.Encoding</span> (convertToBase, <span class="dt">Base</span> (<span class="dt">Base64</span>))
+<span class="kw">import           </span><span class="dt">Data.Text.Encoding</span>      (encodeUtf8)
+<span class="kw">import qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span>
+<span class="kw">import           </span><span class="dt">System.IO</span>               (hFlush, stdout)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  putStr <span class="st">&quot;Enter some text: &quot;</span>
+  hFlush stdout
+  text <span class="ot">&lt;-</span> TIO.getLine
+  <span class="kw">let</span> bs <span class="fu">=</span> encodeUtf8 text
+  putStrLn <span class="fu">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="fu">++</span> show bs
+  <span class="kw">let</span> digest <span class="fu">=</span> convertToBase <span class="dt">Base64</span> (hashWith <span class="dt">SHA256</span> bs)
+  putStrLn <span class="fu">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="fu">++</span> show (<span class="ot">digest ::</span> <span class="dt">ByteString</span>)</code></pre></div>
+<p><code>digest</code> が <code>ByteString</code> であることを明確にするために、型シグネチャが必要な理由を押さえてください。</p>
+<h2 id="マッチするファイルがあるかどうか調べる">マッチするファイルがあるかどうか調べる</h2>
+<p>ここにちょっとしたプログラムがあります。ユーザはコマンドライン引数として、複数個のファイル名を渡します。そして、プログラムは同一の内容の全てのファイルのリストを表示します (少なくとも、SHA256 のハッシュ値がマッチするファイルを。それと、以下の定義には、メモリの効率がよろしくない部分があります。見つけてみてください。この点についてはまた後述します)。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import           </span><span class="dt">Crypto.Hash</span>             (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)
+<span class="kw">import qualified</span> <span class="dt">Data.ByteString</span>         <span class="kw">as</span> <span class="dt">B</span>
+<span class="kw">import           </span><span class="dt">Data.Foldable</span>           (forM_)
+<span class="kw">import           </span><span class="dt">Data.Map.Strict</span>         (<span class="dt">Map</span>)
+<span class="kw">import qualified</span> <span class="dt">Data.Map.Strict</span>         <span class="kw">as</span> <span class="dt">Map</span>
+<span class="kw">import           </span><span class="dt">System.Environment</span>      (getArgs)
+
+<span class="ot">readFile&#39; ::</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Map</span> (<span class="dt">Digest</span> <span class="dt">SHA256</span>) [FilePath])
+readFile&#39; fp <span class="fu">=</span> <span class="kw">do</span>
+  bs <span class="ot">&lt;-</span> B.readFile fp
+  <span class="kw">let</span> digest <span class="fu">=</span> hash bs <span class="co">-- notice lack of type signature :)</span>
+  return <span class="fu">$</span> Map.singleton digest [fp]
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  args <span class="ot">&lt;-</span> getArgs
+  m <span class="ot">&lt;-</span> Map.unionsWith (<span class="fu">++</span>) <span class="fu">&lt;$&gt;</span> mapM readFile&#39; args
+  forM_ (Map.toList m) <span class="fu">$</span> \(digest, files) <span class="ot">-&gt;</span>
+    <span class="kw">case</span> files <span class="kw">of</span>
+      [] <span class="ot">-&gt;</span> error <span class="st">&quot;can never happen&quot;</span>
+      [_] <span class="ot">-&gt;</span> return () <span class="co">-- only one file</span>
+      <span class="co">--                                     unwords :: [String] -&gt; String</span>
+      _ <span class="ot">-&gt;</span> putStrLn <span class="fu">$</span> show digest <span class="fu">++</span> <span class="st">&quot;: &quot;</span> <span class="fu">++</span> unwords (map show files)</code></pre></div>
+<p><strong>練習問題</strong> コマンドライン引数として与えられた全てのファイルの SHA256 ハッシュ値を表示するプログラムを書いてください。</p>
+<p><strong>質問</strong> 上のコードの、どこが非効率的なのでしょうか? 答えは次の章にあります。</p>
+<h2 id="より効率的なファイルハッシュ">より効率的なファイルハッシュ</h2>
+<p>もしもハッシュ関数を使わなければ、さっきのプログラムの実装は、それぞれのファイルの中身をメモリ上に一度に展開するか、O(n^2) のペアの比較をするような変なものになっていたでしょう。 さっきのハッシュを使った実装は、それよりも良い実装です。しかし、まだ問題があります。 <code>Data.ByteString.readFile</code>を使っているので、際限なくメモリを使ってしまう可能性があります。 <code>cryptonite-conduit</code> を使うと、ファイルの内容全てをもっと効率良くハッシュできます。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import           </span><span class="dt">Crypto.Hash</span>         (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)
+<span class="kw">import           </span><span class="dt">Crypto.Hash.Conduit</span> (hashFile)
+<span class="kw">import           </span><span class="dt">Data.Foldable</span>       (forM_)
+<span class="kw">import           </span><span class="dt">Data.Map.Strict</span>     (<span class="dt">Map</span>)
+<span class="kw">import qualified</span> <span class="dt">Data.Map.Strict</span>     <span class="kw">as</span> <span class="dt">Map</span>
+<span class="kw">import           </span><span class="dt">System.Environment</span>  (getArgs)
+
+<span class="ot">readFile&#39; ::</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Map</span> (<span class="dt">Digest</span> <span class="dt">SHA256</span>) [FilePath])
+readFile&#39; fp <span class="fu">=</span> <span class="kw">do</span>
+  digest <span class="ot">&lt;-</span> hashFile fp
+  return <span class="fu">$</span> Map.singleton digest [fp]
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  args <span class="ot">&lt;-</span> getArgs
+  m <span class="ot">&lt;-</span> Map.unionsWith (<span class="fu">++</span>) <span class="fu">&lt;$&gt;</span> mapM readFile&#39; args
+  forM_ (Map.toList m) <span class="fu">$</span> \(digest, files) <span class="ot">-&gt;</span>
+    <span class="kw">case</span> files <span class="kw">of</span>
+      [] <span class="ot">-&gt;</span> error <span class="st">&quot;can never happen&quot;</span>
+      [_] <span class="ot">-&gt;</span> return () <span class="co">-- only one file</span>
+      _ <span class="ot">-&gt;</span> putStrLn <span class="fu">$</span> show digest <span class="fu">++</span> <span class="st">&quot;: &quot;</span> <span class="fu">++</span> unwords (map show files)</code></pre></div>
+<p>かなりシンプルな変更です (というか、こっちの方が少し読みやすいのではないでしょうか)。 さらに、かなりメモリ効率の良いコードになりました(ファイル数に対して線形時間、ファイルサイズに対しては定数時間です)。</p>
+<h2 id="ストリームハッシュ">ストリーム・ハッシュ</h2>
+<p><code>conduit</code> と聞いて、耳か目が即座に反応したかもしれません。 質問された体で答えましょう。 はい、ハッシュに関してもストリーミング処理ができます。ここに、URL とファイルパスを受け取って、その URL の response body の中身をファイルパスに書きこみ、SHA256 でダイジェストを表示するプログラムがあります。 そして、それぞれのデータチャンクを 1回しか参照しないのがいいですね。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import </span><span class="dt">Conduit</span>
+<span class="kw">import </span><span class="dt">Crypto.Hash</span>         (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)
+<span class="kw">import </span><span class="dt">Crypto.Hash.Conduit</span> (sinkHash)
+<span class="kw">import </span><span class="dt">Network.HTTP.Simple</span>
+<span class="kw">import </span><span class="dt">System.Environment</span>  (getArgs)
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  args <span class="ot">&lt;-</span> getArgs
+  (url, fp) <span class="ot">&lt;-</span>
+    <span class="kw">case</span> args <span class="kw">of</span>
+      [x, y] <span class="ot">-&gt;</span> return (x, y)
+      _ <span class="ot">-&gt;</span> error <span class="fu">$</span> <span class="st">&quot;Expected: URL FILEPATH&quot;</span>
+  req <span class="ot">&lt;-</span> parseRequest url
+  digest <span class="ot">&lt;-</span> runResourceT <span class="fu">$</span> httpSink req <span class="fu">$</span> \_res <span class="ot">-&gt;</span> getZipSink <span class="fu">$</span>
+    <span class="dt">ZipSink</span> (sinkFile fp) <span class="fu">*&gt;</span>
+    <span class="dt">ZipSink</span> sinkHash
+  print (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>)</code></pre></div>
+<p><code>conduit</code> にできるなら、もちろんあなたにもできるはずです。 <code>conduit</code> を使わずに、<code>hashFile</code> を実装してみましょう。 こうすることで、ハッシュの API の内部がいくらか分かります。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import </span><span class="dt">Crypto.Hash</span>
+<span class="kw">import </span><span class="dt">System.Environment</span>  (getArgs)
+<span class="kw">import </span><span class="dt">System.IO</span> (withBinaryFile, <span class="dt">IOMode</span> (<span class="dt">ReadMode</span>))
+<span class="kw">import </span><span class="dt">Data.Foldable</span> (forM_)
+<span class="kw">import qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span>
+
+<span class="ot">hashFile ::</span> <span class="dt">HashAlgorithm</span> ha <span class="ot">=&gt;</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Digest</span> ha)
+hashFile fp <span class="fu">=</span> withBinaryFile fp <span class="dt">ReadMode</span> <span class="fu">$</span> \h <span class="ot">-&gt;</span>
+  <span class="kw">let</span> loop context <span class="fu">=</span> <span class="kw">do</span>
+        chunk <span class="ot">&lt;-</span> B.hGetSome h <span class="dv">4096</span>
+        <span class="kw">if</span> B.null chunk
+          <span class="kw">then</span> return <span class="fu">$</span> hashFinalize context
+          <span class="kw">else</span> loop <span class="fu">$!</span> hashUpdate context chunk
+   <span class="kw">in</span> loop hashInit
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  args <span class="ot">&lt;-</span> getArgs
+  forM_ args <span class="fu">$</span> \fp <span class="ot">-&gt;</span> <span class="kw">do</span>
+    digest <span class="ot">&lt;-</span> hashFile fp
+    putStrLn <span class="fu">$</span> show (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>) <span class="fu">++</span> <span class="st">&quot;  &quot;</span> <span class="fu">++</span> fp</code></pre></div>
+<p>この実装では <code>Crypto.Hash</code> で提供されている純粋なハッシュ更新用関数を使っています。 今回の場合、いくつかバッファのコピーをスキップすることで、もう少し効率の良い実装を可能にする、可変ハッシュの関数を使うことができます。</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">#!/usr/bin/env stack</span>
+<span class="co">-- stack --resolver lts-9.3 script</span>
+<span class="kw">import </span><span class="dt">Crypto.Hash</span>
+<span class="kw">import </span><span class="dt">Crypto.Hash.IO</span>
+<span class="kw">import </span><span class="dt">System.Environment</span>  (getArgs)
+<span class="kw">import </span><span class="dt">System.IO</span> (withBinaryFile, <span class="dt">IOMode</span> (<span class="dt">ReadMode</span>))
+<span class="kw">import </span><span class="dt">Data.Foldable</span> (forM_)
+<span class="kw">import qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span>
+
+<span class="ot">hashFile ::</span> <span class="dt">HashAlgorithm</span> ha <span class="ot">=&gt;</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Digest</span> ha)
+hashFile fp <span class="fu">=</span> withBinaryFile fp <span class="dt">ReadMode</span> <span class="fu">$</span> \h <span class="ot">-&gt;</span> <span class="kw">do</span>
+  context <span class="ot">&lt;-</span> hashMutableInit
+  <span class="kw">let</span> loop <span class="fu">=</span> <span class="kw">do</span>
+        chunk <span class="ot">&lt;-</span> B.hGetSome h <span class="dv">4096</span>
+        <span class="kw">if</span> B.null chunk
+          <span class="kw">then</span> hashMutableFinalize context
+          <span class="kw">else</span> <span class="kw">do</span>
+            hashMutableUpdate context chunk
+            loop
+  loop
+
+<span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+  args <span class="ot">&lt;-</span> getArgs
+  forM_ args <span class="fu">$</span> \fp <span class="ot">-&gt;</span> <span class="kw">do</span>
+    digest <span class="ot">&lt;-</span> hashFile fp
+    putStrLn <span class="fu">$</span> show (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>) <span class="fu">++</span> <span class="st">&quot;  &quot;</span> <span class="fu">++</span> fp</code></pre></div>
+<p><strong>練習問題</strong> 遅延入出力と <code>hashlazy</code>関数を使って、<code>hashFile</code> を実装してください (遅延入出力を支持しているわけじゃないですよ。)。</p>]]></summary>
+</entry>
+
+</feed>

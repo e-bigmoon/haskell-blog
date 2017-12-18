@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/materialize-hakyll
+    docker:
+      - image: futtetennista/hakyll:4.9.8.0
+    branches:
+      only:
+        - source
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-stack-work-{{ checksum "materialize-hakyll.cabal" }}
+      - run:
+          name: Build site executable
+          command: stack build
+      - save_cache:
+          paths:
+            - ~/materialize-hakyll/.stack-work
+            - /root/.stack/
+          key: v1-stack-work-{{ checksum "materialize-hakyll.cabal" }}
+      - deploy:
+          name: Deploy master to Github Pages
+          command: |
+            git config --global user.email robots@circleci.com
+            git config --global user.name CircleCI
+            stack exec site rebuild
+            git checkout --orphan gh-pages
+            git rm -rf .
+            # Overwrite existing files with new files
+            cp -a _site/. .
+            rm -rf _site/ .stack-work/ _cache/
+            #  Commit
+            git add .
+            git commit -m "[`date '+%F %T %Z'`] New release"
+            # Force push…sledge hammer approach but I don't care about history
+            git push origin gh-pages:gh-pages --force
