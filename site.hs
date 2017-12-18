@@ -73,7 +73,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
       let
         indexCtx =
           listField "posts" postCtx (return posts)
-          <> constField "title" "Home"
+          <> constField "title" "BIGMOON haskellers blog"
           <> siteCtx
       getResourceBody
         >>= applyAsTemplate indexCtx
