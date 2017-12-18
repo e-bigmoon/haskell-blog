@@ -12,9 +12,13 @@ and can have zero or more tags and an author:
 
 ```
 ---
-title: Carpe Diem
-tags: dummy, philosophy
+title: Haskell で暗号学的ハッシュを扱う
+author: Michael Snoyman
+translator: pythonissam
+tags: fpcomplete
 ---
+
+Great original post: [CRYPTOGRAPHIC HASHING IN HASKELL.](https://www.fpcomplete.com/blog/2017/09/cryptographic-hashing-haskell).
 
 Fusce tortor quam, egestas in posuere quis, porttitor vel turpis...
 <!--more-->
