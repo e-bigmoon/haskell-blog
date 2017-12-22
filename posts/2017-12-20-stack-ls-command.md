@@ -4,8 +4,6 @@ author: Shinya Yamaguchi
 tags: bigmoon, stack
 ---
 
-# stack ls コマンド
-
 `Stack` の `master` に `stack ls` コマンドがマージされました。
 
 - [Add stack ls snapshots documentation to the user guide #3672](https://github.com/commercialhaskell/stack/pull/3672)

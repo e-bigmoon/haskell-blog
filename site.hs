@@ -23,9 +23,9 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     route $ setExtension "css"
     compile (fmap compressCss <$> sassCompiler)
 
-  match (fromList [ "pages/about.rst"
-                  , "pages/contact.markdown"
-                  , "pages/LICENSE.markdown"
+  match (fromList [ "pages/about.md"
+                  , "pages/contact.md"
+                  , "pages/LICENSE.md"
                   ]) $ do
     route $
       customRoute (maybe (error "Expected pages to be in 'pages' folder")
@@ -198,4 +198,4 @@ hakyllConfig =
 
 sitemapPages :: [Item String] -> [Item String]
 sitemapPages =
-  filter ((/="pages/LICENSE.markdown") . toFilePath . itemIdentifier)
+  filter ((/="pages/LICENSE.md") . toFilePath . itemIdentifier)

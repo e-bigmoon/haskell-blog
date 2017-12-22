@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <title>BIGMOON</title>
+    <title>BIG MOON</title>
     <link href="https://haskell.e-bigmoon.com/feed.xml" rel="self" />
     <link href="https://haskell.e-bigmoon.com" />
     <id>https://haskell.e-bigmoon.com/feed.xml</id>
@@ -8,15 +8,40 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2017-12-20T00:00:00Z</updated>
+    <updated>2017-12-22T00:00:00Z</updated>
     <entry>
+    <title>将来も使えるテストスイート</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2017-12-22-future-proofing-test-suites.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2017-12-22-future-proofing-test-suites.html</id>
+    <published>2017-12-22T00:00:00Z</published>
+    <updated>2017-12-22T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Great original post: <a href="https://www.snoyman.com/blog/2017/11/future-proofing-test-suites">Future proofing test suites</a>.</p>
+<p>2017年 11月 12日 Michael Snoyman</p>
+<p>まず、最近何回か見た具体的なケースから話を始めましょう。そしてそれを元に一般的な話をします。もしもあなたがパッケージの作者で、この問題に直面してきたのなら、ちょっと聞いてくださいよ。私がこの情報をブログの記事にしているのは、いくつものバグトラッカーで同じ説明を何回もするよりも、ここに一回だけ書いて、そのリンクを貼ればいいと考えたからです。</p>
+<p><a href="https://www.stackage.org/package/hlint">hlint</a> は Haskell のコードをより良くするためのアドバイスをくれる、素晴らしいツールです (Neil Mitchell のもう一つの素晴らしいプロダクト)。その別のプロダクトのように、hlint もまた新しいバージョンで、より良いアドバイスをくれるような進化を遂げています。まぁこれは、昔の hlint では出なかった警告が、新しいバージョンで突然出るようになるかもしれない、という意味でもあります。</p>
+<!--more-->
+<p>最近、Stackage のキュレーション中に 2回、コードを全く変えていないのに、何個もテストが失敗するのを見ています。この、以前通っていたテストが失敗するようになる現象は、hlint のバージョンを新しくしたのが原因でした。これは明らかに、hlint のバージョンを新しくしたからコードがいきなりぶっ壊れたのではありません。テストの失敗の診断が関係しているので、hlint の警告のせいでしょうね (意訳)。</p>
+<h2 id="推奨するやり方">推奨するやり方</h2>
+<p>hlint を使ってプロジェクトのコードを改善するのは、すごくおすすめです。Stack などの CI のプロセスでこいつを使って、素晴らしい結果を返してくれるのを何回か見ています。(ちなみにこれは私のアイディアではなくて、実際に使ったりもしていませんでした。ただスタイルエラーがある PR を投げてしまって、それが失敗するのに気づいて、嬉しい驚きだった、というだけです)。でも、hlint のバージョンを新しくしたせいで、パッケージ全体としてのテストが失敗する現象。これは起こりすぎです。なので、</p>
+<ul>
+<li>警告が出る PR をブロックしたいのなら、CI から hlint を呼び出すように<strong>してください</strong>。私が思いつく方法は 2つあります:
+<ul>
+<li>Stack のやり方をまねる。Stack にはスタイルエラー専用の、<a href="https://github.com/commercialhaskell/stack/blob/46121be1b96465f1164e3f84cafa19c7369da9cc/.travis.yml#L39">Travis CI のビルドマトリックス</a>があります。プロジェクトの cabal ファイルは、hlint について何も知りません。</li>
+<li>cabalファイルのテストを使うが、デフォルトで無効にしておく。CI の設定から、フラグを使ってそのテストを有効にします。 </li>
+</ul></li>
+<li>Hackage にアップロードされ、Stackage でビルドされた際に、スタイルに関連するエラーによってテストが失敗するようなパッケージのセットアップはやめましょう。</li>
+</ul>
+<h2 id="一般的に推奨するやり方">一般的に推奨するやり方</h2>
+<p>ここから考察される一般論は、CI でコードをビルドするときは、やりたいだけ厳密にやる、ということです。標準を高く保ち、PR をブロックし、master がぶっ壊れた! と叫んでください。ささいな問題でもそうでなくても、重要だと思う問題全てに対してです。<code>-Wall -Werror</code> をオンにし、タブや文末のスペースに対してエラーを吐くようにしてください。これらは全て良いものです (タブかスペースかなどの、必要な議論はしてください)。</p>
+<p>しかし、他の場所でコードをリリースするときは、メインではない機能に対しては、テストを緩くしましょう。コードがビルドに失敗するのなら、それは問題です。ビルドに成功しても、実行時に正しくない結果を返すようなら、それは問題です。これらの問題が存在すると、Stackage などのビルドシステムは、そのようなパッケージを受け入れてくれません。でも、スタイルの問題や新しく追加されたコンパイラの警告のようなものなら、あなたのパッケージを使うより下流の利用者に対して、失敗させるべきではないでしょうね。</p>]]></summary>
+</entry>
+<entry>
     <title>stack ls コマンドが追加されます</title>
     <link href="https://haskell.e-bigmoon.com/posts/2017-12-20-stack-ls-command.html" />
     <id>https://haskell.e-bigmoon.com/posts/2017-12-20-stack-ls-command.html</id>
     <published>2017-12-20T00:00:00Z</published>
     <updated>2017-12-20T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h1 id="stack-ls-コマンド">stack ls コマンド</h1>
-<p><code>Stack</code> の <code>master</code> に <code>stack ls</code> コマンドがマージされました。</p>
+    <summary type="html"><![CDATA[<p><code>Stack</code> の <code>master</code> に <code>stack ls</code> コマンドがマージされました。</p>
 <ul>
 <li><a href="https://github.com/commercialhaskell/stack/pull/3672">Add stack ls snapshots documentation to the user guide #3672</a></li>
 </ul>
