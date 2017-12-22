@@ -50,6 +50,16 @@ $ stack ls snapshots -n remote
 
 実行すると `less` が立ち上がり、結果を確認することができます。
 
+もとの `stack` のバージョンに戻すためには以下のコマンドを実行しましょう。
+
+```bash
+$ stack upgrade --binary-version 1.6.1
+# バイナリが落ちてくるのですぐに元通りです。
+
+$ stack --version
+Version 1.6.1, Git revision f25811329bbc40b0c21053a8160c56f923e1201b (5435 commits) x86_64 hpack-0.20.0
+```
+
 ## まとめ
 
 これで [Stackage](https://www.stackage.org/) を見なくても、どんなスナップショットが利用できるか、すぐに確認できるようになりますね。

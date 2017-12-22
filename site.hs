@@ -191,7 +191,9 @@ atomFeedConfiguration fs =
 -- Friendlier config when using docker
 hakyllConfig :: Configuration
 hakyllConfig =
-  defaultConfiguration{ previewHost = "0.0.0.0" }
+  defaultConfiguration { previewHost = "0.0.0.0"
+                       , previewPort = 3001
+                       }
 
 
 sitemapPages :: [Item String] -> [Item String]
