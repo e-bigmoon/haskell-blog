@@ -18,7 +18,7 @@ tags: bigmoon, stack
 
 このコマンドを使うためには `stack` の `master` ブランチの最新版をインストールする必要があります。
 
-```bash
+```shell
 $ stack upgrade --git
 # ソースからコンパイルするので時間がかかります
 
@@ -28,7 +28,7 @@ Version 1.7.0, Git revision 7d68bd695c4de8f231a95e66d0c882031f8255de (5468 commi
 
 現状、実装されているコマンドとしては `stack ls snapshots` があります。
 
-```bash
+```shell
 # ローカルのスナップショット一覧を表示
 $ stack ls snapshots
 
@@ -50,7 +50,7 @@ $ stack ls snapshots -n remote
 
 もとの `stack` のバージョンに戻すためには以下のコマンドを実行しましょう。
 
-```bash
+```shell
 $ stack upgrade --binary-version 1.6.1
 # バイナリが落ちてくるのですぐに元通りです。
 

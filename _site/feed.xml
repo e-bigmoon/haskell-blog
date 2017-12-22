@@ -8,8 +8,163 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2017-12-22T00:00:00Z</updated>
+    <updated>2017-12-23T00:00:00Z</updated>
     <entry>
+    <title>カスタムスナップショットの紹介</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2017-12-23-stack161.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2017-12-23-stack161.html</id>
+    <published>2017-12-23T00:00:00Z</published>
+    <updated>2017-12-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>ちょっと前に <a href="https://github.com/commercialhaskell/stack/blob/master/ChangeLog.md#v161">version 1.6.1</a> がリリースされたので、その中の目玉機能でもある <code>カスタムスナップショット</code> を紹介したいと思います。</p>
+<!--more-->
+<h2 id="news">NEWS</h2>
+<p>すでに多くの方がご存知かと思いますが、<code>stack</code> 界隈で大きな出来事が3つありました。</p>
+<ul>
+<li><code>stack 1.6.1</code> のリリース</li>
+<li><code>lts-10.0</code> のリリース</li>
+<li><code>stack new</code> で生成されるテンプレートのデフォルトが <code>hpack</code> になった</li>
+</ul>
+<p>以下の記事は <code>hpack</code> についての記述があるため、おすすめです！</p>
+<ul>
+<li><a href="https://myuon.github.io/posts/haskell-project-setup/">Haskellプロジェクトを始めるにあたって</a></li>
+<li><a href="https://qiita.com/ogata-k/items/2b21326b2b7351bfc28c">Haskellのstackによるプロジェクトについて</a></li>
+<li><a href="https://qiita.com/waddlaw/items/49874f4cf9b680e4b015">本気で Haskell したい人向けの Stack チュートリアル</a>
+<ul>
+<li>僕が作成して、時々加筆修正していますが、量が多くなりすぎたのでどうにかしようと思っています・・・。</li>
+<li>タイトルは煽っている感じが少々ありますが、結構真面目です。</li>
+</ul></li>
+</ul>
+<p>ただ、古い記事が全部だめかというとそうでもありません。</p>
+<p>細部を自分で補完できれば有用な記事も多くあります。</p>
+<ul>
+<li><a href="https://qiita.com/tanakh/items/6866d0f570d0547df026">Haskellのビルドツール“stack”の紹介</a></li>
+<li><a href="https://qiita.com/igrep/items/da1d8df6d40eb001a561">Stackでやる最速Haskell Hello world! (GHCのインストール付き！)</a></li>
+</ul>
+<h2 id="custom-snapshots-カスタムスナップショット-について">Custom Snapshots (カスタムスナップショット) について</h2>
+<ul>
+<li><a href="https://docs.haskellstack.org/en/stable/custom_snapshot/">Custom Snapshots</a></li>
+<li><a href="https://www.fpcomplete.com/blog/2017/07/stacks-new-extensible-snapshots">STACK’S NEW EXTENSIBLE SNAPSHOTS.</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3249">Extensible snapshots #3249</a></li>
+</ul>
+<p>カスタムスナップショットは名前から想像できるように、スナップショットを好きにカスタマイズできる新機能です！</p>
+<p>公式のスナップショットは <code>resolver</code> に指定する <code>lts</code> や <code>nightly</code> で始まるものです。</p>
+<p>カスタムスナップショットとは関係ないですが、<code>lts</code>, <code>nightly</code> とバージョンを省略すると最新版のスナップショットを指定できるという小技もあります。(<a href="https://github.com/commercialhaskell/stack/issues/3641">Feature request: stack init –latest-nightly #3641</a>)</p>
+<pre class="shell"><code>$ stack new sample --resolver=nightly
+$ stack new sample --resolver=lts</code></pre>
+<h2 id="カスタムスナップショットを作ってみよう">カスタムスナップショットを作ってみよう！</h2>
+<p>通常であれば <code>stack new</code> で生成されるプロジェクトの <code>stack.yaml</code> と <code>package.yaml</code> を使いますが、今回は全部ゼロから作って行こうと思います。</p>
+<h3 id="カスタムスナップショットの作成">カスタムスナップショットの作成</h3>
+<p>まずは <code>my-snapshot.yaml</code> という名前で空のファイルを作ります。</p>
+<pre class="shell"><code>$ touch my-snapshot.yaml
+$ tree
+.
+└── my-snapshot.yaml</code></pre>
+<p>カスタムスナップショットを定義するためには、まずはベースとなるスナップショットを決める必要があります。</p>
+<p>そのため、 <code>my-snapshot.yaml</code> に <code>resolver</code> を追記しましょう。今回は新しくリリースされた <code>lts-10.0</code> を指定します。</p>
+<p>また <code>name</code> フィールドで自分のスナップショットに名前をつけます。</p>
+<p>この2つが必須のフィールドになります。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">resolver:</span><span class="at"> lts-10.0</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="fu">name:</span><span class="at"> waddlaw-1.0</span></a></code></pre></div>
+<p>これで <code>lts-10.0</code> と全く同じカスタムスナップショットを定義することができました。</p>
+<p><code>name</code> フィールドは <code>~/.stack/snapshots/</code> 以下に保存されるスナップショットのディレクトリ名の一部として利用されたりします。</p>
+<h3 id="stack.yaml-の作成">stack.yaml の作成</h3>
+<p>実際に使ってみましょう。まずは <code>stack.yaml</code> を用意します。</p>
+<pre class="shell"><code>$ touch stack.yaml
+
+$ tree
+.
+├── my-snapshot.yaml
+└── stack.yaml</code></pre>
+<p><code>stack.yaml</code> の <code>resolver</code> に先に作ったカスタムスナップショットを指定します。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="fu">resolver:</span><span class="at"> my-snapshot.yaml</span></a></code></pre></div>
+<p>このままでは <code>cabal</code> ファイルが無いため、まだビルドできません。</p>
+<h3 id="package.yaml-の作成">package.yaml の作成</h3>
+<p><code>package.yaml</code> もゼロから作っていきましょう。</p>
+<pre class="shell"><code>$ touch package.yaml
+
+$ tree
+.
+├── my-snapshot.yaml
+├── package.yaml
+└── stack.yaml</code></pre>
+<p>最小の <code>package.yaml</code> はこんな感じです。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">name:</span><span class="at"> test-custom-snapshot</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="kw">-</span> base</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="fu">library:</span><span class="at"> </span><span class="kw">{}</span></a></code></pre></div>
+<p>ではビルドしてみましょう。</p>
+<pre class="shell"><code>$ stack build
+...
+
+$ tree
+.
+├── my-snapshot.yaml
+├── package.yaml
+├── stack.yaml
+└── test-custom-snapshot.cabal</code></pre>
+<p>無事に <code>cabal</code> ファイルが生成されていますね。</p>
+<h2 id="パッケージの追加">パッケージの追加</h2>
+<p>現時点の依存関係を確認してみます。</p>
+<pre class="shell"><code>$ stack list-dependencies
+base 4.10.1.0
+ghc-prim 0.5.1.1
+integer-gmp 1.0.1.0
+rts 1.0
+test-custom-snapshot 0.0.0</code></pre>
+<p>まずは、いつも通り何かパッケージを追加してみましょう。</p>
+<p>今回は <a href="https://www.stackage.org/package/hakyll-shakespeare">hakyll-shakespeare</a> を追加することにします。<code>hamlet</code> 記法が好きなので <code>hakyll</code> でサイト作る時は個人的にお世話になっているパッケージです。</p>
+<p>現時点で <code>lts-10.0</code> に <code>hakyll-shakespeare</code> は含まれていません。</p>
+<pre><code>$ cat my-snapshot.yaml
+resolver: lts-10.0
+name: waddlaw-1.0
+
+packages:
+  - hakyll-shakespeare-0.1.0.0.2</code></pre>
+<p>こんな感じでカスタムスナップショットに <code>hakyll-shakespeare</code> を指定します。</p>
+<p><code>packages</code> フィールドには <code>extra-deps</code> と同じ構文が利用できます。そのため <code>hackage</code> などにアップロードしていないパッケージでも同様に指定可能です。</p>
+<p>それでは、ちゃんと追加されるか確認してみます。</p>
+<pre class="shell"><code>$ stack build
+$ stack list-dependencies | grep hakyll-shakespeare
+hakyll-shakespeare 0.1.0.0.2</code></pre>
+<p>大丈夫そうですね！</p>
+<h2 id="カスタムスナップショットを共有する">カスタムスナップショットを共有する</h2>
+<p>ここまでで基本的なカスタムスナップショットの作り方はマスターできたと思います。</p>
+<p>しかし、複数のプロジェクトでカスタムスナップショットが利用できなければ、うれしさ半減です。なので、カスタムスナップショットには、そういった仕組みも用意されています。</p>
+<p>どこかにカスタムスナップショットをアップロードし、単純に <code>resolver</code> に <code>URL</code> を指定するだけです。</p>
+<pre class="shell"><code>$ cat stack.yaml
+resolver: https://raw.githubusercontent.com/waddlaw/example-custom-snapshot/master/my-snapshot.yaml</code></pre>
+<h3 id="注意点">注意点</h3>
+<p>1つ注意しなければならない点として、ローカルに用意するカスタムスナップショットファイルと違い、リモートのファイルについてはイミュータブル (変更されないもの) として処理されるという点です。つまり、 <code>URL</code> にアクセスするのは一度だけということです。</p>
+<p>そのため、リモートのファイルを上書き更新したとしても、その内容は既存のプロジェクトには反映されません。</p>
+<pre class="shell"><code>$ tree ~/.stack/custom-plan/
+/home/bm12/.stack/custom-plan/
+└── yaml
+    └── tCj-vP1QL-9k.yaml
+
+$ cat ~/.stack/custom-plan/yaml/tCj-vP1QL-9k.yaml
+resolver: lts-10.0
+name: waddlaw-1.0
+
+packages:
+  - hakyll-shakespeare-0.1.0.0.2</code></pre>
+<p>なので <code>Stackage</code> 同様にカスタムスナップショットの内容を変更する場合は、その都度新しいスナップショットを作る必要があります。</p>
+<h2 id="カスタマイズ可能な設定">カスタマイズ可能な設定</h2>
+<p>スナップショットをカスタマイズできる項目は以下の4つです。</p>
+<ul>
+<li>コンパイラの上書き</li>
+<li>除外パッケージの指定</li>
+<li>ghc-options の指定</li>
+<li>flags の指定</li>
+</ul>
+<p>具体的な使い方についてはドキュメントをご確認ください。</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/blob/master/doc/custom_snapshot.md#using-a-url-instead-of-a-filepath">Custom Snapshots</a></li>
+</ul>
+<h2 id="まとめ">まとめ</h2>
+<p>この機能は <code>Hakyll</code> などの静的サイトジェネレータを良く使う人にとっては、便利なのではないでしょうか。</p>
+<p>個人的には、<code>lts-9</code> 系で最新の <code>pandoc</code> と <code>hakyll</code> を使おうとしたとき、数多くの <code>extra-deps</code> を追加する必要があり、そういう場面で便利かなと少し感じました。</p>]]></summary>
+</entry>
+<entry>
     <title>将来も使えるテストスイート</title>
     <link href="https://haskell.e-bigmoon.com/posts/2017-12-22-future-proofing-test-suites.html" />
     <id>https://haskell.e-bigmoon.com/posts/2017-12-22-future-proofing-test-suites.html</id>
@@ -52,34 +207,34 @@
 <!--more-->
 <h2 id="使ってみよう">使ってみよう！</h2>
 <p>このコマンドを使うためには <code>stack</code> の <code>master</code> ブランチの最新版をインストールする必要があります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">stack</span> upgrade --git</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co"># ソースからコンパイルするので時間がかかります</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">$ <span class="ex">stack</span> --version</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ex">Version</span> 1.7.0, Git revision 7d68bd695c4de8f231a95e66d0c882031f8255de (5468 commits) <span class="ex">x86_64</span> hpack-0.20.0</a></code></pre></div>
+<pre class="shell"><code>$ stack upgrade --git
+# ソースからコンパイルするので時間がかかります
+
+$ stack --version
+Version 1.7.0, Git revision 7d68bd695c4de8f231a95e66d0c882031f8255de (5468 commits) x86_64 hpack-0.20.0</code></pre>
 <p>現状、実装されているコマンドとしては <code>stack ls snapshots</code> があります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># ローカルのスナップショット一覧を表示</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">$ <span class="ex">stack</span> ls snapshots</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># lts のみ表示 (lts の略)</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">$ <span class="ex">stack</span> ls snapshots -l</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># nightly のみ表示 (nightly の略)</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">$ <span class="ex">stack</span> ls snapshots -n</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># リモートのスナップショット一覧を表示</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">$ <span class="ex">stack</span> ls snapshots remote</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">$ <span class="ex">stack</span> ls snapshots -l remote</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">$ <span class="ex">stack</span> ls snapshots -n remote</a></code></pre></div>
+<pre class="shell"><code># ローカルのスナップショット一覧を表示
+$ stack ls snapshots
+
+# lts のみ表示 (lts の略)
+$ stack ls snapshots -l
+
+# nightly のみ表示 (nightly の略)
+$ stack ls snapshots -n
+
+# リモートのスナップショット一覧を表示
+$ stack ls snapshots remote
+
+$ stack ls snapshots -l remote
+
+$ stack ls snapshots -n remote</code></pre>
 <p>実行すると <code>less</code> が立ち上がり、結果を確認することができます。</p>
 <p>もとの <code>stack</code> のバージョンに戻すためには以下のコマンドを実行しましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1">$ <span class="ex">stack</span> upgrade --binary-version 1.6.1</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co"># バイナリが落ちてくるのですぐに元通りです。</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">$ <span class="ex">stack</span> --version</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ex">Version</span> 1.6.1, Git revision f25811329bbc40b0c21053a8160c56f923e1201b (5435 commits) <span class="ex">x86_64</span> hpack-0.20.0</a></code></pre></div>
+<pre class="shell"><code>$ stack upgrade --binary-version 1.6.1
+# バイナリが落ちてくるのですぐに元通りです。
+
+$ stack --version
+Version 1.6.1, Git revision f25811329bbc40b0c21053a8160c56f923e1201b (5435 commits) x86_64 hpack-0.20.0</code></pre>
 <h2 id="まとめ">まとめ</h2>
 <p>これで <a href="https://www.stackage.org/">Stackage</a> を見なくても、どんなスナップショットが利用できるか、すぐに確認できるようになりますね。</p>]]></summary>
 </entry>
