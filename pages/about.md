@@ -8,6 +8,7 @@ Member:
 Name | github | twitter
 -----|--------|-------
 Shinya Yamaguchi | [waddlaw](https://github.com/waddlaw) | [waddlaw](https://twitter.com/waddlaw)
+Wataru Yamada | [wataru86](https://github.com/wataru86) |
 
 ---
 
