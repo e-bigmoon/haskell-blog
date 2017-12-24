@@ -11,10 +11,10 @@ Great original post: [Ghcid with VS Code](http://neilmitchell.blogspot.jp/2017/1
 
 *概要: 新しいバージョンの Ghcid と VS Code拡張がリリースされ、よりいい感じに動くようになった。*
 
-<!--more-->
-
 [Ghcid v0.6.8](https://hackage.haskell.org/package/ghcid) と関連する VS Code拡張 [haskell-ghcid v0.2.0](https://marketplace.visualstudio.com/items?itemName=ndmitchell.haskell-ghcid) をリリースしました。
 一緒に使うと、Ghcid + VS Code 環境をシンプルなものにしてくれます。
+
+<!--more-->
 
 ## .ghcid ファイルの読み込み (Ghcid)
 Ghcid に、カレントディレクトリに `.ghcid` ファイルがあった場合はそれを追加の引数としてロードする機能が追加されました。
