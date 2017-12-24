@@ -8,6 +8,7 @@ Member:
 Name | github | twitter
 -----|--------|-------
 Shinya Yamaguchi | [waddlaw](https://github.com/waddlaw) | [waddlaw](https://twitter.com/waddlaw)
+Kotaro Ohsugi | [pythonissam](https://github.com/pythonissam)|
 Wataru Yamada | [wataru86](https://github.com/wataru86) |
 
 ---
@@ -17,5 +18,6 @@ Wataru Yamada | [wataru86](https://github.com/wataru86) |
 - [FPComplete blog](https://www.fpcomplete.com/blog)
 - [Michael Snoyman's blog](https://www.snoyman.com/)
 - [Neil Mitchell's Haskell Blog](http://neilmitchell.blogspot.jp/)
+- [Matt Parsons's blog](http://www.parsonsmatt.org/)
 
 訳の間違い、誤字脱字のご指摘に関しては [github issue](https://github.com/e-bigmoon/haskell-blog/issues) にて、ご連絡ください。
