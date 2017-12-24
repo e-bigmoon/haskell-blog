@@ -4,9 +4,9 @@ title: stack index
 
 Tips
 
-* [stackの更新](often/stack-upgrade.html)
-* [完全なリビルド](often/full-rebuild.html)
-* [おすすめの開発方法](often/recommend-dev.html)
+* [stackの更新](tips/stack-upgrade.html)
+* [完全なリビルド](tips/full-rebuild.html)
+* [おすすめの開発方法](tips/recommend-dev.html)
 
 チュートリアル
 

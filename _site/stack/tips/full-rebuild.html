@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>おすすめの開発方法</title>
+  <title>完全なリビルド</title>
   <meta name="description" content="BIG MOON">
-  <link rel="canonical" href="../../stack/often/recommend-dev.html">
-  <link rel="alternate" type="application/atom+xml" title="おすすめの開発方法" href="../../feed.xml" />
+  <link rel="canonical" href="../../stack/tips/full-rebuild.html">
+  <link rel="alternate" type="application/atom+xml" title="完全なリビルド" href="../../feed.xml" />
 
   <!-- Stylesheets. -->
   <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
@@ -24,11 +24,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="おすすめの開発方法" />
+  <meta property="og:title" content="完全なリビルド" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="/stack/often/recommend-dev.html" />
+  <meta property="og:url" content="/stack/tips/full-rebuild.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="おすすめの開発方法" />
+  <meta property="og:site_name" content="完全なリビルド" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -131,39 +131,25 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">おすすめの開発方法</h1>
+        <h1 class="post-title">完全なリビルド</h1>
+        
+        <span>最終更新日: 2017/12/24</span>
         
       </div>
 
       <article class="page-content">
-        <p>その時によって違うといえば違うのですが僕は <code>vscode</code> のターミナルに以下のコマンドを打ち込んで自動的にビルドさせています。</p>
-<pre class="shell-session"><code>$ stack test --fast --file-watch --pedantic
-
-# ラフに開発する時はこっちを使ってます
-$ stack test --fast --file-watch</code></pre>
-<p>各オプションの意味は以下の通りです。</p>
-<table>
-<thead>
-<tr class="header">
-<th>オプション</th>
-<th>意味</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>–fast</td>
-<td>最適化を無効にする (<code>-O0</code>)</td>
-</tr>
-<tr class="even">
-<td>–file-watch</td>
-<td>ファイルの変更を検知するとリビルドする</td>
-</tr>
-<tr class="odd">
-<td>–pedantic</td>
-<td><code>-Wall</code> による警告をエラーとして扱う</td>
-</tr>
-</tbody>
-</table>
+        <h2 id="リビルド方法">リビルド方法</h2>
+<p>通常 <code>stack build</code> でリビルドした際はキャッシュが利用されます。</p>
+<p>しかし、場合によって (警告をもう一度みたいなど) はキャッシュを無視してリビルドしたい時があります。</p>
+<p><code>--force-dirty</code> や <code>--ghc-options=-fforce-recomp</code> などを使う方法もあるのですが、一番確実なのは <code>stack clean</code> することです。</p>
+<pre class="shell"><code>$ stack clean
+$ stack build</code></pre>
+<h2 id="何をやってもだめな時">何をやってもだめな時</h2>
+<p>基本的には <code>stack clean</code> で上手く行くことが多いのですがどうしてもだめな場合は <code>--full</code> オプションを追加します。</p>
+<pre class="shell"><code>$ stack clean --full
+$ stack build</code></pre>
+<p>このオプションは以下のコマンドと同じ結果となります。</p>
+<pre class="shell"><code>$ rm -rf .stack-work/</code></pre>
       </article>
 
       
