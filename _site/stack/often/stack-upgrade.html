@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>stackの更新</title>
+  <title>stack の更新</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/often/stack-upgrade.html">
-  <link rel="alternate" type="application/atom+xml" title="stackの更新" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="stack の更新" href="../../feed.xml" />
 
   <!-- Stylesheets. -->
   <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
@@ -24,11 +24,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="stackの更新" />
+  <meta property="og:title" content="stack の更新" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/often/stack-upgrade.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="stackの更新" />
+  <meta property="og:site_name" content="stack の更新" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -70,7 +70,7 @@
       </a>
     </li>
     <li>
-      <a href="../../stack/stack-index.html" class="white-text">
+      <a href="../../stack/" class="white-text">
         <i class="mdi mdi-checkerboard left indigo-text text-lighten-3"></i>
         Stack
       </a>
@@ -131,30 +131,44 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">stackの更新</h1>
+        <h1 class="post-title">stack の更新</h1>
+        
+        <span>最終更新日: 2017/12/24</span>
+        
       </div>
 
       <article class="page-content">
-        <pre class="shell-session"><code>$ stack upgrade
+        <h2 id="最新の安定版へアップグレードする方法">最新の安定版へアップグレードする方法</h2>
+<pre class="shell"><code>$ stack upgrade
 
-$ stack --version
-Version 1.6.1, Git revision f25811329bbc40b0c21053a8160c56f923e1201b (5435 commits) x86_64 hpack-0.20.0
-
-# バージョン指定 (元に戻したい場合などに便利)
-$ stack upgrade --binary-version 1.5.1</code></pre>
-<p>似たコマンドに <code>stack update</code> というものがありますが、こちらはほぼ利用しません。なぜなら <code>stack update</code> は <code>cabal update</code> が行うようにパッケージインデックスの更新を明示的に行うコマンドですが、必要であれば <code>stack</code> の内部で自動的に <code>stack update</code> が実行されるためです。 =&gt; <a href="https://github.com/commercialhaskell/stack/blob/master/doc/faq.md#how-do-i-update-my-package-index">How do I update my package index?</a></p>
-<p>また <code>stack upgrade</code> を行うと、既存とは異なるパスにインストールされる点に注意してください。</p>
+$ stack --version</code></pre>
+<p><code>stack</code> のバイナリファイルがダウンロードされるため、更新はすぐに終わります。</p>
+<h2 id="最新の開発版へアップグレードする方法">最新の開発版へアップグレードする方法</h2>
+<p><code>github</code> の最新版を利用したい方は次のコマンドでアップグレードしましょう。</p>
+<pre class="shell"><code>$ stack upgrade --git</code></pre>
+<p>この場合、ソースコードからのコンパイルとなるため、比較的時間がかかります。(30分以上)</p>
+<h2 id="stack-のバージョンを指定してアップグレードする方法">stack のバージョンを指定してアップグレードする方法</h2>
+<pre class="shell"><code>$ stack upgrade --binary-version 1.5.1</code></pre>
+<p><code>--binary-version</code> オプションを使うことで、以前のバージョンにダウングレードさせることも可能です。</p>
+<h3 id="stack-update-コマンドについて">stack update コマンドについて</h3>
+<p><code>stack upgrade</code> と似たコマンドに <code>stack update</code> というものがありますが、こちらはほぼ利用しません。</p>
+<p>なぜなら <code>stack update</code> は <code>cabal update</code> が行うようにパッケージインデックスの更新を明示的に行うコマンドですが、必要であれば <code>stack</code> の内部で自動的に <code>stack update</code> が実行されるためです。</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/blob/master/doc/faq.md#how-do-i-update-my-package-index">How do I update my package index?</a></li>
+</ul>
+<h2 id="注意点">注意点</h2>
+<p><code>stack upgrade</code> を行うと、既存とは異なるパスにインストールされる点に注意してください。</p>
 <pre class="shell"><code>$ curl -sSL https://get.haskellstack.org/ | sh
 $ which stack
 /usr/local/bin/stack
 
 $ stack upgrade
 $ which stack
-/home/bm12/.local/bin/stack
-
-# 基本的にこの設定をしておいた方が良い
-# export PATH=$PATH:~/.local/bin とすると、古い stack を認識するので注意
-$ export PATH=~/.local/bin:$PATH</code></pre>
+/home/bm12/.local/bin/stack</code></pre>
+<p>基本的には、以下のような <code>PATH</code> の設定をしておいた方が良いと思います。</p>
+<pre class="shell"><code>$ export PATH=~/.local/bin:$PATH</code></pre>
+<p>反対に <code>export PATH=$PATH:~/.local/bin</code> とすると、古い <code>stack</code> を参照してしまうため、注意が必要です。</p>
+<p><code>stack</code> の更新が完了した場合、常にバージョンを確認する方が良いでしょう。</p>
       </article>
 
       
