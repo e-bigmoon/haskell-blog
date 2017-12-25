@@ -19,12 +19,12 @@ Tips
   * [プログラムの実行](/stack/intro/exec-prg.html)
   * [アプリケーションの作成](/stack/intro/create-app.html)
 
-* [ドキュメントの作成](/stack/doc/index.html)
+* [ドキュメントの作成](/stack/doc/)
   * [haddockの基礎知識](/stack/doc/haddock-intro.html)
   * [haddockコメント形式](/stack/doc/haddock-comment.html)
   * [haddockのための設定](/stack/doc/haddock-settings.html)
 
-* [テストの作成](/stack/test/index.html)
+* [テストの作成](/stack/test/)
   * [HSpec](/stack/test/hspec.html)
   * [QuickCheck](/stack/test/quickcheck.html)
   * [doctest](/stack/test/doctest.html)
