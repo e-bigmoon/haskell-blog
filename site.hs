@@ -54,7 +54,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
                   , "pages/stack/etc/hoogle.md"
                   , "pages/stack/etc/profiling.md"
                   , "pages/stack/etc/cmd-ref.md"
-                  , "pages/stack/references.md"
+                  , "pages/stack/etc/references.md"
                   ]) $ do
     route $
       customRoute (fromMaybe (error "Expected pages to be in 'pages' folder")
