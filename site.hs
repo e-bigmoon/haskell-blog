@@ -32,7 +32,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
                   , "pages/stack/tips/stack-upgrade.md"
                   , "pages/stack/tips/full-rebuild.md"
                   , "pages/stack/tips/recommend-dev.md"
-                  , "pages/stack/intro.md"
+                  , "pages/stack/intro/index.md"
                   , "pages/stack/intro/why-stack.md"
                   , "pages/stack/intro/stackage.md"
                   , "pages/stack/intro/stack-install.md"

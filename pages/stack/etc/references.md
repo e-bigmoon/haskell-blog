@@ -1,7 +1,10 @@
 ---
-title: 参考のページ
+title: 参考ページ一覧
 ---
 ##### stack
+
+- [The Haskell Tool Stack](https://docs.haskellstack.org/en/stable/README/)
+- [stack on GitHub](https://github.com/commercialhaskell/stack)
 - [Stackでやる最速Haskell Hello world! (GHCのインストール付き！)](http://qiita.com/igrep/items/da1d8df6d40eb001a561)
 - [Haskellのビルドツール"stack"の紹介](http://qiita.com/tanakh/items/6866d0f570d0547df026)
 - [LTS Haskell: Version your Ecosystem](https://github.com/fpco/lts-haskell#readme)
