@@ -15,7 +15,7 @@ Great original post: [Haskell Performance Debugging](http://www.parsonsmatt.org/
 
 <!--more-->
 
-## 基本的な実行
+## 最初の実行
 Cabalプロジェクトを作り、makefile を作ります。そして、最初のプロファイルを取ります。コードとプロファイル結果は GitHub の `base`ブランチ (多分 `master`ブランチ) にあります。
 
 実行されているコードやプロファイル結果を見る前に、質問のデータ構造の定義を確認しておきましょう:
@@ -109,7 +109,7 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
 
 いい感じですね! さて、このグラフは `Tree` コンストラクタの割り当てをする前に、大量のノード、タプル、`I#` (`Int` のコンストラクタ) を割り当てていることを示しています。対象の `main` 関数だと、この挙動は完全に非合理的というわけではありません。
 
-## 実験1: データ構造を厳格化する
+## 実験1: データ構造を正格化する
 このセクション関連のコードは `strictify-treap` にあります。
 
 データ構造のところどころに bang pattern を差し込んで見ました:
@@ -131,7 +131,7 @@ data Treap v d
     } deriving Show
 ```
 
-こうすることで `Node`型の `val`フィールドと `prior`フィールド が厳格になり、`Treap`型は `Node`フィールドに正格になります。`info`フィールドはほとんどのコンテナのように、lazy のままにしてあります。データ構造の spine も lazy のままにしてあります。
+こうすることで `Node`型の `val`フィールドと `prior`フィールド が正格になり、`Treap`型は `Node`フィールドに正格になります。`info`フィールドはほとんどのコンテナのように、lazy のままにしてあります。データ構造の spine も lazy のままにしてあります。
 
 `-s` の出力です:
 
@@ -279,7 +279,7 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
 
 今は `insertMany` に集中するべきでしょう。
 
-## `insertMany`
+## insertMany
 このセクションのコードは、GitHub の`insert-many`ブランチにあります。
 
 `mergeTreap` はなぜかしらカリー化されていましたが:
@@ -332,7 +332,7 @@ insertMany = foldl' insertTreap
   Productivity  77.0% of total user, 74.4% of total elapsed
 ```
 
-良いですね、トータルの使用メモリが 32MB になり、全体の時間は 10分の1ぐらいになりました。しかも、GC にかかっている時間はたったの 22% です。我々の大勝利です。
+良いですね、トータルの使用メモリが 32MB になり、全体の時間は 10分の1ぐらい減りました。しかも、GC にかかっている時間はたったの 22% です。我々の大勝利です。
 
 ヒープのプロファイル結果を見てみましょう:
 
