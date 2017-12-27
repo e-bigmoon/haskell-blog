@@ -279,7 +279,7 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
 
 今は `insertMany` に集中するべきでしょう。
 
-## `insertMany`
+## insertMany
 このセクションのコードは、GitHub の`insert-many`ブランチにあります。
 
 `mergeTreap` はなぜかしらカリー化されていましたが:
