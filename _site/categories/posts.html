@@ -128,6 +128,84 @@
   <ul class="post-list">
     
       <li class="card-panel hoverable">
+        <span class="grey-text right">December 27, 2017</span>
+        <a class="post-link" href="../posts/2017-12-27-haddock-grid-table.html">haddock に Grid Table 記法が追加されました</a>
+
+        <button data-target=".posts/2017-12-27-haddock-grid-table.md" class="waves-effect waves-light btn modal-trigger" style="padding: 0 1.2rem;">overview
+          <i class="mdi mdi-send right"></i>
+        </button>
+
+        <div id=".posts/2017-12-27-haddock-grid-table.md" class="modal modal-fixed-footer">
+          <div class="modal-content">
+            <h4>haddock に Grid Table 記法が追加されました</h4>
+            <p><h2 id="はじめに">はじめに</h2>
+<p>みなさん <code>haddock</code> を使ってますか？</p>
+<p>コメントを残す時に <code>|</code> や <code>^</code> を追加するだけで <code>haddock</code> 形式のコメントを残すことができます。</p>
+<p>具体的にはこんな感じです。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">-- | リストの合計を計算する関数</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">sum<span class="ot"> ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">sum <span class="fu">=</span> foldl (<span class="fu">+</span>) <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">data</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  {<span class="ot"> name ::</span> <span class="dt">Text</span> <span class="co">-- ^ フルネーム</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  }</a></code></pre></div>
+<p>コメントを <code>haddock</code> 形式にしてあげることで <code>HTML</code> のドキュメントがより充実するので、少ない労力で凄く楽しい気持ちになります。</p>
+<p><code>stack</code> を使っている場合はこのようにしてビルドするだけです。</p>
+<pre class="shell"><code>$ stack haddock --open</code></pre>
+<p>今回、この <code>haddock</code> に <code>Grid Table</code> 記法が追加されたそうなので、その機能についてご紹介したいと思います。</p>
+</p>
+            <div>
+              
+                <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+                <div class="chip">bigmoon, haddock</div>
+              
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="../posts/2017-12-27-haddock-grid-table.html" class="waves-effect btn-flat grey-text text-darken-4 right">read more</a>
+            <a class="modal-action modal-close waves-effect btn-flat grey-text text-darken-4 left">close</a>
+          </div>
+        </div>
+      </li>
+    
+      <li class="card-panel hoverable">
+        <span class="grey-text right">December 27, 2017</span>
+        <a class="post-link" href="../posts/2017-12-27-Haskell-Performance-Debugging.html">Haskell のパフォーマンスをデバッグする</a>
+
+        <button data-target=".posts/2017-12-27-Haskell-Performance-Debugging.md" class="waves-effect waves-light btn modal-trigger" style="padding: 0 1.2rem;">overview
+          <i class="mdi mdi-send right"></i>
+        </button>
+
+        <div id=".posts/2017-12-27-Haskell-Performance-Debugging.md" class="modal modal-fixed-footer">
+          <div class="modal-content">
+            <h4>Haskell のパフォーマンスをデバッグする</h4>
+            <p><p>Great original post: <a href="http://www.parsonsmatt.org/2017/12/18/haskell_performance_debugging.html">Haskell Performance Debugging</a>.</p>
+<p>2017年 12月 18日 Matt Parsons</p>
+<p>誰かが reddit に <a href="https://www.reddit.com/r/haskell/comments/7km60k/optimization_ideas_in_treap_implementation/">Treap の実装が遅い</a> と投稿していました。それを分析して、何が起きているのかを考えてみましょう。</p>
+<p>レポジトリは<a href="https://github.com/parsonsmatt/performance-debugging">ここ</a>にあります。</p>
+<h2 id="最初の実行">最初の実行</h2>
+<p>Cabalプロジェクトを作り、makefile を作ります。そして、最初のプロファイルを取ります。コードとプロファイル結果は GitHub の <code>master</code>ブランチにあります。</p>
+<p>実行されているコードやプロファイル結果を見る前に、質問のデータ構造の定義を確認しておきましょう:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Node</span>  v d <span class="fu">=</span> <span class="dt">Node</span> {<span class="ot"> val ::</span> v,<span class="ot"> info ::</span> d,<span class="ot"> prior ::</span> <span class="dt">Int</span> }</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">    <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Treap</span> v d <span class="fu">=</span> <span class="dt">Leaf</span> <span class="fu">|</span> <span class="dt">Tree</span> {<span class="ot">node ::</span> <span class="dt">Node</span> v d,<span class="ot"> left ::</span> <span class="dt">Treap</span> v d,<span class="ot"> right ::</span> <span class="dt">Treap</span> v d}</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">    <span class="kw">deriving</span> <span class="dt">Show</span></a></code></pre></div>
+</p>
+            <div>
+              
+                <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+                <div class="chip">To Overcome, 翻訳</div>
+              
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="../posts/2017-12-27-Haskell-Performance-Debugging.html" class="waves-effect btn-flat grey-text text-darken-4 right">read more</a>
+            <a class="modal-action modal-close waves-effect btn-flat grey-text text-darken-4 left">close</a>
+          </div>
+        </div>
+      </li>
+    
+      <li class="card-panel hoverable">
         <span class="grey-text right">December 24, 2017</span>
         <a class="post-link" href="../posts/2017-12-24-stack163.html">stack v1.6.3 がリリースされました。</a>
 

@@ -2,6 +2,7 @@
 title: Haskell のパフォーマンスをデバッグする
 author: Matt Parsons
 translator: Kotaro Ohsugi
+github: pythonissam
 tags: To Overcome, 翻訳
 ---
 
@@ -13,23 +14,23 @@ Great original post: [Haskell Performance Debugging](http://www.parsonsmatt.org/
 
 レポジトリは[ここ](https://github.com/parsonsmatt/performance-debugging)にあります。
 
-<!--more-->
-
 ## 最初の実行
-Cabalプロジェクトを作り、makefile を作ります。そして、最初のプロファイルを取ります。コードとプロファイル結果は GitHub の `base`ブランチ (多分 `master`ブランチ) にあります。
+Cabalプロジェクトを作り、makefile を作ります。そして、最初のプロファイルを取ります。コードとプロファイル結果は GitHub の `master`ブランチにあります。
 
 実行されているコードやプロファイル結果を見る前に、質問のデータ構造の定義を確認しておきましょう:
 
 ```haskell
-data Node  v d = Node { val :: v, info :: d, prior :: Int } 
+data Node  v d = Node { val :: v, info :: d, prior :: Int }
     deriving (Eq, Show)
 data Treap v d = Leaf | Tree {node :: Node v d, left :: Treap v d, right :: Treap v d}
     deriving Show
 ```
 
-注釈つきの 2分木ですね。spine と値は、連結リストのように遅延評価されます。
+<!--more-->
 
-以下が `main`関数で、この出力を調べます。
+注釈つきの2分木ですね。 spine と値は、リスト同様に遅延評価されます。
+
+以下が `main` 関数で、この出力を調べます。
 
 ```haskell
 main = do
@@ -45,8 +46,8 @@ main = do
     print $ map (\Node{val = v} -> v) $ inOrder treap
 ```
 
-これをプロファイリングしつつビルドして、-p と -s をつけて実行します。これは時間とメモリ確保についてのプロファイリングをしてくれます。
-以下が -s の出力です:
+これをプロファイリングしつつビルドして、`-p` と `-s` をつけて実行します。これは時間とメモリ確保についてのプロファイリングをしてくれます。
+以下が `-s` の出力です:
 
 ```
    1,691,027,808 bytes allocated in the heap
@@ -76,25 +77,25 @@ main = do
 
 GC に 52% の時間が割かれているのはよろしくないですね。
 
-プロファイル結果によると、かなり大部分の時間を `splitTreap`関数で消費してしまっているようです。なのでそこで何が起きているのか確認しましょう:
+プロファイル結果によると、かなり大部分の時間を `splitTreap`関数で消費してしまっているようです。なので、そこで何が起きているのか確認しましょう:
 
 ```haskell
 splitTreap :: (Ord v) => Treap v d -> v -> (Treap v d, Treap v d)
 splitTreap Leaf _ = (Leaf, Leaf)
 splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
-    | x < v  = 
-        let (lt, rt) = splitTreap r v 
+    | x < v  =
+        let (lt, rt) = splitTreap r v
          in ( Tree { node = node tree, left = l, right = lt }
-            , rt  
+            , rt
             )
-    | v <= x = 
-        let (lt, rt) = splitTreap l v 
+    | v <= x =
+        let (lt, rt) = splitTreap l v
          in ( lt
-            , Tree { node = node tree, left = rt, right = r}  
+            , Tree { node = node tree, left = rt, right = r}
             )
 ```
 
-私には気になる点が 2つ見つかりました:
+私には気になる点が2つ見つかりました:
 
 * タプル
 * 再帰
@@ -103,35 +104,35 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
 
 再帰は GHC のインライン化能力を完全に上回っており、パフォーマンスを台無しにしてしまいます。`map` や `foldr` などはクレバーな最適化を受けることができますが、単純な再帰関数には大抵、インライン化において問題が存在します。
 
-これらが実験を始める前の私の印象です。私のタプルメモリ割り当て仮説を検証するために、ヒープのプロファイリングを行いましょう。-hdフラグを使って確保されたデータコンストラクタを取得します:
+これらが実験を始める前の私の印象です。私のタプルメモリ割り当て仮説を検証するために、ヒープのプロファイリングを行いましょう。`-hd`フラグを使って確保されたデータコンストラクタを取得します:
 
-[参照](http://www.parsonsmatt.org/treap-base-hd.png)
+<img src="http://www.parsonsmatt.org/treap-base-hd.png">
 
-いい感じですね! さて、このグラフは `Tree` コンストラクタの割り当てをする前に、大量のノード、タプル、`I#` (`Int` のコンストラクタ) を割り当てていることを示しています。対象の `main` 関数だと、この挙動は完全に非合理的というわけではありません。
+いい感じですね! さて、このグラフは `Tree` コンストラクタの割り当て前に、大量のノード、タプル、`I#` (`Int` のコンストラクタ) を割り当てていることを示しています。対象の `main` 関数だと、この挙動は完全に非合理的というわけではありません。
 
 ## 実験1: データ構造を正格化する
 このセクション関連のコードは `strictify-treap` にあります。
 
-データ構造のところどころに bang pattern を差し込んで見ました:
+データ構造のところどころにバンパターンを差し込んでみました:
 
 ```haskell
-data Node v d 
-    = Node 
+data Node v d
+    = Node
     { val :: !v
     , info :: d
-    , prior :: !Int 
+    , prior :: !Int
     } deriving (Eq, Show)
 
-data Treap v d 
-    = Leaf 
-    | Tree 
+data Treap v d
+    = Leaf
+    | Tree
     { node :: !(Node v d)
     , left :: Treap v d
     , right :: Treap v d
     } deriving Show
 ```
 
-こうすることで `Node`型の `val`フィールドと `prior`フィールド が正格になり、`Treap`型は `Node`フィールドに正格になります。`info`フィールドはほとんどのコンテナのように、lazy のままにしてあります。データ構造の spine も lazy のままにしてあります。
+こうすることで `Node` 型の `val` フィールドと `prior` フィールドが正格になり、`Treap` 型は `node` フィールドに正格になります。`info` フィールドはたいていのコンテナのように、lazy のままにしてあります。データ構造の spine も lazy のままです。
 
 `-s` の出力です:
 
@@ -165,30 +166,30 @@ data Treap v d
 
 以下はヒーププロファイリングの結果です:
 
-[参照](http://www.parsonsmatt.org/treap-strict-nodes.png)
+<img src="http://www.parsonsmatt.org/treap-strict-nodes.png">
 
 大きな違いはありませんが、確かに少し良い結果です。時間と割り当てのプロファイリングは全く違う結果を証明していています。後々、プログラムの実行時間は 2.49秒から 0.97秒になります。
 
 この結果にかなり励まされつつ、木の spine も正格にしようと思います。
 
 ```haskell
-data Node v d 
-    = Node 
+data Node v d
+    = Node
     { val :: !v
     , info :: d
-    , prior :: !Int 
+    , prior :: !Int
     } deriving (Eq, Show)
 
-data Treap v d 
-    = Leaf 
-    | Tree 
+data Treap v d
+    = Leaf
+    | Tree
     { node :: !(Node v d)
     , left :: !(Treap v d)
     , right :: !(Treap v d)
     } deriving Show
 ```
 
-`-s` の出力結果によると、トータルでまだ 94MB 程度のメモリを使っているようです。
+`-s` の出力結果によると、合計でまだ 94MB 程度のメモリを使っているようです。
 
 ```
   1,161,437,656 bytes allocated in the heap
@@ -220,12 +221,12 @@ data Treap v d
 
 今度はヒープの出力も見てみましょう:
 
-[参照](http://www.parsonsmatt.org/treap-strict-spine.png)
+<img src="http://www.parsonsmatt.org/treap-strict-spine.png">
 
-もう少しですね! 大きなメモリの山を生成され、それが回収されています。何かが起きていることの兆候です。タプルコンストラクタに多くの割り当てをしてしまっています。つらいですね。
+もう少しですね! 大きなメモリの山が生成され、それが回収されています。何かが起きていることの兆候です。タプルコンストラクタに多くの割り当てをしてしまっています。つらいですね。
 
 ## Split を正格化する
-まだ `splitTreap` という最大の犯罪者がいます。こいつはプログラムの実行時間のほぼ半分を占めています。タプルを割り当て、それを捨てていることはわかっているので、そこにスペースリークがある可能性があります。タプルの中に bang pattern を追加し、結果を見てみます。
+まだ `splitTreap` という最大の犯罪者がいます。こいつはプログラムの実行時間のほぼ半分を占めています。タプルを割り当て、それを捨てていることはわかっているので、そこにスペースリークがある可能性があります。タプルの中にバンパターンを追加し、結果を見てみます。
 
 これが変更点です:
 
@@ -237,7 +238,7 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
                 (   Tree { node = node tree, left = l, right = lt },
                     rt  )
     | v <= x = let (!lt, !rt) = splitTreap l v in
-                (   lt, 
+                (   lt,
                     Tree { node = node tree, left = rt, right = r}  )
 ```
 
@@ -273,9 +274,9 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
 
 これはさっきの実行からほとんど変わっていません。ヒーププロファイルも変更されませんでした。これらのタプルがどこに割り当てられるのかを見るために、`-hc` をつけて実行してみます。`-hc` は実際にどの関数がデータを生成しているのかを記録してくれるので、どこに注目するべきかが分かります。
 
-[参照](http://www.parsonsmatt.org/treap-strict-tuple-hc.png)
+<img src="http://www.parsonsmatt.org/treap-strict-tuple-hc.png">
 
-**あぁナッツ!** `splitTreap` がほんの少ししかメモリ割り当てがされなくなってるぞ。`buildNode`, `feedFold`, `insertMany` でほとんどの割り当てを行っているみたいです。これは、`splitTreap` に多くの時間と割り当てをしているという `-p`オプションの結果に反しているように見えます。
+**あぁナッツ!** `splitTreap` がほんの少ししかメモリ割り当てがされなくなってるぞ。`buildNode`, `feedFold`, `insertMany` でほとんどの割り当てを行っているみたいです。これは、`splitTreap` に多くの時間と割り当てをしているという `-p` オプションの結果に反しているように見えます。
 
 今は `insertMany` に集中するべきでしょう。
 
@@ -294,17 +295,17 @@ mergeTreap :: (Treap v d, Treap v d) -> Treap v d
 
 ```haskell
 insertMany :: (Ord v) => Treap v d -> [Node v d] -> Treap v d
-insertMany = foldl insertTreap 
+insertMany = foldl insertTreap
 ```
 
 あぁ。`foldl` がまた来やがりました。
 
 ```haskell
 insertMany :: (Ord v) => Treap v d -> [Node v d] -> Treap v d
-insertMany = foldl' insertTreap 
+insertMany = foldl' insertTreap
 ```
 
-さぁ、GHC のアメージングな最適化力とプライムボーイ、どちらが勝つのでしょうか? -s の結果です:
+さぁ、GHC のアメージングな最適化力とプライムボーイ、どちらが勝つのでしょうか? `-s` の結果です:
 
 ```plain
    1,115,162,944 bytes allocated in the heap
@@ -332,11 +333,11 @@ insertMany = foldl' insertTreap
   Productivity  77.0% of total user, 74.4% of total elapsed
 ```
 
-良いですね、トータルの使用メモリが 32MB になり、全体の時間は 10分の1ぐらい減りました。しかも、GC にかかっている時間はたったの 22% です。我々の大勝利です。
+良いですね、トータルの使用メモリが 32MB になり、全体の時間は 10分の1 ぐらい減りました。しかも、GC にかかっている時間はたったの 22% です。我々の大勝利です。
 
 ヒープのプロファイル結果を見てみましょう:
 
-[参照](http://www.parsonsmatt.org/treap-foldl.png)
+<img src="http://www.parsonsmatt.org/treap-foldl.png">
 
 ## 何があっても foldl を使わず、常に foldl' を使うべし
 
@@ -372,7 +373,7 @@ insertMany = foldl' insertTreap
 
 よろしくはないですね。というか、初めよりもちょっと悪くなってます! ヒープのプロファイル結果はどうでしょう?
 
-[参照](http://www.parsonsmatt.org/treap-just-foldl.png)
+<img src="http://www.parsonsmatt.org/treap-just-foldl.png">
 
 これもほとんど同じですね! 割り当てはちょっとなめらかになっていますが、顕著な違いでもありません。というわけで、データ構造を正格にせずに、ただ `foldl'` に変更しても意味がありませんでした。
 
