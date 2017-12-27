@@ -106,7 +106,7 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
 
 これらが実験を始める前の私の印象です。私のタプルメモリ割り当て仮説を検証するために、ヒープのプロファイリングを行いましょう。`-hd`フラグを使って確保されたデータコンストラクタを取得します:
 
-<img src="http://www.parsonsmatt.org/treap-base-hd.png">
+![-hd フラグを使ったプロファイル](http://www.parsonsmatt.org/treap-base-hd.png)
 
 いい感じですね! さて、このグラフは `Tree` コンストラクタの割り当て前に、大量のノード、タプル、`I#` (`Int` のコンストラクタ) を割り当てていることを示しています。対象の `main` 関数だと、この挙動は完全に非合理的というわけではありません。
 
@@ -166,7 +166,7 @@ data Treap v d
 
 以下はヒーププロファイリングの結果です:
 
-<img src="http://www.parsonsmatt.org/treap-strict-nodes.png">
+![ヒーププロファイリングの結果](http://www.parsonsmatt.org/treap-strict-nodes.png)
 
 大きな違いはありませんが、確かに少し良い結果です。時間と割り当てのプロファイリングは全く違う結果を証明していています。後々、プログラムの実行時間は 2.49秒から 0.97秒になります。
 
@@ -221,7 +221,7 @@ data Treap v d
 
 今度はヒープの出力も見てみましょう:
 
-<img src="http://www.parsonsmatt.org/treap-strict-spine.png">
+![ヒープの出力](http://www.parsonsmatt.org/treap-strict-spine.png)
 
 もう少しですね! 大きなメモリの山が生成され、それが回収されています。何かが起きていることの兆候です。タプルコンストラクタに多くの割り当てをしてしまっています。つらいですね。
 
@@ -274,7 +274,7 @@ splitTreap (tree @ Tree {node = Node { val = x }, left = l, right = r})   v
 
 これはさっきの実行からほとんど変わっていません。ヒーププロファイルも変更されませんでした。これらのタプルがどこに割り当てられるのかを見るために、`-hc` をつけて実行してみます。`-hc` は実際にどの関数がデータを生成しているのかを記録してくれるので、どこに注目するべきかが分かります。
 
-<img src="http://www.parsonsmatt.org/treap-strict-tuple-hc.png">
+![-hc を使ったプロファイル](http://www.parsonsmatt.org/treap-strict-tuple-hc.png)
 
 **あぁナッツ!** `splitTreap` がほんの少ししかメモリ割り当てがされなくなってるぞ。`buildNode`, `feedFold`, `insertMany` でほとんどの割り当てを行っているみたいです。これは、`splitTreap` に多くの時間と割り当てをしているという `-p` オプションの結果に反しているように見えます。
 
@@ -337,7 +337,7 @@ insertMany = foldl' insertTreap
 
 ヒープのプロファイル結果を見てみましょう:
 
-<img src="http://www.parsonsmatt.org/treap-foldl.png">
+![ヒーププロファイルの結果](http://www.parsonsmatt.org/treap-foldl.png)
 
 ## 何があっても foldl を使わず、常に foldl' を使うべし
 
@@ -373,7 +373,7 @@ insertMany = foldl' insertTreap
 
 よろしくはないですね。というか、初めよりもちょっと悪くなってます! ヒープのプロファイル結果はどうでしょう?
 
-<img src="http://www.parsonsmatt.org/treap-just-foldl.png">
+![ヒーププロファイルの結果](http://www.parsonsmatt.org/treap-just-foldl.png)
 
 これもほとんど同じですね! 割り当てはちょっとなめらかになっていますが、顕著な違いでもありません。というわけで、データ構造を正格にせずに、ただ `foldl'` に変更しても意味がありませんでした。
 

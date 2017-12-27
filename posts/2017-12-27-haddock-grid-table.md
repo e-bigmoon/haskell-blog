@@ -81,6 +81,8 @@ $ stack haddock --open
 
 ブラウザが自動的に立ち上がるので `Lib` モジュールを見てみましょう。
 
+![初期状態で生成されるHTML](/images/2017/12-27/step1.png)
+
 `someFunc` だけの味気ない `HTML` ですね。`haddock` コメントを追加して、もう一度確認してみます。
 
 ```haskell
@@ -97,6 +99,8 @@ someFunc = putStrLn "someFunc"
 ```shell
 $ stack haddock --open
 ```
+
+![haddock コメントを少し追加](/images/2017/12-27/step2.png)
 
 ちょっと変わりましたね。
 
@@ -120,6 +124,14 @@ module Lib
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
 ```
+
+ドキュメントを生成してみましょう。
+
+```shell
+$ stack haddock --open
+```
+
+![Grid Table の生成に失敗](/images/2017/12-27/step3.png)
 
 失敗しました・・・。
 
@@ -154,6 +166,8 @@ $ ln -snf ~/.local/bin/haddock $(stack path --compiler-bin)/
 $ stack clean
 $ stack haddock --open
 ```
+
+![Grid Table のレンダリング結果](/images/2017/12-27/step4.png)
 
 なかなかオシャレな感じです。
 

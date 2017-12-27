@@ -212,6 +212,9 @@ Ported to use the GHC API by David Waern 2006-2008</code></pre>
 $ cd test-haddock-grid-table
 $ stack haddock --open</code></pre>
 <p>ブラウザが自動的に立ち上がるので <code>Lib</code> モジュールを見てみましょう。</p>
+<figure>
+<img src="../images/2017/12-27/step1.png" alt="初期状態で生成されるHTML" /><figcaption>初期状態で生成されるHTML</figcaption>
+</figure>
 <p><code>someFunc</code> だけの味気ない <code>HTML</code> ですね。<code>haddock</code> コメントを追加して、もう一度確認してみます。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span></a>
@@ -222,6 +225,9 @@ $ stack haddock --open</code></pre>
 <a class="sourceLine" id="cb6-7" data-line-number="7"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb6-8" data-line-number="8">someFunc <span class="fu">=</span> putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
 <pre class="shell"><code>$ stack haddock --open</code></pre>
+<figure>
+<img src="../images/2017/12-27/step2.png" alt="haddock コメントを少し追加" /><figcaption>haddock コメントを少し追加</figcaption>
+</figure>
 <p>ちょっと変わりましたね。</p>
 <p>では、本題の <code>Grid Table</code> 記法で書いてみます。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
@@ -240,6 +246,11 @@ $ stack haddock --open</code></pre>
 <a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">-- +------+--------------+------------------------------------------+</span></a>
 <a class="sourceLine" id="cb8-15" data-line-number="15"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb8-16" data-line-number="16">someFunc <span class="fu">=</span> putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
+<p>ドキュメントを生成してみましょう。</p>
+<pre class="shell"><code>$ stack haddock --open</code></pre>
+<figure>
+<img src="../images/2017/12-27/step3.png" alt="Grid Table の生成に失敗" /><figcaption>Grid Table の生成に失敗</figcaption>
+</figure>
 <p>失敗しました・・・。</p>
 <p>これはどうやら <code>stack</code> が利用している <code>haddock</code> が <code>~/.local/bin</code> にインストールした最新版の <code>haddock</code> を参照していないためです。</p>
 <ul>
@@ -261,6 +272,9 @@ $ ln -snf ~/.local/bin/haddock $(stack path --compiler-bin)/</code></pre>
 <p>これでやっと <code>Grid Table</code> が使えます！</p>
 <pre class="shell"><code>$ stack clean
 $ stack haddock --open</code></pre>
+<figure>
+<img src="../images/2017/12-27/step4.png" alt="Grid Table のレンダリング結果" /><figcaption>Grid Table のレンダリング結果</figcaption>
+</figure>
 <p>なかなかオシャレな感じです。</p>
 <h2 id="後片付け">後片付け</h2>
 <p>シンボリックリンクを元に戻しておきましょう。</p>
