@@ -65,6 +65,8 @@ $ stack install
 $ haddock --version
 Haddock version 2.18.2, (c) Simon Marlow 2006
 Ported to use the GHC API by David Waern 2006-2008
+
+$ cd ../
 ```
 
 これで準備は整いました！
