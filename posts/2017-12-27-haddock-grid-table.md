@@ -100,7 +100,7 @@ $ stack haddock --open
 
 ちょっと変わりましたね。
 
-では、本題の `Grid Table` を追加してみます。また、一行コメントを書き続けるのつらいので、複数行の形式に変更します。
+では、本題の `Grid Table` 記法で書いてみます。
 
 ```haskell
 -- src/Lib.hs
