@@ -151,6 +151,7 @@ $ ln -snf ~/.local/bin/haddock $(stack path --compiler-bin)/
 これでやっと `Grid Table` が使えます！
 
 ```shell
+$ stack clean
 $ stack haddock --open
 ```
 
@@ -181,6 +182,7 @@ lrwxrwxrwx 1 bm12 bm12    6 11月 27 00:39 runhaskell -> runghc*
 $ ln -snf $(stack path --compiler-bin)/haddock-ghc-8.2.2 $(stack path --compiler-bin)/haddock
 $ cd ../
 $ rm -rf test-haddock-grid-table
+$ rm ~/.local/bin/haddock
 ```
 
 ## 終わりに
