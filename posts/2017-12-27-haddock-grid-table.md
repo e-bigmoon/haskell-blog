@@ -4,6 +4,10 @@ author: Shinya Yamaguchi
 tags: bigmoon, haddock
 ---
 
+![Grid Table 記法の紹介](/images/2017/12-27/step0.png)
+
+<!--more-->
+
 ## はじめに
 
 みなさん `haddock` を使ってますか？
@@ -31,8 +35,6 @@ $ stack haddock --open
 ```
 
 今回、この `haddock` に `Grid Table` 記法が追加されたそうなので、その機能についてご紹介したいと思います。
-
-<!--more-->
 
 ## Grid Table 記法
 
