@@ -1,7 +1,7 @@
 ---
 title: Literate Markdown
 author: Shinya Yamaguchi
-tags: bigmoon, ghc
+tags: bigmoon, package
 ---
 
 ## はじめに
