@@ -1,0 +1,23 @@
+---
+title: Travis CI
+---
+
+```yaml
+sudo: false
+language: generic
+cache:
+  directories:
+  - "$HOME/.stack/"
+  - "$HOME/.local/bin/"
+  - ".stack-work/"
+before_install:
+- mkdir -p ~/.local/bin
+- export PATH=$HOME/.local/bin:$PATH
+- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+install:
+- stack --no-terminal test --only-dependencies
+jobs:
+  include:
+    - stage: stack test
+      script: stack --no-terminal test
+```

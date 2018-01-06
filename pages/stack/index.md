@@ -37,4 +37,5 @@ Tips
 * [hoogle](/stack/etc/hoogle.html)
 * [プロファイリング](/stack/etc/profiling.html)
 * [コマンドリファレンス](/stack/etc/cmd-ref.html)
+* [Travis CI](/stack/etc/travis-ci.html)
 * [参考ページ一覧](/stack/etc/references.html)
