@@ -1,5 +1,5 @@
 ---
-title: 最近遭遇した stack の ld (pthread, -fPIC) エラー
+title: 最近遭遇した stack build 時の ld (pthread, -fPIC) エラー
 author: Shinya Yamaguchi
 tags: bigmoon, stack
 ---
@@ -104,4 +104,4 @@ $ stack setup --reinstall
 
 ## まとめ
 
-何もしていなくても突然ビルドできなくなることもあるんですね・・・。
+突然ビルドできなくなることもあるんですね・・・。
