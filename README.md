@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/futtetennismo/materialize-hakyll/tree/source.svg?style=svg)](https://circleci.com/gh/futtetennismo/materialize-hakyll/tree/source)
+[![Build Status](https://travis-ci.org/e-bigmoon/haskell-blog.svg?branch=master)](https://travis-ci.org/e-bigmoon/haskell-blog)
 
 ## Usage
 ### Pages
