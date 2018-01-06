@@ -25,37 +25,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     compile (fmap compressCss <$> sassCompiler)
 
 -- TODO:watchで反映されない件byやまだ
-  match (fromList [ "pages/about.md"
-                  , "pages/contact.md"
-                  , "pages/LICENSE.md"
-                  , "pages/stack/index.md"
-                  , "pages/stack/tips/stack-upgrade.md"
-                  , "pages/stack/tips/full-rebuild.md"
-                  , "pages/stack/tips/recommend-dev.md"
-                  , "pages/stack/intro/index.md"
-                  , "pages/stack/intro/why-stack.md"
-                  , "pages/stack/intro/stackage.md"
-                  , "pages/stack/intro/stack-install.md"
-                  , "pages/stack/intro/create-prj.md"
-                  , "pages/stack/intro/create-lib.md"
-                  , "pages/stack/intro/exec-prg.md"
-                  , "pages/stack/intro/create-app.md"
-                  , "pages/stack/doc.md"
-                  , "pages/stack/doc/haddock-intro.md"
-                  , "pages/stack/doc/haddock-comment.md"
-                  , "pages/stack/doc/haddock-settings.md"
-                  , "pages/stack/test.md"
-                  , "pages/stack/test/hspec.md"
-                  , "pages/stack/test/quickcheck.md"
-                  , "pages/stack/test/doctest.md"
-                  , "pages/stack/etc/stack-script.md"
-                  , "pages/stack/etc/hlint.md"
-                  , "pages/stack/etc/format.md"
-                  , "pages/stack/etc/hoogle.md"
-                  , "pages/stack/etc/profiling.md"
-                  , "pages/stack/etc/cmd-ref.md"
-                  , "pages/stack/etc/references.md"
-                  ]) $ do
+  match (fromGlob "pages/**.md") $ do
     route $
       customRoute (fromMaybe (error "Expected pages to be in 'pages' folder")
                           . stripPrefix "pages/" . toFilePath)
