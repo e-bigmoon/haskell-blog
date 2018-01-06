@@ -21,3 +21,10 @@ jobs:
     - stage: stack test
       script: stack --no-terminal test
 ```
+
+#### 参考リンク
+* [stack document - Travis CI](https://docs.haskellstack.org/en/stable/travis_ci/)
+* [stack document - simple example](https://raw.githubusercontent.com/commercialhaskell/stack/stable/doc/travis-simple.yml)
+* [stack document - complex example](https://raw.githubusercontent.com/commercialhaskell/stack/stable/doc/travis-complex.yml)
+* [tasty-travis.hsfiles](https://github.com/commercialhaskell/stack-templates/blob/master/tasty-travis.hsfiles)
+* [.travis.yml (stack repo)](https://github.com/commercialhaskell/stack/blob/master/.travis.yml)
