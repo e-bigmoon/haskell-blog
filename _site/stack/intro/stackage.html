@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Stackageとは何か？</title>
+  <title>Stackage とは何か？</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/intro/stackage.html">
-  <link rel="alternate" type="application/atom+xml" title="Stackageとは何か？" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Stackage とは何か？" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -26,11 +26,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Stackageとは何か？" />
+  <meta property="og:title" content="Stackage とは何か？" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/intro/stackage.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Stackageとは何か？" />
+  <meta property="og:site_name" content="Stackage とは何か？" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -139,18 +139,23 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">Stackageとは何か？</h1>
+        <h1 class="post-title">Stackage とは何か？</h1>
+        
+        <span>最終更新日: 2018/01/07</span>
         
       </div>
 
       <article class="page-content">
-        <p><code>Stackage</code> は <code>Stable Hackage</code> の略で、どんな組み合わせでも依存関係でエラーが起きないように調整されたパッケージの集合 (スナップショット) を提供しています。</p>
+        <h2 id="stackage">Stackage</h2>
+<p><a href="https://www.stackage.org/">Stackage</a> は <code>Stable Hackage</code> の略で、どんな組み合わせでも依存関係でエラーが起きないように調整されたパッケージの集合 (スナップショット) を提供しています。</p>
 <p>スナップショットには以下の2種類があります。</p>
 <ul>
 <li>長期サポートの <code>Long Term Support (lts)</code></li>
 <li>日々のスナップショット <code>nightly</code></li>
 </ul>
-<p><code>lts</code> のバージョンは <code>X.Y</code> という形式になっており、<code>X</code> をメジャーバージョン, <code>Y</code> をマイナーバージョンと呼びます。<code>nightly</code> のバージョンは <code>nightly-YYYY-MM-DD</code> という形式です。</p>
+<h2 id="スナップショットのバージョン規則">スナップショットのバージョン規則</h2>
+<p><code>lts</code> のバージョンは <code>X.Y</code> という形式になっており、<code>X</code> をメジャーバージョン, <code>Y</code> をマイナーバージョンと呼びます。</p>
+<p>また、<code>nightly</code> のバージョンは <code>nightly-YYYY-MM-DD</code> という形式になっています。</p>
 <p>バージョンの上がるタイミングと内容は以下のようになっています。</p>
 <table>
 <thead>
@@ -186,6 +191,7 @@
 <p><code>Stackage</code> は <code>Hackage</code> にアップロードされたパッケージをミラーしているので、自分の作ったパッケージを <code>Hackage</code> にアップロードすると、自動的に <code>Stackage</code> にも反映されます。この段階では <code>lts</code> にも <code>nightly</code> にも含まれません。</p>
 <p>もし、自分の作ったパッケージを <code>lts</code> や <code>nightly</code> に含めたい場合は自分で申請する必要があります。申請方法は簡単で、<a href="https://github.com/fpco/stackage/pulls">stackage リポジトリ</a> にプルリクエストを投げて、承認されれば完了です。</p>
 <p>詳しいことは、<a href="https://github.com/fpco/stackage/blob/master/MAINTAINERS.md">MAINTAINERS.md</a> にまとまっているため、興味がある方はどうぞ。</p>
+<h2 id="スナップショットに追加されるタイミング">スナップショットに追加されるタイミング</h2>
 <p>スナップショットに追加される基本的な流れとしては以下の通りです。</p>
 <ol type="1">
 <li><code>Hackage</code> にパッケージをアップロードする</li>
@@ -193,7 +199,8 @@
 <li><code>nightly</code> の申請を行い、<code>nightly</code> に追加される</li>
 <li><code>lts</code> のマイナーバージョンアップデートで <code>lts</code> に追加される</li>
 </ol>
-<p>このスナップショットを <code>stack.yaml</code> の <code>resolver</code> に指定することで、プロジェクトで利用するパッケージのバージョンを固定することができます。また、オプションとして渡すこともできます。(また、上記では紹介していませんが <code>ghc-X.Y.Z</code> のように GHC のバージョンを指定したスナップショットもあります)</p>
+<p>このスナップショットを <code>stack.yaml</code> の <code>resolver</code> に指定することで、プロジェクトで利用するパッケージのバージョンを固定することができます。また、オプションとして渡すこともできます。</p>
+<p>また、上記では紹介していませんが <code>ghc-X.Y.Z</code> のように GHC のバージョンを指定したスナップショットもあります。</p>
 <pre class="shell-session"><code># resolver のスナップショットに lts-9.17 を指定して ghci を起動
 $ stack ghci --resolver lts-9.8
 
@@ -206,6 +213,9 @@ $ stack ghci --resolver ghc-7.10.3
 # 最新の resolver で ghci を起動
 $ stack ghci --resolver nightly
 $ stack ghci --resolver lts</code></pre>
+<h2 id="カスタムスナップショット">カスタムスナップショット</h2>
+<p>自分でカスタマイズしたスナップショットを定義して利用することもできます。</p>
+<p>詳しくは <a href="../../posts/2017-12-23-stack161.html">カスタムスナップショットの紹介</a> をご確認ください。</p>
       </article>
 
       

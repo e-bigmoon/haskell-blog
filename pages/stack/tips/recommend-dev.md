@@ -1,20 +1,19 @@
 ---
 title: おすすめの開発方法
-date: 2017/12/25
+date: 2018/01/07
 ---
 
 ## ビルド
-
 僕は `vscode` のターミナルに以下のコマンドを打ち込んで自動的にビルドさせています。
 
 ```shell
-$ stack test --fast --file-watch --pedantic
+$ stack test --fast --file-watch
 ```
 
-プロジェクトの初期など、ラフに開発する時は以下のコマンドを良く使います。
+警告が許せない人は以下のように `--pedantic` を付けて開発しましょう。(個人的には付けずに開発しつつ `CI` でチェックするスタイルの方が効率が上がって良いと思います)
 
 ```shell
-$ stack test --fast --file-watch
+$ stack test --fast --file-watch --pedantic
 ```
 
 ## オプションの紹介

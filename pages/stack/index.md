@@ -4,15 +4,15 @@ title: stack index
 
 Tips
 
-* [stackの更新](/stack/tips/stack-upgrade.html)
+* [stack の更新](/stack/tips/stack-upgrade.html)
 * [完全なリビルド](/stack/tips/full-rebuild.html)
 * [おすすめの開発方法](/stack/tips/recommend-dev.html)
 
 チュートリアル
 
 * [イントロダクション](/stack/intro/)
-  * [なぜstackを使うのか？](/stack/intro/why-stack.html)
-  * [Stackageとは何か？](/stack/intro/stackage.html)
+  * [なぜ stack を使うのか？](/stack/intro/why-stack.html)
+  * [Stackage とは何か？](/stack/intro/stackage.html)
   * [stackのインストール](/stack/intro/stack-install.html)
   * [プロジェクトの作成](/stack/intro/create-prj.html)
   * [ライブラリの作成](/stack/intro/create-lib.html)
