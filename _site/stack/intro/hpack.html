@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>参考ページ一覧</title>
+  <title>hpack について</title>
   <meta name="description" content="BIG MOON">
-  <link rel="canonical" href="../../stack/etc/references.html">
-  <link rel="alternate" type="application/atom+xml" title="参考ページ一覧" href="../../feed.xml" />
+  <link rel="canonical" href="../../stack/intro/hpack.html">
+  <link rel="alternate" type="application/atom+xml" title="hpack について" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -26,11 +26,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="参考ページ一覧" />
+  <meta property="og:title" content="hpack について" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="/stack/etc/references.html" />
+  <meta property="og:url" content="/stack/intro/hpack.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="参考ページ一覧" />
+  <meta property="og:site_name" content="hpack について" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -139,55 +139,75 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">参考ページ一覧</h1>
+        <h1 class="post-title">hpack について</h1>
+        
+        <span>最終更新日: 2018/01/08</span>
         
       </div>
 
       <article class="page-content">
-        <h5 id="stack">stack</h5>
+        <h2 id="hpack-の役割">hpack の役割</h2>
+<p><code>hpack</code> は <code>yaml</code> 形式の <code>package.yaml</code> から <code>.cabal</code> を自動生成するためのツールです。</p>
+<p><code>hpack</code> を使うメリットとしては以下が挙げられます。</p>
 <ul>
-<li><a href="https://docs.haskellstack.org/en/stable/README/">The Haskell Tool Stack</a></li>
-<li><a href="https://github.com/commercialhaskell/stack">stack on GitHub</a></li>
-<li><a href="http://qiita.com/igrep/items/da1d8df6d40eb001a561">Stackでやる最速Haskell Hello world! (GHCのインストール付き！)</a></li>
-<li><a href="http://qiita.com/tanakh/items/6866d0f570d0547df026">Haskellのビルドツール“stack”の紹介</a></li>
-<li><a href="https://github.com/fpco/lts-haskell#readme">LTS Haskell: Version your Ecosystem</a></li>
+<li><code>yaml</code> 形式なのでわかりやすい (<code>cabal</code> 形式を覚えなくて良い)</li>
+<li><code>exposed-modules</code> を書けば、<code>other-modules</code> を自動推論してくれる</li>
+<li>共通する <code>dependencies</code> や <code>ghc-options</code> を一箇所に集約できる</li>
 </ul>
-<h5 id="doctest">doctest</h5>
-<ul>
-<li><a href="https://github.com/sol/doctest">sol/doctest</a></li>
-</ul>
-<h5 id="hspec">hspec</h5>
-<ul>
-<li><a href="http://fujimura.hatenablog.com/entry/2015/12/15/214332">Hspecベストプラクティス</a></li>
-<li><a href="https://github.com/hspec/hspec-example">hspec/hspec-example on github</a></li>
-</ul>
-<h5 id="quickcheck">QuickCheck</h5>
-<ul>
-<li><a href="https://www.fpcomplete.com/blog/2017/01/quickcheck">QuickCheck and Magic of Testing</a></li>
-<li><a href="https://www.stackage.org/lts-8.19/package/QuickCheck-2.9.2">Test.QuickCheck</a></li>
-<li><a href="https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html#1.0">Property Testing using QuickCheck</a></li>
-</ul>
-<h4 id="tools">tools</h4>
-<h5 id="hoogle">hoogle</h5>
-<ul>
-<li><a href="https://github.com/ndmitchell/hoogle">ndmitchell/hoogle</a></li>
-</ul>
-<h5 id="hpack">hpack</h5>
-<ul>
-<li><a href="https://github.com/sol/hpack">sol/hpack</a></li>
-<li><a href="https://mmhaskell.com/blog/2017/7/17/cleaning-up-our-projects-with-hpack">Cleaning Up Our Projects with Hpack!</a></li>
-<li><a href="https://github.com/yamadapc/hpack-convert">yamadapc/hpack-convert</a></li>
-</ul>
-<h5 id="haddock">haddock</h5>
-<ul>
-<li><a href="https://www.haskell.org/haddock/">Haddock: A Haskell Documentation Tool</a></li>
-<li><a href="http://haskell-haddock.readthedocs.io/en/latest/index.html">Welcome to Haddock’s documentation!</a></li>
-</ul>
-<h5 id="ghc">GHC</h5>
-<h6 id="glasgow-haskell-compiler-users-guide">Glasgow Haskell Compiler User’s Guide</h6>
-<ul>
-<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html">8. Profiling</a></li>
-</ul>
+<h2 id="インストール-使い方">インストール &amp; 使い方</h2>
+<p><code>stack</code> にバンドルされているため、別途 <code>hpack</code> をインストールする必要はありません。</p>
+<p>そのため <code>stack build</code> コマンドを実行すれば自動的に <code>package.yaml</code> から <code>.cabal</code> を生成してくれます。</p>
+<p>自分の使っているバージョンを確認する場合は <code>stack --version</code> を使います。一番最後に表示されます。(僕の環境では <code>hpack-0.20.0</code>)</p>
+<pre class="shell"><code>$ stack --version
+Version 1.7.0, Git revision 98c51cafb038bf09b58d5607956fb199d3660735 (5570 commits) x86_64 hpack-0.20.0</code></pre>
+<p>もし、最新版の <code>hpack</code> を利用したい場合は <code>--with-hpack=&lt;PATH&gt;</code> オプションを利用する必要があるのでご注意ください。</p>
+<p>また、手動で <code>.cabal</code> を変更した場合は <code>hpack</code> が変更を検知して <code>.cabal</code> を生成しないので、そちらもご注意ください。</p>
+<h2 id="既存の-.cabal-プロジェクトを-hpack-に変換する方法">既存の .cabal プロジェクトを hpack に変換する方法</h2>
+<p>既存のプロジェクトを <code>hpack</code> に変換するための便利ツールとして <a href="https://github.com/yamadapc/hpack-convert">hpack-convert</a> があります。</p>
+<p>このツールを使えばプロジェクトの <code>.cabal</code> から <code>.package.yaml</code> を生成することができます。</p>
+<p><code>stack</code> もこのツールを使って <code>hpack</code> に移行しました。(<a href="https://github.com/commercialhaskell/stack/pull/3506">Use hpack package.yaml to build Stack #3506</a>)</p>
+<p>そのため、基本的には大丈夫だと思いますが、僕が使った時は少し変換がおかしい部分もあったのでご注意ください。</p>
+<h2 id="従来の-.cabal-形式を使いたい場合">従来の .cabal 形式を使いたい場合</h2>
+<p><code>hpack</code> は <code>package.yaml</code> がプロジェクトのルートに存在する場合のみ <code>package.yaml</code> から <code>.cabal</code> ファイルを生成します。</p>
+<p>そのため <code>cabal</code> を使いたい場合はプロジェクトから <code>package.yaml</code> を削除するだけで大丈夫です。</p>
+<h2 id="まとめ">まとめ</h2>
+<p><code>stack new</code> した際のデフォルトテンプレートは <code>hpack</code> に切り替わりました。(<a href="https://github.com/commercialhaskell/stack-templates/pull/112">Switch new-template to use hpack #112</a>)。</p>
+<p>利用可能なテンプレートは <code>stack templates</code> コマンドで確認できます。</p>
+<pre class="shell"><code>$ stack templates
+Template                    Description
+chrisdone
+foundation                - Project based on an alternative prelude with batteries and no dependencies.
+franklinchen
+ghcjs                     - Haskell to JavaScript compiler, based on GHC
+ghcjs-old-base
+hakyll-template           - a static website compiler library
+haskeleton                - a project skeleton for Haskell packages
+hspec                     - a testing framework for Haskell inspired by the Ruby library RSpec
+new-template
+protolude                 - Project using a custom Prelude based on the Protolude library
+quickcheck-test-framework - a library for random testing of program properties
+readme-lhs                - small scale, quick start, literate haskell projects
+rubik
+scotty-hello-world
+scotty-hspec-wai
+servant                   - a set of packages for declaring web APIs at the type-level
+servant-docker
+simple
+simple-hpack
+simple-library
+spock                     - a lightweight web framework
+tasty-discover            - a project with tasty-discover with setup
+tasty-travis
+unicode-syntax-exe
+unicode-syntax-lib
+yesod-minimal
+yesod-mongo
+yesod-mysql
+yesod-postgres
+yesod-postgres-fay
+yesod-simple
+yesod-sqlite</code></pre>
+<p>本チュートリアルも <code>hpack</code> を利用します。</p>
       </article>
 
       
