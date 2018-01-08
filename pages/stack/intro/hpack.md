@@ -48,7 +48,7 @@ Version 1.7.0, Git revision 98c51cafb038bf09b58d5607956fb199d3660735 (5570 commi
 
 ## まとめ
 
-`stack new` した際のデフォルトテンプレートは `hpack` に切り替わりました。([Switch new-template to use hpack #112](https://github.com/commercialhaskell/stack-templates/pull/112))。
+`stack new` した際のデフォルトテンプレートは `hpack` に切り替わりました。([Switch new-template to use hpack #112](https://github.com/commercialhaskell/stack-templates/pull/112))
 
 利用可能なテンプレートは `stack templates` コマンドで確認できます。
 
