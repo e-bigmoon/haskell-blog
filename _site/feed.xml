@@ -8,8 +8,175 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-01-06T00:00:00Z</updated>
+    <updated>2018-01-12T00:00:00Z</updated>
     <entry>
+    <title>tasty-1.0 がリリースされました。</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018-01-12-tasty-1.0.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018-01-12-tasty-1.0.html</id>
+    <published>2018-01-12T00:00:00Z</published>
+    <updated>2018-01-12T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p><code>Haskell</code> で広く利用されているテストフレームワークに <a href="http://hspec.github.io/">Hspec</a> と <a href="http://documentup.com/feuerbach/tasty">Tasty</a> があります。</p>
+<p><code>Haskell</code> は型がテストのように振る舞い、結果としてバグが少ないプログラムを素早く作ることができます。</p>
+<p>しかしながら、それでもテストを書くことは重要です。</p>
+<p>なぜなら、値については何も保証しないからです。コンパイルが通ったからといって全てが正しいわけではありません。</p>
+<p>例えば、以下の関数はコンパイルには通りますが、期待通りの結果を返さないでしょう。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">isZero ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">isZero <span class="dv">1</span> <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">isZero <span class="dv">0</span> <span class="fu">=</span> <span class="dt">False</span></a></code></pre></div>
+<p><code>Haskell</code> においてこの種のバグをデバッグすることは、基本的に難しい作業ではないでしょうか。(現実的には、モナドトランスフォーマーのベースに <code>IO</code> があって <code>print</code> デバッグ的なことができたり、<code>Debug.Trace</code> の <code>trace</code> 関数を使ったりして実際の値を確かめたりします。)</p>
+<p>このようなバグができるだけ入り込まないよう、関数が仕様を満たしていることを確認するために単体テストやランダムテストを実施します。</p>
+<p><code>Hspec</code> や <code>Tasty</code> はそれらのテストパッケージを使ってテストをより効率的に書けるよう、便利な関数などを含めて提供しているテストフレームワークです。(<code>Hspec</code> でよく見る <code>shouldBe</code> も <a href="https://www.stackage.org/package/HUnit">HUnit</a> パッケージで提供されている関数をラップしているだけです。)</p>
+<p>本記事では <code>Tasty</code> が <code>1.0</code> になったので使い方などを紹介したいと思います。</p>
+<!--more-->
+<h2 id="tasty-と-hspec-の違い">Tasty と Hspec の違い</h2>
+<p><code>Tasty</code> は <code>Hspec</code> よりも後に作られたライブラリです。そのため、一般的なプロジェクトでは <code>Hspec</code> が利用されていることが多いです。(<code>stack new</code> で作られるプロジェクトのデフォルトテンプレートも <code>Hspec</code> になっています)</p>
+<p>また <code>Tasty</code> は「<code>Haskell</code> のモダンテストフレームワークを作ろう！」ということで <code>Hspec</code> よりも後に作られました。</p>
+<p>どちらが優れているというわけではないですが、個人的には以下の理由で <code>Tasty</code> が結構好きです。</p>
+<ul>
+<li>プロンプトのテスト結果に色が付く</li>
+<li>テスト結果のレポートを出力できる</li>
+<li><code>providers</code> と <code>ingredients</code> が別々に用意されているので拡張性が高い</li>
+<li><code>golden test</code> が書ける</li>
+<li><code>Hspec</code> の形式も <code>Tasty</code> に記述できる</li>
+<li><code>tasty-discover</code> が強力</li>
+</ul>
+<h2 id="tasty-を採用しているプロジェクト">Tasty を採用しているプロジェクト</h2>
+<ul>
+<li><a href="https://github.com/haskell/cabal">cabal</a></li>
+<li><a href="https://github.com/bos/attoparsec">attoparsec</a></li>
+<li><a href="https://github.com/jgm/pandoc">pandoc</a></li>
+<li><a href="https://github.com/jaspervdj/hakyll">hakyll</a></li>
+</ul>
+<p><code>cabal</code> や <code>pandoc</code> といった大きなプロジェクトでも採用実績があります。</p>
+<h2 id="使い方">使い方</h2>
+<p><a href="https://github.com/commercialhaskell/stack-templates">stack-templates</a> に <a href="https://github.com/commercialhaskell/stack-templates/blob/master/tasty-discover.hsfiles">tasty-discover.hsfiles</a> と <a href="https://github.com/commercialhaskell/stack-templates/blob/master/tasty-travis.hsfiles">tasty-travis.hsfiles</a> がありますが、今回は0から作っていきます。</p>
+<h3 id="プロジェクトの作成">プロジェクトの作成</h3>
+<p>適当にディレクトリを作ってから、以下の内容で <code>stack.yaml</code> と <code>package.yaml</code> を作ります。</p>
+<pre class="shell"><code>$ tree .
+.
+├── package.yaml
+├── src
+└── stack.yaml</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># package.yaml</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="fu">name:</span><span class="at"> tasty-example</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">  <span class="kw">-</span> base</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="fu">library:</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"> <span class="fu">source-dirs:</span><span class="at"> src</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># stack.yaml</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="fu">resolver:</span><span class="at"> lts-10.3</span></a></code></pre></div>
+<h3 id="テスト対象の関数を作る-設計">テスト対象の関数を作る (設計)</h3>
+<p>何かテスト対象となる関数を定義しなければなりません。</p>
+<p>何でも良いのですが、こういう時は <strong>閏年の判定</strong> と <strong>消費税の計算</strong> にしておきましょう。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">-- src/Leap.hs</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Leap</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="ot">isLeapYear ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">isLeapYear <span class="fu">=</span> undefined</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">-- src/Tax.hs</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Tax</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="ot">calcSalesTax ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Double</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">calcSalesTax <span class="fu">=</span> undefined</a></code></pre></div>
+<p>このように <code>undefined</code> を使って型だけ合わせてから、実装を後から定義するという手法は良く使われます。</p>
+<h3 id="テストの実装-準備">テストの実装 (準備)</h3>
+<p>実際の開発同様に <a href="https://github.com/lwm/tasty-discover">tasty-discover</a> を使います。</p>
+<p><code>package.yaml</code> にテストのための記述を追加しましょう。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">name:</span><span class="at"> tasty-example</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">  <span class="kw">-</span> base</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="fu">library:</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"> <span class="fu">source-dirs:</span><span class="at"> src</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="co"># 追記</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10"><span class="fu">tests:</span></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">  <span class="fu">tasty:</span></a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">    <span class="fu">main:</span><span class="at"> Tasty.hs</span></a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">    <span class="fu">source-dirs:</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">      <span class="kw">-</span> src</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15">      <span class="kw">-</span> test</a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">    <span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">      <span class="kw">-</span> tasty</a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">      <span class="kw">-</span> tasty-discover</a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">      <span class="co"># ここから先のパッケージは必要に応じて追加する</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20">      <span class="co">## Providers</span></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">      <span class="kw">-</span> tasty-hunit</a>
+<a class="sourceLine" id="cb7-22" data-line-number="22">      <span class="kw">-</span> tasty-golden</a>
+<a class="sourceLine" id="cb7-23" data-line-number="23">      <span class="kw">-</span> tasty-smallcheck</a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">      <span class="kw">-</span> tasty-quickcheck</a>
+<a class="sourceLine" id="cb7-25" data-line-number="25">      <span class="kw">-</span> tasty-hspec</a>
+<a class="sourceLine" id="cb7-26" data-line-number="26">      <span class="kw">-</span> tasty-program</a>
+<a class="sourceLine" id="cb7-27" data-line-number="27">      <span class="kw">-</span> tasty-bdd</a>
+<a class="sourceLine" id="cb7-28" data-line-number="28">      <span class="kw">-</span> tasty-dejafu</a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">      <span class="co">## Ingredients</span></a>
+<a class="sourceLine" id="cb7-30" data-line-number="30">      <span class="kw">-</span> tasty-ant-xml</a>
+<a class="sourceLine" id="cb7-31" data-line-number="31">      <span class="kw">-</span> tasty-rerun</a>
+<a class="sourceLine" id="cb7-32" data-line-number="32">      <span class="kw">-</span> tasty-html</a>
+<a class="sourceLine" id="cb7-33" data-line-number="33">      <span class="kw">-</span> tasty-stats</a>
+<a class="sourceLine" id="cb7-34" data-line-number="34">      <span class="co">## Other packages</span></a>
+<a class="sourceLine" id="cb7-35" data-line-number="35">      <span class="kw">-</span> tasty-th</a>
+<a class="sourceLine" id="cb7-36" data-line-number="36">      <span class="kw">-</span> tasty-hunit-adapter</a>
+<a class="sourceLine" id="cb7-37" data-line-number="37">      <span class="kw">-</span> tasty-expected-failure</a></code></pre></div>
+<p>今回は <code>tasty</code> 関連パッケージの紹介を兼ねて <code>package.yaml</code> の依存関係に色々と追加しましたが、例えば <code>QuickCheck</code> しか使わないのであれば <code>tasty-quickcheck</code> だけで大丈夫です。</p>
+<p>実際の開発では、自分が利用するテストパッケージだけを依存関係に追加します。</p>
+<h4 id="tasty-discover">tasty-discover</h4>
+<p><code>test/Tasty.hs</code> の内容は以下の通りです。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">{-# OPTIONS_GHC -F -pgmF tasty-discover #-}</span></a></code></pre></div>
+<p>これでルールに沿って関数を定義すれば自動的にテストを見つけてくれます。</p>
+<p>ルールは以下のように、関数に特定の接頭辞を付けることで <code>stack test</code> を実行した際、それぞれの関数がどのテストを実行するか判断します。</p>
+<table>
+<thead>
+<tr class="header">
+<th>関数の接頭辞</th>
+<th>テスト</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>prop_</td>
+<td>QuickCheck</td>
+</tr>
+<tr class="even">
+<td>scprop_</td>
+<td>SmallCheck</td>
+</tr>
+<tr class="odd">
+<td>hprop_</td>
+<td>Hedgehog</td>
+</tr>
+<tr class="even">
+<td>unit_</td>
+<td>HUnit</td>
+</tr>
+<tr class="odd">
+<td>spec_</td>
+<td>Hspec</td>
+</tr>
+<tr class="even">
+<td>test_</td>
+<td>Tasty</td>
+</tr>
+</tbody>
+</table>
+<h3 id="テストの実装">テストの実装</h3>
+<p>次にテストケースを実装します。</p>
+<p>ここでは単体テストをいろいろなパッケージを使って記述してみようと思います。</p>
+<h3 id="tasty-hunit">tasty-hunit</h3>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://github.com/feuerbach/tasty">feuerbach/tasty</a></li>
+<li><a href="https://github.com/hspec/hspec/">hspec/hspec</a></li>
+<li><a href="http://documentup.com/feuerbach/tasty">Tasty</a></li>
+<li><a href="https://hspec.github.io/">A Testing Framework for Haskell</a></li>
+<li><a href="https://github.com/haskell/cabal">haskell/cabal</a></li>
+<li><a href="https://github.com/lwm/tasty-discover">lwm/tasty-discover</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>最近遭遇した stack build 時の ld (pthread, -fPIC) エラー</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018-01-06-stack-ld-errors.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018-01-06-stack-ld-errors.html</id>
@@ -1207,54 +1374,6 @@ packages:
 <h2 id="一般的に推奨するやり方">一般的に推奨するやり方</h2>
 <p>ここから考察される一般論は、CI でコードをビルドするときは、やりたいだけ厳密にやる、ということです。標準を高く保ち、PR をブロックし、master がぶっ壊れた! と叫んでください。ささいな問題でもそうでなくても、重要だと思う問題全てに対してです。<code>-Wall -Werror</code> をオンにし、タブや文末のスペースに対してエラーを吐くようにしてください。これらは全て良いものです (タブかスペースかなどの、必要な議論はしてください)。</p>
 <p>しかし、他の場所でコードをリリースするときは、メインではない機能に対しては、テストを緩くしましょう。コードがビルドに失敗するのなら、それは問題です。ビルドに成功しても、実行時に正しくない結果を返すようなら、それは問題です。これらの問題が存在すると、Stackage などのビルドシステムは、そのようなパッケージを受け入れてくれません。でも、スタイルの問題や新しく追加されたコンパイラの警告のようなものなら、あなたのパッケージを使うより下流の利用者に対して、失敗させるべきではないでしょうね。</p>]]></summary>
-</entry>
-<entry>
-    <title>stack ls コマンドが追加されます</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2017-12-20-stack-ls-command.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2017-12-20-stack-ls-command.html</id>
-    <published>2017-12-20T00:00:00Z</published>
-    <updated>2017-12-20T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<p><code>Stack</code> の <code>master</code> に <code>stack ls</code> コマンドがマージされました。</p>
-<ul>
-<li><a href="https://github.com/commercialhaskell/stack/pull/3672">Add stack ls snapshots documentation to the user guide #3672</a></li>
-</ul>
-<p>今後、このコマンドのサブコマンドに <code>list-dependencies</code> などを順次追加していく方針?のようです。</p>
-<ul>
-<li><a href="https://github.com/commercialhaskell/stack/issues/3669">Stack list-dependencies : Bring it under the new ls umbrella command #3669</a></li>
-</ul>
-<!--more-->
-<h2 id="使ってみよう">使ってみよう！</h2>
-<p>このコマンドを使うためには <code>stack</code> の <code>master</code> ブランチの最新版をインストールする必要があります。</p>
-<pre class="shell"><code>$ stack upgrade --git
-# ソースからコンパイルするので時間がかかります
-
-$ stack --version
-Version 1.7.0, Git revision 7d68bd695c4de8f231a95e66d0c882031f8255de (5468 commits) x86_64 hpack-0.20.0</code></pre>
-<p>現状、実装されているコマンドとしては <code>stack ls snapshots</code> があります。</p>
-<pre class="shell"><code># ローカルのスナップショット一覧を表示
-$ stack ls snapshots
-
-# lts のみ表示 (lts の略)
-$ stack ls snapshots -l
-
-# nightly のみ表示 (nightly の略)
-$ stack ls snapshots -n
-
-# リモートのスナップショット一覧を表示
-$ stack ls snapshots remote
-
-$ stack ls snapshots -l remote
-
-$ stack ls snapshots -n remote</code></pre>
-<p>実行すると <code>less</code> が立ち上がり、結果を確認することができます。</p>
-<p>もとの <code>stack</code> のバージョンに戻すためには以下のコマンドを実行しましょう。</p>
-<pre class="shell"><code>$ stack upgrade --binary-version 1.6.1
-# バイナリが落ちてくるのですぐに元通りです。
-
-$ stack --version
-Version 1.6.1, Git revision f25811329bbc40b0c21053a8160c56f923e1201b (5435 commits) x86_64 hpack-0.20.0</code></pre>
-<h2 id="まとめ">まとめ</h2>
-<p>これで <a href="https://www.stackage.org/">Stackage</a> を見なくても、どんなスナップショットが利用できるか、すぐに確認できるようになりますね。</p>]]></summary>
 </entry>
 
 </feed>
