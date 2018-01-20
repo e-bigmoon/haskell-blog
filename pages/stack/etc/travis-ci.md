@@ -50,17 +50,33 @@ Executable named site not found on path: ["/home/travis/build/wataru86/haskell-b
 The command "stack exec site rebuild" exited with 1.
 ```
 
-`Travis` では `stage` は独立しているためキャッシュは共有されません。
+一番目の `stage` のログを見てみると、以下のようにキャッシュの処理が最大時間である180秒を超えていたため途中で止まってしまったことがわかりました。
 
-1つ目の `stage` で作成された実行ファイル `site` は、二番目の `stage` で参照できずにエラーとなりました。今回のように実行ファイルの作成と実行を行う場合は以下のように `script` を同一の `stage` 内に記述しましょう。
+```shell
+running `casher push` took longer than 180 seconds and has been aborted.
+You can extend the timeout with `cache.timeout`. See https://docs.travis-ci.com/user/caching/#Setting-the-timeout for details
+```
+
+キャッシュの保存はそれぞれの `stage` の最後に行われるので、 `.travis.yml` を以下のように `stage` の分割を行い、さらにキャッシュの最大時間を2倍(360秒)にすることで解決しました。
 
 ```yaml
+cache:
+  timeout: 360
+
+（中略）
+
 jobs:
   include:
-    - stage: stack test and build site
-      script:
-        - stack --no-terminal test
-        - stack exec site rebuild
+    - stage: install cabal
+      script: stack --no-terminal build -j 1 Cabal
+    - stage: install pandoc
+      script: stack --no-terminal build pandoc
+    - stage: install deprndences
+      script: stack --no-terminal test --only-dependencies
+    - stage: stack test
+      script: stack --no-terminal test
+    - stage: rebuild site
+    - script: stack exec site rebuild
 ```
 
 今回のエラーの全体のログは[こちら](https://travis-ci.org/wataru86/haskell-blog/jobs/325956394)です。
