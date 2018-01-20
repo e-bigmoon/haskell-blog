@@ -22,9 +22,9 @@ jobs:
       script: stack --no-terminal test
 ```
 
-#### エラー例
+#### エラー集
 
-`stack test`により実行ファイル`site`を作成した後、実行ファイルの動作確認をTravis CIで行うため、`.travis.yml`に以下の内容を追記しました。
+`stack test`により実行ファイル`site`を作成した後、実行ファイルの動作確認を`Travis CI`で行うため、`.travis.yml`に以下の内容を追記しました。
 
 ```yaml
 jobs:
@@ -53,6 +53,8 @@ jobs:
         - stack --no-terminal test
         - stack exec site rebuild
 ```
+
+今回のエラーの全体のログは[こちら](https://travis-ci.org/wataru86/haskell-blog/jobs/325956394)です。
 
 #### 参考リンク
 * [stack document - Travis CI](https://docs.haskellstack.org/en/stable/travis_ci/)
