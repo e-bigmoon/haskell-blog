@@ -178,14 +178,27 @@
 <pre class="shell"><code>Executable named site not found on path: [&quot;/home/travis/build/wataru86/haskell-blog/.stack-work/install/x86_64-linux/lts-10.1/8.2.2/bin&quot;,(中略),&quot;/opt/pyenv/bin&quot;,&quot;/home/travis/.yarn/bin&quot;]
 
 The command &quot;stack exec site rebuild&quot; exited with 1.</code></pre>
-<p><code>Travis</code> では <code>stage</code> は独立しているためキャッシュは共有されません。</p>
-<p>1つ目の <code>stage</code> で作成された実行ファイル <code>site</code> は、二番目の <code>stage</code> で参照できずにエラーとなりました。今回のように実行ファイルの作成と実行を行う場合は以下のように <code>script</code> を同一の <code>stage</code> 内に記述しましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">jobs:</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="fu">include:</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> stack test and build site</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">      <span class="fu">script:</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">        <span class="kw">-</span> stack --no-terminal test</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">        <span class="kw">-</span> stack exec site rebuild</a></code></pre></div>
+<p>一番目の <code>stage</code> のログを見てみると、以下のようにキャッシュの処理が最大時間である180秒を超えていたため途中で止まってしまったことがわかりました。</p>
+<pre class="shell"><code>running `casher push` took longer than 180 seconds and has been aborted.
+You can extend the timeout with `cache.timeout`. See https://docs.travis-ci.com/user/caching/#Setting-the-timeout for details</code></pre>
+<p>キャッシュの保存はそれぞれの <code>stage</code> の最後に行われるので、 <code>.travis.yml</code> を以下のように <code>stage</code> の分割を行い、さらにキャッシュの最大時間を2倍(360秒)にすることで解決しました。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="fu">cache:</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">  <span class="fu">timeout:</span><span class="at"> 360</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">（中略）</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="fu">jobs:</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">  <span class="fu">include:</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> install cabal</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">      <span class="fu">script:</span><span class="at"> stack --no-terminal build -j 1 Cabal</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> install pandoc</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">      <span class="fu">script:</span><span class="at"> stack --no-terminal build pandoc</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> install deprndences</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">      <span class="fu">script:</span><span class="at"> stack --no-terminal test --only-dependencies</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> stack test</span></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">      <span class="fu">script:</span><span class="at"> stack --no-terminal test</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> rebuild site</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">    <span class="kw">-</span> <span class="fu">script:</span><span class="at"> stack exec site rebuild</span></a></code></pre></div>
 <p>今回のエラーの全体のログは<a href="https://travis-ci.org/wataru86/haskell-blog/jobs/325956394">こちら</a>です。</p>
 <h2 id="参考リンク">参考リンク</h2>
 <ul>
