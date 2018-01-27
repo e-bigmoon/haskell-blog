@@ -141,10 +141,14 @@
       <div class="post-heading">
         <h1 class="post-title">Travis CI</h1>
         
+        <span>最終更新日: 2018/01/20</span>
+        
       </div>
 
       <article class="page-content">
-        <div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="fu">sudo:</span><span class="at"> false</span></a>
+        <h2 id="テンプレート">テンプレート</h2>
+<p>以下の内容は汎用的な <code>travis</code> の設定です。<code>.travis.yml</code> としてプロジェクトのルートに保存すれば動きます。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="fu">sudo:</span><span class="at"> false</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="fu">language:</span><span class="at"> generic</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="fu">cache:</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4">  <span class="fu">directories:</span></a>
@@ -161,7 +165,29 @@
 <a class="sourceLine" id="cb1-15" data-line-number="15">  <span class="fu">include:</span></a>
 <a class="sourceLine" id="cb1-16" data-line-number="16">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> stack test</span></a>
 <a class="sourceLine" id="cb1-17" data-line-number="17">      <span class="fu">script:</span><span class="at"> stack --no-terminal test</span></a></code></pre></div>
-<h4 id="参考リンク">参考リンク</h4>
+<h2 id="エラー集">エラー集</h2>
+<h3 id="ジョブ間で成果物が共有されない問題">ジョブ間で成果物が共有されない問題</h3>
+<p><code>stack test</code> により実行ファイル <code>site</code> を作成した後、実行ファイルの動作確認を <code>Travis CI</code> で行うため、<code>.travis.yml</code> に以下の内容を追記しました。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">jobs:</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="fu">include:</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> stack test</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">      <span class="fu">script:</span><span class="at"> stack --no-terminal test</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> site build test</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">      <span class="fu">script:</span><span class="at"> stack exec site rebuild</span></a></code></pre></div>
+<p>このように記述した結果、以下のようなエラーで二番目の<code>stage</code>が失敗していました。</p>
+<pre class="shell"><code>Executable named site not found on path: [&quot;/home/travis/build/wataru86/haskell-blog/.stack-work/install/x86_64-linux/lts-10.1/8.2.2/bin&quot;,(中略),&quot;/opt/pyenv/bin&quot;,&quot;/home/travis/.yarn/bin&quot;]
+
+The command &quot;stack exec site rebuild&quot; exited with 1.</code></pre>
+<p><code>Travis</code> では <code>stage</code> は独立しているためキャッシュは共有されません。</p>
+<p>1つ目の <code>stage</code> で作成された実行ファイル <code>site</code> は、二番目の <code>stage</code> で参照できずにエラーとなりました。今回のように実行ファイルの作成と実行を行う場合は以下のように <code>script</code> を同一の <code>stage</code> 内に記述しましょう。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">jobs:</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="fu">include:</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> stack test and build site</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">      <span class="fu">script:</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">        <span class="kw">-</span> stack --no-terminal test</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">        <span class="kw">-</span> stack exec site rebuild</a></code></pre></div>
+<p>今回のエラーの全体のログは<a href="https://travis-ci.org/wataru86/haskell-blog/jobs/325956394">こちら</a>です。</p>
+<h2 id="参考リンク">参考リンク</h2>
 <ul>
 <li><a href="https://docs.haskellstack.org/en/stable/travis_ci/">stack document - Travis CI</a></li>
 <li><a href="https://raw.githubusercontent.com/commercialhaskell/stack/stable/doc/travis-simple.yml">stack document - simple example</a></li>
