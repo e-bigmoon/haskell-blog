@@ -94,7 +94,9 @@ $ hlint app/Main.hs
 
 ## HLint のヒント
 
-以下のように `stack new` で新規プロジェクトを作ってすぐの状態では `HLint` は何もヒントを出してくれません。つまり、とても良い状態ということです。
+以下のように `stack new` で新規プロジェクトを作ってすぐの状態では `HLint` は何もヒントを出してくれません。
+
+つまり、とても良い状態ということです。
 
 ```shell
 $ stacke new test-proj
@@ -136,12 +138,19 @@ Why not:
 2 hints
 ```
 
-これは、こんな感じの意味になります。
+これは、このような意味になります。
 
-ヒントレベル | ヒント | 出力の意味
-:-----------:|--------|----------
-警告 | Use concatMap | `concat (map toUpper ['a' .. 'z'])` を見つけたけど、どうして `concatMap toUpper ['a' .. 'z']` と書かないんだい？
-警告 | Use fromMaybe | `maybe "" id` は `Data.Maybe` モジュールにある `fromMaybe` 関数を使えば `fromMaybe ""` と同じですよ
+```yaml
+# 1つ目のヒント
+- ヒントレベル: 警告
+- ヒント: Use concatMap
+- 出力の意味: concat (map toUpper ['a' .. 'z']) を見つけたけど、どうして concatMap toUpper ['a' .. 'z'] と書かないんだい？
+
+# 2つ目のヒント
+- ヒントレベル: 警告
+- ヒント: Use fromMaybe
+- 出力の意味: maybe "" id は Data.Maybe モジュールにある fromMaybe 関数を使えば fromMaybe "" と同じですよ
+```
 
 素晴らしいですね。とてもわかりやすいです。また、`--report` オプションを利用することで結果を `HTML` として出力することも可能です。
 
@@ -243,7 +252,7 @@ tshow :: Show a => a -> Text
 tshow = pack . show
 ```
 
-目的としてはプロジェクトのコード中で `pack . show` となっている部分を `tshow` に直すようにヒントを出させることです。当然ながら現時点では `pack . show` というコードが使われていたとしても何も起こりません。
+目的としてはプロジェクトのコード中で `pack . show` となっている部分を `tshow` に直すようにヒントを出させることです。まだヒントを追加していないため、当然ながら現時点では `pack . show` というコードが使われていたとしても何も起こりません。
 
 ```haskell
 -- src/Lib.hs
@@ -297,7 +306,7 @@ No hints
 
 ### ヒントの定義方法について
 
-さきほど定義したヒントはこのようにポイントフリーで書くこともできます。
+さきほど定義したヒントはこのようにポイントフリー形式で書くこともできます。
 
 ```yaml
 - error: {lhs: pack . show, rhs: tshow}
@@ -378,6 +387,14 @@ Note: may break the code
 1 hint
 ```
 
+`Lib` モジュールのみを検査対象とする場合は `within` キーワードを次のようにします。
+
+```yaml
+# .hlint.yaml
+- functions:
+  - {name: undefined, within: [Lib]}
+```
+
 ## HLint のヒントを無視する方法
 
 `HLint` のヒントを無視する方法には以下の2種類があります。
@@ -421,8 +438,8 @@ Why not:
 
 提案されているヒントは以下の2つです。
 
-- Warning: Use `concatMap`
-- Warning: Use `fromMaybe`
+- Warning: `Use concatMap`
+- Warning: `Use fromMaybe`
 
 とりあえず `someFunc` のヒントを全て無視するようにしてしまいましょう。
 
