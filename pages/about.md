@@ -20,5 +20,6 @@ Wataru Yamada | [wataru86](https://github.com/wataru86) |
 - [Michael Snoyman's blog](https://www.snoyman.com/)
 - [Neil Mitchell's Haskell Blog](http://neilmitchell.blogspot.jp/)
 - [Matt Parsons's blog](http://www.parsonsmatt.org/)
+- [Yesod Web Framework Blog](https://www.yesodweb.com/blog/)
 
 訳の間違い、誤字脱字のご指摘に関しては [github issue](https://github.com/e-bigmoon/haskell-blog/issues) にて、ご連絡ください。
