@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Stackage とは何か？</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../stack/intro/stackage.html">
+  <link rel="alternate" type="application/atom+xml" title="Stackage とは何か？" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="Stackage とは何か？" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/stack/intro/stackage.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Stackage とは何か？" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIG MOON</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-checkerboard left indigo-text text-lighten-3"></i>
+        Stack
+      </a>
+    </li>
+    <li>
+      <a href="../../archive.html" class="white-text">
+        <i class="mdi mdi-archive left indigo-text text-lighten-3"></i>
+        Archive
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-checkerboard left blue-text"></i>
+        Stack
+      </a>
+    </li>
+    <li>
+      <a href="../../archive.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-archive left blue-text"></i>
+        Archive
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-rss left red-text"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+
+  <div class="post-page card-panel z-depth-2">
+
+    <div class="post-section">
+
+      <div class="post-heading">
+        <h1 class="post-title">Stackage とは何か？</h1>
+        
+        <span>最終更新日: 2018/01/07</span>
+        
+      </div>
+
+      <article class="page-content">
+        <h2 id="stackage">Stackage</h2>
+<p><a href="https://www.stackage.org/">Stackage</a> は <code>Stable Hackage</code> の略で、どんな組み合わせでも依存関係でエラーが起きないように調整されたパッケージの集合 (スナップショット) を提供しています。</p>
+<p>スナップショットには以下の2種類があります。</p>
+<ul>
+<li>長期サポートの <code>Long Term Support (lts)</code></li>
+<li>日々のスナップショット <code>nightly</code></li>
+</ul>
+<h2 id="スナップショットのバージョン規則">スナップショットのバージョン規則</h2>
+<p><code>lts</code> のバージョンは <code>X.Y</code> という形式になっており、<code>X</code> をメジャーバージョン, <code>Y</code> をマイナーバージョンと呼びます。</p>
+<p>また、<code>nightly</code> のバージョンは <code>nightly-YYYY-MM-DD</code> という形式になっています。</p>
+<p>バージョンの上がるタイミングと内容は以下のようになっています。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">バージョン</th>
+<th style="text-align: left;">タイミング</th>
+<th style="text-align: left;">例</th>
+<th style="text-align: left;">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">メジャーバージョン</td>
+<td style="text-align: left;">3 ~ 6 ヶ月に一度</td>
+<td style="text-align: left;">lts-8.0 → lts-9.0</td>
+<td style="text-align: left;">API の破壊的変更, パッケージの追加, パッケージの削除が行われる</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">マイナーバージョン</td>
+<td style="text-align: left;">1週間に一度 (主に日曜日)</td>
+<td style="text-align: left;">lts-9.8 → lts-9.9</td>
+<td style="text-align: left;">互換性のある API の変更, パッケージの追加が行われる</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">nightly</td>
+<td style="text-align: left;">日々</td>
+<td style="text-align: left;">nightly-2017-10-14 → nightly-2017-10-15</td>
+<td style="text-align: left;">API の変更, パッケージの追加</td>
+</tr>
+</tbody>
+</table>
+<p><code>lts</code> で一度対応してしまえば、マイナーバージョンを上げた際にコードが壊れることは基本的にありません。なので、互換性を維持したまま新しい関数などを使うことができます。</p>
+<p><code>Stackage</code> は <code>Hackage</code> にアップロードされたパッケージをミラーしているので、自分の作ったパッケージを <code>Hackage</code> にアップロードすると、自動的に <code>Stackage</code> にも反映されます。この段階では <code>lts</code> にも <code>nightly</code> にも含まれません。</p>
+<p>もし、自分の作ったパッケージを <code>lts</code> や <code>nightly</code> に含めたい場合は自分で申請する必要があります。申請方法は簡単で、<a href="https://github.com/fpco/stackage/pulls">stackage リポジトリ</a> にプルリクエストを投げて、承認されれば完了です。</p>
+<p>詳しいことは、<a href="https://github.com/fpco/stackage/blob/master/MAINTAINERS.md">MAINTAINERS.md</a> にまとまっているため、興味がある方はどうぞ。</p>
+<h2 id="スナップショットに追加されるタイミング">スナップショットに追加されるタイミング</h2>
+<p>スナップショットに追加される基本的な流れとしては以下の通りです。</p>
+<ol type="1">
+<li><code>Hackage</code> にパッケージをアップロードする</li>
+<li><code>Stackage</code> に追加される</li>
+<li><code>nightly</code> の申請を行い、<code>nightly</code> に追加される</li>
+<li><code>lts</code> のマイナーバージョンアップデートで <code>lts</code> に追加される</li>
+</ol>
+<p>このスナップショットを <code>stack.yaml</code> の <code>resolver</code> に指定することで、プロジェクトで利用するパッケージのバージョンを固定することができます。また、オプションとして渡すこともできます。</p>
+<p>また、上記では紹介していませんが <code>ghc-X.Y.Z</code> のように GHC のバージョンを指定したスナップショットもあります。</p>
+<pre class="shell-session"><code># resolver のスナップショットに lts-9.17 を指定して ghci を起動
+$ stack ghci --resolver lts-9.8
+
+# GHC-8.2.1 で ghci を起動
+$ stack ghci --resolver ghc-8.2.1
+
+# GHC-7.10.3 で ghci を起動
+$ stack ghci --resolver ghc-7.10.3
+
+# 最新の resolver で ghci を起動
+$ stack ghci --resolver nightly
+$ stack ghci --resolver lts</code></pre>
+<h2 id="カスタムスナップショット">カスタムスナップショット</h2>
+<p>自分でカスタマイズしたスナップショットを定義して利用することもできます。</p>
+<p>詳しくは <a href="../../posts/2017-12-23-stack161.html">カスタムスナップショットの紹介</a> をご確認ください。</p>
+      </article>
+
+      
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2017 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

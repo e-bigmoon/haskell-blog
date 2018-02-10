@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Haskell のパフォーマンスをデバッグする</title>
+  <meta name="description" content="Great original post: Haskell Performance Debugging.
+2017年 12月 18日 Matt Parsons
+誰かが reddit に Treap の実装が遅い と投稿していました。それを分析して、何が起きているのかを考えてみましょう。
+レポジトリはここにあります。
+最初">
+  <link rel="canonical" href="../posts/2017-12-27-Haskell-Performance-Debugging.html">
+  <link rel="alternate" type="application/atom+xml" title="Haskell のパフォーマンスをデバッグする" href="../feed.xml" />
+  <link rel="shortcut icon" href="../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../lib/mdi/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="Haskell のパフォーマンスをデバッグする" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2017-12-27-Haskell-Performance-Debugging.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Haskell のパフォーマンスをデバッグする" />
+  <meta property="og:description" content="Great original post: Haskell Performance Debugging.
+2017年 12月 18日 Matt Parsons
+誰かが reddit に Treap の実装が遅い と投稿していました。それを分析して、何が起きているのかを考えてみましょう。
+レポジトリはここにあります。
+最初" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../"><span class="site-title">BIG MOON</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../stack/" class="white-text">
+        <i class="mdi mdi-checkerboard left indigo-text text-lighten-3"></i>
+        Stack
+      </a>
+    </li>
+    <li>
+      <a href="../archive.html" class="white-text">
+        <i class="mdi mdi-archive left indigo-text text-lighten-3"></i>
+        Archive
+      </a>
+    </li>
+    <li>
+      <a href="../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-checkerboard left blue-text"></i>
+        Stack
+      </a>
+    </li>
+    <li>
+      <a href="../archive.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-archive left blue-text"></i>
+        Archive
+      </a>
+    </li>
+    <li>
+      <a href="../feed.xml" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-rss left red-text"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on December 27, 2017
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          translated by Kotaro Ohsugi
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          author by Matt Parsons
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Haskell のパフォーマンスをデバッグする</h1>
+
+        
+          <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+          <div class="chip"><a href="../tags/To%20Overcome.html">To Overcome</a>, <a href="../tags/%E7%BF%BB%E8%A8%B3.html">翻訳</a></div>
+        
+      </div>
+
+      <article class="post-content">
+        <p>Great original post: <a href="http://www.parsonsmatt.org/2017/12/18/haskell_performance_debugging.html">Haskell Performance Debugging</a>.</p>
+<p>2017年 12月 18日 Matt Parsons</p>
+<p>誰かが reddit に <a href="https://www.reddit.com/r/haskell/comments/7km60k/optimization_ideas_in_treap_implementation/">Treap の実装が遅い</a> と投稿していました。それを分析して、何が起きているのかを考えてみましょう。</p>
+<p>レポジトリは<a href="https://github.com/parsonsmatt/performance-debugging">ここ</a>にあります。</p>
+<h2 id="最初の実行">最初の実行</h2>
+<p>Cabalプロジェクトを作り、makefile を作ります。そして、最初のプロファイルを取ります。コードとプロファイル結果は GitHub の <code>master</code>ブランチにあります。</p>
+<p>実行されているコードやプロファイル結果を見る前に、質問のデータ構造の定義を確認しておきましょう:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Node</span>  v d <span class="fu">=</span> <span class="dt">Node</span> {<span class="ot"> val ::</span> v,<span class="ot"> info ::</span> d,<span class="ot"> prior ::</span> <span class="dt">Int</span> }</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">    <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Treap</span> v d <span class="fu">=</span> <span class="dt">Leaf</span> <span class="fu">|</span> <span class="dt">Tree</span> {<span class="ot">node ::</span> <span class="dt">Node</span> v d,<span class="ot"> left ::</span> <span class="dt">Treap</span> v d,<span class="ot"> right ::</span> <span class="dt">Treap</span> v d}</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">    <span class="kw">deriving</span> <span class="dt">Show</span></a></code></pre></div>
+<!--more-->
+<p>注釈つきの2分木ですね。 spine と値は、リスト同様に遅延評価されます。</p>
+<p>以下が <code>main</code> 関数で、この出力を調べます。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">    g <span class="ot">&lt;-</span> getStdGen</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">    <span class="kw">let</span> nulls <span class="fu">=</span> repeat ()</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">        n <span class="fu">=</span> <span class="dv">100000</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">        rxs <span class="fu">=</span> take n <span class="fu">$</span> randomRs (<span class="dv">1</span>,<span class="dv">100000</span>)<span class="ot"> g  ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">        nodeList <span class="fu">=</span> feedFold (zip rxs nulls) g buildNode</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">        treap <span class="fu">=</span> insertMany empty nodeList</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">    print <span class="fu">$</span> heightTreap treap</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">    print <span class="fu">$</span> map (\<span class="dt">Node</span>{val <span class="fu">=</span> v} <span class="ot">-&gt;</span> v) <span class="fu">$</span> inOrder treap</a></code></pre></div>
+<p>これをプロファイリングしつつビルドして、<code>-p</code> と <code>-s</code> をつけて実行します。これは時間とメモリ確保についてのプロファイリングをしてくれます。 以下が <code>-s</code> の出力です:</p>
+<pre><code>   1,691,027,808 bytes allocated in the heap
+   1,179,783,328 bytes copied during GC
+      42,694,944 bytes maximum residency (25 sample(s))
+       8,493,296 bytes maximum slop
+             121 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      3033 colls,     0 par    0.716s   0.752s     0.0002s    0.0008s
+  Gen  1        25 colls,     0 par    0.544s   0.560s     0.0224s    0.0460s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    1.088s  (  1.140s elapsed)
+  GC      time    1.260s  (  1.312s elapsed)
+  RP      time    0.000s  (  0.000s elapsed)
+  PROF    time    0.000s  (  0.000s elapsed)
+  EXIT    time    0.000s  (  0.003s elapsed)
+  Total   time    2.404s  (  2.455s elapsed)
+
+  %GC     time      52.4%  (53.4% elapsed)
+
+  Alloc rate    1,554,253,500 bytes per MUT second
+
+  Productivity  47.6% of total user, 46.5% of total elapsed</code></pre>
+<p>GC に 52% の時間が割かれているのはよろしくないですね。</p>
+<p>プロファイル結果によると、かなり大部分の時間を <code>splitTreap</code>関数で消費してしまっているようです。なので、そこで何が起きているのか確認しましょう:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">splitTreap ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> v <span class="ot">-&gt;</span> (<span class="dt">Treap</span> v d, <span class="dt">Treap</span> v d)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">splitTreap <span class="dt">Leaf</span> _ <span class="fu">=</span> (<span class="dt">Leaf</span>, <span class="dt">Leaf</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">splitTreap (tree <span class="fu">@</span> <span class="dt">Tree</span> {node <span class="fu">=</span> <span class="dt">Node</span> { val <span class="fu">=</span> x }, left <span class="fu">=</span> l, right <span class="fu">=</span> r})   v</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="fu">|</span> x <span class="fu">&lt;</span> v  <span class="fu">=</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">        <span class="kw">let</span> (lt, rt) <span class="fu">=</span> splitTreap r v</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">         <span class="kw">in</span> ( <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> l, right <span class="fu">=</span> lt }</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">            , rt</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">            )</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">    <span class="fu">|</span> v <span class="fu">&lt;=</span> x <span class="fu">=</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">        <span class="kw">let</span> (lt, rt) <span class="fu">=</span> splitTreap l v</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">         <span class="kw">in</span> ( lt</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">            , <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> rt, right <span class="fu">=</span> r}</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">            )</a></code></pre></div>
+<p>私には気になる点が2つ見つかりました:</p>
+<ul>
+<li>タプル</li>
+<li>再帰</li>
+</ul>
+<p>タプルはしばしば、意図しない遅延やスペースリークの原因になります。GHC がタプルのデータ構造を見て、それを完全にアンボックス化し、オーバーヘッドを 0 にできる場合もあります。しかし、それができないときもあります。結果割り当てられまくって、サンクリークが始まります。</p>
+<p>再帰は GHC のインライン化能力を完全に上回っており、パフォーマンスを台無しにしてしまいます。<code>map</code> や <code>foldr</code> などはクレバーな最適化を受けることができますが、単純な再帰関数には大抵、インライン化において問題が存在します。</p>
+<p>これらが実験を始める前の私の印象です。私のタプルメモリ割り当て仮説を検証するために、ヒープのプロファイリングを行いましょう。<code>-hd</code>フラグを使って確保されたデータコンストラクタを取得します:</p>
+<figure>
+<img src="http://www.parsonsmatt.org/treap-base-hd.png" alt="-hd フラグを使ったプロファイル" /><figcaption>-hd フラグを使ったプロファイル</figcaption>
+</figure>
+<p>いい感じですね! さて、このグラフは <code>Tree</code> コンストラクタの割り当て前に、大量のノード、タプル、<code>I#</code> (<code>Int</code> のコンストラクタ) を割り当てていることを示しています。対象の <code>main</code> 関数だと、この挙動は完全に非合理的というわけではありません。</p>
+<h2 id="実験1-データ構造を正格化する">実験1: データ構造を正格化する</h2>
+<p>このセクション関連のコードは <code>strictify-treap</code> にあります。</p>
+<p>データ構造のところどころにバンパターンを差し込んでみました:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Node</span> v d</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">    <span class="fu">=</span> <span class="dt">Node</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">    {<span class="ot"> val ::</span> <span class="fu">!</span>v</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">    ,<span class="ot"> info ::</span> d</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    ,<span class="ot"> prior ::</span> <span class="fu">!</span><span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">    } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="kw">data</span> <span class="dt">Treap</span> v d</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">    <span class="fu">=</span> <span class="dt">Leaf</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">    <span class="fu">|</span> <span class="dt">Tree</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">    {<span class="ot"> node ::</span> <span class="fu">!</span>(<span class="dt">Node</span> v d)</a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">    ,<span class="ot"> left ::</span> <span class="dt">Treap</span> v d</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">    ,<span class="ot"> right ::</span> <span class="dt">Treap</span> v d</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">    } <span class="kw">deriving</span> <span class="dt">Show</span></a></code></pre></div>
+<p>こうすることで <code>Node</code> 型の <code>val</code> フィールドと <code>prior</code> フィールドが正格になり、<code>Treap</code> 型は <code>node</code> フィールドに正格になります。<code>info</code> フィールドはたいていのコンテナのように、lazy のままにしてあります。データ構造の spine も lazy のままです。</p>
+<p><code>-s</code> の出力です:</p>
+<pre><code>1,659,050,200 bytes allocated in the heap
+   1,144,049,696 bytes copied during GC
+      43,890,168 bytes maximum residency (33 sample(s))
+       8,508,680 bytes maximum slop
+             102 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      2905 colls,     0 par    0.676s   0.696s     0.0002s    0.0007s
+  Gen  1        33 colls,     0 par    0.544s   0.567s     0.0172s    0.0409s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    0.920s  (  0.996s elapsed)
+  GC      time    1.220s  (  1.263s elapsed)
+  RP      time    0.000s  (  0.000s elapsed)
+  PROF    time    0.000s  (  0.000s elapsed)
+  EXIT    time    0.000s  (  0.001s elapsed)
+  Total   time    2.196s  (  2.260s elapsed)
+
+  %GC     time      55.6%  (55.9% elapsed)
+
+  Alloc rate    1,803,315,434 bytes per MUT second
+
+  Productivity  44.4% of total user, 44.1% of total elapsed</code></pre>
+<p>20MB も使用しているメモリが減っています。これはいいですね。そして全体の使用時間も少なくなっています (2.4秒 vs 2.2秒)。これもいいことです! しかし GC が使っている時間は 55% です。前より悪くなってるじゃなイカ!</p>
+<p>以下はヒーププロファイリングの結果です:</p>
+<figure>
+<img src="http://www.parsonsmatt.org/treap-strict-nodes.png" alt="ヒーププロファイリングの結果" /><figcaption>ヒーププロファイリングの結果</figcaption>
+</figure>
+<p>大きな違いはありませんが、確かに少し良い結果です。時間と割り当てのプロファイリングは全く違う結果を証明していています。後々、プログラムの実行時間は 2.49秒から 0.97秒になります。</p>
+<p>この結果にかなり励まされつつ、木の spine も正格にしようと思います。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Node</span> v d</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">    <span class="fu">=</span> <span class="dt">Node</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">    {<span class="ot"> val ::</span> <span class="fu">!</span>v</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">    ,<span class="ot"> info ::</span> d</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">    ,<span class="ot"> prior ::</span> <span class="fu">!</span><span class="dt">Int</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">    } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="kw">data</span> <span class="dt">Treap</span> v d</a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">    <span class="fu">=</span> <span class="dt">Leaf</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">    <span class="fu">|</span> <span class="dt">Tree</span></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">    {<span class="ot"> node ::</span> <span class="fu">!</span>(<span class="dt">Node</span> v d)</a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">    ,<span class="ot"> left ::</span> <span class="fu">!</span>(<span class="dt">Treap</span> v d)</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">    ,<span class="ot"> right ::</span> <span class="fu">!</span>(<span class="dt">Treap</span> v d)</a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">    } <span class="kw">deriving</span> <span class="dt">Show</span></a></code></pre></div>
+<p><code>-s</code> の出力結果によると、合計でまだ 94MB 程度のメモリを使っているようです。</p>
+<pre><code>  1,161,437,656 bytes allocated in the heap
+     449,893,272 bytes copied during GC
+      43,890,328 bytes maximum residency (24 sample(s))
+       8,520,808 bytes maximum slop
+              94 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      2143 colls,     0 par    0.152s   0.166s     0.0001s    0.0006s
+  Gen  1        24 colls,     0 par    0.188s   0.203s     0.0085s    0.0272s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    0.556s  (  0.644s elapsed)
+  GC      time    0.320s  (  0.345s elapsed)
+  RP      time    0.000s  (  0.000s elapsed)
+  PROF    time    0.020s  (  0.024s elapsed)
+  EXIT    time    0.000s  (  0.000s elapsed)
+  Total   time    0.952s  (  0.989s elapsed)
+
+  %GC     time      33.6%  (34.9% elapsed)
+
+  Alloc rate    2,088,916,647 bytes per MUT second
+
+  Productivity  64.3% of total user, 62.6% of total elapsed</code></pre>
+<p>これはかなり良い結果です。GC が 33% なのは良くないですが、それでも前よりもだいぶ良い結果です。2.4秒から 0.95秒になりました。これはかなりの改善です。</p>
+<p>今度はヒープの出力も見てみましょう:</p>
+<figure>
+<img src="http://www.parsonsmatt.org/treap-strict-spine.png" alt="ヒープの出力" /><figcaption>ヒープの出力</figcaption>
+</figure>
+<p>もう少しですね! 大きなメモリの山が生成され、それが回収されています。何かが起きていることの兆候です。タプルコンストラクタに多くの割り当てをしてしまっています。つらいですね。</p>
+<h2 id="split-を正格化する">Split を正格化する</h2>
+<p>まだ <code>splitTreap</code> という最大の犯罪者がいます。こいつはプログラムの実行時間のほぼ半分を占めています。タプルを割り当て、それを捨てていることはわかっているので、そこにスペースリークがある可能性があります。タプルの中にバンパターンを追加し、結果を見てみます。</p>
+<p>これが変更点です:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">splitTreap ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> v <span class="ot">-&gt;</span> (<span class="dt">Treap</span> v d, <span class="dt">Treap</span> v d)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">splitTreap <span class="dt">Leaf</span> _ <span class="fu">=</span> (<span class="dt">Leaf</span>, <span class="dt">Leaf</span>)</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">splitTreap (tree <span class="fu">@</span> <span class="dt">Tree</span> {node <span class="fu">=</span> <span class="dt">Node</span> { val <span class="fu">=</span> x }, left <span class="fu">=</span> l, right <span class="fu">=</span> r})   v</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">    <span class="fu">|</span> x <span class="fu">&lt;</span> v  <span class="fu">=</span> <span class="kw">let</span> (<span class="fu">!</span>lt, <span class="fu">!</span>rt) <span class="fu">=</span> splitTreap r v <span class="kw">in</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">                (   <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> l, right <span class="fu">=</span> lt },</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">                    rt  )</a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">    <span class="fu">|</span> v <span class="fu">&lt;=</span> x <span class="fu">=</span> <span class="kw">let</span> (<span class="fu">!</span>lt, <span class="fu">!</span>rt) <span class="fu">=</span> splitTreap l v <span class="kw">in</span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">                (   lt,</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">                    <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> rt, right <span class="fu">=</span> r}  )</a></code></pre></div>
+<p>元のコードがタプルを直ちに破棄して <code>lt</code> と <code>rt</code> 変数を lazy なままにしているのに対して、これらの変数を WHNF に強制しています。</p>
+<p>新しい <code>-s</code> の出力結果です:</p>
+<pre><code>   1,331,896,120 bytes allocated in the heap
+     497,880,136 bytes copied during GC
+      43,890,328 bytes maximum residency (25 sample(s))
+       8,516,712 bytes maximum slop
+              94 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      2245 colls,     0 par    0.188s   0.186s     0.0001s    0.0007s
+  Gen  1        25 colls,     0 par    0.212s   0.251s     0.0100s    0.0386s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    0.636s  (  0.756s elapsed)
+  GC      time    0.360s  (  0.394s elapsed)
+  RP      time    0.000s  (  0.000s elapsed)
+  PROF    time    0.040s  (  0.043s elapsed)
+  EXIT    time    0.000s  (  0.000s elapsed)
+  Total   time    1.084s  (  1.151s elapsed)
+
+  %GC     time      33.2%  (34.2% elapsed)
+
+  Alloc rate    2,094,176,289 bytes per MUT second
+
+  Productivity  63.1% of total user, 62.0% of total elapsed</code></pre>
+<p>これはさっきの実行からほとんど変わっていません。ヒーププロファイルも変更されませんでした。これらのタプルがどこに割り当てられるのかを見るために、<code>-hc</code> をつけて実行してみます。<code>-hc</code> は実際にどの関数がデータを生成しているのかを記録してくれるので、どこに注目するべきかが分かります。</p>
+<figure>
+<img src="http://www.parsonsmatt.org/treap-strict-tuple-hc.png" alt="-hc を使ったプロファイル" /><figcaption>-hc を使ったプロファイル</figcaption>
+</figure>
+<p><strong>あぁナッツ!</strong> <code>splitTreap</code> がほんの少ししかメモリ割り当てがされなくなってるぞ。<code>buildNode</code>, <code>feedFold</code>, <code>insertMany</code> でほとんどの割り当てを行っているみたいです。これは、<code>splitTreap</code> に多くの時間と割り当てをしているという <code>-p</code> オプションの結果に反しているように見えます。</p>
+<p>今は <code>insertMany</code> に集中するべきでしょう。</p>
+<h2 id="insertmany">insertMany</h2>
+<p>このセクションのコードは、GitHub の<code>insert-many</code>ブランチにあります。</p>
+<p><code>mergeTreap</code> はなぜかしらカリー化されていましたが:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">mergeTreap ::</span> (<span class="dt">Treap</span> v d, <span class="dt">Treap</span> v d) <span class="ot">-&gt;</span> <span class="dt">Treap</span> v d</a></code></pre></div>
+<p>これはうざかったので、上のようにアンカリー化しました。これはパフォーマンスには関係ありません。</p>
+<p>ここで、<code>insertMany</code> を実際に見てみます:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="ot">insertMany ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> [<span class="dt">Node</span> v d] <span class="ot">-&gt;</span> <span class="dt">Treap</span> v d</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">insertMany <span class="fu">=</span> foldl insertTreap</a></code></pre></div>
+<p>あぁ。<code>foldl</code> がまた来やがりました。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">insertMany ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> [<span class="dt">Node</span> v d] <span class="ot">-&gt;</span> <span class="dt">Treap</span> v d</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">insertMany <span class="fu">=</span> foldl' insertTreap</a></code></pre></div>
+<p>さぁ、GHC のアメージングな最適化力とプライムボーイ、どちらが勝つのでしょうか? <code>-s</code> の結果です:</p>
+<pre class="plain"><code>   1,115,162,944 bytes allocated in the heap
+     245,033,472 bytes copied during GC
+      12,088,896 bytes maximum residency (22 sample(s))
+         306,112 bytes maximum slop
+              32 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      2134 colls,     0 par    0.116s   0.128s     0.0001s    0.0003s
+  Gen  1        22 colls,     0 par    0.080s   0.105s     0.0048s    0.0136s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    0.596s  (  0.700s elapsed)
+  GC      time    0.180s  (  0.216s elapsed)
+  RP      time    0.000s  (  0.000s elapsed)
+  PROF    time    0.016s  (  0.018s elapsed)
+  EXIT    time    0.000s  (  0.001s elapsed)
+  Total   time    0.852s  (  0.916s elapsed)
+
+  %GC     time      21.1%  (23.6% elapsed)
+
+  Alloc rate    1,871,078,765 bytes per MUT second
+
+  Productivity  77.0% of total user, 74.4% of total elapsed</code></pre>
+<p>良いですね、トータルの使用メモリが 32MB になり、全体の時間は 10分の1 ぐらい減りました。しかも、GC にかかっている時間はたったの 22% です。我々の大勝利です。</p>
+<p>ヒープのプロファイル結果を見てみましょう:</p>
+<figure>
+<img src="http://www.parsonsmatt.org/treap-foldl.png" alt="ヒーププロファイルの結果" /><figcaption>ヒーププロファイルの結果</figcaption>
+</figure>
+<h2 id="何があっても-foldl-を使わず常に-foldl-を使うべし">何があっても foldl を使わず、常に foldl’ を使うべし</h2>
+<p>最初の状態で foldl を foldl’ に変更してみたらどうでしょう?</p>
+<p><code>git checkout base</code> を走らせて元に戻し、<code>foldl</code> を <code>foldl'</code> に変更してみました。<code>-s</code> の結果です:</p>
+<pre class="plain"><code>1,581,972,168 bytes allocated in the heap
+   1,140,799,032 bytes copied during GC
+      40,964,944 bytes maximum residency (43 sample(s))
+         495,784 bytes maximum slop
+             114 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      3044 colls,     0 par    0.664s   0.636s     0.0002s    0.0004s
+  Gen  1        43 colls,     0 par    0.796s   0.812s     0.0189s    0.0611s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    0.964s  (  1.226s elapsed)
+  GC      time    1.336s  (  1.320s elapsed)
+  RP      time    0.000s  (  0.000s elapsed)
+  PROF    time    0.124s  (  0.128s elapsed)
+  EXIT    time    0.000s  (  0.002s elapsed)
+  Total   time    2.488s  (  2.548s elapsed)
+
+  %GC     time      53.7%  (51.8% elapsed)
+
+  Alloc rate    1,641,049,966 bytes per MUT second
+
+  Productivity  41.3% of total user, 43.2% of total elapsed</code></pre>
+<p>よろしくはないですね。というか、初めよりもちょっと悪くなってます! ヒープのプロファイル結果はどうでしょう?</p>
+<figure>
+<img src="http://www.parsonsmatt.org/treap-just-foldl.png" alt="ヒーププロファイルの結果" /><figcaption>ヒーププロファイルの結果</figcaption>
+</figure>
+<p>これもほとんど同じですね! 割り当てはちょっとなめらかになっていますが、顕著な違いでもありません。というわけで、データ構造を正格にせずに、ただ <code>foldl'</code> に変更しても意味がありませんでした。</p>
+<h2 id="最終結果">最終結果</h2>
+<p>プロファイリングを無効にして、もう一回コードを実行してみます:</p>
+<pre class="plain"><code>     650,786,800 bytes allocated in the heap
+     132,515,880 bytes copied during GC
+       7,278,528 bytes maximum residency (17 sample(s))
+         353,296 bytes maximum slop
+              21 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      1233 colls,     0 par    0.112s   0.100s     0.0001s    0.0004s
+  Gen  1        17 colls,     0 par    0.056s   0.056s     0.0033s    0.0122s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    0.212s  (  0.341s elapsed)
+  GC      time    0.168s  (  0.156s elapsed)
+  EXIT    time    0.000s  (  0.000s elapsed)
+  Total   time    0.436s  (  0.497s elapsed)
+
+  %GC     time      38.5%  (31.3% elapsed)
+
+  Alloc rate    3,069,749,056 bytes per MUT second
+
+  Productivity  61.5% of total user, 68.7% of total elapsed</code></pre>
+<p>メモリ消費は 21MB, 実行時間は 0.43秒でした。</p>
+<h2 id="結論">結論?</h2>
+<h3 id="spine-は正格にリーブは-lazy-に">spine は正格に、リーブは lazy に</h3>
+<p>データ構造的には、spine は正格に、リーブは lazy にすべきです。データコンストラクタを、ストリームの形で組み立てたり消費したいという強い意思があるなら話は別ですが。</p>
+<h3 id="foldl-は絶対に使うな">foldl は絶対に使うな</h3>
+<p>まじめに使っちゃダメです。<code>hlint</code> のルールにそうしないように書いてください。コードから排除しましょう。廃止して、<code>Prelude</code> を置き換えるように GHC に提案しましょう。</p>
+      </article>
+
+      
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2017 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../js/init.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
