@@ -10,7 +10,6 @@ install:
 - mkdir -p ~/.local/bin
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-
 jobs:
   include:
     - stage: install cabal
@@ -22,4 +21,20 @@ jobs:
     - stage: stack test
       script: stack --no-terminal test
     - stage: rebuild site
-    - script: stack exec site rebuild
+      script: stack exec site rebuild
+    - stage: deploy
+      if: branch = master AND type IN (push)
+      script: stack exec site rebuild
+      after_success:
+      - eval "$(ssh-agent -s)"
+      - chmod 600 deploy_key
+      - ssh-add deploy_key
+      - git clone --branch=site git@github.com:e-bigmoon/haskell-blog.git
+      - cd haskell-blog
+      - cp -r ../_site/ .
+      - git add -A
+      - "git commit -m \"by Travis CI (JOB $TRAVIS_JOB_NUMBER) : $TRAVIS_COMMIT_MESSAGE\""
+      - git push origin site
+before_install:
+- openssl aes-256-cbc -K $encrypted_90007859edaf_key -iv $encrypted_90007859edaf_iv
+  -in deploy_key.enc -out deploy_key -d
