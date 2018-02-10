@@ -32,6 +32,12 @@ date: 2018/01/08
   - [QuickCheck](/stack/test/quickcheck.html)
   - [doctest](/stack/test/doctest.html)
 
+- [HLint](/stack/hlint/index.html)
+  - [HLintの導入と実行](/stack/hlint/hlint-intro.html)
+  - [HLintのヒント](/stack/hlint/hlint-hint.html)
+  - [HLintのヒントを無視する方法](/stack/hlint/hlint-ignore.html)
+  - [CIを回す!](/stack/hlint/hlint-ci.html)
+
 ## その他
 
 - [プログラムの配布](/stack/etc/stack-script.html)
