@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>HLintのヒント</title>
+  <title>プロジェクトで禁止している関数を関数の検出</title>
   <meta name="description" content="BIG MOON">
-  <link rel="canonical" href="../../stack/hlint/hlint-hint.html">
-  <link rel="alternate" type="application/atom+xml" title="HLintのヒント" href="../../feed.xml" />
+  <link rel="canonical" href="../../stack/hlint/forbidden-functions.html">
+  <link rel="alternate" type="application/atom+xml" title="プロジェクトで禁止している関数を関数の検出" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -26,11 +26,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="HLintのヒント" />
+  <meta property="og:title" content="プロジェクトで禁止している関数を関数の検出" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="/stack/hlint/hlint-hint.html" />
+  <meta property="og:url" content="/stack/hlint/forbidden-functions.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="HLintのヒント" />
+  <meta property="og:site_name" content="プロジェクトで禁止している関数を関数の検出" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -139,58 +139,41 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">HLintのヒント</h1>
+        <h1 class="post-title">プロジェクトで禁止している関数を関数の検出</h1>
         
-        <span>最終更新日: 2018/02/10</span>
+        <span>最終更新日: 2018/02/11</span>
         
       </div>
 
       <article class="page-content">
-        <p>以下のように <code>stack new</code> で新規プロジェクトを作ってすぐの状態では <code>HLint</code> は何もヒントを出してくれません。</p>
-<p>つまり、とても良い状態ということです。</p>
-<pre class="shell"><code>$ stacke new test-proj
-$ cd test-proj
-
-$ hlint .
-No hints</code></pre>
-<p>ここで、ファイルを少し修正して <code>HLint</code> に働いてもらいましょう！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="kw">let</span> x1 <span class="fu">=</span> concat (map toUpper [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">      x2 <span class="fu">=</span> maybe <span class="st">&quot;&quot;</span> id <span class="st">&quot;abc&quot;</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
-<p>上記のコードは以下のようなヒントを2つ提案してくれます。</p>
+        <p>プロジェクト内で部分関数 (例: <code>fromJust</code>) を使わせないようにさせたり、<code>undefined</code> が残っていないかなどのチェックをレビュー時に人間が行っていたりしませんか？</p>
+<p>人間が介入するということは必ずミスが起こります。人間が気をつければミスは起こらないと思っていたり、精神力でなんとかしようとしている場合は能力不足を疑われても仕方がありません。</p>
+<p>また、そのようなつまらない間違い探しのような非クリエイティブな作業に大切な時間を割いてしまうのはとても良くないことです。</p>
+<p><code>HLint</code> を使えば、そのような関数を検出することが可能です。実際には <code>関数</code> だけでなく <code>言語拡張</code>, <code>フラグ</code>, <code>モジュール</code> も指定することができます。</p>
+<h3 id="関数を指定する方法">関数を指定する方法</h3>
+<p><code>.hlint.yaml</code> に以下の内容を追記します。今回は <code>undefined</code> を検出してみたいと思います。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># .hlint.yaml</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">-</span> <span class="fu">functions:</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="kw">-</span> <span class="kw">{</span><span class="fu">name:</span><span class="at"> undefined</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[]}</span></a></code></pre></div>
+<p>現状はどこにも使われていないためヒントは表示されません。</p>
 <pre class="shell"><code>$ hlint .
-./src/Lib.hs:7:12: Warning: Use concatMap
+No hints</code></pre>
+<p>では、以下の関数を追加してみましょう。このように型レベルで設計して、実装を <code>undefined</code> にしておくことは良くあります。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="ot">doubleToText ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">doubleToText <span class="fu">=</span> undefined</a></code></pre></div>
+<p>忘れずに実装してしまえば問題無いのですが、たまには忘れることもあります。しかし、<code>HLint</code> があれば安心です。</p>
+<pre class="shell"><code>$ hlint .
+./src/Lib.hs:18:16: Warning: Avoid restricted function
 Found:
-  concat (map toUpper ['a' .. 'z'])
-Why not:
-  concatMap toUpper ['a' .. 'z']
+  undefined
+Note: may break the code
 
-./src/Lib.hs:8:12: Warning: Use fromMaybe
-Found:
-  maybe &quot;&quot; id
-Why not:
-  Data.Maybe.fromMaybe &quot;&quot;
-
-2 hints</code></pre>
-<p>これは、このような意味になります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># 1つ目のヒント</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">-</span> <span class="fu">ヒントレベル:</span><span class="at"> 警告</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">-</span> <span class="fu">ヒント:</span><span class="at"> Use concatMap</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">-</span> <span class="fu">出力の意味:</span><span class="at"> concat (map toUpper ['a' .. 'z']) を見つけたけど、どうして concatMap toUpper ['a' .. 'z'] と書かないんだい？</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># 2つ目のヒント</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">-</span> <span class="fu">ヒントレベル:</span><span class="at"> 警告</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw">-</span> <span class="fu">ヒント:</span><span class="at"> Use fromMaybe</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">-</span> <span class="fu">出力の意味:</span><span class="at"> maybe &quot;&quot; id は Data.Maybe モジュールにある fromMaybe 関数を使えば fromMaybe &quot;&quot; と同じですよ</span></a></code></pre></div>
-<p>素晴らしいですね。とてもわかりやすいです。また、<code>--report</code> オプションを利用することで結果を <code>HTML</code> として出力することも可能です。</p>
-<pre class="shell"><code>$ hlint . --report</code></pre>
-<p>とても素晴らしいのですが、<code>HLint</code> の提案するヒントに賛成できない時はどうしましょう? もし <code>HLint</code> の言うとおりにしかできないのであれば、とても使いづらいツールになってしまいます。</p>
-<p>そういった場合のためにルールを無視する方法も用意されています。また、プロジェクト固有のカスタムヒントについても同様に設定方法が用意されています。</p>
+1 hint</code></pre>
+<p><code>Lib</code> モジュールのみを検査対象とする場合は <code>within</code> キーワードを次のようにします。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># .hlint.yaml</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">-</span> <span class="fu">functions:</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">  <span class="kw">-</span> <span class="kw">{</span><span class="fu">name:</span><span class="at"> undefined</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[</span>Lib<span class="kw">]}</span></a></code></pre></div>
       </article>
 
       
