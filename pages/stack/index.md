@@ -35,6 +35,8 @@ date: 2018/01/08
 - [HLint](/stack/hlint/index.html)
   - [HLintの導入と実行](/stack/hlint/hlint-intro.html)
   - [HLintのヒント](/stack/hlint/hlint-hint.html)
+  - [HLintのカスタムヒント](/stack/hlint/hlint-customhint.html)
+  - [プロジェクトで禁止している関数の検出](/stack/hlint/forbidden-functions.html)
   - [HLintのヒントを無視する方法](/stack/hlint/hlint-ignore.html)
   - [CIを回す!](/stack/hlint/hlint-ci.html)
 
