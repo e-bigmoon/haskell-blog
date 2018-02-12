@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>HLintのヒントを無視する方法</title>
+  <title>HLint のヒントを無視する方法</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/hlint/hlint-ignore.html">
-  <link rel="alternate" type="application/atom+xml" title="HLintのヒントを無視する方法" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="HLint のヒントを無視する方法" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -26,11 +26,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="HLintのヒントを無視する方法" />
+  <meta property="og:title" content="HLint のヒントを無視する方法" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/hlint/hlint-ignore.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="HLintのヒントを無視する方法" />
+  <meta property="og:site_name" content="HLint のヒントを無視する方法" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -139,20 +139,21 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">HLintのヒントを無視する方法</h1>
+        <h1 class="post-title">HLint のヒントを無視する方法</h1>
         
-        <span>最終更新日: 2018/02/10</span>
+        <span>最終更新日: 2018/02/12</span>
         
       </div>
 
       <article class="page-content">
-        <p><code>HLint</code> のヒントを無視する方法には以下の2種類があります。</p>
+        <h2 id="ヒントを無視する方法">ヒントを無視する方法</h2>
+<p><code>HLint</code> のヒントを無視する方法には以下の2種類があります。</p>
 <ul>
 <li><code>.hlint.yaml</code> ファイルで指定する (<strong>全てのファイル</strong>に影響)</li>
 <li>ファイルに直接 <code>{-# ANN -#}</code> アノテーションを記述する (<strong>アノテーションの範囲</strong>にのみ影響)</li>
 </ul>
 <p>書式がちょっとわかりづらいので、実際に色々試してみましょう。</p>
-<h3 id="関数単位で全てのヒントを無視する">関数単位で全てのヒントを無視する</h3>
+<h2 id="関数単位で全てのヒントを無視する">関数単位で全てのヒントを無視する</h2>
 <p>最初に定義した <code>someFunc</code> 関数はヒントを2つ提案してくれていました。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
@@ -195,7 +196,7 @@ Why not:
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>これで <code>src/Lib.hs</code> に記述されている <code>someFunc</code> 関数のみ <code>HLint</code> のヒントを無視できるようになりました。</p>
-<h3 id="ヒントを無視する様々な方法">ヒントを無視する様々な方法</h3>
+<h2 id="ファイル単位でヒントを無視する様々な方法">ファイル単位でヒントを無視する様々な方法</h2>
 <p>ヒントレベルは <code>ignore</code> 以外にも <code>suggest</code>, <code>warn</code>, <code>error</code> が利用可能です。これらの値を利用した場合は出力時のヒントレベルが強制的にそのレベルに上書きされます。つまり、ヒントファイルに <code>warn</code> で定義されていたとしても <code>error</code> や <code>ignore</code> として処理されることになります。</p>
 <h4 id="関数単位で全てのヒントを無視する方法">関数単位で全てのヒントを無視する方法</h4>
 <p><code>ANN</code> のあとに対象の関数名を書きます。</p>
@@ -210,10 +211,10 @@ No hints</code></pre>
 <a class="sourceLine" id="cb7-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="ot">{-# ANN module &quot;HLint: ignore Use fromMaybe&quot; #-}</span></a>
 <a class="sourceLine" id="cb7-4" data-line-number="4"><span class="ot">{-# ANN module &quot;HLint: ignore Use concatMap&quot; #-}</span></a></code></pre></div>
-<h3 id="overloadedstrings-言語拡張">OverloadedStrings 言語拡張</h3>
+<h2 id="overloadedstrings-言語拡張">OverloadedStrings 言語拡張</h2>
 <p>言語拡張の <code>OverloadedStrings</code> を有効化している場合は上手く動かないため、明示的に <code>String</code> の型注釈を指定する必要があります。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">{-# ANN someFunc (&quot;HLint: ignore&quot; :: String) #-}</span></a></code></pre></div>
-<h3 id="ヒントファイルを使って無視する方法">ヒントファイルを使って無視する方法</h3>
+<h2 id="ヒントファイルを使って無視する方法">ヒントファイルを使って無視する方法</h2>
 <p>プロジェクト全体で無視したいヒントについては <code>.hint.yaml</code> に追記します。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># .hint.yaml</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use fromMaybe</span><span class="kw">}</span></a>

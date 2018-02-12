@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>HLintのヒント</title>
+  <title>HLint のヒント</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/hlint/hlint-hint.html">
-  <link rel="alternate" type="application/atom+xml" title="HLintのヒント" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="HLint のヒント" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -26,11 +26,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="HLintのヒント" />
+  <meta property="og:title" content="HLint のヒント" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/hlint/hlint-hint.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="HLintのヒント" />
+  <meta property="og:site_name" content="HLint のヒント" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -139,14 +139,15 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">HLintのヒント</h1>
+        <h1 class="post-title">HLint のヒント</h1>
         
-        <span>最終更新日: 2018/02/10</span>
+        <span>最終更新日: 2018/02/12</span>
         
       </div>
 
       <article class="page-content">
-        <p>以下のように <code>stack new</code> で新規プロジェクトを作ってすぐの状態では <code>HLint</code> は何もヒントを出してくれません。</p>
+        <h2 id="stack-プロジェクトで-hlint-になれよう">stack プロジェクトで HLint になれよう！</h2>
+<p>以下のように <code>stack new</code> で新規プロジェクトを作ってすぐの状態では <code>HLint</code> は何もヒントを出してくれません。</p>
 <p>つまり、とても良い状態ということです。</p>
 <pre class="shell"><code>$ stacke new test-proj
 $ cd test-proj
@@ -162,6 +163,7 @@ No hints</code></pre>
 <a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="kw">let</span> x1 <span class="fu">=</span> concat (map toUpper [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
 <a class="sourceLine" id="cb2-7" data-line-number="7">      x2 <span class="fu">=</span> maybe <span class="st">&quot;&quot;</span> id <span class="st">&quot;abc&quot;</span></a>
 <a class="sourceLine" id="cb2-8" data-line-number="8">  putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
+<h2 id="ヒントの種類">ヒントの種類</h2>
 <p>上記のコードは以下のようなヒントを2つ提案してくれます。</p>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:7:12: Warning: Use concatMap
@@ -181,14 +183,17 @@ Why not:
 <div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># 1つ目のヒント</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">-</span> <span class="fu">ヒントレベル:</span><span class="at"> 警告</span></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">-</span> <span class="fu">ヒント:</span><span class="at"> Use concatMap</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">-</span> <span class="fu">出力の意味:</span><span class="at"> concat (map toUpper ['a' .. 'z']) を見つけたけど、どうして concatMap toUpper ['a' .. 'z'] と書かないんだい？</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># 2つ目のヒント</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">-</span> <span class="fu">ヒントレベル:</span><span class="at"> 警告</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw">-</span> <span class="fu">ヒント:</span><span class="at"> Use fromMaybe</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">-</span> <span class="fu">出力の意味:</span><span class="at"> maybe &quot;&quot; id は Data.Maybe モジュールにある fromMaybe 関数を使えば fromMaybe &quot;&quot; と同じですよ</span></a></code></pre></div>
-<p>素晴らしいですね。とてもわかりやすいです。また、<code>--report</code> オプションを利用することで結果を <code>HTML</code> として出力することも可能です。</p>
-<pre class="shell"><code>$ hlint . --report</code></pre>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">-</span> <span class="fu">出力の意味:</span><span class="at"> concat (map toUpper ['a' .. 'z']) を見つけたけど、どうして concatMap toUpper ['a' .. 'z'] と書かないんだい？</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># 2つ目のヒント</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">-</span> <span class="fu">ヒントレベル:</span><span class="at"> 警告</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">-</span> <span class="fu">ヒント:</span><span class="at"> Use fromMaybe</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">-</span> <span class="fu">出力の意味:</span><span class="at"> maybe &quot;&quot; id は Data.Maybe モジュールにある fromMaybe 関数を使えば fromMaybe &quot;&quot; と同じですよ</span></a></code></pre></div>
+<p>素晴らしいですね。とてもわかりやすいです。</p>
+<p>ここで紹介したヒント以外にもデフォルトでいくつも有用なヒントが用意されているため、実際に色々使ってみると楽しいです。</p>
+<h2 id="html-で結果を出力">HTML で結果を出力</h2>
+<p><code>--report</code> オプションを利用することで結果を <code>HTML</code> として出力することも可能です。</p>
+<pre class="shell"><code>$ hlint . --report
+...</code></pre>
 <p>とても素晴らしいのですが、<code>HLint</code> の提案するヒントに賛成できない時はどうしましょう? もし <code>HLint</code> の言うとおりにしかできないのであれば、とても使いづらいツールになってしまいます。</p>
 <p>そういった場合のためにルールを無視する方法も用意されています。また、プロジェクト固有のカスタムヒントについても同様に設定方法が用意されています。</p>
       </article>

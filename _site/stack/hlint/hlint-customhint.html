@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>HLintのカスタムヒント</title>
+  <title>HLint のカスタムヒント</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/hlint/hlint-customhint.html">
-  <link rel="alternate" type="application/atom+xml" title="HLintのカスタムヒント" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="HLint のカスタムヒント" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -26,11 +26,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="HLintのカスタムヒント" />
+  <meta property="og:title" content="HLint のカスタムヒント" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/hlint/hlint-customhint.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="HLintのカスタムヒント" />
+  <meta property="og:site_name" content="HLint のカスタムヒント" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -139,15 +139,17 @@
     <div class="post-section">
 
       <div class="post-heading">
-        <h1 class="post-title">HLintのカスタムヒント</h1>
+        <h1 class="post-title">HLint のカスタムヒント</h1>
         
-        <span>最終更新日: 2018/02/11</span>
+        <span>最終更新日: 2018/02/12</span>
         
       </div>
 
       <article class="page-content">
-        <p>デフォルトで適用されるヒントの一覧は <a href="https://github.com/ndmitchell/hlint/blob/master/data/hlint.yaml">hlint.yaml</a> で確認できます。この中に無いヒントについては、自分でカスタムヒントを追加して対応することになります。</p>
-<h3 id="カスタムヒントファイルの生成">カスタムヒントファイルの生成</h3>
+        <h2 id="カスタムヒント">カスタムヒント</h2>
+<p>デフォルトで適用されるヒントの一覧は <a href="https://github.com/ndmitchell/hlint/blob/master/data/hlint.yaml">hlint.yaml</a> で確認できます。</p>
+<p>この中に無いヒントについては、自分でカスタムヒントを追加して対応することになります。</p>
+<h2 id="カスタムヒントファイルの生成">カスタムヒントファイルの生成</h2>
 <p>まずは、カスタムヒントファイルの雛形を生成するために、プロジェクトのルートで以下のコマンドを実行しましょう。</p>
 <pre class="shell"><code>$ hlint --default &gt; .hlint.yaml</code></pre>
 <p>中身はこんな感じで、ヒントの書き方について具体例が載っています。</p>
@@ -212,13 +214,14 @@
 <a class="sourceLine" id="cb2-59" data-line-number="59"><span class="co"># To generate a suitable file for HLint do:</span></a>
 <a class="sourceLine" id="cb2-60" data-line-number="60"><span class="co"># $ hlint --default &gt; .hlint.yaml</span></a></code></pre></div>
 <p><code>HLint</code> はデフォルトヒントが記述されている <code>hlint.yaml</code> と、カスタムヒントが記述されている <code>.hlint.yaml</code> の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、<code>.hlint.yaml</code> に記述していくことになります。</p>
-<h3 id="カスタムヒントの追加">カスタムヒントの追加</h3>
+<h2 id="カスタムヒントの追加">カスタムヒントの追加</h2>
 <p>ここでは説明のため以下のような <code>tshow</code> という関数があるとしましょう。この関数は <code>show :: Show a =&gt; a -&gt; String</code> の <code>Text</code> バージョンです。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">tshow <span class="fu">=</span> pack <span class="fu">.</span> show</a></code></pre></div>
-<p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <code>tshow</code> に直すようにヒントを出させることです。まだヒントを追加していないため、当然ながら現時点では <code>pack . show</code> というコードが使われていたとしても何も起こりません。</p>
+<p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <code>tshow</code> に直すようにヒントを出させることです。</p>
+<p>まだヒントを追加していないため、当然ながら現時点では <code>pack . show</code> というコードが使われていたとしても何も起こりません。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"></a>
@@ -228,7 +231,8 @@
 <a class="sourceLine" id="cb4-7" data-line-number="7">intToText <span class="fu">=</span> pack <span class="fu">.</span> show</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
-<p>それでは <code>.hlint.yaml</code> に <code>tshow = pack . show</code> を検出するためのヒントを追記しましょう。以下の1行を追記するだけです。</p>
+<p>それでは <code>.hlint.yaml</code> に <code>tshow = pack . show</code> を検出するためのヒントを追記しましょう。</p>
+<p>以下の1行を追記するだけです。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">-</span> <span class="fu">error:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs:</span><span class="at"> pack (show x)</span><span class="kw">,</span> <span class="fu">rhs:</span><span class="at"> tshow x</span><span class="kw">}</span></a></code></pre></div>
 <p><code>lhs</code>, <code>rhs</code> はそれぞれ <code>Left Hand Side (左辺)</code>, <code>Right Hand Side (右辺)</code> の略です。またヒントのレベルは <code>error</code> 以外にも <code>warm</code>, <code>suggest (hint キーワードはただのエイリアスです)</code> も指定できるため、好きなレベルを指定しましょう。(ヒントレベルの使い分けについては <a href="https://github.com/ndmitchell/hlint#what-is-the-difference-between-errorwarningsuggestion">What is the difference between error/warning/suggestion?</a> をご参照ください)</p>
 <p>では、実行してみましょう。</p>
@@ -246,7 +250,7 @@ Why not:
 <a class="sourceLine" id="cb8-2" data-line-number="2">intToText <span class="fu">=</span> tshow</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
-<h3 id="ヒントの定義方法について">ヒントの定義方法について</h3>
+<h2 id="ヒントの定義方法について">ヒントの定義方法について</h2>
 <p>さきほど定義したヒントはこのようにポイントフリー形式で書くこともできます。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">-</span> <span class="fu">error:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs:</span><span class="at"> pack . show</span><span class="kw">,</span> <span class="fu">rhs:</span><span class="at"> tshow</span><span class="kw">}</span></a></code></pre></div>
 <p>上記のヒント形式で次の内容を解析してみましょう。</p>
@@ -268,7 +272,8 @@ Why not:
   tshow
 
 1 hint</code></pre>
-<p><code>intToText</code> と <code>intToText2</code> どちらも検出して欲しいですが <code>intToText</code> しか検出できていません。<code>HLint</code> では自動的に η-簡約 (eta-reduction) が行われるため <code>error: {lhs: pack (show x), rhs: tshow x}</code> というように定義しておいた方が良いです。</p>
+<p><code>intToText</code> と <code>intToText2</code> どちらも検出して欲しいですが <code>intToText</code> しか検出できていません。</p>
+<p><code>HLint</code> では自動的に η-簡約 (eta-reduction) が行われるため <code>error: {lhs: pack (show x), rhs: tshow x}</code> というように定義しておいた方が良いでしょう。</p>
       </article>
 
       
