@@ -1,11 +1,15 @@
 ---
-title: HLintのカスタムヒント
-date: 2018/02/11
+title: HLint のカスタムヒント
+date: 2018/02/12
 ---
 
-デフォルトで適用されるヒントの一覧は [hlint.yaml](https://github.com/ndmitchell/hlint/blob/master/data/hlint.yaml) で確認できます。この中に無いヒントについては、自分でカスタムヒントを追加して対応することになります。
+## カスタムヒント
 
-### カスタムヒントファイルの生成
+デフォルトで適用されるヒントの一覧は [hlint.yaml](https://github.com/ndmitchell/hlint/blob/master/data/hlint.yaml) で確認できます。
+
+この中に無いヒントについては、自分でカスタムヒントを追加して対応することになります。
+
+## カスタムヒントファイルの生成
 
 まずは、カスタムヒントファイルの雛形を生成するために、プロジェクトのルートで以下のコマンドを実行しましょう。
 
@@ -80,7 +84,7 @@ $ hlint --default > .hlint.yaml
 
 `HLint` はデフォルトヒントが記述されている `hlint.yaml` と、カスタムヒントが記述されている `.hlint.yaml` の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、`.hlint.yaml` に記述していくことになります。
 
-### カスタムヒントの追加
+## カスタムヒントの追加
 
 ここでは説明のため以下のような `tshow` という関数があるとしましょう。この関数は `show :: Show a => a -> String` の `Text` バージョンです。
 
@@ -91,7 +95,9 @@ tshow :: Show a => a -> Text
 tshow = pack . show
 ```
 
-目的としてはプロジェクトのコード中で `pack . show` となっている部分を `tshow` に直すようにヒントを出させることです。まだヒントを追加していないため、当然ながら現時点では `pack . show` というコードが使われていたとしても何も起こりません。
+目的としてはプロジェクトのコード中で `pack . show` となっている部分を `tshow` に直すようにヒントを出させることです。
+
+まだヒントを追加していないため、当然ながら現時点では `pack . show` というコードが使われていたとしても何も起こりません。
 
 ```haskell
 -- src/Lib.hs
@@ -108,7 +114,9 @@ $ hlint .
 No hints
 ```
 
-それでは `.hlint.yaml` に `tshow = pack . show` を検出するためのヒントを追記しましょう。以下の1行を追記するだけです。
+それでは `.hlint.yaml` に `tshow = pack . show` を検出するためのヒントを追記しましょう。
+
+以下の1行を追記するだけです。
 
 ```yaml
 - error: {lhs: pack (show x), rhs: tshow x}
@@ -143,7 +151,7 @@ $ hlint .
 No hints
 ```
 
-### ヒントの定義方法について
+## ヒントの定義方法について
 
 さきほど定義したヒントはこのようにポイントフリー形式で書くこともできます。
 
@@ -177,4 +185,6 @@ Why not:
 1 hint
 ```
 
-`intToText` と `intToText2` どちらも検出して欲しいですが `intToText` しか検出できていません。`HLint` では自動的に η-簡約 (eta-reduction) が行われるため `error: {lhs: pack (show x), rhs: tshow x}` というように定義しておいた方が良いです。
+`intToText` と `intToText2` どちらも検出して欲しいですが `intToText` しか検出できていません。
+
+`HLint` では自動的に η-簡約 (eta-reduction) が行われるため `error: {lhs: pack (show x), rhs: tshow x}` というように定義しておいた方が良いでしょう。
