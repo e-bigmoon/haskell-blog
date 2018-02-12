@@ -1,6 +1,6 @@
 ---
 title: HLintの導入と実行
-date: 2018/02/10
+date: 2018/02/12
 ---
 
 ## HLint の導入
@@ -20,33 +20,29 @@ HLint v2.0.15, (C) Neil Mitchell 2006-2018
 
 ```shell
 $ curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
+...
 ```
 
 ## HLint の実行方法
 
 `HLint` はディレクトリを指定すると再帰的に解析を行ってくれます。
 
-### プロジェクト全体に対して再帰的に実行
-
 ```shell
+# プロジェクト全体に対して再帰的に実行
 $ hlint .
 ```
 
-### 特定のディレクトリ (src) に対して再帰的に実行
-
 ```shell
+# 特定のディレクトリ (src) に対して再帰的に実行
 $ hlint src
 ```
 
-### 複数のディレクトリ (src, test) に対して再帰的に実行
-
 ```shell
+# 複数のディレクトリ (src, test) に対して再帰的に実行
 $ hlint src test
 ```
 
-### 単一のファイル (app/Main.hs) にのみ実行
-
 ```shell
+# 単一のファイル (app/Main.hs) にのみ実行
 $ hlint app/Main.hs
 ```
-
