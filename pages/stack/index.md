@@ -1,6 +1,6 @@
 ---
 title: stack index
-date: 2018/01/08
+date: 2018/02/12
 ---
 
 ## Tips
@@ -8,7 +8,6 @@ date: 2018/01/08
 - [stack の更新](/stack/tips/stack-upgrade.html)
 - [完全なリビルド](/stack/tips/full-rebuild.html)
 - [おすすめの開発方法](/stack/tips/recommend-dev.html)
-
 
 ## チュートリアル
 
@@ -32,13 +31,15 @@ date: 2018/01/08
   - [QuickCheck](/stack/test/quickcheck.html)
   - [doctest](/stack/test/doctest.html)
 
-- [HLint](/stack/hlint/index.html)
-  - [HLintの導入と実行](/stack/hlint/hlint-intro.html)
-  - [HLintのヒント](/stack/hlint/hlint-hint.html)
-  - [HLintのカスタムヒント](/stack/hlint/hlint-customhint.html)
-  - [プロジェクトで禁止している関数の検出](/stack/hlint/forbidden-functions.html)
-  - [HLintのヒントを無視する方法](/stack/hlint/hlint-ignore.html)
-  - [CIを回す!](/stack/hlint/hlint-ci.html)
+## HLint
+
+- [はじめに](/stack/hlint/)
+- [HLint の導入と実行](/stack/hlint/hlint-intro.html)
+- [HLint のヒント](/stack/hlint/hlint-hint.html)
+- [HLint のカスタムヒント](/stack/hlint/hlint-customhint.html)
+- [プロジェクトで禁止している関数の検出](/stack/hlint/forbidden-functions.html)
+- [HLint のヒントを無視する方法](/stack/hlint/hlint-ignore.html)
+- [CI を回す!](/stack/hlint/hlint-ci.html)
 
 ## その他
 
