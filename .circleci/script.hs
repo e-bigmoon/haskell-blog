@@ -27,18 +27,32 @@ main' pullRequestUrl = do
     userName <- liftIO $ getEnv "CIRCLE_PROJECT_USERNAME"
     repoName <- liftIO $ getEnv "CIRCLE_PROJECT_REPONAME"
     buildUrl <- liftIO $ getEnv "CIRCLE_BUILD_URL"
-    homeDir <- liftIO $ getEnv "HOME"
+    homeDir  <- liftIO $ getEnv "HOME"
     let prNumber = reverse . takeWhile (/= '/') $ reverse pullRequestUrl
-    token    <- liftIO $ getEnv "GITHUB_OAUTH"
+    token <- liftIO $ getEnv "GITHUB_OAUTH"
     let payload = object
-          [ "body" .= intercalate "/"
-            [buildUrl, "artifacts", "0", homeDir, repoName
-            , "_site/index.html"]
+          [ "body" .= intercalate
+              "/"
+              [ buildUrl
+              , "artifacts"
+              , "0"
+              , homeDir
+              , repoName
+              , "_site/index.html"
+              ]
           ]
-    r <- req POST
-      (https "api.github.com" /: "repos" /: T.pack userName /: T.pack repoName /: "issues" /: T.pack prNumber /: "comments")
+    r <- req
+      POST
+      (  https "api.github.com"
+      /: "repos"
+      /: T.pack userName
+      /: T.pack repoName
+      /: "issues"
+      /: T.pack prNumber
+      /: "comments"
+      )
       (ReqBodyJson payload)
       jsonResponse
-      (oAuth2Token (B.pack token) <>
-      header "User-Agent" "bigmoon")
+      (oAuth2Token (B.pack token) <> header "User-Agent" "bigmoon")
     liftIO $ print (responseBody r :: Value)
+
