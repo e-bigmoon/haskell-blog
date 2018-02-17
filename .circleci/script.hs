@@ -4,14 +4,14 @@
 
 module Main where
 
-import System.Environment
-import Turtle hiding (header)
-import Data.List
-import qualified Data.Text as T
+import           Data.Aeson
 import qualified Data.ByteString.Char8 as B
-import Data.Aeson
-import Data.Default.Class
-import Network.HTTP.Req
+import           Data.Default.Class
+import           Data.List
+import qualified Data.Text             as T
+import           Network.HTTP.Req
+import           System.Environment
+import           Turtle                hiding (header)
 
 main :: IO ()
 main = do
