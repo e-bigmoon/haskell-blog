@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/haskell-blog
+    docker:
+      - image: fpco/stack-build
+    steps:
+      - checkout
+      - restore_cache:
+          key: cache
+      - run:
+          name: build and store artifacts when PR
+          command: ./.circleci/script.hs
+      - save_cache:
+          key: cache
+          paths:
+            - ~/.stack/
+            - .stack-work/
+      - store_artifacts:
+          path: _site
