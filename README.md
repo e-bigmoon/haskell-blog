@@ -4,7 +4,7 @@
 ### Pages
 Add a new page in the `pages` folder.
 
-
+test
 ### Posts
 
 Each blog post **must** have a title and a teaser - read more about teasers in
