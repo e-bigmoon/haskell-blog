@@ -5,7 +5,6 @@
 
 module Main where
 
-import           Control.Exception     (throwIO)
 import           Data.Aeson
 import           Data.ByteString       (ByteString)
 import qualified Data.ByteString.Char8 as B (pack)
@@ -73,4 +72,4 @@ takeWhileEnd p = snd . foldr go (False, [])
 
 lookupEnvWithError :: String -> IO String
 lookupEnvWithError env =
-  maybe (throwIO $ env ++ " is not found") pure =<< lookupEnv env
+  maybe (error $ env ++ " is not found") pure =<< lookupEnv env
