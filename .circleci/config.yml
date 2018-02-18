@@ -9,8 +9,8 @@ jobs:
       - restore_cache:
           key: cache
       - run:
-          name: build and store artifacts when PR
-          command: ./.circleci/preview.hs
+          name: build when PR
+          command: ./.circleci/build.hs
       - save_cache:
           key: cache
           paths:
@@ -18,3 +18,6 @@ jobs:
             - .stack-work/
       - store_artifacts:
           path: _site
+      - run:
+          name: Send Artifacts URL to GitHub when PR
+          command: ./.circleci/preview.hs
