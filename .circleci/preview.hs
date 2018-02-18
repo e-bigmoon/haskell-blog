@@ -7,7 +7,7 @@ module Main where
 
 import           Control.Exception     (throwIO)
 import           Data.Aeson
-import           Data.Bytestring       (ByteString)
+import           Data.ByteString       (ByteString)
 import qualified Data.ByteString.Char8 as B (pack)
 import           Data.Default.Class    (def)
 import           Data.Function         ((&))
