@@ -36,10 +36,6 @@ main = do
     homeDir  <- lookupEnvWithError "HOME"
     token    <- lookupEnvWithError "GITHUB_OAUTH"
 
-    view $ do
-      shell "stack build"             empty
-      shell "stack exec site rebuild" empty
-
     let
       prNumber = takeWhileEnd (/= '/') prUrl
       url = mkUrl (T.pack userName) (T.pack repoName) (T.pack prNumber)
