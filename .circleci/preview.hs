@@ -9,9 +9,7 @@ import           Data.Aeson
 import           Data.ByteString       (ByteString)
 import qualified Data.ByteString.Char8 as B (pack)
 import           Data.Default.Class    (def)
-import           Data.Function         ((&))
 import           Data.List             (intercalate)
-import           Data.Maybe            (fromMaybe)
 import           Data.Text             (Text)
 import qualified Data.Text             as T (pack)
 import           Network.HTTP.Req
@@ -38,14 +36,10 @@ main = do
     homeDir  <- lookupEnvWithError "HOME"
     token    <- lookupEnvWithError "GITHUB_OAUTH"
 
-    view $ do
-      shell "stack build"             empty
-      shell "stack exec site rebuild" empty
-
     let
       prNumber = takeWhileEnd (/= '/') prUrl
       url = mkUrl (T.pack userName) (T.pack repoName) (T.pack prNumber)
-      message = mkMessage buildUrl homeDir repoName
+      message = mkMessage buildUrl (tail homeDir) repoName
 
     resp <- runReq def $ mkReq url message (B.pack token)
     print $ responseBody resp
@@ -53,7 +47,7 @@ main = do
 mkReq :: Url Https -> String -> ByteString -> Req (JsonResponse Value)
 mkReq url message token =
   req POST url (ReqBodyJson $ object [ "body" .= message]) jsonResponse $
-    oAuth2Token token <> header "User-Agent" "bigmoon"
+    oAuth2Token token <> header "User-Agent" "CircleCI Preview"
 
 mkMessage :: String -> String -> String -> String
 mkMessage buildUrl homeDir repoName =
