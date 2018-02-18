@@ -65,7 +65,7 @@ main' prUrl = do
       )
       (ReqBodyJson payload)
       jsonResponse
-      (oAuth2Token (B.pack token) <> header "User-Agent" "bigmoon")
+      (oAuth2Token (B.pack token) <> header "User-Agent" "CircleCI Preview")
     liftIO $ print (responseBody request :: Value)
 
 -- | port from dropWhileEnd in Data.List
