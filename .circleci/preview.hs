@@ -62,7 +62,7 @@ mkMessage buildUrl homeDir repoName =
 
 mkUrl :: Text -> Text -> Text -> Url Https
 mkUrl userName repoName prNumber =
-  pure $ https "api.github.com" /: "repos" /: userName /: repoName /: "issues" /: prNumber /: "comments"
+  https "api.github.com" /: "repos" /: userName /: repoName /: "issues" /: prNumber /: "comments"
 
 -- | port from dropWhileEnd in Data.List
 takeWhileEnd :: (a -> Bool) -> [a] -> [a]
@@ -73,4 +73,4 @@ takeWhileEnd p = snd . foldr go (False, [])
 
 lookupEnvWithError :: String -> IO String
 lookupEnvWithError env =
-  fromMaybe (throwIO $ env ++ " is not found") <$> lookupEnv env
+  maybe (throwIO $ env ++ " is not found") pure =<< lookupEnv env
