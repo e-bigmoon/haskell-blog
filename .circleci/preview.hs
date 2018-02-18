@@ -1,16 +1,19 @@
 #!/usr/bin/env stack
 -- stack --resolver lts-10.5 script
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DataKinds         #-}
 
 module Main where
 
 import           Control.Exception     (throwIO)
 import           Data.Aeson
+import           Data.Bytestring       (ByteString)
 import qualified Data.ByteString.Char8 as B (pack)
 import           Data.Default.Class    (def)
 import           Data.Function         ((&))
 import           Data.List             (intercalate)
 import           Data.Maybe            (fromMaybe)
+import           Data.Text             (Text)
 import qualified Data.Text             as T (pack)
 import           Network.HTTP.Req
 import           System.Environment    (lookupEnv)
@@ -54,7 +57,7 @@ mkReq url message token =
     oAuth2Token token <> header "User-Agent" "bigmoon"
 
 mkMessage :: String -> String -> String -> String
-mkMessgae buildUrl homeDir repoName =
+mkMessage buildUrl homeDir repoName =
   intercalate "/" [buildUrl, "artifacts", "0", homeDir, repoName, "_site/index.html"]
 
 mkUrl :: Text -> Text -> Text -> Url Https
