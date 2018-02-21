@@ -1,6 +1,6 @@
 ---
 title: Travis CI
-date: 2018/01/20
+date: 2018/02/22
 ---
 
 ## テンプレート
@@ -23,9 +23,25 @@ install:
 - stack --no-terminal test --only-dependencies
 jobs:
   include:
-    - stage: stack test
-      script: stack --no-terminal test
+    - stage: Run stack test
+      script: stack --no-terminal test --fast
+    - stage: Run stack test --pedantic
+      script:
+      - stack clean
+      - stack --no-terminal test --fast --pedantic
+    - stage: Run HLint
+      script: curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
+
+notifications:
+  email: false
 ```
+
+上記の設定内容でチェック出来る項目
+
+- テスト (ビルド)が通るか
+- GHC の警告が出ていないかどうか
+- HLint のヒントが出ていないかどうか
+
 
 ## エラー集
 
