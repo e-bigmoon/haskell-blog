@@ -1,11 +1,11 @@
 #!/usr/bin/env stack
--- stack --resolver lts-10.5 script
-{-# LANGUAGE OverloadedStrings #-}
+-- stack --resolver lts-10.6 script
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
-import           System.Environment    (lookupEnv)
+import           System.Environment (lookupEnv)
 import           Turtle
 
 main :: IO ()
@@ -15,6 +15,5 @@ main = do
   flip (maybe $ putStrLn "This build is not PR.") pullRequestUrl $ \prUrl -> do
     putStrLn ("PR: " ++ prUrl)
 
-    view $ do
-      shell "stack build"             empty
-      shell "stack exec site rebuild" empty
+    eCode <- shell "stack build" empty .&&. shell "stack exec site rebuild" empty
+    exit eCode
