@@ -3,7 +3,6 @@ import qualified Config          as C
 import           Data.List       (stripPrefix)
 import           Data.Maybe
 import           Data.Monoid     ((<>))
-import qualified Data.Set        as Set
 import           Hakyll
 import           Hakyll.Web.Sass (sassCompiler)
 
@@ -135,7 +134,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
                  (toField C.style C.navbarTextColourMobile)
 
     toField configObj configField item = do
-      metadata <- getMetadata $ itemIdentifier item
+      _metadata <- getMetadata $ itemIdentifier item
       return $ configField (configObj siteConfig)
 
   postCtx :: Context String
@@ -143,13 +142,13 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     dateField "date" "%B %e, %Y"
       <> teaserField "teaser" "content"
   -- create a short version of the teaser. Strip out HTML tags and trim.
-      <> mapContext (trim . take 160 . stripTags)
+      <> mapContext (trim' . take 160 . stripTags)
                     (teaserField "teaser-short" "content")
       <> siteCtx
    where
-    trim xs = map snd . filter trim' $ zip [0 ..] xs
+    trim' xs = map snd . filter trim'' $ zip [0 ..] xs
      where
-      trim' (ix, x)
+      trim'' (ix, x)
         | ix == 0 || ix == (length xs - 1) = x `notElem` [' ', '\n', '\t']
         | otherwise                        = True
 
