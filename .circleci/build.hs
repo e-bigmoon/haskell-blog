@@ -15,5 +15,4 @@ main = do
   flip (maybe $ putStrLn "This build is not PR.") pullRequestUrl $ \prUrl -> do
     putStrLn ("PR: " ++ prUrl)
 
-    eCode <- shell "stack build" empty .&&. shell "stack exec site rebuild" empty
-    exit eCode
+    exit =<< shell "stack build" empty .&&. shell "stack exec site rebuild" empty
