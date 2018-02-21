@@ -141,7 +141,7 @@
       <div class="post-heading">
         <h1 class="post-title">Travis CI</h1>
         
-        <span>最終更新日: 2018/01/20</span>
+        <span>最終更新日: 2018/02/22</span>
         
       </div>
 
@@ -163,8 +163,23 @@
 <a class="sourceLine" id="cb1-13" data-line-number="13"><span class="kw">-</span> stack --no-terminal test --only-dependencies</a>
 <a class="sourceLine" id="cb1-14" data-line-number="14"><span class="fu">jobs:</span></a>
 <a class="sourceLine" id="cb1-15" data-line-number="15">  <span class="fu">include:</span></a>
-<a class="sourceLine" id="cb1-16" data-line-number="16">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> stack test</span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17">      <span class="fu">script:</span><span class="at"> stack --no-terminal test</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-16" data-line-number="16">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> Run stack test</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">      <span class="fu">script:</span><span class="at"> stack --no-terminal test --fast</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> Run stack test --pedantic</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">      <span class="fu">script:</span></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">      <span class="kw">-</span> stack clean</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">      <span class="kw">-</span> stack --no-terminal test --fast --pedantic</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">    <span class="kw">-</span> <span class="fu">stage:</span><span class="at"> Run HLint</span></a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">      <span class="fu">script:</span><span class="at"> curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="fu">notifications:</span></a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">  <span class="fu">email:</span><span class="at"> false</span></a></code></pre></div>
+<p>上記の設定内容でチェック出来る項目</p>
+<ul>
+<li>テスト (ビルド)が通るか</li>
+<li>GHC の警告が出ていないかどうか</li>
+<li>HLint のヒントが出ていないかどうか</li>
+</ul>
 <h2 id="エラー集">エラー集</h2>
 <h3 id="ジョブ間で成果物が共有されない問題">ジョブ間で成果物が共有されない問題</h3>
 <p><code>stack test</code> により実行ファイル <code>site</code> を作成した後、実行ファイルの動作確認を <code>Travis CI</code> で行うため、<code>.travis.yml</code> に以下の内容を追記しました。</p>
