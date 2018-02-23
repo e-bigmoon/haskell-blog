@@ -31,3 +31,15 @@ $ stack build
 ```shell
 $ rm -rf .stack-work/
 ```
+
+## それでもダメな時
+
+`precompiled`, `snapshots` を削除してもう一度ビルドしてみましょう。
+
+```shell
+$ stack path --stack-root
+~/.stack
+
+$ rm -rf $(stack path --stack-root)/precompiled
+$ rm -rf $(stack path --stack-root)/snapshots
+```
