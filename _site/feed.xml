@@ -8,8 +8,44 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-02-21T00:00:00Z</updated>
+    <updated>2018-02-23T00:00:00Z</updated>
     <entry>
+    <title>stack でどうしてもビルドできないとき</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018-02-23-stack-build-failure.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018-02-23-stack-build-failure.html</id>
+    <published>2018-02-23T00:00:00Z</published>
+    <updated>2018-02-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>僕は <code>stack</code>, <code>hlint</code>, <code>liquidhaskell</code> などのパッケージを毎日なんとなくビルドしてインストールしているのですが、ある時 <code>stack</code> のビルドで <code>GHC panic</code> が発生し、ビルドができなくなってしまいました。</p>
+<p>数日放置していたのですが、直らず・・・。そればかりか別のPCでは問題なくビルドができているため <code>stack</code> の問題だな！と意気揚々と <a href="https://github.com/commercialhaskell/stack/issues/3876">issue</a> を作ったのですが、結局は自分の環境の問題でした・・・。</p>
+<p>僕は英語が得意ではありませんが、こういった時に批判だけするのは良くないと思っているので、頑張って <code>issue</code> や <code>PR</code> を投げるようにしています。Google 翻訳とかもありますし、誰か助けてくれますよ、きっと。 (放置されたり却下されることもありますが、気にせずコツコツ続けると楽しいです)</p>
+<!--more-->
+<h2 id="stack-のビルドがどうしてもできない時">Stack のビルドがどうしてもできない時</h2>
+<p>ちゃんと <code>stack clean --full</code> を行った上でビルドコマンドを叩いたら、以下のような <code>ghc panic</code> エラーになりました。</p>
+<pre class="shell"><code>$ stack build
+...
+
+ghc: panic! (the &#39;impossible&#39; happened)
+      (GHC version 8.2.2 for x86_64-apple-darwin):
+    	Loading temp shared object failed: dlopen(/var/folders/ky/8g7fv32j4js337c85sy5gy0h0000gn/T/ghc43457_0/libghc_437.dylib, 5): Symbol not found: _hackagezmsecurityzm0zi5zi2zi2zm9BfzzLHvNB6mEIMD9YTAK2zz_HackageziSecurityziUtilziChecked_zdwthrowChecked_closure
+      Referenced from: /var/folders/ky/8g7fv32j4js337c85sy5gy0h0000gn/T/ghc43457_0/libghc_437.dylib
+      Expected in: flat namespace
+     in /var/folders/ky/8g7fv32j4js337c85sy5gy0h0000gn/T/ghc43457_0/libghc_437.dylib
+
+    Please report this as a GHC bug:  http://www.haskell.org/ghc/reportabug</code></pre>
+<p><code>ghc panic</code> は、言語拡張とか最新の機能とかを触っていれば良く見るエラーですが、なぜこれが起きたのか全くわかりません・・・。</p>
+<p><code>issue</code> のアドバイス通り <code>stack exec -- ghc-pkg unregister hackage-security</code> も試してみたのですがダメでした。</p>
+<p>なので最終手段の <code>~/.stack</code> を削除することになったんですが、今までどのフォルダを削除したら良いのかイマイチわかっていませんでした。</p>
+<p>しかし <code>stack</code> の中の人は違います！ <code>precompiled</code>, <code>snapshots</code> を削除しなよ！と優しく教えてくれたので、指示通りこんな感じで削除したおところ、無事にビルドが通るようになりました！</p>
+<pre class="shell"><code>$ stack path --stack-root
+~/.stack
+
+$ rm -rf $(stack path --stack-root)/precompiled
+$ rm -rf $(stack path --stack-root)/snapshots</code></pre>
+<p>もう知ってるよ・・・。という話かもしれませんが、どうしてもビルドできない人は試してみてはいかがでしょうか。</p>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>stack 1.6.5 がリリースされました。</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018-02-21-stack165.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018-02-21-stack165.html</id>
@@ -1592,81 +1628,6 @@ $ rm ~/.local/bin/haddock</code></pre>
 <p>データ構造的には、spine は正格に、リーブは lazy にすべきです。データコンストラクタを、ストリームの形で組み立てたり消費したいという強い意思があるなら話は別ですが。</p>
 <h3 id="foldl-は絶対に使うな">foldl は絶対に使うな</h3>
 <p>まじめに使っちゃダメです。<code>hlint</code> のルールにそうしないように書いてください。コードから排除しましょう。廃止して、<code>Prelude</code> を置き換えるように GHC に提案しましょう。</p>]]></summary>
-</entry>
-<entry>
-    <title>stack v1.6.3 がリリースされました。</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2017-12-24-stack163.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2017-12-24-stack163.html</id>
-    <published>2017-12-24T00:00:00Z</published>
-    <updated>2017-12-24T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>以下のコマンドで <code>stack v1.6.3</code> のバイナリが落ちてきます。</p>
-<pre class="shell"><code>$ stack upgrade</code></pre>
-<h2 id="リリースノート">リリースノート</h2>
-<ul>
-<li><a href="https://github.com/commercialhaskell/stack/blob/master/ChangeLog.md#v163">Changelog.md</a></li>
-</ul>
-<p>機能追加は無く、改良とバグフィックスのみです。</p>
-<p><code>stack ls</code> コマンドは今回に含まれていないので <code>v1.7.0</code> で追加されそうな感じですね。</p>
-<!--more-->
-<h3 id="enhancements">Enhancements</h3>
-<ul>
-<li>In addition to supporting <code>.tar.gz</code> and <code>.zip</code> files as remote archives, plain <code>.tar</code> files are now accepted too. This will additionally help with cases where HTTP servers mistakenly set the transfer encoding to <code>gzip</code>. See <a href="https://github.com/commercialhaskell/stack/issues/3647">#3647</a>.</li>
-</ul>
-<p>ということで <code>.tar</code> に加えて <code>extra-deps</code> に <code>.tar.gz</code>, <code>.zip</code> 形式が指定できるようになったみたいです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">extra-deps:</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">-</span> <span class="fu">http:</span><span class="at">//www.mathstat.dal.ca/~selinger/quipper/downloads/quipper-0.8.tgz</span></a></code></pre></div>
-<p>僕は使ったこと無いですが、役立ちそう。</p>
-<hr />
-<ul>
-<li>Links to docs.haskellstack.org ignore Stack version patchlevel.</li>
-<li>Downloading Docker-compatible stack binary ignores Stack version patchlevel.</li>
-</ul>
-<p>たぶん <code>stack v1.6.1.1</code> のようなバージョンは無視されるということでしょうか。</p>
-<h2 id="bug-fixes">Bug fixes</h2>
-<ul>
-<li>For versions of Cabal before 1.24, ensure that the dependencies of non-buildable components are part of the build plan to work around an old Cabal bug. See <a href="https://github.com/commercialhaskell/stack/issues/3631">#3631</a>.</li>
-</ul>
-<p>古めの <code>LTS</code> (issue は lts-6.35 で報告されてる) 使ってる人はこの問題が解決されますのでアップデート推奨と思われます。</p>
-<hr />
-<ul>
-<li>Run the Cabal file checking in the <code>sdist</code> command more reliably by allowing the Cabal library to flatten the <code>GenericPackageDescription</code> itself.</li>
-</ul>
-<p>よくわかりません。</p>
-<hr />
-<ul>
-<li>The script interpreter’s implicit file arguments are now passed before other arguments. See <a href="Error%20when%20using%20RTS%20options%20with%20the%20Stack%20script%20interpreter%20#3658">#3658</a>. In particular, this makes it possible to pass <code>-- +RTS ... -RTS</code> to specify RTS arguments used when running the script.</li>
-</ul>
-<p>スクリプトインタプリタの暗黙的なファイル引数を他の引数より先に渡すように修正されたようです。 その結果、以下のような <code>RTS</code> オプションの指定が適切に処理できるようになりました。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">{- stack</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">  script</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">  --resolver lts-6.25</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">  --package turtle</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">  --</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">  +RTS -s -RTS</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">-}</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="ot">main ::</span> <span class="dt">IO</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11">main <span class="fu">=</span> putStrLn <span class="st">&quot;Hello, world!&quot;</span></a></code></pre></div>
-<hr />
-<ul>
-<li>Don’t ignore the template year parameter in config files, and clarify the surrounding documentation. See <a href="stack%20new%20--%20AesonException%20#2275">#2275</a>.</li>
-</ul>
-<p><code>config.yaml</code> に <code>year</code> パラメータを指定できるようになったそうです。こんな感じです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">templates:</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="fu">params:</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="fu">author-email:</span><span class="at"> 415fox@gmail.com</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="fu">author-name:</span><span class="at"> michael fox</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="fu">category:</span><span class="at"> Application</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="fu">copyright:</span><span class="at"> copytright michael fox 2016</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="fu">github-username:</span><span class="at"> gitfoxi</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">    <span class="fu">year:</span><span class="at"> 2016</span></a></code></pre></div>
-<p>ドキュメントを見る限り <code>copyright</code> を省略した場合は <code>author-name</code> と <code>year</code> を使って <code>copyright</code> が生成されるようです。 また <code>year</code> を省略した場合は現在の年が設定されるとのことなので、設定しなくても良さそうですね。</p>
-<blockquote>
-<p>year - if copyright is not specified, year and author-name are used to generate the copyright property in cabal. If year is not specified, it defaults to the current year.</p>
-</blockquote>
-<p>以上です。</p>]]></summary>
 </entry>
 
 </feed>
