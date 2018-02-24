@@ -38,7 +38,7 @@ ghc: panic! (the 'impossible' happened)
 
 なので最終手段の `~/.stack` を削除することになったんですが、今までどのフォルダを削除したら良いのかイマイチわかっていませんでした。
 
-しかし `stack` の中の人は違います！ `precompiled`, `snapshots` を削除しなよ！と優しく教えてくれたので、指示通りこんな感じで削除したおところ、無事にビルドが通るようになりました！
+しかし `stack` の中の人は違います！ `precompiled`, `snapshots` を削除しなよ！と優しく教えてくれたので、指示通りこんな感じで削除したところ、無事にビルドが通るようになりました！
 
 ```shell
 $ stack path --stack-root
