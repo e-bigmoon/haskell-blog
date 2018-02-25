@@ -18,7 +18,9 @@ jobs:
             - stack-{{ .Environment.COMMON_CACHE_KEY }}-
       - run:
           name: build when PR
-          command: ./.circleci/build.hs
+          command: |
+            curl -sSL https://get.haskellstack.org/ | sh -s - -f
+            ./.circleci/build.hs
       - save_cache:
           key: stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
           paths:
