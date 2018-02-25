@@ -1,21 +1,28 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/haskell-blog
-    docker:
-      - image: fpco/stack-build
+#    working_directory: ~/haskell-blog
+    machine:
+      docker_layer_caching: true
     steps:
       - checkout
+      - run:
+          name: Build docker image
+          command: |
+            rsync -ave --exclude='.circleci' ./ .circleci/code
+            docker-compose -f .circleci/docker-compose.yml build --build-arg resolver=$(cat stack.yaml | sed -n '/resolver:/p' | sed -r 's/resolver:\s(.*)/\1/') app
       - restore_cache:
-          key: cache
+          keys:
+            - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+            - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-
+            - stack-{{ .Environment.COMMON_CACHE_KEY }}-
       - run:
           name: build when PR
           command: ./.circleci/build.hs
       - save_cache:
-          key: cache
+          key: stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
           paths:
-            - ~/.stack/
-            - .stack-work/
+            - .circleci/code/.stack-work
       - store_artifacts:
           path: _site
       - run:
