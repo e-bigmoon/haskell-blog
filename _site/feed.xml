@@ -8,8 +8,53 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-02-25T00:00:00Z</updated>
+    <updated>2018-02-26T00:00:00Z</updated>
     <entry>
+    <title>debug パッケージのアナウンス (翻訳)</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018-02-26-Announcing-the-debug-package.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018-02-26-Announcing-the-debug-package.html</id>
+    <published>2018-02-26T00:00:00Z</published>
+    <updated>2018-02-26T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="debug-パッケージのアナウンス-翻訳">debug パッケージのアナウンス (翻訳)</h2>
+<p>Original post: <a href="http://neilmitchell.blogspot.jp/2017/12/announcing-debug-package.html">Announcing the ‘debug’ package</a></p>
+<p>Haskell は素晴らしい言語ですが、Haskell のデバッグは間違いなく弱い部分です。この問題をどうにかするために、<a href="https://hackage.haskell.org/package/debug">debug ライブラリ</a> をリリースしました。このライブラリは全てのことを解決するのではなく、一般的なデバッグのタスクに対してシンプルで簡単に使えるような設計を目指しました。デバッグをするにあたって、みなさんが興味を持ってくれるような関数を例に取って見てみましょう。</p>
+<!--more-->
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">module</span> <span class="dt">QuickSort</span>(quicksort) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Data.List</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ot">quicksort ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">quicksort [] <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">quicksort (x<span class="fu">:</span>xs) <span class="fu">=</span> quicksort lt <span class="fu">++</span> [x] <span class="fu">++</span> quicksort gt</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    <span class="kw">where</span> (lt, gt) <span class="fu">=</span> partition (<span class="fu">&lt;=</span> x) xs</a></code></pre></div>
+<p><code>TemplateHaskell</code> と <code>ViewPatterns</code> を有効にしてから、<code>Debug</code> をインポートし、コードをインデントして <code>debug</code> の引数に渡してやりましょう。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">{-# LANGUAGE TemplateHaskell, ViewPatterns #-}</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">module</span> <span class="dt">QuickSort</span>(quicksort) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Data.List</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Debug</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">debug [d|</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">   quicksort :: Ord a =&gt; [a] -&gt; [a]</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">   quicksort [] = []</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">   quicksort (x:xs) = quicksort lt ++ [x] ++ quicksort gt</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">       where (lt, gt) = partition (&lt;= x) xs</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">   |]</a></code></pre></div>
+<p>以下のコマンドでデバッガを走らせることができます。</p>
+<pre class="shell"><code>$ ghci QuickSort.hs
+GHCi, version 8.2.1: http://www.haskell.org/ghc/  :? for help
+[1 of 1] Compiling QuickSort        ( QuickSort.hs, interpreted )
+Ok, 1 module loaded.
+*QuickSort&gt; quicksort &quot;haskell&quot;
+&quot;aehklls&quot;
+*QuickSort&gt; debugView</code></pre>
+<p><code>debugView</code> を呼ぶと Webブラウザが起動して、記録されたデバッグの結果を見ることができます。こんな感じです。</p>
+<figure>
+<img src="https://cdn.rawgit.com/ndmitchell/debug/f6e8dbc9/debug.png" alt="debugView の実行結果" /><figcaption>debugView の実行結果</figcaption>
+</figure>
+<p>ここから、計算の経過をクリックしつつ探すことができます。</p>
+<p>私は <code>debug</code> を使った感想や、これを改善できるようなアイディアを求めています。そのため、フィードバックや<a href="https://github.com/ndmitchell/debug/issues">バグトラッカー</a>経由のお手伝いなどをお待ちしています。</p>
+<p>また別の Haskell のデバッガに興味があるのなら、<a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/ghci.html#the-ghci-debugger">GHCi デバッガ</a>や <a href="https://hackage.haskell.org/package/Hoed">Hood/Hoed</a> などを試してみるべきでしょう。</p>]]></summary>
+</entry>
+<entry>
     <title>SLURP (翻訳)</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018-02-25-SLURP.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018-02-25-SLURP.html</id>
@@ -1229,156 +1274,6 @@ literate-markdown-0.1.0.0: Test suite readme passed</code></pre>
 </ul>
 <p>実際にいくつかのプロジェクトで利用されているように、<code>README.md</code> で <code>main</code> 関数を実行する例がある場合は、この方法を採用してみても良いのではないでしょうか。</p>
 <p>本記事で利用したコード: <a href="https://github.com/waddlaw/example-literate-markdown">github</a></p>]]></summary>
-</entry>
-<entry>
-    <title>haddock に Grid Table 記法が追加されました</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2017-12-27-haddock-grid-table.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2017-12-27-haddock-grid-table.html</id>
-    <published>2017-12-27T00:00:00Z</published>
-    <updated>2017-12-27T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<figure>
-<img src="/images/2017/12-27/step0.png" alt="Grid Table 記法の紹介" /><figcaption>Grid Table 記法の紹介</figcaption>
-</figure>
-<!--more-->
-<h2 id="はじめに">はじめに</h2>
-<p>みなさん <code>haddock</code> を使ってますか？</p>
-<p>コメントを残す時に <code>|</code> や <code>^</code> を追加するだけで <code>haddock</code> 形式のコメントを残すことができます。</p>
-<p>具体的にはこんな感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">-- | リストの合計を計算する関数</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">sum<span class="ot"> ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">sum <span class="fu">=</span> foldl (<span class="fu">+</span>) <span class="dv">0</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">data</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  {<span class="ot"> name ::</span> <span class="dt">Text</span> <span class="co">-- ^ フルネーム</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  }</a></code></pre></div>
-<p>コメントを <code>haddock</code> 形式にしてあげることで <code>HTML</code> のドキュメントがより充実するので、少ない労力で凄く楽しい気持ちになります。</p>
-<p><code>stack</code> を使っている場合はこのようにしてビルドするだけです。</p>
-<pre class="shell"><code>$ stack haddock --open</code></pre>
-<p>今回、この <code>haddock</code> に <code>Grid Table</code> 記法が追加されたそうなので、その機能についてご紹介したいと思います。</p>
-<h2 id="grid-table-記法">Grid Table 記法</h2>
-<p>以下の内容を参考としています。</p>
-<ul>
-<li><a href="https://github.com/haskell/haddock/pull/718">Grid Tables #718</a></li>
-<li><a href="https://github.com/haskell/haddock/issues/530">Add markup support for tables #530</a></li>
-<li><a href="http://haskell-haddock.readthedocs.io/en/latest/markup.html#grid-tables">Grid Tables</a></li>
-</ul>
-<h3 id="haddock-の更新">haddock の更新</h3>
-<p><code>Grid Table</code> を使うためには <code>haddock-2.18.2</code> 以上である必要があります。</p>
-<p>現状 <code>Hackage</code> の最新版が <code>2.18.1</code> なので <code>github</code> の最新版を利用する必要があります。</p>
-<pre class="shell"><code>$ haddock --version
-Haddock version 2.18.1, (c) Simon Marlow 2006
-Ported to use the GHC API by David Waern 2006-2008</code></pre>
-<p>ここでは <code>stack</code> を使って最新版をインストールします。(その他の各種ビルド方法については <a href="https://github.com/haskell/haddock#hacking">Readme</a> に詳しく載っているので、そちらをご参照ください)</p>
-<pre class="shell"><code>$ git clone https://github.com/haskell/haddock.git
-$ cd haddock
-$ stack init
-$ stack install
-
-$ haddock --version
-Haddock version 2.18.2, (c) Simon Marlow 2006
-Ported to use the GHC API by David Waern 2006-2008
-
-$ cd ../</code></pre>
-<p>これで準備は整いました！</p>
-<h3 id="使ってみる">使ってみる</h3>
-<p>まずは新規プロジェクトを作って、初期状態で <code>haddock</code> を生成します。</p>
-<pre class="shell"><code>$ stack new test-haddock-grid-table
-$ cd test-haddock-grid-table
-$ stack haddock --open</code></pre>
-<p>ブラウザが自動的に立ち上がるので <code>Lib</code> モジュールを見てみましょう。</p>
-<figure>
-<img src="/images/2017/12-27/step1.png" alt="初期状態で生成されるHTML" /><figcaption>初期状態で生成されるHTML</figcaption>
-</figure>
-<p><code>someFunc</code> だけの味気ない <code>HTML</code> ですね。<code>haddock</code> コメントを追加して、もう一度確認してみます。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">    ( someFunc</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">    ) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">-- | haddock test</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">someFunc <span class="fu">=</span> putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
-<pre class="shell"><code>$ stack haddock --open</code></pre>
-<figure>
-<img src="/images/2017/12-27/step2.png" alt="haddock コメントを少し追加" /><figcaption>haddock コメントを少し追加</figcaption>
-</figure>
-<p>ちょっと変わりましたね。</p>
-<p>では、本題の <code>Grid Table</code> 記法で書いてみます。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">    ( someFunc</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">    ) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">-- | Table with header.</span></a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">--</span></a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">-- +------+--------------+------------------------------------------+</span></a>
-<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co">-- | code | message      | description                              |</span></a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="co">-- +======+==============+==========================================+</span></a>
-<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="co">-- | 200  |   @OK@       | operation successful                     |</span></a>
-<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="co">-- +------+--------------+------------------------------------------+</span></a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="co">-- | 204  | @No Content@ | operation successful, no body returned   |</span></a>
-<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">-- +------+--------------+------------------------------------------+</span></a>
-<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb8-16" data-line-number="16">someFunc <span class="fu">=</span> putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
-<p>ドキュメントを生成してみましょう。</p>
-<pre class="shell"><code>$ stack haddock --open</code></pre>
-<figure>
-<img src="/images/2017/12-27/step3.png" alt="Grid Table の生成に失敗" /><figcaption>Grid Table の生成に失敗</figcaption>
-</figure>
-<p>失敗しました・・・。</p>
-<p>これはどうやら <code>stack</code> が利用している <code>haddock</code> が <code>~/.local/bin</code> にインストールした最新版の <code>haddock</code> を参照していないためです。</p>
-<ul>
-<li><a href="https://github.com/commercialhaskell/stack/issues/2922">Allow use of custom haddock binary to generate the documentation #2922</a></li>
-<li><a href="https://stackoverflow.com/questions/41628606/how-to-use-a-custom-haddock-executable-to-generate-documentation-with-stack">ow to use a custom haddock executable to generate documentation with stack?</a></li>
-</ul>
-<p>以下のコマンドで確認することができます。</p>
-<pre class="shell"><code>$ stack exec -- which haddock
-/home/bm12/.stack/programs/x86_64-linux/ghc-nopie-8.2.2/bin/haddock
-
-$ stack exec -- haddock --version
-Haddock version 2.18.1, (c) Simon Marlow 2006
-Ported to use the GHC API by David Waern 2006-2008</code></pre>
-<p>ここで、<code>stack</code> が参照する <code>haddock</code> プログラムはシンボリックリンクとなっているため、一時的に上書きすることにしました。</p>
-<pre class="shell"><code>$ stack path --compiler-bin
-/home/bm12/.stack/programs/x86_64-linux/ghc-nopie-8.2.2/bin
-
-$ ln -snf ~/.local/bin/haddock $(stack path --compiler-bin)/</code></pre>
-<p>これでやっと <code>Grid Table</code> が使えます！</p>
-<pre class="shell"><code>$ stack clean
-$ stack haddock --open</code></pre>
-<figure>
-<img src="/images/2017/12-27/step4.png" alt="Grid Table のレンダリング結果" /><figcaption>Grid Table のレンダリング結果</figcaption>
-</figure>
-<p>なかなかオシャレな感じです。</p>
-<h2 id="後片付け">後片付け</h2>
-<p>シンボリックリンクを元に戻しておきましょう。</p>
-<pre class="shell"><code>$ ls -l $(stack path --compiler-bin)
-合計 32
-lrwxrwxrwx 1 bm12 bm12    9 11月 27 00:39 ghc -&gt; ghc-8.2.2*
--rwxr-xr-x 1 bm12 bm12  444 11月 27 00:39 ghc-8.2.2*
-lrwxrwxrwx 1 bm12 bm12   10 11月 27 00:39 ghci -&gt; ghci-8.2.2*
--rwxr-xr-x 1 bm12 bm12  108 11月 27 00:39 ghci-8.2.2*
-lrwxrwxrwx 1 bm12 bm12   13 11月 27 00:39 ghc-pkg -&gt; ghc-pkg-8.2.2*
--rwxr-xr-x 1 bm12 bm12  476 11月 27 00:39 ghc-pkg-8.2.2*
-lrwxrwxrwx 1 bm12 bm12   29 12月 27 14:24 haddock -&gt; /home/bm12/.local/bin/haddock*
--rwxr-xr-x 1 bm12 bm12  435 11月 27 00:39 haddock-ghc-8.2.2*
--rwxr-xr-x 1 bm12 bm12  408 11月 27 00:39 hp2ps*
--rwxr-xr-x 1 bm12 bm12  406 11月 27 00:39 hpc*
--rwxr-xr-x 1 bm12 bm12 1206 11月 27 00:39 hsc2hs*
-lrwxrwxrwx 1 bm12 bm12   12 11月 27 00:39 runghc -&gt; runghc-8.2.2*
--rwxr-xr-x 1 bm12 bm12  452 11月 27 00:39 runghc-8.2.2*
-lrwxrwxrwx 1 bm12 bm12    6 11月 27 00:39 runhaskell -&gt; runghc*
-
-$ ln -snf $(stack path --compiler-bin)/haddock-ghc-8.2.2 $(stack path --compiler-bin)/haddock
-$ cd ../
-$ rm -rf test-haddock-grid-table
-$ rm -rf haddock
-$ rm ~/.local/bin/haddock</code></pre>
-<h2 id="終わりに">終わりに</h2>
-<p><code>stack</code> の謎の挙動によって若干苦戦しながらも、無事に試してみることができました。</p>
-<p><code>--with-haddock</code> のようなオプションが欲しいなぁと感じました・・・。</p>
-<p><code>Grid Table</code> についてはデータベース系の操作結果などを例示する際に使えそうです！</p>
-<p>以上です。</p>]]></summary>
 </entry>
 
 </feed>
