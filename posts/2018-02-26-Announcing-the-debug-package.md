@@ -1,5 +1,5 @@
 ---
-title: `debug` パッケージのアナウンス (翻訳)
+title: debug パッケージのアナウンス (翻訳)
 author: Neil Mitchell
 translator: pythonissam
 tags: Neil Mitchell's Haskell Blog, 翻訳
