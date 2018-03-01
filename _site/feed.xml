@@ -8,8 +8,253 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-02-26T00:00:00Z</updated>
+    <updated>2018-03-01T00:00:00Z</updated>
     <entry>
+    <title>Liquid Haskell</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018-03-01-liquidhaskell.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018-03-01-liquidhaskell.html</id>
+    <published>2018-03-01T00:00:00Z</published>
+    <updated>2018-03-01T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>Liquid Haskell で少しハマったのでメモとして残しておきます。</p>
+<p>本来なら先に仕様を書いて実装を書くべきだと思いますが、今回の例は既存のコードにリファインメント型をつけるような場合を想定しています。</p>
+<pre class="shell"><code>$ liquid
+LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
+Copyright 2013-18 Regents of the University of California. All Rights Reserved.</code></pre>
+<p>Liquid Haskell を気になってる人向けの記事です。</p>
+<!--more-->
+<h2 id="やりたいこと">やりたいこと</h2>
+<p>データの挿入と更新操作を次のような型で表現します。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Operation</span> <span class="fu">=</span> <span class="dt">Insert</span> <span class="fu">|</span> <span class="dt">Update</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="kw">deriving</span> <span class="dt">Eq</span></a></code></pre></div>
+<p>上記のデータ型を使って、次のような関数を定義します。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">adjustBound op lower upper n <span class="fu">|</span> isInsert op <span class="fu">=</span> upper <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">                             <span class="fu">|</span> otherwise   <span class="fu">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">isInsert <span class="dt">Insert</span> <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">isInsert _      <span class="fu">=</span> <span class="dt">False</span></a></code></pre></div>
+<p><code>adjustBound</code> 関数は以下のように動作します。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="dv">11</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="fu">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">100</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="dv">11</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="fu">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> (<span class="fu">-</span><span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="dv">11</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="fu">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="dv">5</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="fu">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">100</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="dv">10</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="fu">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> (<span class="fu">-</span><span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="dv">0</span></a></code></pre></div>
+<p><code>adjustBound</code> のような関数でバグが無いことを確認するためには何をしたら良いでしょうか？</p>
+<p>型は非常に強力ですが、値について何も教えてくれません。</p>
+<h2 id="バグの少ない世界を目指して">バグの少ない世界を目指して</h2>
+<p>僕が Haskell を使う理由は、第一に <code>楽しい</code> からです。そのため、「勉強しても就職する時に役に立たないでしょ？」などと言われても全く気になりません。(そもそも、就職するために勉強するわけじゃないですよね)</p>
+<p>また Haskell を使えば、正しいソフトウェアを普通に作ることができます。また、<code>hspec</code> などで単体テストを書いたり、<code>QuichCheck</code> などでランダムテストを書くことで、過去に起こった問題を再発させないようにする努力や、バグを少なくするための取り組みが行われています。</p>
+<p>しかしながら、個人的にはどれもまだ不安です。もしかしたら、チェックしてない部分にバグがあるんじゃないの・・・？</p>
+<p>そんな心配性の方は <code>Liquid Haskell (LH)</code> を使いましょう！</p>
+<h2 id="型をより厳しく">型をより厳しく</h2>
+<p>最初に定義した <code>Operation</code> 型と <code>adjustBound</code> を再掲します。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">-- LH.hs</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">module</span> <span class="dt">LH</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">data</span> <span class="dt">Operation</span> <span class="fu">=</span> <span class="dt">Insert</span> <span class="fu">|</span> <span class="dt">Update</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">  <span class="kw">deriving</span> <span class="dt">Eq</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">adjustBound op lower upper n <span class="fu">|</span> isInsert op <span class="fu">=</span> upper <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">                             <span class="fu">|</span> otherwise   <span class="fu">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">isInsert <span class="dt">Insert</span> <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">isInsert _      <span class="fu">=</span> <span class="dt">False</span></a></code></pre></div>
+<p>とりあえず、現在のコードを <code>LH</code> にかけてみます。</p>
+<pre class="shell"><code>$ liquid LH.hs
+LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
+Copyright 2013-18 Regents of the University of California. All Rights Reserved.
+
+
+**** DONE:  A-Normalization ****************************************************
+
+
+**** DONE:  Extracted Core using GHC *******************************************
+
+
+**** DONE:  Transformed Core ***************************************************
+
+Working 100% [=================================================================]
+
+**** DONE:  annotate ***********************************************************
+
+
+**** RESULT: SAFE **************************************************************</code></pre>
+<p><code>RESULT: SAFE</code> が表示されれば問題ありません！</p>
+<h3 id="入力を自然数に限定させよう">入力を自然数に限定させよう</h3>
+<p>例えば <code>lower</code> と <code>upper</code> が自然数 (0含む) しか許容しないという仕様が与えられた時、どうしますか？</p>
+<p>よくある対応としては、コメントにその旨を書いたり、テストを作ったりという作業になるでしょう。</p>
+<p><code>Liquid Haskell</code> では上記の仕様を <code>事前条件</code> として記述することができます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; _ @-}</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">adjustBound op lower upper n <span class="fu">|</span> isInsert op <span class="fu">=</span> upper <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">                             <span class="fu">|</span> otherwise   <span class="fu">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a></code></pre></div>
+<p><code>Nat</code> は <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Prelude.spec">Prelude</a> で以下のように定義されています。つまり、0以上の <code>Int</code> のみを含むリファインメント型です。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">{-@ type Nat = {v: Int | v &gt;= 0 } @-}</span></a></code></pre></div>
+<p>これだけです。<code>LH</code> で結果を確かめてみましょう。</p>
+<pre class="shell"><code>$ liquid LH.hs
+...
+
+**** RESULT: SAFE **************************************************************</code></pre>
+<p><code>SAFE</code> ですね！</p>
+<p>これでもう <code>adjustBound</code> の <code>lower</code> と <code>upper</code> は <code>0</code> 以上の自然数でしか呼び出されていないことが示されました。</p>
+<h3 id="もう少し具体例">もう少し具体例</h3>
+<p>では、別のプログラマが <code>adjustBound</code> を利用した関数を作ったとしましょう。この関数自体に意味はないですが、<code>LH</code> を理解するためにはとても良い例だと思います。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="ot">f ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">f <span class="fu">=</span> adjustBound <span class="dt">Insert</span> (<span class="fu">-</span><span class="dv">100</span>) (<span class="fu">-</span><span class="dv">50</span>) (<span class="fu">-</span><span class="dv">70</span>)</a></code></pre></div>
+<p>この関数 <code>f</code> は、型が正しいため当然コンパイルできます。</p>
+<pre class="shell"><code>$ stack repl -- LH.hs
+&gt; f
+-49</code></pre>
+<p>けれども、僕らの仕様では <code>adjustBound</code> の <code>lower</code> と <code>upper</code> には自然数しか適用してはいけないはずです。</p>
+<p>次に <code>LH</code> を実行してみましょう。</p>
+<pre class="shell"><code>$ liquid LH.hs
+**** RESULT: UNSAFE ************************************************************
+
+
+ LH.hs:18:25-28: Error: Liquid Type Mismatch
+
+ 18 | f = adjustBound Insert (-100) (-50) (-70)
+                              ^^^^
+
+
+   Inferred type
+    VV : {v : Int | v == (-?a)
+                    &amp;&amp; v == ?b}
+
+  not a subtype of Required type
+    VV : {VV : Int | VV &gt;= 0}
+
+  In Context
+    ?b : {?b : Int | ?b == (-?a)}
+
+    ?a : {?a : Int | ?a == (100 : int)}
+
+
+ LH.hs:18:32-34: Error: Liquid Type Mismatch
+
+ 18 | f = adjustBound Insert (-100) (-50) (-70)
+                                     ^^^
+
+
+   Inferred type
+    VV : {v : Int | v == (-?b)
+                    &amp;&amp; v == ?a}
+
+  not a subtype of Required type
+    VV : {VV : Int | VV &gt;= 0}
+
+  In Context
+    ?b : {?b : Int | ?b == (50 : int)}
+
+    ?a : {?a : Int | ?a == (-?b)}</code></pre>
+<p><code>UNSAFE</code> になりましたね。こういうことです。</p>
+<p>つまり、<strong>自分たちが使っている範囲</strong>で <code>Liquid Haskell</code> のリファインメント型について、正しく整合性が取れているのかということを判定しています。</p>
+<h3 id="戻り値の型も厳しくしよう">戻り値の型も厳しくしよう！</h3>
+<p>先程、事前条件についてリファインメント型を書きました。</p>
+<p>次は事後条件についてリファインメントを書きましょう！</p>
+<p>同様に戻り値の型も自然数という仕様にします。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; Nat @-}</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">adjustBound op lower upper n <span class="fu">|</span> isInsert op <span class="fu">=</span> upper <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">                             <span class="fu">|</span> otherwise   <span class="fu">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a></code></pre></div>
+<pre class="shell"><code>$ liquid LH.hs
+**** RESULT: SAFE **************************************************************</code></pre>
+<p>リファインメント型 (Refinement type) は <code>篩 (ふるい) 型</code> と訳されている本 (<a href="https://taimen.jp/f/389">入門LiquidHaskell−篩型による静的コード解析−</a>) もありますが、それは <code>Haskell</code> の型の値が条件によって <code>ふるい</code> 落とされて、新しい型 (リファインメント型) になっているというイメージから来ているのだと思います。(読んだこと無いので間違ってたらすみません・・・。)</p>
+<h2 id="もっと仕様を">もっと仕様を</h2>
+<p><code>adjustBound</code> 関数はこれで十分なのでしょうか？人によっては十分だね。と答えるかもしれません。</p>
+<p>しかし、今回は次のような仕様を与えることにします。</p>
+<ol type="1">
+<li><code>upper</code> は <code>lower</code> 以上の自然数</li>
+<li><code>Insert</code> の操作の場合の戻り値は <code>lower</code> 〜 <code>upper + 1</code> の間の自然数</li>
+<li><code>Update</code> の操作の場合の戻り値は <code>lower</code> 〜 <code>lower `max` (n `min` upper)</code> の間の自然数</li>
+</ol>
+<p>ここからが面白いところです。</p>
+<p>まずは前準備として <code>x 〜 y</code> までの間の自然数を表すリファインメント型と述語を定義します。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co">{-@ type Btwn Lo Hi = {v:Int | Lo &lt;= v &amp;&amp; v &lt;= Hi} @-}</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="co">{-@ predicate BtwnP Lo Hi = Lo &lt;= v &amp;&amp; v &lt;= Hi @-}</span></a></code></pre></div>
+<p>では、<code>仕様1</code>を反映させてみましょう。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co">{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u} -&gt; _ -&gt; Nat @-}</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">adjustBound op lower upper n <span class="fu">|</span> isInsert op <span class="fu">=</span> upper <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4">                             <span class="fu">|</span> otherwise   <span class="fu">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a></code></pre></div>
+<pre class="shell"><code>$ liquid LH.hs
+**** RESULT: SAFE **************************************************************</code></pre>
+<p>では次に、<code>仕様2</code> と <code>仕様3</code> です。</p>
+<p>リファインメント型は以下のようになります。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co">{-@ adjustBound ::</span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="co">      op:Operation -&gt;</span></a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="co">      l:Nat -&gt;</span></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="co">      {u:Nat | l &lt;= u} -&gt;</span></a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="co">      _ -&gt;</span></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6"><span class="co">      {v:Nat | if (isInsert op) then (BtwnP l (u+1)) else BtwnP l u }</span></a>
+<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="co">@-}</span></a>
+<a class="sourceLine" id="cb18-8" data-line-number="8"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb18-9" data-line-number="9">adjustBound op lower upper n <span class="fu">|</span> isInsert op <span class="fu">=</span> upper <span class="fu">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb18-10" data-line-number="10">                             <span class="fu">|</span> otherwise   <span class="fu">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a>
+<a class="sourceLine" id="cb18-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="co">{-@ measure isInsert @-}</span></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb18-14" data-line-number="14">isInsert <span class="dt">Insert</span> <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb18-15" data-line-number="15">isInsert _      <span class="fu">=</span> <span class="dt">False</span></a></code></pre></div>
+<pre class="shell"><code>$ liquid LH.hs
+**** RESULT: SAFE **************************************************************</code></pre>
+<h2 id="はまったポイント">はまったポイント</h2>
+<p><code>if (isInsert op) then (BtwnP l (u+1)) else BtwnP l u</code> の部分でかなりはまりました。</p>
+<p>例えば <code>if</code> の括弧を外した場合は次のようなエラーになります。</p>
+<p><code>if isInsert op then (BtwnP l (u+1)) else BtwnP l u</code></p>
+<pre class="shell"><code>**** RESULT: ERROR *************************************************************
+
+
+ LH.hs:10:73: Error: Cannot parse specification:
+
+ 10 | {-@ adjustBound :: op:Operation -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; {v:Nat | if isInsert op then (BtwnP l (u+1)) else BtwnP l u } @-}
+                                                                              ^
+
+     unexpected &quot;:&quot;
+     expecting operator, white space or &quot;}&quot;</code></pre>
+<p>また、同様に <code>then</code> の括弧を外してもエラーになります。</p>
+<p><code>if (isInsert op) then BtwnP l (u+1) else BtwnP l u</code></p>
+<pre class="shell"><code>**** RESULT: ERROR *************************************************************
+
+
+ LH.hs:10:73: Error: Cannot parse specification:
+
+ 10 | {-@ adjustBound :: op:Operation -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; {v:Nat | if (isInsert op) then BtwnP l (u+1) else BtwnP l u } @-}
+                                                                              ^
+
+     unexpected &quot;:&quot;
+     expecting operator, white space or &quot;}&quot;</code></pre>
+<p><code>else</code> については括弧があっても無くても <code>SAFE</code> です。</p>
+<p>この挙動が本当にわからなくてつらかったです・・・。</p>
+<p>ちなみに、以下のような場合も同様にはまるので、ご注意ください。</p>
+<pre><code>-- UNSAFE
+{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; Btwn l (u+1) @-}
+{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; Btwn l {u+1} @-}
+
+-- SAFE
+{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; Btwn {l} {u+1} @-}</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>if</code> を使う場合は多めに括弧を付けておいた方が良さそう。</li>
+<li><code>{}</code> で囲むと上手くいく場合もある</li>
+<li><code>LiquidHaskell</code> はすごい</li>
+</ul>
+<p>この良くわからない挙動について一緒に考えてくれた友人の tkg さんありがとうございました。</p>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>debug パッケージのアナウンス (翻訳)</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018-02-26-Announcing-the-debug-package.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018-02-26-Announcing-the-debug-package.html</id>
@@ -1134,146 +1379,6 @@ stack --no-terminal test --only-dependencies</code></pre>
 <h2 id="まとめ">まとめ</h2>
 <p><code>travis</code> の <code>OUT OF MEMORY</code> エラーは噂には聞いていましたが、実際に自分が遭遇するのは初めてでした。</p>
 <p>対処法としてはエラーの原因となるパッケージのみを <code>-j 1</code> オプションで先にビルドしてしまえば良いということがわかりました。</p>]]></summary>
-</entry>
-<entry>
-    <title>Literate Markdown (markdown-unlit の使い方) について</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2017-12-29-Literate-Markdown.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2017-12-29-Literate-Markdown.html</id>
-    <published>2017-12-29T00:00:00Z</published>
-    <updated>2017-12-29T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>今回は <code>Literate Markdown</code> をご紹介します。(最近見つけて面白そうだったので使ってみました。)</p>
-<p>モチベーションとしては <code>Bird</code> 記法や <code>TeX</code> 記法だけではなく、<code>Markdown</code> 記法も使いたいよね！という感じです。</p>
-<p>また、<code>HaskelL</code> の文学的 (Literate) プログラミングについては、すでに多くのWeb・書籍等で言及されているため、必要最低限の説明に留めたいと思います。</p>
-<p>本記事の内容は以下を参考としています。</p>
-<ul>
-<li><a href="https://www.haskell.org/definition/haskell2010.pdf">Haskell 2010 Language Report</a></li>
-<li><a href="https://ghc.haskell.org/trac/ghc/wiki/LiterateMarkdown">Literate Markdown</a></li>
-<li><a href="https://ghc.haskell.org/trac/ghc/wiki/FlexibleLiterateExtension">Flexible Literate Haskell File Extensions</a></li>
-<li><a href="https://github.com/sol/markdown-unlit">sol/markdown-unlit</a></li>
-</ul>
-<!--more-->
-<h2 id="文芸的プログラミング">文芸的プログラミング</h2>
-<p>文芸的プログラミングは <code>GHC</code> 固有の機能ではなく <code>Haskell 2010</code> の仕様 (10.4 Literate comments) で規定されています。</p>
-<p>また、拡張子は通常の <code>hs</code> ではなく <code>lhs</code> となります。</p>
-<p>スタイルについては <code>Bird</code> 記法と <code>LaTeX</code> 記法があり、好きな方を使うと良いでしょう。</p>
-<h3 id="bird-記法">Bird 記法</h3>
-<p><code>Brid</code> 記法は先頭に <code>&gt;</code> を入れて表現するスタイルです。</p>
-<p><code>&gt;</code> から始まる行が <code>Haskell</code> コードとして認識されます。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="dt">This</span> is a comment<span class="fu">.</span>  <span class="dt">Lines</span> starting with <span class="ch">&#39;&gt;&#39;</span> are the actual code<span class="fu">.</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="fu">&gt;</span> average xs <span class="fu">=</span> sum xs <span class="fu">/</span> length xs</a></code></pre></div>
-<h3 id="latex-記法">LaTeX 記法</h3>
-<p><code>LaTeX</code> 記法は通常の <code>LaTeX</code> のように <code>\begin{code} - \end{code}</code> のコードブロックで囲まれた部分を <code>Haskell</code> コードとして認識します。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="dt">This</span> is a comment<span class="fu">.</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">\begin{code}</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">average <span class="fu">=</span> sum xs <span class="fu">/</span> length xs</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">\end{code}</a></code></pre></div>
-<h2 id="literate-markdown">Literate Markdown</h2>
-<p><code>Literate Markdown</code> は2014年頃に議論があったようです。実装も<a href="https://github.com/elliottt/ghc/tree/literate-markdown">提案</a>されていたようですが、現状の <code>GHC</code> には組み込まれていません。</p>
-<p>どうしようかなと思っていましたが、色々と調べた結果、<a href="https://github.com/sol/markdown-unlit">sol/markdown-unlit</a> という素晴らしいパッケージを見つけました。</p>
-<p>このパッケージを利用することで当初の目的が達成できそうです！</p>
-<h2 id="markdown-unlit">markdown-unlit</h2>
-<h3 id="インストール">インストール</h3>
-<p><code>version 0.5.0</code> を利用したかったので <code>--resolver=nightly</code> としました。</p>
-<pre class="shell"><code>$ stack install markdown-unlit --resolver=nightly
-$ which markdown-unlit
-/home/bm12/.local/bin/markdown-unlit</code></pre>
-<h3 id="実際に使ってみる">実際に使ってみる</h3>
-<p>以下の内容を <code>test.lhs</code> というファイル名で保存しましょう。</p>
-<div class="sourceCode">
-<pre class="sourceCode markdown"><code class="sourceCode markdown hljs"># nifty-library: Do nifty things (effortlessly!)
-
-Here is a basic example:
-
-```haskell
-main :: IO ()
-main = putStrLn "That was easy!"
-```
-</code></pre>
-</div>
-<p>この時、拡張子は <code>.lhs</code> となることに注意してください。(<code>.md</code> としたい場合はシンボリックリンクを作成します)</p>
-<p>では実行してみます。</p>
-<pre class="shell"><code>$ stack ghci --ghc-options=&quot;-pgmL markdown-unlit&quot; test.lhs
-[1 of 1] Compiling Main             ( /home/bm12/Desktop/test.lhs, interpreted )
-Ok, modules loaded: Main.
-Loaded GHCi configuration from /tmp/ghci19999/ghci-script
-*Main&gt; main
-That was easy!</code></pre>
-<p>問題無さそうですね。これで <code>Literate Markdown</code> 形式のファイルを作成することができました。</p>
-<p><code>-pgmL markdown-unlit</code> オプションは <code>.ghci</code> ファイルを設定することで省略可能です。</p>
-<pre class="shell"><code>$ echo &#39;:set -pgmL markdown-unlit&#39; &gt;&gt; ~/.ghci</code></pre>
-<p>もし、読み込み時に <code>*** WARNING: ~/.ghci is writable by someone else, IGNORING!</code> のようなエラーが出る場合は以下のようにして、ファイルのパーミッションを変更します。</p>
-<pre class="shell"><code>$ chmod go-w ~/.ghci</code></pre>
-<p>これで、基本的な使い方はわかりました。次に実際のプロジェクトにおいてどのように利用されているか確認してみたいと思います。</p>
-<h2 id="stack-プロジェクトで-markdown-unlit-を使う">stack プロジェクトで markdown-unlit を使う</h2>
-<p>より実践的な例として <code>markdown-unlit</code> を使ってプロジェクトの <code>README.md</code> を <code>Literate Markdown</code> 形式で記述してみましょう。</p>
-<p>この手法は実際にいくつかのプロジェクトで利用されています。</p>
-<ul>
-<li><a href="https://github.com/yesodweb/wai/tree/master/wai#readme">yesodweb/wai</a></li>
-<li><a href="https://github.com/tfausak/strive">tfausak/strive</a></li>
-<li><a href="https://github.com/sol/attoparsec-parsec#readme">sol/attoparsec-parsec</a></li>
-<li><a href="https://github.com/hspec/hspec-expectations#readme">hspec/hspec-expectations</a></li>
-</ul>
-<h3 id="準備">準備</h3>
-<pre class="shell"><code>$ stack new literate-markdown
-$ cd literate-markdown</code></pre>
-<p><code>LTS-10.1</code> に含まれる <code>markdown-unlit</code> のバージョンは <code>0.4.1</code> ですが、最新版の <code>0.5.0</code> を使いたいので <code>resolver</code> に <code>nightly</code> を指定します。ついでに <code>package.yaml</code> に依存関係を追加しておきます。</p>
-<p><code>stack.yaml</code> と <code>package.yaml</code> はそれぞれこんな感じです。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="fu">resolver:</span><span class="at"> nightly-2017-12-28</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw">-</span> .</a></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">name:</span><span class="at">                literate-markdown</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="fu">version:</span><span class="at">             0.1.0.0</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="fu">github:</span><span class="at">              </span><span class="st">&quot;waddlaw/literate-markdown&quot;</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="fu">extra-source-files:</span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="kw">-</span> README.md</a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="kw">-</span> ChangeLog.md</a>
-<a class="sourceLine" id="cb9-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb9-10" data-line-number="10"><span class="kw">-</span> base &gt;= 4.7 &amp;&amp; &lt; 5</a>
-<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="kw">-</span> markdown-unlit</a></code></pre></div>
-<p>とりあえず <code>stack build</code> しておきます。</p>
-<pre class="shell"><code>$ stack build</code></pre>
-<h3 id="markdown-unlit-の設定">markdown-unlit の設定</h3>
-<p>まずは <code>package.yaml</code> に以下の内容を追記します。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="fu">ghc-options:</span><span class="at"> -pgmL markdown-unlit</span></a></code></pre></div>
-<p>次に <code>README.md</code> の内容を以下のように変更します。</p>
-<div class="sourceCode">
-<pre class="sourceCode markdown"><code class="sourceCode markdown hljs"># nifty-library: Do nifty things (effortlessly!)
-
-Here is a basic example:
-
-```haskell
-main :: IO ()
-main = putStrLn "That was easy!"
-```
-</code></pre>
-</div>
-<p>ここが少し面倒ですが、シンボリックリンクを作成します。</p>
-<pre class="shell"><code>$ ln -s README.md README.lhs</code></pre>
-<h3 id="テストの設定">テストの設定</h3>
-<p><code>package.yaml</code> にテストを追加しましょう。以下の内容を追記します。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="fu">tests:</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">  <span class="fu">readme:</span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">    <span class="fu">main:</span><span class="at"> README.lhs</span></a></code></pre></div>
-<p>これで <code>stack test</code> を実行してみましょう。</p>
-<pre class="shell"><code>$ stack test
-literate-markdown-0.1.0.0: test (suite: readme)
-
-That was easy!
-
-literate-markdown-0.1.0.0: Test suite readme passed</code></pre>
-<p>ちゃんと <code>That was easy!</code> が表示されています。</p>
-<h2 id="終わりに">終わりに</h2>
-<ul>
-<li><code>Haskell</code> で利用可能な文芸的プログラミングについて少しだけ解説しました</li>
-<li><code>Markdown</code> 形式で文芸的プログラミングを行うための <code>markdown-unlit</code> について解説しました</li>
-</ul>
-<p>実際にいくつかのプロジェクトで利用されているように、<code>README.md</code> で <code>main</code> 関数を実行する例がある場合は、この方法を採用してみても良いのではないでしょうか。</p>
-<p>本記事で利用したコード: <a href="https://github.com/waddlaw/example-literate-markdown">github</a></p>]]></summary>
 </entry>
 
 </feed>
