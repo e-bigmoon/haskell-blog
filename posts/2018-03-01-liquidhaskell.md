@@ -244,6 +244,15 @@ $ liquid LH.hs
 リファインメント型 (Refinement type) は `篩 (ふるい) 型` と訳されている本 ([入門LiquidHaskell−篩型による静的コード解析−
 ](https://taimen.jp/f/389)) もありますが、それは `Haskell` の型の値が条件によって `ふるい` 落とされて、新しい型 (リファインメント型) になっているというイメージから来ているのだと思います。(読んだこと無いので間違ってたらすみません・・・。)
 
+追記: チェシャ猫さんから `篩型` について教えてもらいました！
+
+<blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">&gt; リファインメント型 (Refinement type) は 篩 (ふるい) 型 と訳されている本もありますが<br><br>頒布したときに最も多かった質問は「これ何て読むんですか？」だった。ちなみに「篩型」はこの本で勝手に作った造語ではなく、論文タイトルなどにも使われています。<a href="https://t.co/Du6mK1hqdD">https://t.co/Du6mK1hqdD</a></p>&mdash; チェシャ猫 (@y_taka_23) <a href="https://twitter.com/y_taka_23/status/969499842895495168?ref_src=twsrc%5Etfw">2018年3月2日</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">五十嵐先生と末永先生が発案した訳語のようです。 <a href="https://t.co/rcZuFuptl6">https://t.co/rcZuFuptl6</a></p>&mdash; チェシャ猫 (@y_taka_23) <a href="https://twitter.com/y_taka_23/status/969515905737621506?ref_src=twsrc%5Etfw">2018年3月2日</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
 ## もっと仕様を
 
 `adjustBound` 関数はこれで十分なのでしょうか？人によっては十分だね。と答えるかもしれません。
