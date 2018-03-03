@@ -16,19 +16,25 @@ jobs:
             - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
             - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-
             - stack-{{ .Environment.COMMON_CACHE_KEY }}-
+            - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "./.circleci/build.hs" }}-{{ checksum "./.circleci/preview.hs" }}
+            - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "./.circleci/build.hs" }}-
+            - stack-{{ .Environment.COMMON_CACHE_KEY }}-
       - run:
           name: build when PR
           command: |
             curl -sSL https://get.haskellstack.org/ | sh -s - -f
             ./.circleci/build.hs
-      - save_cache:
-          key: stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
-          paths:
-            - .circleci/code/.stack-work
-            - ~/.stack/
-            - ~/.local/bin/
       - store_artifacts:
           path: _site
       - run:
           name: Send Artifacts URL to GitHub when PR
           command: ./.circleci/preview.hs
+      - save_cache:
+          key: stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+          paths:
+            - .circleci/code/.stack-work
+      - save_cache:
+          key: stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "./.circleci/build.hs" }}-{{ checksum "./.circleci/preview.hs" }}
+          paths:
+            - ~/.stack/
+            - ~/.local/bin/
