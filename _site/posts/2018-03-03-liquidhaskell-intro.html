@@ -178,7 +178,7 @@ Liquid Haskell を半年ほど勉強した結果、色々と出来ることが�
 <!--more-->
 <h2 id="liquid-haskell-とは">Liquid Haskell とは？</h2>
 <p><code>Liquid Haskell</code> は <code>GHC</code> の型よりも、さらに厳密な <code>篩型 (Refinement Type)</code> の型検査器です。</p>
-<p>既存のコードを実行することなく利用できるため、既存のプロジェクトの一部にだけ導入することも可能です。</p>
+<p>既存のコードを変更 (さらには実行すら) することなく利用できるため、既存のプロジェクトの一部にだけ導入することも可能です。</p>
 <p>また、つい最近も <code>GADT</code> をサポートしたりと、開発はとても活発に行われています。</p>
 <p>正しいソフトウェアを楽しく作るために、<code>Liquid Haskell</code> を学習してみるのはどうでしょうか！</p>
 <p>ちなみに <code>Liquid</code> という単語は <code>液体</code> と言いたくなりますが、それとはあまり関係なく、実際は <code>Logically Qualified Data</code> の略です。(ロゴは <code>水滴</code> + <code>&gt;&gt;=</code> なので、全く無関係では無いかもですが)</p>
@@ -220,10 +220,10 @@ $ stack install
 $ liquid
 LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
 Copyright 2013-18 Regents of the University of California. All Rights Reserved.</code></pre>
-<p>stack プロジェクトで利用する場合は。以下のように stack exec コマンドで呼び出します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">$</span> stack exec <span class="co">-- liquid</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="dt">LiquidHaskell</span> <span class="dt">Version</span> <span class="fl">0.8</span><span class="fu">.</span><span class="fl">2.4</span>, <span class="dt">Git</span> revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="dt">Copyright</span> <span class="dv">2013</span><span class="fu">-</span><span class="dv">18</span> <span class="dt">Regents</span> <span class="kw">of</span> the <span class="dt">University</span> <span class="kw">of</span> <span class="dt">California</span><span class="fu">.</span> <span class="dt">All</span> <span class="dt">Rights</span> <span class="dt">Reserved</span><span class="fu">.</span></a></code></pre></div>
+<p>stack プロジェクトで利用する場合は、以下のように <code>stack exec</code> コマンドで呼び出します。</p>
+<pre class="shell"><code>$ stack exec -- liquid
+LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
+Copyright 2013-18 Regents of the University of California. All Rights Reserved.</code></pre>
 <h2 id="サンプルプログラム">サンプルプログラム</h2>
 <p><code>myDiv</code> 関数の例を使って <code>LiquidHaskell</code> に慣れましょう！</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">-- MyDiv.hs</span></a>
@@ -232,17 +232,17 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <a class="sourceLine" id="cb5-4" data-line-number="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb5-5" data-line-number="5">myDiv <span class="fu">=</span> div</a></code></pre></div>
 <p><code>myDiv</code> の実装は単に <code>div</code> をラップしただけです。</p>
-<p>この関数はだいたい上手く動きますが、もし第二引数に0が与えられたらどうでしょうか？そう、実行時エラーになります・・・。試してみましょう。</p>
+<p>この関数はだいたい上手く動きますが、もし第二引数に <strong>0</strong> が与えられたらどうでしょうか？そう、実行時エラーになります・・・。試してみましょう。</p>
 <pre class="shell"><code>$ stack repl -- MyDiv.hs
-*myDiv&gt; myDiv 10 2
+*MyDiv&gt; myDiv 10 2
 5
-*myDiv&gt; myDiv 10 0
+*MyDiv&gt; myDiv 10 0
 *** Exception: divide by zero</code></pre>
 <p>全然安全ではありませんね。</p>
 <p>では、どうしたら本当に安全な <code>myDiv</code> を作れるのでしょうか？</p>
 <p>その答えは<code>篩(ふるい)型</code>にあります。</p>
-<p><code>Liquid Haskell</code> では <code>篩型</code> を <code>{-@ ... @-}</code> のコメント形式で記述します。<code>Liquid Haskell</code> を利用するメリットの1つに、篩型をある程度、推論してくれるというものがあります。</p>
-<p>実は、先程の <code>myDiv</code> は篩型を書いていませんが、こういう場合 <code>Liquid Haskell</code> は <code>Haskell</code> の型をそのまま篩型として利用します。</p>
+<p><code>Liquid Haskell</code> では <code>篩型</code> を <code>{-@ ... @-}</code> のコメント形式で記述します。<code>Liquid Haskell</code> を利用するメリットの1つは、篩型の自動推論です。(推論できない場合も多々ありますが、結構色々と推論してくれます)</p>
+<p>先程の <code>myDiv</code> には篩型を書いていませんが、こういう場合に <code>Liquid Haskell</code> は <code>Haskell</code> の型をそのまま篩型として利用します。</p>
 <p><code>myDiv</code> に対して明示的に篩型を書いてみましょう！</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span> <span class="co">-- これが篩型</span></a>
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
@@ -254,7 +254,7 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
  MyDiv.hs:4:11-13: Error: Liquid Type Mismatch
 
  4 | myDiv = div
-               ^^^
+             ^^^
 
    Inferred type
      VV : Int
@@ -264,12 +264,12 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 
    In Context</code></pre>
 <p>なぜか <code>UNSAFE</code> が表示されましたね。これは <code>Liquid Haskell</code> で既に <code>div</code> の篩型が定義されているからです。(<a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/GHC/Real.spec#L19">div</a> 以外にも色々ありますが、充実しているとは言い難いと思います)</p>
-<p>だいたいこんな感じで、第二引数が0ではないという条件がついているのです。</p>
+<p>だいたいこんな感じで、第二引数に <strong>0を含まないInt型</strong> という事前条件がついているのです。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">{-@ div :: Int -&gt; {v:Int | v /= 0} -&gt; Int @-}</span></a></code></pre></div>
 <p>そのため、先程のエラーメッセージで以下のように指摘されてしまったのです。</p>
 <pre class="shell"><code>not a subtype of Required type
      VV : {VV : Int | VV /= 0}</code></pre>
-<p>つまり、僕らの定義した篩型は <code>0</code> を許容する <code>Int</code> 型なので、このままだと <code>div</code> に <code>0</code> が与えられてしまう可能性があるよ！ということを言っています。</p>
+<p>つまり、僕らの定義した篩型は <code>0</code> を含む <code>Int</code> 型なので、このままだと <code>div</code> に <code>0</code> が与えられてしまう可能性があるよ！ということを教えてくれています。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span></a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb11-3" data-line-number="3">myDiv <span class="fu">=</span> div</a></code></pre></div>
@@ -290,13 +290,13 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <a class="sourceLine" id="cb15-4" data-line-number="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb15-5" data-line-number="5">myDiv <span class="fu">=</span> div</a></code></pre></div>
 <p>意味は全く同じですが、先程よりもわかりやすくなりました。</p>
-<pre class="shell"><code>$ liquid SafeDiv.hs
+<pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <p>最後に <code>myDiv</code> を呼び出す関数を定義してみましょう。</p>
 <p><code>good</code> は問題の無い使い方です。</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="ot">good ::</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb17-2" data-line-number="2">good <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">2</span></a></code></pre></div>
-<p>もし、このような関数 <code>bad</code> が定義されたとすると、<code>Liquid Haskell</code> は <code>UNSAFE</code> を返します。</p>
+<p>しかし、以下のような関数 <code>bad</code> が定義された場合、<code>Liquid Haskell</code> は <code>UNSAFE</code> を返します。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="ot">bad ::</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb18-2" data-line-number="2">bad <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">0</span></a></code></pre></div>
 <pre class="shell"><code>$ liquid MyDiv.hs
@@ -374,7 +374,7 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 2
 5
 
-*MyDiv&gt; main
+*Main&gt; main
 10
 0
 *** Exception: divide by zero</code></pre>
