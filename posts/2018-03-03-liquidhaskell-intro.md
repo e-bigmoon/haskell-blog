@@ -20,7 +20,7 @@ tags: bigmoon, liquidhaskell
 
 `Liquid Haskell` は `GHC` の型よりも、さらに厳密な `篩型 (Refinement Type)` の型検査器です。
 
-既存のコードを実行することなく利用できるため、既存のプロジェクトの一部にだけ導入することも可能です。
+既存のコードを変更 (さらには実行すら) することなく利用できるため、既存のプロジェクトの一部にだけ導入することも可能です。
 
 また、つい最近も `GADT` をサポートしたりと、開発はとても活発に行われています。
 
@@ -87,9 +87,9 @@ LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa0154
 Copyright 2013-18 Regents of the University of California. All Rights Reserved.
 ```
 
-stack プロジェクトで利用する場合は。以下のように stack exec コマンドで呼び出します。
+stack プロジェクトで利用する場合は、以下のように `stack exec` コマンドで呼び出します。
 
-```haskell
+```shell
 $ stack exec -- liquid
 LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
 Copyright 2013-18 Regents of the University of California. All Rights Reserved.
@@ -109,13 +109,13 @@ myDiv = div
 
 `myDiv` の実装は単に `div` をラップしただけです。
 
-この関数はだいたい上手く動きますが、もし第二引数に0が与えられたらどうでしょうか？そう、実行時エラーになります・・・。試してみましょう。
+この関数はだいたい上手く動きますが、もし第二引数に **0** が与えられたらどうでしょうか？そう、実行時エラーになります・・・。試してみましょう。
 
 ```shell
 $ stack repl -- MyDiv.hs
-*myDiv> myDiv 10 2
+*MyDiv> myDiv 10 2
 5
-*myDiv> myDiv 10 0
+*MyDiv> myDiv 10 0
 *** Exception: divide by zero
 ```
 
@@ -125,9 +125,9 @@ $ stack repl -- MyDiv.hs
 
 その答えは`篩(ふるい)型`にあります。
 
-`Liquid Haskell` では `篩型` を `{-@ ... @-}` のコメント形式で記述します。`Liquid Haskell` を利用するメリットの1つに、篩型をある程度、推論してくれるというものがあります。
+`Liquid Haskell` では `篩型` を `{-@ ... @-}` のコメント形式で記述します。`Liquid Haskell` を利用するメリットの1つは、篩型の自動推論です。(推論できない場合も多々ありますが、結構色々と推論してくれます)
 
-実は、先程の `myDiv` は篩型を書いていませんが、こういう場合 `Liquid Haskell` は `Haskell` の型をそのまま篩型として利用します。
+先程の `myDiv` には篩型を書いていませんが、こういう場合に `Liquid Haskell` は `Haskell` の型をそのまま篩型として利用します。
 
 `myDiv` に対して明示的に篩型を書いてみましょう！
 
@@ -146,7 +146,7 @@ $ liquid MyDiv.hs
  MyDiv.hs:4:11-13: Error: Liquid Type Mismatch
 
  4 | myDiv = div
-               ^^^
+             ^^^
 
    Inferred type
      VV : Int
@@ -159,7 +159,7 @@ $ liquid MyDiv.hs
 
 なぜか `UNSAFE` が表示されましたね。これは `Liquid Haskell` で既に `div` の篩型が定義されているからです。([div](https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/GHC/Real.spec#L19) 以外にも色々ありますが、充実しているとは言い難いと思います)
 
-だいたいこんな感じで、第二引数が0ではないという条件がついているのです。
+だいたいこんな感じで、第二引数に **0を含まないInt型** という事前条件がついているのです。
 
 ```haskell
 {-@ div :: Int -> {v:Int | v /= 0} -> Int @-}
@@ -172,7 +172,7 @@ not a subtype of Required type
      VV : {VV : Int | VV /= 0}
 ```
 
-つまり、僕らの定義した篩型は `0` を許容する `Int` 型なので、このままだと `div` に `0` が与えられてしまう可能性があるよ！ということを言っています。
+つまり、僕らの定義した篩型は `0` を含む `Int` 型なので、このままだと `div` に `0` が与えられてしまう可能性があるよ！ということを教えてくれています。
 
 ```haskell
 {-@ myDiv :: Int -> Int -> Int @-}
@@ -216,7 +216,7 @@ myDiv = div
 意味は全く同じですが、先程よりもわかりやすくなりました。
 
 ```shell
-$ liquid SafeDiv.hs
+$ liquid MyDiv.hs
 **** RESULT: SAFE **************************************************************
 ```
 
@@ -229,7 +229,7 @@ good :: Int
 good = myDiv 10 2
 ```
 
-もし、このような関数 `bad` が定義されたとすると、`Liquid Haskell` は `UNSAFE` を返します。
+しかし、以下のような関数 `bad` が定義された場合、`Liquid Haskell` は `UNSAFE` を返します。
 
 ```haskell
 bad :: Int
@@ -329,7 +329,7 @@ $ stack repl -- Main.hs
 2
 5
 
-*MyDiv> main
+*Main> main
 10
 0
 *** Exception: divide by zero
