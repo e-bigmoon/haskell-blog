@@ -6,16 +6,22 @@ jobs:
       docker_layer_caching: true
     steps:
       - checkout
-      - run:
-          name: Build docker image
-          command: |
-            rsync -ave --exclude='.circleci' ./ .circleci/code
-            docker-compose -f .circleci/docker-compose.yml build --build-arg resolver=$(cat stack.yaml | sed -n '/resolver:/p' | sed -r 's/resolver:\s(.*)/\1/') app
       - restore_cache:
           keys:
             - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
             - stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-
             - stack-{{ .Environment.COMMON_CACHE_KEY }}-
+      - run:
+          name: Build docker image
+          command: |
+            rsync -ave --exclude='.circleci' ./ .circleci/code
+            docker-compose -f .circleci/docker-compose.yml build --build-arg resolver=$(cat stack.yaml | sed -n '/resolver:/p' | sed -r 's/resolver:\s(.*)/\1/') app
+      - save_cache:
+          key: stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+          paths:
+            - .circleci/code/.stack-work
+      - restore_cache:
+          keys:
             - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/build.hs" }}-{{ checksum "./.circleci/preview.hs" }}
             - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/build.hs" }}-
             - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-
@@ -29,10 +35,6 @@ jobs:
       - run:
           name: Send Artifacts URL to GitHub when PR
           command: ./.circleci/preview.hs
-      - save_cache:
-          key: stack-{{ .Environment.COMMON_CACHE_KEY }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
-          paths:
-            - .circleci/code/.stack-work
       - save_cache:
           key: stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/build.hs" }}-{{ checksum "./.circleci/preview.hs" }}
           paths:
