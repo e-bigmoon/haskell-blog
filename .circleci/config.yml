@@ -22,21 +22,21 @@ jobs:
             - .circleci/code/.stack-work
       - restore_cache:
           keys:
-            - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/build.hs" }}-{{ checksum "./.circleci/preview.hs" }}
-            - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/build.hs" }}-
+            - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/preview.hs" }}
             - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-
       - run:
-          name: build when PR
+          name: build
           command: |
             curl -sSL https://get.haskellstack.org/ | sh -s - -f
-            ./.circleci/build.hs
+            stack build
+            stack exec site rebuild
       - store_artifacts:
           path: _site
       - run:
           name: Send Artifacts URL to GitHub when PR
           command: ./.circleci/preview.hs
       - save_cache:
-          key: stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/build.hs" }}-{{ checksum "./.circleci/preview.hs" }}
+          key: stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/preview.hs" }}
           paths:
             - /home/circleci/.stack/
             - /home/circleci/.local/bin/
