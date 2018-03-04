@@ -26,10 +26,11 @@ jobs:
             - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-{{ checksum "./.circleci/build.hs" }}-
             - stack-{{ .Environment.COMMON_CACHE_KEY_SCRIPT }}-
       - run:
-          name: build when PR
+          name: build
           command: |
             curl -sSL https://get.haskellstack.org/ | sh -s - -f
-            ./.circleci/build.hs
+            stack build
+            stack exec site rebuild
       - store_artifacts:
           path: _site
       - run:
