@@ -210,7 +210,7 @@ ioLeft <> ioRight
 
 In other words, if you combine two IO actions you just run each IO action and then combine their results. This in turn implies that if we nest two IO actions then we repeat this process twice:
 
-言い換えるなら、`IO` アクションを2つ組み合わせるということは、それぞれの `IO` アクションを実行して結果を組み合わせるということなのです。これは、2つの `IO` アクションをネストさせると同じ処理を2回実行する、ということも示しています:
+言い換えるなら、`IO` アクションを2つ組み合わせるということは、それぞれの `IO` アクションを実行して結果を組み合わせるということなのです。これは、2つの `IO` アクションをネストさせると、アクションを実行して結果を組み合わせるという処理を2回実行する、ということも示しています:
 
 ```haskell
 requestLeft <> requestRight
