@@ -1,10 +1,15 @@
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 import qualified Config          as C
 import           Data.List       (stripPrefix)
 import           Data.Maybe
 import           Data.Monoid     ((<>))
 import           Hakyll
+
+#if !(defined(mingw32_HOST_OS))
 import           Hakyll.Web.Sass (sassCompiler)
+#endif
 
 main :: IO ()
 main = do
@@ -17,9 +22,15 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     route idRoute
     compile copyFileCompiler
 
+#ifdef mingw32_HOST_OS
+  match "css/*.css" $ do
+    route idRoute
+    compile compressCssCompiler
+#else
   match "css/*.scss" $ do
     route $ setExtension "css"
     compile (fmap compressCss <$> sassCompiler)
+#endif
 
 -- TODO:watchで反映されない件byやまだ
   match (fromGlob "pages/**.md") $ do
