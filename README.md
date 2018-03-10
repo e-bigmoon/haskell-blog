@@ -28,3 +28,12 @@ Fusce tortor quam, egestas in posuere quis, porttitor vel turpis...
 
 Proin vulputate sapien facilisis leo ornare pulvinar...
 ```
+
+### Build on Windows
+
+can't build `hakyll-sass`.
+So, build css on local using `sass`.
+
+```
+$ sass -I sass --scss ./css/main.scss ./css/main.css
+```
