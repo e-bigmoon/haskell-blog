@@ -8,8 +8,52 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-03-07T00:00:00Z</updated>
+    <updated>2018-03-13T00:00:00Z</updated>
     <entry>
+    <title>extra-deps の設定方法に github の短縮形が指定できるようになります</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018-03-13-stack-extra-deps-shorthand.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018-03-13-stack-extra-deps-shorthand.html</id>
+    <published>2018-03-13T00:00:00Z</published>
+    <updated>2018-03-13T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>今日マージされた <a href="https://github.com/commercialhaskell/stack/pull/3890">Allow ‘github’ shorthand for extra-deps (fixes #3873) #3890</a> がとても便利だと思いますのでご紹介します。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">stack</span> --version</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ex">Version</span> 1.7.0, Git revision 4a140342f9b28005bf2fdd5335bdcd32c9370265 (5702 commits) <span class="ex">x86_64</span> hpack-0.21.2</a></code></pre></div>
+<!--more-->
+<p><code>stack.yaml</code> に記述する <code>extra-deps</code> は主に2つの理由で記述することが多いです。</p>
+<ul>
+<li><code>lts</code> に含まれていないパッケージのバージョンを指定するため</li>
+<li>そもそも <code>Hackage</code> に上がっていないパッケージを使うため</li>
+</ul>
+<p>今回は <code>extra-deps</code> の指定方法に <code>github</code> 専用の短縮形が導入されました。</p>
+<p>こんな感じで指定可能です。(コミットの短縮形はいつから使えていたのかわかりませんが、使えます)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">extra-deps:</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> haskell/text</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="fu">commit:</span><span class="at"> 9fac5d</span></a></code></pre></div>
+<p>1.6.5 ではまだ利用できない機能となっております。</p>
+<h2 id="試し方">試し方</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1">$ <span class="ex">stack</span> upgrade --git</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co"># コンパイルするので時間かかります</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">$ <span class="ex">stack</span> --version</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ex">Version</span> 1.7.0, Git revision 4a140342f9b28005bf2fdd5335bdcd32c9370265 (5702 commits) <span class="ex">x86_64</span> hpack-0.21.2</a></code></pre></div>
+<p>遊んでから、元の <code>stack</code> のバージョンに戻す時は以下のようにするだけです。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="ex">stack</span> upgrade --binary-version 1.6.5</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ex">...</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">$ <span class="ex">stack</span> --version</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="ex">Version</span> 1.6.5, Git revision 24ab0d6ff07f28276e082c3ce74dfdeb1a2ca9e9 (5514 commits) <span class="ex">x86_64</span> hpack-0.20.0</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># バイナリが落ちてくるのですぐ終わります</span></a></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>stack 1.7.0</code> ぐらいから利用できるようになるはず</li>
+<li><code>github</code> が新たに追加され <code>user/repo</code> の短縮形で記述できるようになった</li>
+<li><code>commit</code> もいつからか短縮形で記述できるようになっていた</li>
+<li><code>subdirs</code> を指定すれば <code>Yesod</code> のような mega-repo でも指定できる</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>wizard モノイド</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018-03-07-The-wizard-monoid.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018-03-07-The-wizard-monoid.html</id>
@@ -1619,56 +1663,6 @@ No hints</code></pre>
 <li><a href="https://github.com/ndmitchell/hlint#automatically-applying-hints">Automatically Applying Hints</a></li>
 </ul>
 <p>今回は <code>Haskell</code> の静的解析ツール <code>HLint</code> について説明を行いました。需要があれば <code>LiquidHaskell</code> などの他の静的解析ツールについても、チュートリアル的な解説記事を書いていきたいところです。</p>]]></summary>
-</entry>
-<entry>
-    <title>Yesod の破壊的変更予定</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018-01-27-Upcoming-Yesod-breaking-changes.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018-01-27-Upcoming-Yesod-breaking-changes.html</id>
-    <published>2018-01-27T00:00:00Z</published>
-    <updated>2018-01-27T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<p>Original post: <a href="https://www.yesodweb.com/blog/2018/01/upcoming-yesod-breaking-changes">Upcoming Yesod breaking changes</a></p>
-<p>2018年 1月 11日 Michael Snoyman</p>
-<p>私が作ったライブラリの破壊的変更点について話をしてきましたが、Yesod をその変更から取り残したくはありませんでした。yesod-core は 2014年からバージョン1.4 で安定しています。しかし、私のパッケージエコシステムにおける <code>MonadUnliftIO</code> の変更は Yesod にも影響してくるでしょう。問題は、どの程度かということです。</p>
-<!--more-->
-<p>知らない人のために補足しておくと、<code>MonadUnliftIO</code> は <code>monad-control</code> と <code>exceptions</code> にそれぞれ存在する <code>MonadBaseControl</code> と <code>MonadCatch/MonadMask</code> クラスの代替となる型クラスです。私はこれまでこの新しいアプローチのメリットを至る所で言及してきましたが、おそらく一番良い資料は<a href="https://www.fpcomplete.com/blog/2017/07/announcing-new-unliftio-library">リリースアナウンスのブログ記事</a>でしょう。</p>
-<p>予定されている Yesod の変更点を簡潔に述べると:</p>
-<ul>
-<li><code>WidgetT</code> の内部表現を変更する。現在は <code>WriterT</code> として実装されているので変更が必要です。<code>MonadUnliftIO</code> とマッチさせるために、<code>IORef</code> を持つ <code>ReaderT</code> にする必要があります。この変更は内部モジュールにしか影響しないため、私の想像ではかなり小さな変更になります (非破壊的変更と言い換えることもできる)。</li>
-<li><code>MonadBaseControl</code> と <code>MonadCatch/MonadMask</code> のインスタンスを削除する。これは厳密には必要ないですが、2つのアドバンテージがあります: 依存関係の数を少なくし、<code>HandlerT</code> の上に <code>StateT</code> を乗せた状態で <code>concurrently</code> を使うような危険な振る舞いを避けることができます。</li>
-<li>依存しているライブラリを、変更後の新しいバージョンに切り替える。特に conduit や resourcet など。これも厳密には破壊的変更ではないですが、私は依存関係のメジャーバージョンへのサポートを打ち切ることを半破壊的変更だと捉えています。</li>
-<li>破壊的変更に伴う、いくつもの小さなお片付け。いくつかの場所に正格化のためのアノテーションを追加するとか、死んでいる <code>GoogleEmail</code> や <code>BrowserId</code> 等のモジュールの削除などです。</li>
-</ul>
-<p>これは完全に筋の通った変更で、Yesod 1.5 (2.0) としてリリースします。私が実験しているもう少し大きな変更があるので、それをここで共有しておきます。この変更が Yesod のユーザーにとって価値があるかどうか、フィードバックをお願いしたいです。</p>
-<h2 id="トランスフォーマーから離れろ">トランスフォーマーから離れろ!</h2>
-<p>以下の説明は、こういう議論ではいつもそうであるように、仕方なく <code>IO</code> に入れなければならないコードについて言及したものです。純粋なコードは今回はパスです。</p>
-<p>(実際の変更よりも大きく見えますが) 変更は <a href="https://github.com/yesodweb/yesod/pull/1466">no-transformer ブランチ</a> で確認できます。まぁすぐに嘘だと分かると思いますが、意図を正確に表しています。ここ 1年間のブログ記事の雰囲気と推奨しているベストプラクティスについての私の議論を見れば、次の簡単な主張に帰結します: モダンな Haskell はモナドトランスフォーマーを使いすぎなのです</p>
-<p>この主張に対して最も過激な反応をするなら、全てのトランスフォーマーを削除し、全てのコードを <code>IO</code> に入れる、というものになります。私はちょっと妥協して、reader の機能は残す価値があると判断しました。なぜなら、<code>logInfo</code> のような単純な関数に何かを追加で渡すのは、かなりの苦痛だからです。Yesod の核となっている型は <code>HandlerT</code> で、<code>getHomeR :: HandlerT App IO Html</code> のように使われます。内部では、<code>HandlerT</code> は以下のようになっています:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">newtype</span> <span class="dt">HandlerT</span> site m a <span class="fu">=</span> <span class="dt">HandlerT</span> (<span class="dt">HandlerData</span> site <span class="ot">-&gt;</span> m a)</a></code></pre></div>
-<p>簡単な質問をしましょう: <code>HandlerT</code> は本当にトランスフォーマーである必要があるのでしょうか?</p>
-<p>なぜシンプルにこんな風に書かないのでしょうか:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">newtype</span> <span class="dt">HandlerFor</span> site a <span class="fu">=</span> <span class="dt">HandlerFor</span> (<span class="dt">HandlerData</span> site <span class="ot">-&gt;</span> <span class="dt">IO</span> a)</a></code></pre></div>
-<p><code>m</code> という型引数を <code>IO</code> という具体的なものに変えただけです。どんな場所でもハンドラはベースモナドとして <code>IO</code> を持つ、という前提がすでにあるので、汎用性が無くなるわけではありません。</p>
-<p>しかしこの結果得られるものは:</p>
-<ul>
-<li>少し分かりやすいエラーメッセージ</li>
-<li>より少ない型制約。思い浮かぶのは <code>MonadUnliftIO m</code> みたいな</li>
-<li>内部で、型族周りの汚い部分をかなりシンプルにできる。</li>
-</ul>
-<p>ヘルパー型シノニムを導入すれば、多くの後方互換性を得ることができます:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">type</span> <span class="dt">HandlerT</span> site m <span class="fu">=</span> <span class="dt">HandlerFor</span> site</a></code></pre></div>
-<p>さらに、Template Haskell によって生成された <code>Handler</code> という型シノニムを使っているなら、新しいバージョンの Yesod は正しいものを生成してくれるでしょう。全体として、これはほんの少しの改善です。この変更によって得られる利益と破壊のコストを天秤にかける必要があります。ただ、まだ折衷案が残っています。</p>
-<h2 id="サブサイトを扱う-ええトランスフォーマーです">サブサイトを扱う (ええ、トランスフォーマーです)</h2>
-<p>私は 2回嘘をつきました: さっきのブランチはトランスフォーマーを使っています。そして <code>HandlerT</code> は <code>HandlerFor</code> よりも一般的です。いずれの場合もサブサイトをどうにかする必要がありますが、これは歴史的に苦痛を伴う作業です (使う分にはひどすぎることもないです)。実は、今日 <code>HandlerT</code> が存在する唯一の理由に、サブサイトを綺麗に層に分けるやり方で実装しようとした、というものがあります (失敗しましたが)。Yesod を長く使っている人は <code>GHandler</code> という前回のアプローチを覚えているかもしれません。そして、サブサイトを書いたことがあって <code>defaultLayout</code> を使う時に起こる地獄を知っている人は、現在の状況は良くないということに同意してくれると思います。</p>
-<p>なので、問題を全て解決するため: サブサイトを書く時、ほとんど全てが普通の handler のコードを書くのと同じです。以下の点が違いますが:</p>
-<ul>
-<li><code>getYesod</code> を呼ぶ時、マスターサイトの app データを受け取る (例えば、スキャフォールドサイトの <code>App</code>)。サブサイトのデータを入手する方法も必要になります (例えば、<code>yesod-static</code> の <code>Static</code> という値)。</li>
-<li><code>getCurrentRoute</code> を呼ぶと、マスターサイトのルートを返してくれます。例えば、<code>yesod-auth</code> の中にいる時、親サイトの取りうる全てのルートを扱いたくはないでしょう。その代わりに、サブサイト自身のルートを知りたいはずです。</li>
-<li>URL を生成する時、サブサイトのルートを親サイトのルートに変換する手段が必要になります。</li>
-</ul>
-<p>今日の Yesod では、これらの違いを <code>HandlerT</code> の中で提供しています。こうすると、ベースケースの <code>m</code> を <code>IO</code> にする時に、やけに複雑になります。その代わりに、新しいブランチでは <code>HandlerFor</code> の上に <code>ReaderT</code> 1層を置き、これら 3つの機能を提供しています。詳しく知りたい方は<a href="https://github.com/yesodweb/yesod/blob/3e06942449cad0b52e218cb7e9f2c06b45b85e69/yesod-core/Yesod/Core/Class/Dispatch.hs#L38">コードを見てください</a>。</p>
-<h2 id="何をすべきか">何をすべきか?</h2>
-<p>全体的に、私はこの設計をエレガントで、理解しやすく、コードを綺麗にしてくれるものだと思っています。現実問題、昔のものから大きく離れたわけでも大きく改善されたわけでもありませんし、私はトランスフォーマーを無くすような変更の道半ばで進めなくなっています。</p>
-<p>近い将来、Yesod には破壊的変更が行われますが、必ずしもこの変更を含む必要はありません。もしこの変更が追加されないのなら、破壊的変更は上で言及した、かなりマイナーなものになるでしょう。この変更が好ましいという一般のコンセンサスが得られたなら、同時に追加した方がいいでしょうね。</p>]]></summary>
 </entry>
 
 </feed>
