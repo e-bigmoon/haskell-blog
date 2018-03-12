@@ -1,5 +1,5 @@
 ---
-title: extra-deps の設定方法に github の短縮形が指定できるようになります
+title: extra-deps に github の短縮形が指定できるようになります
 author: Shinya Yamaguchi
 tags: bigmoon, stack
 ---
