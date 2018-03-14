@@ -124,8 +124,8 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     compile $ getResourceBody >>= relativizeUrls
  where
   ctxWithTags :: Context String -> [(String, Tags)] -> Context String
-  ctxWithTags ctx =
-    foldr (\(name, tags) baseCtx -> tagsField name tags <> baseCtx) ctx
+  ctxWithTags =
+    foldr (\(name, tags) baseCtx -> tagsField name tags <> baseCtx)
 
   siteCtx :: Context String
   siteCtx = generalCtx <> styleCtx <> defaultContext
@@ -169,10 +169,10 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         | otherwise                        = True
 
   createTagsRules :: Tags -> (String -> String) -> Rules ()
-  createTagsRules tags mkTitle = tagsRules tags $ \tag pattern -> do
+  createTagsRules tags mkTitle = tagsRules tags $ \tag pattern' -> do
     route idRoute
     compile $ do
-      posts <- recentFirst' =<< loadAll pattern
+      posts <- recentFirst' =<< loadAll pattern'
       let ctx =
             constField "title" (mkTitle tag)
               <> listField "posts" postCtx (return posts)
