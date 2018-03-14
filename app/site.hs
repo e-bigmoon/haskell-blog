@@ -5,7 +5,9 @@ import qualified Config          as C
 import           Data.List       (stripPrefix)
 import           Data.Maybe
 import           Data.Monoid     ((<>))
-import           Hakyll
+import           Hakyll          hiding (dateFieldWith)
+import           Hakyll.Ext
+import           System.FilePath (takeBaseName, takeDirectory, takeFileName)
 
 #if !(defined(mingw32_HOST_OS))
 import           Hakyll.Web.Sass (sassCompiler)
@@ -68,7 +70,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   create ["archive.html"] $ do
     route idRoute
     compile $ do
-      posts <- recentFirst =<< loadAll "posts/*"
+      posts <- recentFirst' =<< loadAll "posts/**"
       let archiveCtx =
             listField "posts" postCtx (return posts)
               `mappend` constField "title" "Archives"
@@ -81,7 +83,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   match "pages/index.html" $ do
     route (constRoute "index.html")
     compile $ do
-      posts <- recentFirst =<< loadAll "posts/*"
+      posts <- recentFirst' =<< loadAll "posts/**"
       let indexCtx =
             listField "posts" postCtx (return posts)
               <> constField "title" "BIGMOON haskellers blog"
@@ -99,7 +101,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     compile $ do
       let feedConfig = C.feed siteConfig
           feedCtx    = postCtx <> bodyField "description"
-      posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/**"
+      posts <- fmap (take 10) . recentFirst' =<< loadAllSnapshots "posts/**"
                                                                  "content"
       renderAtom (atomFeedConfiguration feedConfig) feedCtx posts
 
@@ -107,7 +109,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   create ["sitemap.xml"] $ do
     route idRoute
     compile $ do
-      posts <- recentFirst =<< loadAll "posts/**"
+      posts <- recentFirst' =<< loadAll "posts/**"
       pages <- loadAll "pages/*"
       let crawlPages = sitemapPages pages ++ posts
 
@@ -122,8 +124,8 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     compile $ getResourceBody >>= relativizeUrls
  where
   ctxWithTags :: Context String -> [(String, Tags)] -> Context String
-  ctxWithTags ctx =
-    foldr (\(name, tags) baseCtx -> tagsField name tags <> baseCtx) ctx
+  ctxWithTags =
+    foldr (\(name, tags) baseCtx -> tagsField name tags <> baseCtx)
 
   siteCtx :: Context String
   siteCtx = generalCtx <> styleCtx <> defaultContext
@@ -149,13 +151,16 @@ main' siteConfig = hakyllWith hakyllConfig $ do
       return $ configField (configObj siteConfig)
 
   postCtx :: Context String
-  postCtx =
-    dateField "date" "%B %e, %Y"
-      <> teaserField "teaser" "content"
-  -- create a short version of the teaser. Strip out HTML tags and trim.
-      <> mapContext (trim' . take 160 . stripTags)
-                    (teaserField "teaser-short" "content")
-      <> siteCtx
+  postCtx = mconcat
+    [ dateField' "date" "%B %e, %Y"
+    , dateField' "published" "%Y-%m-%dT%H:%M:%SZ"
+    , dateField' "updated"   "%Y-%m-%dT%H:%M:%SZ"
+    , teaserField "teaser" "content"
+    , mapContext (trim' . take 160 . stripTags)
+                 (teaserField "teaser-short" "content")
+    , siteCtx
+    ]
+
    where
     trim' xs = map snd . filter trim'' $ zip [0 ..] xs
      where
@@ -164,10 +169,10 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         | otherwise                        = True
 
   createTagsRules :: Tags -> (String -> String) -> Rules ()
-  createTagsRules tags mkTitle = tagsRules tags $ \tag pattern -> do
+  createTagsRules tags mkTitle = tagsRules tags $ \tag pattern' -> do
     route idRoute
     compile $ do
-      posts <- recentFirst =<< loadAll pattern
+      posts <- recentFirst' =<< loadAll pattern'
       let ctx =
             constField "title" (mkTitle tag)
               <> listField "posts" postCtx (return posts)
@@ -194,3 +199,19 @@ hakyllConfig =
 
 sitemapPages :: [Item String] -> [Item String]
 sitemapPages = filter ((/= "pages/LICENSE.md") . toFilePath . itemIdentifier)
+
+-- |
+-- Helper Functions for dirctory design is yyyy/mm-dd-xxx.md
+
+toDate :: Identifier -> String
+toDate ident = yyyy ++ "-" ++ mmdd
+ where
+  path = toFilePath ident
+  yyyy = takeFileName $ takeDirectory path
+  mmdd = take 5 $ takeBaseName path
+
+dateField' :: String -> String -> Context a
+dateField' = dateFieldWith toDate
+
+recentFirst' :: MonadMetadata m => [Item a] -> m [Item a]
+recentFirst' = recentFirstWith toDate
