@@ -1,7 +1,9 @@
 {-# LANGUAGE CPP               #-}
+{-# LANGUAGE OverloadedLabels  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 import qualified Config          as C
+import           Control.Lens    ((^.))
 import           Data.List       (stripPrefix)
 import           Data.Maybe
 import           Data.Monoid     ((<>))
@@ -99,7 +101,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   create ["feed.xml"] $ do
     route idRoute
     compile $ do
-      let feedConfig = C.feed siteConfig
+      let feedConfig = siteConfig ^. #feed
           feedCtx    = postCtx <> bodyField "description"
       posts <- fmap (take 10) . recentFirst' =<< loadAllSnapshots "posts/**"
                                                                  "content"
@@ -131,24 +133,24 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   siteCtx = generalCtx <> styleCtx <> defaultContext
    where
     generalCtx =
-      field "site-title" (toField C.general C.siteTitle)
-        <> field "head-title" (toField C.general C.headTitle)
-        <> field "base-url"   (toField C.general C.baseUrl)
+      field "site-title" (toField #general #siteTitle)
+        <> field "head-title" (toField #general #headTitle)
+        <> field "base-url"   (toField #general #baseUrl)
 
     styleCtx =
-      field "header-colour" (toField C.style C.headerColour)
-        <> field "head-theme-colour"  (toField C.style C.headThemeColour)
-        <> field "footer-colour"      (toField C.style C.footerColour)
-        <> field "footer-btn-colour"  (toField C.style C.footerBtnColour)
-        <> field "footer-link-colour" (toField C.style C.footerLinkColour)
+      field "header-colour" (toField #style #headerColour)
+        <> field "head-theme-colour"  (toField #style #headThemeColour)
+        <> field "footer-colour"      (toField #style #footerColour)
+        <> field "footer-btn-colour"  (toField #style #footerBtnColour)
+        <> field "footer-link-colour" (toField #style #footerLinkColour)
         <> field "navbar-text-colour-desktop"
-                 (toField C.style C.navbarTextColourDesktop)
+                 (toField #style #navbarTextColourDesktop)
         <> field "navbar-text-colour-mobile"
-                 (toField C.style C.navbarTextColourMobile)
+                 (toField #style #navbarTextColourMobile)
 
     toField configObj configField item = do
       _metadata <- getMetadata $ itemIdentifier item
-      return $ configField (configObj siteConfig)
+      return $ siteConfig ^. configObj ^.configField
 
   postCtx :: Context String
   postCtx = mconcat
@@ -185,11 +187,11 @@ main' siteConfig = hakyllWith hakyllConfig $ do
 
 atomFeedConfiguration :: C.Feed -> FeedConfiguration
 atomFeedConfiguration fs = FeedConfiguration
-  { feedTitle       = C.title fs
-  , feedDescription = C.description fs
-  , feedAuthorName  = C.authorName fs
-  , feedAuthorEmail = C.authorEmail fs
-  , feedRoot        = C.root fs
+  { feedTitle       = fs ^. #title
+  , feedDescription = fs ^. #description
+  , feedAuthorName  = fs ^. #authorName
+  , feedAuthorEmail = fs ^. #authorEmail
+  , feedRoot        = fs ^. #root
   }
 
 -- Friendlier config when using docker
