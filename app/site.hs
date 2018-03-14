@@ -137,16 +137,21 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         <> field "head-title" (toField #general #headTitle)
         <> field "base-url"   (toField #general #baseUrl)
 
-    styleCtx =
-      field "header-colour" (toField #style #headerColour)
-        <> field "head-theme-colour"  (toField #style #headThemeColour)
-        <> field "footer-colour"      (toField #style #footerColour)
-        <> field "footer-btn-colour"  (toField #style #footerBtnColour)
-        <> field "footer-link-colour" (toField #style #footerLinkColour)
-        <> field "navbar-text-colour-desktop"
-                 (toField #style #navbarTextColourDesktop)
-        <> field "navbar-text-colour-mobile"
-                 (toField #style #navbarTextColourMobile)
+    styleCtx = mconcat
+      [ field "header-colour"      (toField #style #headerColour)
+      , field "head-theme-colour"  (toField #style #headThemeColour)
+      , field "footer-colour"      (toField #style #footerColour)
+      , field "footer-btn-colour"  (toField #style #footerBtnColour)
+      , field "footer-link-colour" (toField #style #footerLinkColour)
+      , field "navbar-text-colour-desktop"
+              (toField #style #navbarTextColourDesktop)
+      , field "navbar-text-colour-mobile"
+              (toField #style #navbarTextColourMobile)
+      , field "share-button-colour" (toField #style #shareButtonColour)
+      , field "share-button-small-colour"
+              (toField #style #shareButtonSmallColour)
+      ]
+
 
     toField configObj configField item = do
       _metadata <- getMetadata $ itemIdentifier item

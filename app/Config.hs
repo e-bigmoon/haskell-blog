@@ -18,6 +18,8 @@ type Style = Record
   , "footerLinkColour"        >: Colour
   , "navbarTextColourDesktop" >: Colour
   , "navbarTextColourMobile"  >: Colour
+  , "shareButtonColour"       >: Colour
+  , "shareButtonSmallColour"  >: Colour
   ]
 
 type Colour = String
