@@ -1,6 +1,8 @@
 ---
 title: hpack について
 date: 2018/01/08
+prev: stack-install.html
+next: create-prj.html
 ---
 
 ## hpack の役割

@@ -1,5 +1,7 @@
 ---
 title: プログラムの実行
+prev: ./create-lib.html
+next: ./create-app.html
 ---
 
 ここまでの内容を対話環境で実行したいと思います。

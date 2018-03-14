@@ -1,5 +1,6 @@
 ---
 title: アプリケーションの作成
+prev: ./exec-prg.html
 ---
 
 ここまででライブラリ (`Minfree.hs`) の作成が終わりました。

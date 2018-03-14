@@ -1,5 +1,7 @@
 ---
 title: ライブラリの作成
+prev: ./create-prj.html
+next: ./exec-prg.html
 ---
 
 それでは書籍のコードを `src/Minfree.hs` として保存してみましょう。
