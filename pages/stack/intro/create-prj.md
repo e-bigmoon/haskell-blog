@@ -1,5 +1,7 @@
 ---
 title: プロジェクトの作成
+prev: ./hpack.html
+next: ./create-lib.html
 ---
 
 ```shell-session

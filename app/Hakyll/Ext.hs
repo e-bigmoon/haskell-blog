@@ -33,6 +33,11 @@ recentFirstWith
   :: MonadMetadata m => (Identifier -> String) -> [Item a] -> m [Item a]
 recentFirstWith f = fmap reverse . chronologicalWith f
 
+sortChronologicalWith
+  :: MonadMetadata m => (Identifier -> String) -> [Identifier] -> m [Identifier]
+sortChronologicalWith f =
+  fmap (fmap itemIdentifier) . chronologicalWith f . fmap (flip Item ())
+
 sortRecentFirstWith
   :: MonadMetadata m => (Identifier -> String) -> [Identifier] -> m [Identifier]
 sortRecentFirstWith f =

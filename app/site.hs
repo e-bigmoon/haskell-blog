@@ -4,6 +4,7 @@
 
 import qualified Config          as C
 import           Control.Lens    ((^.))
+import           Control.Monad   (forM_)
 import           Data.List       (stripPrefix)
 import           Data.Maybe
 import           Data.Monoid     ((<>))
@@ -57,17 +58,32 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   categories <- buildCategories "posts/**" (fromCapture "categories/*.html")
   createTagsRules categories (\xs -> "Posts categorised as \"" ++ xs ++ "\"")
 
-  match "posts/**" $ do
-    route $ setExtension "html"
-    let namedTags = [("tags", tags), ("categories", categories)]
-    compile
-      $   pandocCompiler
-      >>= saveSnapshot "content"
-      >>= loadAndApplyTemplate "templates/post.html"
-                               (ctxWithTags postCtx namedTags)
-      >>= loadAndApplyTemplate "templates/default.html"
-                               (ctxWithTags postCtx namedTags)
-      >>= relativizeUrls
+
+  postIDs <- sortChronological' =<< getMatches "posts/**"
+  let prevPosts = Nothing : map Just postIDs
+      nextPosts = tail $ map Just postIDs ++ [Nothing]
+
+  forM_ (zip3 postIDs prevPosts nextPosts) $
+    \(postID, mprevPost, mnextPost) -> create [postID] $ do
+        let prevPageCtx = case mprevPost of
+                Just i -> field "previousPageUrl"   (\_ -> pageUrl   i) <>
+                          field "previousPageTitle" (\_ -> pageTitle i)
+                _      -> mempty
+            nextPageCtx = case mnextPost of
+                Just i -> field "nextPageUrl"       (\_ -> pageUrl   i) <>
+                          field "nextPageTitle"     (\_ -> pageTitle i)
+                _      -> mempty
+            namedTags = [("tags", tags), ("categories", categories)]
+            ctx = mconcat [prevPageCtx, nextPageCtx, postCtx]
+        route $ setExtension "html"
+        compile
+          $   pandocCompiler
+          >>= saveSnapshot "content"
+          >>= loadAndApplyTemplate "templates/post.html"
+                                   (ctxWithTags ctx namedTags)
+          >>= loadAndApplyTemplate "templates/default.html"
+                                   (ctxWithTags ctx namedTags)
+          >>= relativizeUrls
 
   create ["archive.html"] $ do
     route idRoute
@@ -190,6 +206,19 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         >>= loadAndApplyTemplate "templates/default.html" ctx
         >>= relativizeUrls
 
+  pageTitle, pageUrl :: Identifier -> Compiler String
+  pageTitle i = do
+      mtitle <- getMetadataField i "title"
+      case mtitle of
+          Just title -> return title
+          Nothing    -> fail "no 'title' field"
+  pageUrl i = do
+      mfilePath <- getRoute i
+      case mfilePath of
+          Just filePath -> return (toUrl filePath)
+          Nothing       -> fail "no route"
+
+
 atomFeedConfiguration :: C.Feed -> FeedConfiguration
 atomFeedConfiguration fs = FeedConfiguration
   { feedTitle       = fs ^. #title
@@ -222,3 +251,6 @@ dateField' = dateFieldWith toDate
 
 recentFirst' :: MonadMetadata m => [Item a] -> m [Item a]
 recentFirst' = recentFirstWith toDate
+
+sortChronological' :: MonadMetadata m => [Identifier] -> m [Identifier]
+sortChronological' = sortChronologicalWith toDate
