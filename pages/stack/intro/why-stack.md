@@ -1,6 +1,8 @@
 ---
 title: なぜ stack を使うのか？
 date: 2018/01/07
+prev: ./index.html
+next: ./stackage.html
 ---
 
 ## Haskell 開発

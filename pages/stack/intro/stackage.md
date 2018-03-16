@@ -1,6 +1,8 @@
 ---
 title: Stackage とは何か？
 date: 2018/01/07
+prev: why-stack.html
+next: stack-install.html
 ---
 
 ## Stackage

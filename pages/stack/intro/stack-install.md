@@ -1,6 +1,8 @@
 ---
 title: stack について
 date: 2018/01/08
+prev: ./stackage.html
+next: ./hpack.html
 ---
 
 ## インストール
