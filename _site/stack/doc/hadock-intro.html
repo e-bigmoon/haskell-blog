@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>プロジェクトの作成</title>
+  <title>haddockの基礎知識</title>
   <meta name="description" content="BIG MOON">
-  <link rel="canonical" href="../../stack/intro/create-prj.html">
-  <link rel="alternate" type="application/atom+xml" title="プロジェクトの作成" href="../../feed.xml" />
+  <link rel="canonical" href="../../stack/doc/hadock-intro.html">
+  <link rel="alternate" type="application/atom+xml" title="haddockの基礎知識" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="プロジェクトの作成" />
+  <meta property="og:title" content="haddockの基礎知識" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="/stack/intro/create-prj.html" />
+  <meta property="og:url" content="/stack/doc/hadock-intro.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="プロジェクトの作成" />
+  <meta property="og:site_name" content="haddockの基礎知識" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -148,69 +148,56 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">プロジェクトの作成</h1>
+        <h1 class="post-title">haddockの基礎知識</h1>
         
       </div>
 
       <article class="page-content">
-        <pre class="shell-session"><code>$ stack new PFAD
-$ cd PFAD
-$ stack build
-
-$ tree .
+        <p><code>stack</code> には <code>Haddock</code> 形式と呼ばれる形式でコメントを残すことで、そのコメントを自動的にドキュメントに変換する <code>stack haddock</code> コマンドがあります。</p>
+<p>まずは特に何もせずに <code>Haddock</code> を生成してみましょう。</p>
+<pre class="shell-session"><code>$ stack haddock
+...
+/home/bm12/.stack/snapshots/x86_64-linux-nopie/lts-9.17/8.0.2/doc/index.html</code></pre>
+<p>ドキュメントが生成されるパスはデフォルトでは <code>.stack</code> 以下になっているため、ちょっと確認しづらいです。</p>
+<p>次に、<code>--haddock-arguments --odir=haddock</code> オプションで、出力先ディレクトリを変更してみましょう。</p>
+<pre class="shell-session"><code>$ stack haddock --haddock-arguments --odir=haddock
+$ tree -L 1
 .
-|-- ChangeLog.md
-|-- LICENSE
-|-- PFAD.cabal
-|-- README.md
-|-- Setup.hs
-|-- app
-|   `-- Main.hs
-|-- package.yaml
-|-- src
-|   `-- Lib.hs
-|-- stack.yaml
-`-- test
-    `-- Spec.hs</code></pre>
-<h5 id="準備">準備</h5>
-<p>新たに作成するソースコードは <code>app</code>, <code>src</code>, <code>test</code> に以下にそれぞれ配置します。一応、以下のコマンドに対応するようにフォルダを分けることが多いです。</p>
-<table>
-<thead>
-<tr class="header">
-<th>フォルダ</th>
-<th>関連するコマンド</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>app</td>
-<td>stack exec</td>
-</tr>
-<tr class="even">
-<td>src</td>
-<td>stack build</td>
-</tr>
-<tr class="odd">
-<td>test</td>
-<td>stack test</td>
-</tr>
-</tbody>
-</table>
-<p>今回 <code>src/Lib.hs</code> は使わないので削除しておきましょう。</p>
-<pre class="shell-session"><code>$ rm src/Lib.hs</code></pre>
-<p>そうすると当然 <code>Lib.hs</code> が無いのでコンパイルエラーになってしまいます。とりあえず現状は <code>src/Main.hs</code> を以下のように書き換えておきましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs:app/main.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">main <span class="fu">=</span> undefined</a></code></pre></div>
+├── app
+├── ChangeLog.md
+├── LICENSE
+├── package.yaml
+├── PFAD.cabal
+├── README.md
+├── Setup.hs
+├── src
+├── stack.yaml
+└── test</code></pre>
+<p><code>Haddock</code> ディレクトリができると思いきや、何も起こりませんね。これはビルドキャッシュが残っているためです。一度 <code>stack clean</code> をしてからもう一度実行してみましょう。</p>
+<pre class="shell-session"><code>$ stack clean
+$ stack haddock --haddock-arguments --odir=haddock
+$ tree -L 1
+.
+├── app
+├── ChangeLog.md
+├── haddock       # 生成された
+├── LICENSE
+├── package.yaml
+├── PFAD.cabal
+├── README.md
+├── Setup.hs
+├── src
+├── stack.yaml
+└── test</code></pre>
+<p><code>haddock/index.html</code> をブラウザで確認すると、こんな感じで <code>Hackage</code> と同じようなドキュメントが生成されているはずです。</p>
+<p><img src="../../images/haddock01.png" alt="page1.png" /> <img src="../../images/haddock02.png" alt="page2.png" /></p>
+<p>ここまでで基本的なドキュメントの生成方法はわかりました。</p>
+<p>気にしておいて欲しい点としては <code>expose</code> されている関数のみがドキュメント化されるという点です。<code>Haddock</code> 形式のコメントを使っていなくても <code>expose</code> されている関数や型は、自動的に情報が公開されることを理解しておきましょう。</p>
+<p>次は <code>Haddock</code> コメントを追加してどんどんドキュメントをリッチにしていきましょう！</p>
       </article>
 
       <div class="pager">
       
-        <a class="waves-effect waves-light btn white-text prev" href="./hpack.html"><span>«</span>前</a>
-      
-      
-        <a class="waves-effect waves-light btn white-text next" href="./create-lib.html">次<span>»</span></a>
       
       </div>
 
@@ -222,13 +209,13 @@ $ tree .
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=プロジェクトの作成&url=https://haskell.e-bigmoon.com/stack/intro/create-prj.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=haddockの基礎知識&url=https://haskell.e-bigmoon.com/stack/doc/hadock-intro.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/intro/create-prj.html"><i class="mdi mdi-facebook white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/doc/hadock-intro.html"><i class="mdi mdi-facebook white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/intro/create-prj.html"><i class="mdi mdi-google-plus white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/doc/hadock-intro.html"><i class="mdi mdi-google-plus white-text"></i></a>
     </li>
   </ul>
 </div>
