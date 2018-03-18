@@ -1,7 +1,7 @@
 #!/usr/bin/env stack
 -- stack --resolver lts-10.5 script
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
@@ -15,7 +15,6 @@ import qualified Data.Text             as T (pack)
 import           Network.HTTP.Req
 import           System.Environment    (lookupEnv)
 import           Turtle                hiding (header)
-
 
 main :: IO ()
 main = do
@@ -36,26 +35,33 @@ main = do
     homeDir  <- lookupEnvWithError "HOME"
     token    <- lookupEnvWithError "GITHUB_OAUTH"
 
-    let
-      prNumber = takeWhileEnd (/= '/') prUrl
-      url = mkUrl (T.pack userName) (T.pack repoName) (T.pack prNumber)
-      message = mkMessage buildUrl (tail homeDir) repoName
+    let prNumber = takeWhileEnd (/= '/') prUrl
+        url      = mkUrl (T.pack userName) (T.pack repoName) (T.pack prNumber)
+        message  = mkMessage buildUrl (tail homeDir) repoName
 
     resp <- runReq def $ mkReq url message (B.pack token)
     print $ responseBody resp
 
 mkReq :: Url Https -> String -> ByteString -> Req (JsonResponse Value)
 mkReq url message token =
-  req POST url (ReqBodyJson $ object [ "body" .= message]) jsonResponse $
-    oAuth2Token token <> header "User-Agent" "CircleCI Preview"
+  req POST url (ReqBodyJson $ object ["body" .= message]) jsonResponse
+    $  oAuth2Token token
+    <> header "User-Agent" "CircleCI Preview"
 
 mkMessage :: String -> String -> String -> String
-mkMessage buildUrl homeDir repoName =
-  intercalate "/" [buildUrl, "artifacts", "0", homeDir, repoName, "_site/index.html"]
+mkMessage buildUrl homeDir repoName = intercalate
+  "/"
+  [buildUrl, "artifacts", "0", homeDir, repoName, "_site/index.html"]
 
 mkUrl :: Text -> Text -> Text -> Url Https
 mkUrl userName repoName prNumber =
-  https "api.github.com" /: "repos" /: userName /: repoName /: "issues" /: prNumber /: "comments"
+  https "api.github.com"
+    /: "repos"
+    /: userName
+    /: repoName
+    /: "issues"
+    /: prNumber
+    /: "comments"
 
 -- | port from dropWhileEnd in Data.List
 takeWhileEnd :: (a -> Bool) -> [a] -> [a]

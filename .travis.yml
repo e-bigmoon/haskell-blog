@@ -12,17 +12,25 @@ install:
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 jobs:
   include:
-    - stage: install cabal
+    - stage: Install cabal
       script: stack --no-terminal build -j 1 Cabal
-    - stage: install pandoc
+    - stage: Install pandoc
       script: travis_wait 30 stack --no-terminal build pandoc
-    - stage: install deprndences
+    - stage: Install deprndences
       script: stack --no-terminal test --only-dependencies
-    - stage: stack test
+    - stage: Run stack test
       script: stack --no-terminal test
-    - stage: rebuild site
+    - stage: Run stack test --pedantic
+      script:
+      - stack clean
+      - stack --no-terminal test --pedantic
+    - stage: Run HLint
+      script:
+      - curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version
+      - curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
+    - stage: Run stack exec site rebuild
       script: stack exec site rebuild
-    - stage: deploy
+    - stage: Deploy
       if: branch = master AND type IN (push)
       script: stack exec site rebuild
       after_success:

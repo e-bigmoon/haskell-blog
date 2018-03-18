@@ -5,7 +5,6 @@ module Config where
 
 import           Data.Extensible
 import           Data.Yaml       (FromJSON, decodeFile)
-import           GHC.Generics
 
 fromConfig :: (FromJSON a) => FilePath -> IO (Maybe a)
 fromConfig = decodeFile

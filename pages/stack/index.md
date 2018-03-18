@@ -1,6 +1,6 @@
 ---
-title: stack index
-date: 2018/02/12
+title: Haskell Stack
+date: 2018/03/18
 ---
 
 ## Tips
