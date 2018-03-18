@@ -1,5 +1,5 @@
 ---
-title: Haskell Stack まとめ
+title: Haskell Stack
 date: 2018/03/18
 ---
 

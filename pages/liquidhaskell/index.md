@@ -1,5 +1,5 @@
 ---
-title: LiquidHaskell まとめ
+title: LiquidHaskell
 date: 2018/03/18
 ---
 

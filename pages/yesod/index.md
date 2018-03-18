@@ -1,5 +1,5 @@
 ---
-title: Haskell Yesod まとめ
+title: Haskell Yesod
 date: 2018/03/18
 ---
 
