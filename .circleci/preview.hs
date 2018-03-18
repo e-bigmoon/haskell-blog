@@ -16,7 +16,6 @@ import           Network.HTTP.Req
 import           System.Environment    (lookupEnv)
 import           Turtle                hiding (header)
 
-
 main :: IO ()
 main = do
   -- | If this build is part of only one pull request, its URL will be populated here. If there was more than one pull request, it will contain one of the pull request URLs (picked randomly).
