@@ -168,7 +168,6 @@ main' siteConfig = hakyllWith hakyllConfig $ do
               (toField #style #shareButtonSmallColour)
       ]
 
-
     toField configObj configField item = do
       _metadata <- getMetadata $ itemIdentifier item
       return $ siteConfig ^. configObj ^.configField
@@ -218,7 +217,6 @@ main' siteConfig = hakyllWith hakyllConfig $ do
           Just filePath -> return (toUrl filePath)
           Nothing       -> fail "no route"
 
-
 atomFeedConfiguration :: C.Feed -> FeedConfiguration
 atomFeedConfiguration fs = FeedConfiguration
   { feedTitle       = fs ^. #title
@@ -236,9 +234,7 @@ hakyllConfig =
 sitemapPages :: [Item String] -> [Item String]
 sitemapPages = filter ((/= "pages/LICENSE.md") . toFilePath . itemIdentifier)
 
--- |
--- Helper Functions for dirctory design is yyyy/mm-dd-xxx.md
-
+-- | Helper Functions for dirctory design is yyyy/mm-dd-xxx.md
 toDate :: Identifier -> String
 toDate ident = yyyy ++ "-" ++ mmdd
  where
