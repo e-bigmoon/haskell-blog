@@ -146,11 +146,11 @@ $ ./Main.hs
 
 この状態で [http://localhost:3000/](http://localhost:3000/) にアクセスしてみましょう。以下のようなページが表示されるはずです。
 
-![img](/images/2018/03-19/img01.png)
+![トップページ](/images/2018/03-19/img01.png)
 
 サブサイトにアクセスするとこんな感じです。
 
-![img](/images/2018/03-19/img02.png)
+![サブサイト](/images/2018/03-19/img02.png)
 
 ## Scaffolded Site
 
@@ -294,7 +294,7 @@ $ stack exec example-subsite
 
 [http://localhost:3000/subsite](http://localhost:3000/subsite) にアクセスすると次のような画面が現れます。
 
-![img](/images/2018/03-19/img03.png)
+![実行結果](/images/2018/03-19/img03.png)
 
 ## まとめ
 
