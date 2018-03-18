@@ -12,11 +12,11 @@ date: 2018/03/18
 
 ### Basics
 
-| 原文 | 訳 | 補足資料 | 練習問題 | 備考 |
-|-----|------|------|------|------|
-| [Introduction](https://www.yesodweb.com/book/introduction) | Introduction | | | |
-| [Haskell](https://www.yesodweb.com/book/haskell) | Haskell | | | |
-| [Basics](https://www.yesodweb.com/book/basics) | [Basics](contents/Basics/ch03/) | [スライド](https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing) | [練習問題](exercise/ch03/) |  |
+原文 | 日本語訳 | 補足資料 | 練習問題
+-----|----------|----------|----------
+[Introduction](https://www.yesodweb.com/book/introduction) | Introduction
+[Haskell](https://www.yesodweb.com/book/haskell) | Haskell
+[Basics](https://www.yesodweb.com/book/basics) | [Basics](book/ch03-basics.html) | [スライド](https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing) | [練習問題](exercise/ch03/)
 | [Shakespearean Templates](https://www.yesodweb.com/book/shakespearean-templates) | [Shakespearean Templates](contents/Basics/ch04/) | [スライド](https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing) | [練習問題](exercise/ch04/) |  |
 | [Widgets](https://www.yesodweb.com/book/widgets) | [Widgets](contents/Basics/ch05/) | [スライド](https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing) | [練習問題](exercise/ch05/) |  |
 | [Yesod Typeclass](https://www.yesodweb.com/book/yesod-typeclass) | [Yesod Typeclass](contents/Basics/ch06/) | [スライド](https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing) | |  |
