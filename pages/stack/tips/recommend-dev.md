@@ -4,15 +4,16 @@ date: 2018/01/07
 ---
 
 ## ビルド
+
 僕は `vscode` のターミナルに以下のコマンドを打ち込んで自動的にビルドさせています。
 
-```shell
+```sh
 $ stack test --fast --file-watch
 ```
 
 警告が許せない人は以下のように `--pedantic` を付けて開発しましょう。(個人的には付けずに開発しつつ `CI` でチェックするスタイルの方が効率が上がって良いと思います)
 
-```shell
+```sh
 $ stack test --fast --file-watch --pedantic
 ```
 

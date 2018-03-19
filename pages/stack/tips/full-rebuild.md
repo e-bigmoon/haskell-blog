@@ -3,7 +3,6 @@ title: 完全なリビルド
 date: 2017/12/24
 ---
 
-
 ## リビルド方法
 
 通常 `stack build` でリビルドした際はキャッシュが利用されます。
@@ -12,7 +11,7 @@ date: 2017/12/24
 
 `--force-dirty` や `--ghc-options=-fforce-recomp` などを使う方法もあるのですが、一番確実なのは `stack clean` することです。
 
-```shell
+```sh
 $ stack clean
 $ stack build
 ```
@@ -21,14 +20,14 @@ $ stack build
 
 基本的には `stack clean` で上手く行くことが多いのですがどうしてもだめな場合は `--full` オプションを追加します。
 
-```shell
+```sh
 $ stack clean --full
 $ stack build
 ```
 
 このオプションは以下のコマンドと同じ結果となります。
 
-```shell
+```sh
 $ rm -rf .stack-work/
 ```
 
@@ -36,7 +35,7 @@ $ rm -rf .stack-work/
 
 `precompiled`, `snapshots` を削除してもう一度ビルドしてみましょう。
 
-```shell
+```sh
 $ stack path --stack-root
 ~/.stack
 
