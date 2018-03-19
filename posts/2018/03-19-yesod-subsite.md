@@ -159,7 +159,7 @@ $ ./Main.hs
 `Scaffolded Site` は一番素朴な `yesod-simple` を利用することとします。
 
 ```sh
-$ $ stack new example-subsite yesod-simple
+$ stack new example-subsite yesod-simple
 $ cd example-subsite
 ```
 
