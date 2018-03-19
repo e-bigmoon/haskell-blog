@@ -5,7 +5,7 @@ date: 2017/12/24
 
 ## 最新の安定版へアップグレードする方法
 
-```shell
+```sh
 $ stack upgrade
 
 $ stack --version
@@ -17,7 +17,7 @@ $ stack --version
 
 `github` の最新版を利用したい方は次のコマンドでアップグレードしましょう。
 
-```shell
+```sh
 $ stack upgrade --git
 ```
 
@@ -29,13 +29,13 @@ $ stack upgrade --git
 
 `master` 以外のブランチを指定したい場合は、以下のように `--git-branch` オプションにブランチ名を指定すると良いでしょう。
 
-```shell
+```sh
 $ stack upgrade --git --git-branch release
 ```
 
 ## stack のバージョンを指定してアップグレードする方法
 
-```shell
+```sh
 $ stack upgrade --binary-version 1.5.1
 ```
 
@@ -48,7 +48,6 @@ $ stack upgrade --binary-version 1.5.1
 なぜなら `stack update` は `cabal update` が行うようにパッケージインデックスの更新を明示的に行うコマンドですが、必要であれば `stack` の内部で自動的に `stack update` が実行されるためです。
 
 - [How do I update my package index?](https://github.com/commercialhaskell/stack/blob/master/doc/faq.md#how-do-i-update-my-package-index)
-
 
 ## 注意点
 
@@ -66,7 +65,7 @@ $ which stack
 
 基本的には、以下のような `PATH` の設定をしておいた方が良いと思います。
 
-```shell
+```sh
 $ export PATH=~/.local/bin:$PATH
 ```
 
