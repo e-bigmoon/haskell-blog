@@ -10,7 +10,7 @@ tags: bigmoon, package
 
 利用者の多いアプリケーションだと、バグ報告時にどのコミットでビルドしたものなのか知りたい場合に便利です。
 
-こんな感じで表示させることが可能です。
+表示されるバージョン情報はこんな感じになります。
 
 ```hs
 # gitrev を使った方法
@@ -42,7 +42,7 @@ Version 0.1.0.0, Git revision 341e785b02c4c599f64b922b4aa9cfff3c006945
 - コミットの describe
 - コミットのハッシュ
 
-そのため、メッセージをカスタマイズしたい場合に便利でしょう。
+そのため、表示する情報を自分の好きなようにカスタマイズしたい場合に便利でしょう。
 
 ### サンプルアプリケーション
 
@@ -92,7 +92,6 @@ $ git init
 Initialized empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/
 
 $ git add -A
-
 $ git commit -m "TEST"
 [master (root-commit) 3a0bd17] TEST
  1 file changed, 16 insertions(+)
@@ -110,7 +109,7 @@ Main.hs: [panic master@3a0bd17fdfb8a3e334292a560280e8e0791e941c (Tue Mar 20 02:0
 
 それは `optparse-simple` パッケージの [simpleVersion](https://www.stackage.org/haddock/lts-11.1/optparse-simple-0.1.0/Options-Applicative-Simple.html#v:simpleVersion) を使う方法です。
 
-`Paths_XXXX` の `XXXX` は `cabal` ファイルのプロジェクト名を指定します。これで `cabal` ファイルのバージョン情報を直接取得できるようになります。
+`simpleVersion` では `git` の情報だけでなく、アプリケーションのバージョンも自動的に表示してくれます。
 
 ```hs
 {-# LANGUAGE TemplateHaskell   #-}
@@ -121,6 +120,9 @@ import qualified Paths_XXXX               as Meta
 main :: IO ()
 main = putStrLn $(simpleVersion Meta.version)
 ```
+
+`Paths_XXXX` の `XXXX` は `cabal` ファイルのプロジェクト名を指定します。これで `cabal` ファイルのバージョン情報を直接取得できるようになります。
+
 
 表示される結果はこんな感じです。
 
