@@ -13,11 +13,11 @@ tags: bigmoon, package
 表示されるバージョン情報はこんな感じになります。
 
 ```hs
-# gitrev を使った方法
+# gitrev の例
 $ ./Main.hs
 Main.hs: [panic master@3a0bd17fdfb8a3e334292a560280e8e0791e941c (Tue Mar 20 02:00:17 2018 +0900) (1 commits in HEAD)]
 
-# optparse-simple を使った方法
+# optparse-simple の例
 $ stack exec -- example-version-exe
 Version 0.1.0.0, Git revision 341e785b02c4c599f64b922b4aa9cfff3c006945
 ```
@@ -109,7 +109,79 @@ Main.hs: [panic master@3a0bd17fdfb8a3e334292a560280e8e0791e941c (Tue Mar 20 02:0
 
 それは `optparse-simple` パッケージの [simpleVersion](https://www.stackage.org/haddock/lts-11.1/optparse-simple-0.1.0/Options-Applicative-Simple.html#v:simpleVersion) を使う方法です。
 
-`simpleVersion` では `git` の情報だけでなく、アプリケーションのバージョンも自動的に表示してくれます。
+`simpleVersion` では `git` の情報だけでなく、アプリケーションのバージョンも一緒に表示することができます。
+
+### simpleVersion
+
+[simpleVersion](https://www.stackage.org/haddock/lts-11.1/optparse-simple-0.1.0/src/Options.Applicative.Simple.html#simpleVersion) の定義は以下のようになっています。
+
+```hs
+simpleVersion :: Version -> Q Exp
+simpleVersion version =
+  [|concat (["Version "
+           ,$(TH.lift $ showVersion version)
+           ] ++
+           if $gitHash == ("UNKNOWN" :: String)
+             then []
+             else
+               [", Git revision "
+               ,$gitHash
+               ,if $gitDirty
+                   then " (dirty)"
+                   else ""
+               ])|]
+```
+
+`$gitHash` や `$gitDirty` を見ればわかる通り、内部的に `gitrev` パッケージを利用して `git` の情報を取得しています。
+
+また、第一引数の `Version` 型は `base` パッケージの [Data.Version](https://www.stackage.org/haddock/lts-11.1/base-4.10.1.0/Data-Version.html) で定義されている型です。
+
+以下のように `makeVersion :: [Int] -> Version` 関数を使って `Version` 型の値を作ることができます。
+
+```hs
+{-# LANGUAGE TemplateHaskell   #-}
+
+import           Options.Applicative.Simple (simpleVersion)
+import           Data.Version (makeVersion)
+
+main :: IO ()
+main = putStrLn $(simpleVersion $ makeVersion [100,0,0,0])
+```
+
+適当にプロジェクトを作って、上記の内容を実行してみましょう。
+
+```sh
+$ stack exec example-exe 
+Version 100.0.0.0
+```
+
+まだ `git` で管理していないため、バージョン情報のみが表示されます。
+
+では、先ほどの例と同様に `git` リポジトリを作ってコミットした結果を見てみましょう。
+
+```sh
+$ git init
+Initialized empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/
+
+$ git add -A
+$ git commit -m "TEST"
+[master (root-commit) 3a0bd17] TEST
+ 1 file changed, 16 insertions(+)
+ create mode 100755 Main.hs
+
+$ stack clean
+$ stack build
+$ stack exec example-exe 
+Version 100.0.0.0, Git revision e106394f7fdded0c9908cbf8edc87c5d5d5b4309
+```
+
+このようにちゃんとリビジョンが表示されるようになりました。
+
+### アプリケーションのバージョンを自動的に更新する
+
+アプリケーションのリリースごとに `makeVersion` を使って更新する作業はとても面倒ですし、いつか間違えてしまうかもしれません。
+
+これを解決するためには `.cabal` ファイルからバージョン情報を自動取得して `simpleVersion` 関数に渡してあげるようにすれば良いのです。
 
 ```hs
 {-# LANGUAGE TemplateHaskell   #-}
@@ -121,8 +193,7 @@ main :: IO ()
 main = putStrLn $(simpleVersion Meta.version)
 ```
 
-`Paths_XXXX` の `XXXX` は `cabal` ファイルのプロジェクト名を指定します。これで `cabal` ファイルのバージョン情報を直接取得できるようになります。
-
+`Paths_XXXX` の `XXXX` はアプリケーション名 (`cabal` ファイルの `name` の値) を指定します。これで `cabal` ファイルのバージョン情報を直接取得できるようになります。
 
 表示される結果はこんな感じです。
 
