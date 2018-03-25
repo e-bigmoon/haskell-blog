@@ -18,7 +18,19 @@ tags: bigmoon, package
 
 ```bssh
 $ git clone https://github.com/haskell/haskell-ide-engine.git
-$ stack install
+$ cd haskell-ide-engine
+$ make
+
+...
+
+* Missing C libraries: icuuc, icui18n, icudata
+```
+
+`make`実行時、以下のようにライブラリが足りなかったので、必要なパケージをインストールして、もう一度 `make` しました。
+
+```bash
+$ sudo apt install libicu-dev
+$ make
 ```
 
 ### 2. 必要なパッケージを入手する。
