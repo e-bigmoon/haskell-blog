@@ -1,13 +1,12 @@
 ---
-title: Haskell IDE EngineをEmacsで使う
+title: Haskell IDE Engine を Emacs で使う
 author: Wataru Yamada
-tags: bigmoon
+tags: bigmoon, package
 ---
 
 ## はじめに
 
-[HIE(Haskell IDE Engine)](https://github.com/haskell/haskell-ide-engine)
-を `Emacs` に導入する方法が`HIE`の[README.md](https://github.com/haskell/haskell-ide-engine/pull/502/files)に追記されたので、それに従いインストールしてみました。
+[HIE (Haskell IDE Engine)](https://github.com/haskell/haskell-ide-engine) を `Emacs` に導入する方法が `HIE` の [README.md](https://github.com/haskell/haskell-ide-engine/pull/502/files) に追記されたので、それに従いインストールしてみました。
 
 本記事では、導入手順を紹介します。
 
@@ -15,10 +14,10 @@ tags: bigmoon
 
 ## 導入手順
 
-### 1. IEをインストールする。
+### 1. HIE をインストールする。
 
 ```bssh
-$ git clone git@github.com:haskell/haskell-ide-engine.git
+$ git clone https://github.com/haskell/haskell-ide-engine.git
 $ stack install
 ```
 
@@ -30,7 +29,7 @@ $ git clone git@github.com:emacs-lsp/lsp-ui.git
 $ git clone git@github.com:emacs-lsp/lsp-haskell.git
 ```
 
-### 3. emacsの設定ファイル(init.elなど)に以下を追加する。
+### 3. emacs の設定ファイル (init.el など) に以下を追加する。
 
 ```elisp
 (add-to-list 'load-path "/path/to/lsp-mode")
@@ -46,10 +45,10 @@ $ git clone git@github.com:emacs-lsp/lsp-haskell.git
 (add-hook 'haskell-mode-hook 'flycheck-mode)
 ```
 
-上記内容を記述した後でEmacsを起動したときに、依存するパッケージのインストールを要求される場合があるので、`Cask`や`package-install`などでインストールしましょう。
+上記内容を記述した後で Emacs を起動したときに、依存するパッケージのインストールを要求される場合があるので、`Cask` や `package-install` などでインストールしましょう。
 
 インストールが成功すると、`Haskell` のファイルを読み込んだときに、カーソルを当てたところにある関数の型の表示、エラーの表示、補完、コマンド `M-.` で定義のところにジャンプなどができるようになります。
 
-### おわりに
+## おわりに
 
 `HIE` は `ghc-mod` の実行ファイルを使っているかのように見えますが、実際はライブラリを通しているだけでバイナリは使っていないそうです。
