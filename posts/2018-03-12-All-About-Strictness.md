@@ -198,8 +198,8 @@ main = do
 
 **質問** もし、全ての `add` 関数に `!` をつけたら結果はどう変わるでしょうか？ なぜ `!` を付けるだけで出力に影響したり (しなかったり) するのでしょうか？
 
-## The value of bottom
-This is all well and good, but the more standard way to demonstrate evaluation order is to use bottom values, aka `undefined`. `undefined` is special in that, when it is evaluated, it throws a runtime exception. (The `error` function does the same thing, as do a few other special functions and values.) To demonstrate the same thing about `seven` not being evaluated without the bangs, compare these two programs:
+## ボトムの値
+今までの例もちゃんと動きますが、評価の順番をデモするのに、より標準的な方法があります。ボトム、すなわち `undefined` を使うことです。`undefined` は、評価されたときに実行時例外を投げる点で特別です。 (他の特別な関数や値のように、`error` 関数も同じ動きをします。) バンなしで `seven` が評価されないことを再現するために、以下の2つのプログラムを比較してみましょう:
 
 ```haskell
 #!/usr/bin/env stack
@@ -217,7 +217,7 @@ main = do
   putStrLn $ "Five: " ++ show five
 ```
 
-Versus:
+と:
 
 ```haskell
 #!/usr/bin/env stack
@@ -235,16 +235,16 @@ main = do
   putStrLn $ "Five: " ++ show five
 ```
 
-The former completes without issue, since `seven` is never evaluated. However, in the latter, we have a bang pattern on `seven`. What GHC does here is:
+です。最初の例は問題なく実行することができます。これは `seven` が評価されることがないからですね。しかし、後者では、`seven` にバンパターンが付いています。ここで、GHC はこんなことをしています:
 
-- Evaluate the expression `add (1 + 2) undefined`
-- This reduces to `(1 + 2) + undefined`
-- But this is still an expression, not a value, so more evaluation is necessary
-- In order to evaluate the `+` operator, it needs actual values for the two arguments, not just thunks. This can be seen as if `+` has bang patterns on its arguments. The correct way to say this is "`+` is strict in both of its arguments."
-- GHC is free to choose to either evaluate `1 + 2` or `undefined` first. Let's assume it does `1 + 2` first. It will come up with two evaluated values (`1` and `2`), pass them to `+`, and get back `3`. All good.
-- However, it then tries to evaluate `undefined`, which triggers a runtime exception to be thrown.
+- `add (1 + 2) undefined` と言う式を評価する
+- これは `(1 + 2) + undefined` に簡約化される
+- しかしまだこれは値ではなく式なので、さらに評価が必要になる
+- `+` という演算子を評価するために、ただのサンクではなく2つの引数の実際の値が必要になる。`+` の引数がバンパターンを持っている、という見方をしてもいい。正しい言い方をすると、「`+` は2つの引数のどちらに対しても厳格 (自信なし)」
+- GHC は `1 + 2` と `undefined` のどちらも最初に評価してもいい。ここでは `1 + 2` を最初に評価しているものとするが、2つの評価済みの値 (`1` と `2`) を `+` に渡し、`3` を得る。全て順調。
+- しかし、`undefined` を評価しようとして、実行時例外が投げられる。
 
-**QUESTION** Returning to the question above: does it look like bang patterns inside the `add` function actually accomplish anything? Think about what the output of this program will be:
+**問題** 上の質問 (自信なし) に戻りますが: `add` 関数の内部にバンパターンを持たせたら、何か変わるでしょうか? このプログラムの出力が何になるか考えてみてください:
 
 ```haskell
 #!/usr/bin/env stack
@@ -262,7 +262,7 @@ main = do
   putStrLn $ "Five: " ++ show five
 ```
 
-To compare this behavior to a strict language, we need a language with something like runtime exceptions. I'll use Rust's panics:
+この動作を厳格な言語と比較するために、実行時例外のようなものを持つ言語が必要ですね。Rust のパニックを使うことにしましょう:
 
 ```rust
 fn add(x: isize, y: isize) -> isize {
@@ -278,9 +278,9 @@ fn main() {
 }
 ```
 
-Firstly, to Rust's credit: it gives me a bunch of warnings about how this program is dumb. Fair enough, but I'm going to ignore those warnings and charge ahead with it. This program will first evaluate the `add(1 + 1, 1 + 2)` expression (which we can see in the output of `adding: 2 and 3`). Then, before it ever enters the add function the second time, it needs to evaluate both `1 + 2` and `panic!()`. The former works just fine, but the latter results in a panic being generated and short-circuiting the rest of our function.
+まず Rust をフォローするために書いておきましょう。Rust は、このプログラムがどんなにバカげたことをしているのか、多くの警告を出してくれます。確かにそれはそうなんですが、これらの警告は無視して突っ走りましょう。このプログラムは、まず最初に `add(1 + 1, 1 + 2)` という式を評価します (`adding: 2 and 3` という出力で確認できます)。そして、2回目の add 関数に入る前に、`1 + 2` と　`panic!()` のどちらも評価する必要があります。前者はいいですが、後者ではパニックが発生し、そこでショートします。
 
-If we want to regain Haskell's laziness properties, there's a straightforward way to do it: use a closure. A closure is, essentially, a thunk. The Rust syntax for creating a closure is `|args| body`. We can create closures with no arguments to act like thunks, which gives us:
+Haskell の遅延性を獲得したいのなら、簡単な方法があります。クロージャを使いましょう。クロージャは本質的にはサンクです。Rust の構文でクロージャを書くと、`|args| body` のようになります。引数なしのクロージャを作ると、サンクのような振る舞いをします。こんな感じです:
 
 ```rust
 fn add<X, Y>(x: X, y: Y) -> isize
@@ -300,9 +300,9 @@ fn main() {
 }
 ```
 
-Again, the Rust compiler complains about the unused `seven`, but this program succeeds in running, since we never run the `seven` closure.
+繰り返しますが、Rust のコンパイラは使われていない `seven` について文句を言ってきます。が、`seven` のクロージャを使うことはないので、このプログラムを実行することはできます。
 
-Still not up to speed with Rust? Let's use everyone's favorite language: Javascript:
+まだ Rust についてあまり知らない? それなら、みんな大好き Javascript を使ってみましょう:
 
 ```javascript
 function add(x, y) {
@@ -318,15 +318,15 @@ var seven = ignored => add(ignored => 1 + 2, panic);
 console.log("Five: " + five());
 ```
 
-Alright, to summarize until now:
+よし、今までの話をまとめてみます:
 
-- Haskell is lazy by default
-- You can use bang patterns and `seq` to make things strict
-- By contrast, in strict languages, you can use closures to make things lazy
-- You can see if a function is strict in its arguments by passing in bottom (`undefined`) and seeing if it explodes in your face
-- The `trace` function can help you see this as well
+- Haskell はデフォルトで lazy
+- バンパターンと `seq` を使うことで、厳格にすることができる
+- 一方、厳格な言語ではクロージャを使うことで lazy にすることができる
+- 関数が引数に対して厳格かどうか、ボトム (`undefined`) を渡して、目の前で爆発するかどうかで確認することができる
+- `trace` 関数を使っても同じことを確認できる
 
-This is all good, and make sure you have a solid grasp of these concepts before continuing. Consider rereading the sections above.
+ここまでは全て順調ですね。先に進む前に、これらの概念を確実に理解しておいてください。上のセクションを読み直すのもいいかもしれません。
 
 ## Average
 Here's something we didn't address: what, exactly, does it mean to evaluate or force a value? To demonstrate the problem, let's implement an average function. We'll use a helper datatype, called `RunningTotal`, to capture both the cumulative sum and the number of elements we've seen so far.
