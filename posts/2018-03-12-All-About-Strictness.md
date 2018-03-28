@@ -328,8 +328,8 @@ console.log("Five: " + five());
 
 ここまでは全て順調ですね。先に進む前に、これらの概念を確実に理解しておいてください。上のセクションを読み直すのもいいかもしれません。
 
-## Average
-Here's something we didn't address: what, exactly, does it mean to evaluate or force a value? To demonstrate the problem, let's implement an average function. We'll use a helper datatype, called `RunningTotal`, to capture both the cumulative sum and the number of elements we've seen so far.
+## 平均
+まだ言及してないことがありました: 具体的に、「評価する」とか「値であることを強要する」というのはどういうことなのでしょう? この問題を考えるために、average 関数を実装してみましょう。`RunningTotal` というヘルパー型を使って、これまでに出てきた累積合計と要素数を取得することにします。
 
 ```haskell
 data RunningTotal = RunningTotal
@@ -356,13 +356,13 @@ main :: IO ()
 main = printListAverage [1..1000000]
 ```
 
-We're going to run this with run time statistics turned on so we can look at memory usage:
+実行時に統計を取って、メモリ使用を見てみます:
 
 ```bash
 $ stack ghc average.hs && ./average +RTS -s
 ```
 
-Lo and behold, our memory usage is through the roof!
+なんということでしょう。メモリ使用量がぶっ飛んだことになっています!
 
 ```bash
 [1 of 1] Compiling Main             ( average.hs, average.o )
@@ -375,10 +375,10 @@ Linking average ...
              164 MB total memory in use (0 MB lost due to fragmentation)
 ```
 
-We're allocating a total of 258MB, and keeping 95MB in memory at once. For something that should just be a tight inner loop, that's ridiculously large.
+トータルで 258MB も確保していて、同時に、 (???) 95MB も確保しています。ただの tight inner loop (???) にしては、ばかみたいに多いですね。
 
-### Bang!
-You're probably thinking right now "shouldn't we use that `seq` stuff or those bang patterns?" Certainly that makes sense. And in fact, it looks really trivial to solve this problem with a single bang to force evaluation of the newly constructed `rt` before recursing back into `go`. For example, we can add `{-# LANGUAGE BangPatterns #-}` to the top of our file and then define `go` as:
+### バン!
+あなたは今、「`seq` とかバンパターンのようなものを使うべきじゃないの?」と考えていると思います。確かに、それは筋が通るやり方です。実際、1つバンパターンを加えて `go` の再帰に入る前に新しい `rt` の評価を強制することで、普通にこの問題は解けそうです。例えば、`{-# LANGUAGE BangPatterns #-}` をファイルの先頭に追加して、`go` をこんな風に定義したらどうでしょう:
 
 ```haskell
 go !rt [] = printAverage rt
@@ -387,7 +387,7 @@ go (RunningTotal sum count) (x:xs) =
    in go rt xs
 ```
 
-Unfortunately, this results in exactly the same memory usage as we had before. In order to understand why this is happening, we need to look at something called weak head normal form.
+しかし、こうしてもメモリ使用率は全く変わりません。なぜこんなことになってしまうのでしょう。これを理解するためには、weak head normal form というものを理解する必要があります。
 
 ### Weak Head Normal Form
 Note in advance that [there's a great Stack Overflow answer](https://stackoverflow.com/questions/6872898/haskell-what-is-weak-head-normal-form/6889335#6889335) on this topic for further reading.
