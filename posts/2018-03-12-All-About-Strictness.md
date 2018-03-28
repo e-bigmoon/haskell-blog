@@ -375,7 +375,7 @@ Linking average ...
              164 MB total memory in use (0 MB lost due to fragmentation)
 ```
 
-トータルで 258MB も確保していて、同時に、 (???) 95MB も確保しています。ただの tight inner loop (???) にしては、ばかみたいに多いですね。
+トータルで 258MB も確保していて、一度に 95MB も確保しています。ただの局所関数の再帰にしては、ばかみたいに多いですね。
 
 ### バン!
 あなたは今、「`seq` とかバンパターンのようなものを使うべきじゃないの?」と考えていると思います。確かに、それは筋が通るやり方です。実際、1つバンパターンを加えて `go` の再帰に入る前に新しい `rt` の評価を強制することで、普通にこの問題は解けそうです。例えば、`{-# LANGUAGE BangPatterns #-}` をファイルの先頭に追加して、`go` をこんな風に定義したらどうでしょう:
@@ -387,7 +387,7 @@ go (RunningTotal sum count) (x:xs) =
    in go rt xs
 ```
 
-しかし、こうしてもメモリ使用率は全く変わりません。なぜこんなことになってしまうのでしょう。これを理解するためには、weak head normal form というものを理解する必要があります。
+しかし、こうしてもメモリ使用率は全く変わりません。なぜこんなことになってしまうのでしょう。これを理解するためには、weak head normal form (弱頭部正規形) というものを理解する必要があります。
 
 ### Weak Head Normal Form
 Note in advance that [there's a great Stack Overflow answer](https://stackoverflow.com/questions/6872898/haskell-what-is-weak-head-normal-form/6889335#6889335) on this topic for further reading.
