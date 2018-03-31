@@ -89,7 +89,7 @@ B
  a
 ```
 
-先頭の空白が不必要な場合は [<+>](https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--43--62-) を [<>](https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--62-) にするだけです。
+区切りの空白が不要な場合は [<+>](https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--43--62-) を [<>](https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--62-) にするだけです。
 
 ```hs
 instance Pretty B where
