@@ -8,8 +8,182 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-03-30T00:00:00Z</updated>
+    <updated>2018-03-31T00:00:00Z</updated>
     <entry>
+    <title>Haskell Quiz No.5 Conduit Part.1</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/03-31-quiz-5.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/03-31-quiz-5.html</id>
+    <published>2018-03-31T00:00:00Z</published>
+    <updated>2018-03-31T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.5">Haskell Quiz No.5</h2>
+<p>難易度: λλ</p>
+<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.0</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">sink <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC show <span class="fu">.|</span> foldC</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  y <span class="ot">&lt;-</span> sumC</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  return (x, y)</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  print res</a></code></pre></div>
+<p>答えは次回。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./03-28-quiz-4.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λ</p>
+<p>今回は、与えられた値がリストのリストに含まれているかどうかを判定する問題です。</p>
+<p>幅優先で探索する関数 <code>bfs</code> と深さ優先で探索する関数 <code>dfs</code> をそれぞれ定義してみましょう。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">bfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">bfs <span class="fu">=</span> undefined</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ot">dfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">dfs <span class="fu">=</span> undefined</a></code></pre></div>
+<p>実行結果はだいたいこんな感じです。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1">$ <span class="ex">stack</span> repl -- Quiz4.hs</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="ex">*Quiz4</span><span class="op">&gt;</span> xs = [[10..],[4,5,6],[7,8,9]]</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ex">*Quiz4</span><span class="op">&gt;</span> bfs 9 xs</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="ex">True</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="ex">.....</span></a></code></pre></div>
+<h3 id="こたえ">こたえ</h3>
+<p>素晴らしい回答が <strong>Haskeller</strong> から届きました。(一部修正)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1">dfs x <span class="fu">=</span> elem x <span class="fu">.</span> concat</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">bfs x <span class="fu">=</span> elem x <span class="fu">.</span> concat <span class="fu">.</span> transpose</a></code></pre></div>
+<p>まさに <code>Haskell</code> ！！！って感じのコードですよね。</p>
+<h2 id="haskell-quiz-no.4-の解説">Haskell Quiz No.4 の解説</h2>
+<p>完全なコードはこちら</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Quiz4</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Data.List</span> (transpose)</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="ot">dfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">dfs x <span class="fu">=</span> elem x <span class="fu">.</span> concat</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">bfs x <span class="fu">=</span> elem x <span class="fu">.</span> concat <span class="fu">.</span> transpose</a></code></pre></div>
+<ul>
+<li><strong>dfs</strong> は <code>depth farst search</code> なので、深さ優先探索を行います。</li>
+<li><strong>bfs</strong> は <code>breadth first search</code> なので、幅優先探索を行います。</li>
+</ul>
+<h3 id="data.list-モジュール">Data.List モジュール</h3>
+<p>リスト操作系の関数は基本的に <a href="http://hackage.haskell.org/package/base-4.11.0.0/docs/Data-List.html">Data.List</a> を探せば見つかります。</p>
+<p><code>Prelude</code> に含まれている関数と重複するものもありますが、それ以外にも有用な関数がいくつも定義されているため、 <code>Data.List</code> モジュールにどんな関数があるか把握しておくと良いと思います。</p>
+<p>ここで定義されている関数の命名規則は別のパッケージでも慣習的に利用されていることが多いため、関数がどんな操作なのか<strong>理解</strong> (暗記ではない) しておくと、全く知らないパッケージでも何となく読める時があります。</p>
+<p>例えば今回の <code>transpose</code> 関数は <code>Data.List</code> 以外にも色々なモジュールで同様に定義されています。</p>
+<ul>
+<li><a href="http://hackage.haskell.org/package/bytestring-0.10.8.2/docs/Data-ByteString-Char8.html#v:transpose">ByteString</a></li>
+<li><a href="http://hackage.haskell.org/package/text-1.2.3.0/docs/Data-Text-Lazy.html#v:transpose">Text</a></li>
+</ul>
+<p>つまり、データ構造はリストとは違うけども、操作としては同じと言うことです。</p>
+<h3 id="transpose">transpose</h3>
+<p><a href="http://hackage.haskell.org/package/base-4.11.0.0/docs/Data-List.html#v:transpose">transpose</a> は <code>base</code> パッケージの <code>Data.List</code> で定義されています。<code>Prelude</code> には含まれていないため、明示的に <code>import</code> する必要があります。</p>
+<p><code>haddock</code> の説明通り、リストを転置させる関数です。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="fu">&gt;&gt;&gt;</span> transpose [[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>],[<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]]</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">[[<span class="dv">1</span>,<span class="dv">4</span>],[<span class="dv">2</span>,<span class="dv">5</span>],[<span class="dv">3</span>,<span class="dv">6</span>]]</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="fu">&gt;&gt;&gt;</span> transpose [[<span class="dv">10</span>,<span class="dv">11</span>],[<span class="dv">20</span>],[],[<span class="dv">30</span>,<span class="dv">31</span>,<span class="dv">32</span>]]</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">[[<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>],[<span class="dv">11</span>,<span class="dv">31</span>],[<span class="dv">32</span>]]</a></code></pre></div>
+<p>その際、空リストは取り除かれるようですね。</p>
+<p><code>transpose</code> 関数の実装は <a href="http://hackage.haskell.org/package/base-4.11.0.0/docs/src/Data.OldList.html#transpose">Data.OldList</a> で以下のように定義されています。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">transpose ::</span> [[a]] <span class="ot">-&gt;</span> [[a]]</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">transpose []           <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">transpose ([]<span class="fu">:</span>xss)     <span class="fu">=</span> transpose xss</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">transpose ((x<span class="fu">:</span>xs)<span class="fu">:</span>xss) <span class="fu">=</span> (x <span class="fu">:</span> [h <span class="fu">|</span> (h<span class="fu">:</span>_) <span class="ot">&lt;-</span> xss]) <span class="fu">:</span> transpose (xs <span class="fu">:</span> [ t <span class="fu">|</span> (_<span class="fu">:</span>t) <span class="ot">&lt;-</span> xss])</a></code></pre></div>
+<p>たしかに2つ目の等式で空白が除去されていることがわかりますね。</p>
+<p>3つ目の等式は少し複雑ですが、面白いので見てみましょう。</p>
+<p>それぞれのリストの <code>head</code> を取りたいので <code>map head xss</code> がすぐに思いつきそうですが <code>[h | (h:_) &lt;- xss]</code> となっています。うまいやりかたですね。</p>
+<p>普通に <code>head</code> をかけてしまうと空リストで実行時エラーとなってしまいます。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz4</span><span class="fu">&gt;</span> xss <span class="fu">=</span> [[<span class="dv">1</span>,<span class="dv">2</span>],[],[<span class="dv">3</span>,<span class="dv">4</span>]]</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="fu">*</span><span class="dt">Quiz4</span><span class="fu">&gt;</span> map head xss</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">[<span class="dv">1</span>,<span class="fu">***</span> <span class="dt">Exception</span><span class="fu">:</span> Prelude.head<span class="fu">:</span> empty list</a></code></pre></div>
+<p>しかし <code>[h | (h:_) &lt;- xss]</code> ではどうでしょうか？</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz4</span><span class="fu">&gt;</span> xss <span class="fu">=</span> [[<span class="dv">1</span>,<span class="dv">2</span>],[],[<span class="dv">3</span>,<span class="dv">4</span>]]</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="fu">*</span><span class="dt">Quiz4</span><span class="fu">&gt;</span> [h <span class="fu">|</span> (h<span class="fu">:</span>_) <span class="ot">&lt;-</span> xss]</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">[<span class="dv">1</span>,<span class="dv">3</span>]</a></code></pre></div>
+<p>はい。空リストを含んでいたとしてもエラーにならずに、良い感じに先頭の要素から成るリストが生成できました。</p>
+<p>では、なぜこのような動作になるのでしょうか？</p>
+<p>それを理解するためには <strong>Haskell 2010 Language Report</strong> の <a href="https://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-420003.11">3.11 List Comprehensions</a> を参照する必要があります。</p>
+<p>ここにリスト内包表記がどのように変換されるか、変換規則が載っています。(ここでは一部のみ掲載)</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">-- ルール1</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">[ e <span class="fu">|</span> <span class="dt">True</span> ] <span class="fu">=</span> [e]</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">-- ルール2</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">[ e <span class="fu">|</span> q ] <span class="fu">=</span> [ e <span class="fu">|</span> q, <span class="dt">True</span> ]</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">-- ルール3</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">[ e <span class="fu">|</span> p <span class="ot">&lt;-</span> l, <span class="dt">Q</span> ] <span class="fu">=</span> <span class="kw">let</span> ok p <span class="fu">=</span> [ e <span class="fu">|</span> <span class="dt">Q</span> ]</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">                        ok _ <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10">                    <span class="kw">in</span> concatMap ok l</a></code></pre></div>
+<p>上記の規則により、先程の <code>[h | (h:_) &lt;- xss]</code> は以下のように変換できます。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1">[ h <span class="fu">|</span> (h<span class="fu">:</span>_) <span class="ot">&lt;-</span> xss ]</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="fu">=</span> { ルール2 より }</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">[ h <span class="fu">|</span> (h<span class="fu">:</span>_) <span class="ot">&lt;-</span> xss, <span class="dt">True</span> ]</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">  <span class="fu">=</span> { ルール3 より }</a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="kw">let</span> ok (h<span class="fu">:</span>_) <span class="fu">=</span> [ h <span class="fu">|</span> <span class="dt">True</span> ]</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">    ok _ <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="kw">in</span> concatMap ok xss</a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">  <span class="fu">=</span> { ルール1 より }</a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="kw">let</span> ok (h<span class="fu">:</span>_) <span class="fu">=</span> [h]</a>
+<a class="sourceLine" id="cb11-10" data-line-number="10">    ok _ <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="kw">in</span> concatMap ok xss</a></code></pre></div>
+<p>最終的には <code>f = [h | (h:_) &lt;- xss]</code> とすると</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1">f <span class="fu">=</span> concatMap ok xss</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">    ok (h<span class="fu">:</span>_) <span class="fu">=</span> [h]</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">    ok _     <span class="fu">=</span> []</a></code></pre></div>
+<p>になります。</p>
+<p>パターンマッチに失敗した場合は <code>ok _ = []</code> ということで自動的に空リストになるという部分が実行時エラーにならない秘密のようですね。</p>
+<p>最終的に <code>concatMap</code> によって、空リストが自然に除去されていることがわかります。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz4</span><span class="fu">&gt;</span> concatMap ok [[<span class="dv">1</span>,<span class="dv">2</span>], [], [<span class="dv">3</span>,<span class="dv">4</span>]]</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</a></code></pre></div>
+<p>ということで、もとの式に戻ると <code>transpose</code> 関数の主張はこういうことです。</p>
+<figure>
+<img src="/images/2018/03-31/transpose.png" alt="transpose 関数の処理" /><figcaption>transpose 関数の処理</figcaption>
+</figure>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1">transpose []           <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">transpose ([]<span class="fu">:</span>xss)     <span class="fu">=</span> transpose xss</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">transpose ((x<span class="fu">:</span>xs)<span class="fu">:</span>xss) <span class="fu">=</span> (x <span class="fu">:</span> [h <span class="fu">|</span> (h<span class="fu">:</span>_) <span class="ot">&lt;-</span> xss]) <span class="fu">:</span> transpose (xs <span class="fu">:</span> [ t <span class="fu">|</span> (_<span class="fu">:</span>t) <span class="ot">&lt;-</span> xss])</a></code></pre></div>
+<h3 id="幅優先探索と深さ優先探索">幅優先探索と深さ優先探索</h3>
+<p>アルゴリズムの本などを読むと、必ずこの <strong>幅優先探索</strong> と <strong>深さ優先探索</strong> というキーワードを目にすると思います。(また、同時に説明に利用されるのは木構造のデータでしょう)</p>
+<p>幅優先探索と深さ優先探索の概念を理解するために木構造に触れる必要は無く、リストだけで十分です。</p>
+<p>本質は以下のように凄く簡単なことです。</p>
+<figure>
+<img src="/images/2018/03-31/search.png" alt="リストを使った幅優先探索と深さ優先探索" /><figcaption>リストを使った幅優先探索と深さ優先探索</figcaption>
+</figure>
+<p>そのため <code>[10..]</code> のような無限リストが与えられた場合に <strong>深さ優先探索</strong> では結果を返すことができないのです。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" data-line-number="1">$ <span class="ex">stack</span> repl -- Quiz4.hs</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="ex">*Quiz4</span><span class="op">&gt;</span> xs = [[10..],[4,5,6],[7,8,9]]</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="ex">*Quiz4</span><span class="op">&gt;</span> bfs 9 xs</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="ex">True</span></a>
+<a class="sourceLine" id="cb15-5" data-line-number="5"><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</a>
+<a class="sourceLine" id="cb15-6" data-line-number="6"><span class="ex">.....</span></a></code></pre></div>
+<h3 id="コードの解説">コードの解説</h3>
+<p><code>dfs</code> は <code>concat</code> によってリストのリストを直列につないだ結果に対して <code>elem x</code> で要素を検索すれば良いということになります。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="ot">dfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">dfs x <span class="fu">=</span> elem x <span class="fu">.</span> concat</a></code></pre></div>
+<p>それに対して <code>bfs</code> は各リストの先頭要素だけを先に処理していく必要があります。自分でその辺りの処理を書いても良いのですが <code>transpose</code> で一発です。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">bfs x <span class="fu">=</span> elem x <span class="fu">.</span> concat <span class="fu">.</span> transpose</a></code></pre></div>
+<p><code>bfs</code> はこのように書くこともできます。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">bfs x <span class="fu">=</span> dfs <span class="fu">.</span> transpose</a></code></pre></div>
+<p>つまり、リストのリストのようなデータ構造に対して幅優先探索を行うということは、リストを転置した結果に対して深さ優先探索を行うことと等しいということです。</p>
+<figure>
+<img src="/images/2018/03-31/bfs.png" alt="bfs と dfs の関係" /><figcaption>bfs と dfs の関係</figcaption>
+</figure>
+<h2 id="まとめ">まとめ</h2>
+<p>Haskell 2010 Language Report ってどういう時に利用するんだろう？って思っている人もいるとは思いますが、こういう場合に参照すると便利です。</p>
+<p>今回は幅優先探索と深さ優先探索を <strong>リストのリスト</strong> で説明しましたが、一般的に説明される木構造では、これが少し複雑になっただけです。</p>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>prettyprinter パッケージ</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/03-30-prettyprinter.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/03-30-prettyprinter.html</id>
@@ -117,7 +291,7 @@
 <a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ex">True</span></a>
 <a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ex">.....</span></a></code></pre></div>
-<p>答えは次回。</p>
+<p>答えは<a href="03-31-quiz-5.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
 <p><a href="./03-27-quiz-3.html">前回</a>の問題と答えは以下の通りです。</p>
@@ -1322,297 +1496,6 @@ O
 <li><code>subdirs</code> を指定すれば <code>Yesod</code> のような mega-repo でも指定できる</li>
 </ul>
 <p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>wizard モノイド</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html</id>
-    <published>2018-03-07T00:00:00Z</published>
-    <updated>2018-03-07T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="wizard-モノイド-翻訳">wizard モノイド (翻訳)</h2>
-<p>Original post: <a href="http://www.haskellforall.com/2018/02/the-wizard-monoid.html">The wizard monoid</a></p>
-<p>最近の GHC 8.0 は、<code>IO</code> 用の <code>Monoid</code> インスタンスを提供しています。このブログ記事では、組み合わせ可能な “wizard” を作りつつ、なぜこのインスタンスが便利なのかを示す例をお見せします。</p>
-<!--more-->
-<h3 id="wizard">Wizard</h3>
-<p>ここで使う “wizard” とは、ユーザーに複数の入力を促し、全ての入力が完了したら、いくつかのアクションを実行するようなプログラムです。</p>
-<p>簡単な wizard の例です:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">    <span class="co">-- First, we request all inputs:</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">    putStrLn <span class="st">&quot;What is your name?&quot;</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">    name <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">    putStrLn <span class="st">&quot;What is your age?&quot;</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">    age <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">    <span class="co">-- Then, we perform all actions:</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">    putStrLn (<span class="st">&quot;Your name is: &quot;</span> <span class="fu">++</span> name)</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">    putStrLn (<span class="st">&quot;Your age is: &quot;</span> <span class="fu">++</span> age)</a></code></pre></div>
-<p>… 実行例:</p>
-<pre class="plain"><code>What is your name?
-Gabriel&lt;Enter&gt;
-What is your age?
-31&lt;Enter&gt;
-Your name is: Gabriel
-Your age is: 31</code></pre>
-<p>… それで、以下はもう少し複雑な wizard の例です:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">System.Directory</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">    <span class="co">-- First, we request all inputs:</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">    files <span class="ot">&lt;-</span> System.Directory.listDirectory <span class="st">&quot;.&quot;</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">    <span class="kw">let</span> askFile file <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">            putStrLn (<span class="st">&quot;Would you like to delete &quot;</span> <span class="fu">++</span> file <span class="fu">++</span> <span class="st">&quot;?&quot;</span>)</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">            response <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">            <span class="kw">case</span> response <span class="kw">of</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11">                <span class="st">&quot;y&quot;</span> <span class="ot">-&gt;</span> return [file]</a>
-<a class="sourceLine" id="cb3-12" data-line-number="12">                _   <span class="ot">-&gt;</span> return []</a>
-<a class="sourceLine" id="cb3-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14">    listOfListOfFilesToRemove <span class="ot">&lt;-</span> mapM askFile files</a>
-<a class="sourceLine" id="cb3-15" data-line-number="15">    <span class="kw">let</span> listOfFilesToRemove <span class="fu">=</span> concat listOfListOfFilesToRemove</a>
-<a class="sourceLine" id="cb3-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb3-17" data-line-number="17">    <span class="co">-- Then, we perform all actions:</span></a>
-<a class="sourceLine" id="cb3-18" data-line-number="18">    <span class="kw">let</span> removeFile file <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-19" data-line-number="19">            putStrLn (<span class="st">&quot;Removing &quot;</span> <span class="fu">++</span> file)</a>
-<a class="sourceLine" id="cb3-20" data-line-number="20">            System.Directory.removeFile file</a>
-<a class="sourceLine" id="cb3-21" data-line-number="21">    mapM_ removeFile listOfFilesToRemove</a></code></pre></div>
-<p>… 実行例:</p>
-<pre class="plain"><code>Would you like to delete file1.txt?
-y&lt;Enter&gt;
-Would you like to delete file2.txt?
-n&lt;Enter&gt;
-Would you like to delete file3.txt?
-y&lt;Enter&gt;
-Removing file1.txt
-Removing file3.txt</code></pre>
-<p>以上に挙げた例では、ユーザーが要求された入力を全て入力し終えるまで、変更ができないアクションを実行するのは避けたいという要求があります。</p>
-<h3 id="モジュール性">モジュール性</h3>
-<p>最初の例を見直してみましょう:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">    <span class="co">-- First, we request all inputs:</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">    putStrLn <span class="st">&quot;What is your name?&quot;</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">    name <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">    putStrLn <span class="st">&quot;What is your age?&quot;</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">    age <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">    <span class="co">-- Then, we perform all actions:</span></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">    putStrLn (<span class="st">&quot;Your name is: &quot;</span> <span class="fu">++</span> name)</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">    putStrLn (<span class="st">&quot;Your age is: &quot;</span> <span class="fu">++</span> age)</a></code></pre></div>
-<p>この例は、実質的には2つの独立した wizard を組み合わせています:</p>
-<ul>
-<li>最初の wizard はユーザーの名前を要求し、表示している</li>
-<li>2つ目の wizard はユーザーの年齢を要求し、表示している</li>
-</ul>
-<p>しかし、アクションを実行する前に全ての入力が必要だったので、2つの wizard のロジックをそれぞれ混ぜる必要がありました。</p>
-<p>これら2つの wizard を別々に定義し、より大きな wizard に合体させる方法があったらどうでしょう? <code>IO</code> の <code>Monoid</code> インスタンスの長所を活かせば可能です。こんな感じ:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">name <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">    putStrLn <span class="st">&quot;What is your name?&quot;</span></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">    return (putStrLn (<span class="st">&quot;Your name is: &quot;</span> <span class="fu">++</span> x))</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="ot">age ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10">age <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">    putStrLn <span class="st">&quot;What is your age?&quot;</span></a>
-<a class="sourceLine" id="cb6-12" data-line-number="12">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb6-13" data-line-number="13">    return (putStrLn (<span class="st">&quot;Your age is: &quot;</span> <span class="fu">++</span> x))</a>
-<a class="sourceLine" id="cb6-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</a>
-<a class="sourceLine" id="cb6-16" data-line-number="16">runWizard request <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17">    respond <span class="ot">&lt;-</span> request</a>
-<a class="sourceLine" id="cb6-18" data-line-number="18">    respond</a>
-<a class="sourceLine" id="cb6-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb6-20" data-line-number="20"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb6-21" data-line-number="21">main <span class="fu">=</span> runWizard (name <span class="fu">&lt;&gt;</span> age)</a></code></pre></div>
-<p>このプログラムはさっきの例と完全に同じ動きをします。が、ユーザーの名前を扱うロジックは、ユーザーの年齢を扱うロジックと完全に分離されています。</p>
-<p>この方法でうまくいくのは、それぞれの wizard を2つの部分に分けたからです:</p>
-<ul>
-<li>リクエストの部分 (ユーザーに入力を求める部分など)</li>
-<li>レスポンスの部分 (その入力に応じたアクションを実行する部分など)</li>
-</ul>
-<p>… そしてそれぞれの wizard に <code>IO (IO ())</code> という型を与えることによって、型レベルでこれを実現しています:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="ot">age ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a></code></pre></div>
-<p>外側の <code>IO</code> アクションは“リクエスト”です。リクエストが終了したとき、外側の <code>IO</code> アクションは内側の <code>IO</code> アクション、つまり“レスポンス”を返します。例えば:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">--      ↓ リクエスト</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">--          ↑ レスポンス</span></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">name <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-5" data-line-number="5">    putStrLn <span class="st">&quot;What is your name?&quot;</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb8-7" data-line-number="7">    <span class="co">-- ↑ ここから上の部分全てが、外側の `IO` アクションの一部 (例えばリクエスト)</span></a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb8-9" data-line-number="9">    <span class="co">--      ↓ この return される値は、内側の `IO` アクション (例えばレスポンス)</span></a>
-<a class="sourceLine" id="cb8-10" data-line-number="10">    return (putStrLn (<span class="st">&quot;Your name is: &quot;</span> <span class="fu">++</span> x))</a></code></pre></div>
-<p>wizard は <code>(&lt;&gt;)</code> 演算子を使って組み合わせることができます。<code>IO</code> アクションに限って言うなら、以下のような動作をします:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1">ioLeft <span class="fu">&lt;&gt;</span> ioRight</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="fu">=</span> <span class="kw">do</span> resultLeft  <span class="ot">&lt;-</span> ioLeft</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">     resultRight <span class="ot">&lt;-</span> ioRight</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">     return (resultLeft <span class="fu">&lt;&gt;</span> resultRight)</a></code></pre></div>
-<p>言い換えるなら、<code>IO</code> アクションを2つ組み合わせるということは、それぞれの <code>IO</code> アクションを実行して結果を組み合わせるということなのです。これは、2つの <code>IO</code> アクションをネストさせると、アクションを実行して結果を組み合わせるという処理を2回実行する、ということも示しています:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1">requestLeft <span class="fu">&lt;&gt;</span> requestRight</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="fu">=</span> <span class="kw">do</span> respondLeft  <span class="ot">&lt;-</span> requestLeft</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">     respondRight <span class="ot">&lt;-</span> requestRight</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">     return (respondLeft <span class="fu">&lt;&gt;</span> respondRight)</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="fu">=</span> <span class="kw">do</span> respondLeft  <span class="ot">&lt;-</span> requestLeft</a>
-<a class="sourceLine" id="cb10-8" data-line-number="8">     respondRight <span class="ot">&lt;-</span> requestRight</a>
-<a class="sourceLine" id="cb10-9" data-line-number="9">     return (<span class="kw">do</span></a>
-<a class="sourceLine" id="cb10-10" data-line-number="10">         unitLeft  <span class="ot">&lt;-</span> respondLeft</a>
-<a class="sourceLine" id="cb10-11" data-line-number="11">         unitRight <span class="ot">&lt;-</span> respondRight</a>
-<a class="sourceLine" id="cb10-12" data-line-number="12">         return (unitLeft <span class="fu">&lt;&gt;</span> unitRight) )</a>
-<a class="sourceLine" id="cb10-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb10-14" data-line-number="14"><span class="co">-- Both `unitLeft` and `unitRight` are `()` and `() &lt;&gt; () = ()`, so we can</span></a>
-<a class="sourceLine" id="cb10-15" data-line-number="15"><span class="co">-- simplify this further to:</span></a>
-<a class="sourceLine" id="cb10-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="co">-- `unitLeft` も `unitRight` も `()` で、`() &lt;&gt; () = ()` なので、</span></a>
-<a class="sourceLine" id="cb10-18" data-line-number="18"><span class="co">-- 以下のように簡約化することができます:</span></a>
-<a class="sourceLine" id="cb10-19" data-line-number="19"><span class="fu">=</span> <span class="kw">do</span> respondLeft  <span class="ot">&lt;-</span> requestLeft</a>
-<a class="sourceLine" id="cb10-20" data-line-number="20">     respondRight <span class="ot">&lt;-</span> requestRight</a>
-<a class="sourceLine" id="cb10-21" data-line-number="21">     return (<span class="kw">do</span></a>
-<a class="sourceLine" id="cb10-22" data-line-number="22">         respondLeft</a>
-<a class="sourceLine" id="cb10-23" data-line-number="23">         respondRight )</a></code></pre></div>
-<p>つまり、2つの wizard を組み合わせると、リクエストを組み合わせてレスポンスも組み合わせたことになるのです。</p>
-<p>この方法は2つ以上の wizard でもうまくいきます。例えば:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1">request0 <span class="fu">&lt;&gt;</span> request1 <span class="fu">&lt;&gt;</span> request2 <span class="fu">&lt;&gt;</span> request3</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="fu">=</span> <span class="kw">do</span> respond0 <span class="ot">&lt;-</span> request0</a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">     respond1 <span class="ot">&lt;-</span> request1</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">     respond2 <span class="ot">&lt;-</span> request2</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">     respond3 <span class="ot">&lt;-</span> request3</a>
-<a class="sourceLine" id="cb11-7" data-line-number="7">     return (<span class="kw">do</span></a>
-<a class="sourceLine" id="cb11-8" data-line-number="8">         respond0</a>
-<a class="sourceLine" id="cb11-9" data-line-number="9">         respond1</a>
-<a class="sourceLine" id="cb11-10" data-line-number="10">         respond2</a>
-<a class="sourceLine" id="cb11-11" data-line-number="11">         respond3 )</a></code></pre></div>
-<p>これをアクションの形で表現するために、さっきの例をもう一度見てみましょう:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb12-4" data-line-number="4">name <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">    putStrLn <span class="st">&quot;What is your name?&quot;</span></a>
-<a class="sourceLine" id="cb12-6" data-line-number="6">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb12-7" data-line-number="7">    return (putStrLn (<span class="st">&quot;Your name is: &quot;</span> <span class="fu">++</span> x))</a>
-<a class="sourceLine" id="cb12-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb12-9" data-line-number="9"><span class="ot">age ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb12-10" data-line-number="10">age <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb12-11" data-line-number="11">    putStrLn <span class="st">&quot;What is your age?&quot;</span></a>
-<a class="sourceLine" id="cb12-12" data-line-number="12">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb12-13" data-line-number="13">    return (putStrLn (<span class="st">&quot;Your age is: &quot;</span> <span class="fu">++</span> x))</a>
-<a class="sourceLine" id="cb12-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb12-15" data-line-number="15"><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</a>
-<a class="sourceLine" id="cb12-16" data-line-number="16">runWizard request <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb12-17" data-line-number="17">    respond <span class="ot">&lt;-</span> request</a>
-<a class="sourceLine" id="cb12-18" data-line-number="18">    respond</a>
-<a class="sourceLine" id="cb12-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb12-20" data-line-number="20"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb12-21" data-line-number="21">main <span class="fu">=</span> runWizard (name <span class="fu">&lt;&gt;</span> age)</a></code></pre></div>
-<p>…<code>name</code> と <code>age</code> はかなり似ているので、共通の関数を使うような実装にすることができますね:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="ot">prompt ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">prompt attribute <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">    putStrLn (<span class="st">&quot;What is your &quot;</span> <span class="fu">++</span> attribute <span class="fu">++</span> <span class="st">&quot;?&quot;</span>)</a>
-<a class="sourceLine" id="cb13-6" data-line-number="6">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb13-7" data-line-number="7">    return (putStrLn (<span class="st">&quot;Your &quot;</span> <span class="fu">++</span> attribute <span class="fu">++</span> <span class="st">&quot; is: &quot;</span> <span class="fu">++</span> x))</a>
-<a class="sourceLine" id="cb13-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb13-9" data-line-number="9"><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</a>
-<a class="sourceLine" id="cb13-10" data-line-number="10">runWizard request <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb13-11" data-line-number="11">    respond <span class="ot">&lt;-</span> request</a>
-<a class="sourceLine" id="cb13-12" data-line-number="12">    respond</a>
-<a class="sourceLine" id="cb13-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb13-14" data-line-number="14"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb13-15" data-line-number="15">main <span class="fu">=</span> runWizard (prompt <span class="st">&quot;name&quot;</span> <span class="fu">&lt;&gt;</span> prompt <span class="st">&quot;age&quot;</span>)</a></code></pre></div>
-<p>2つの wizard のロジックが混ざっていたとき、この共通化のロジックを使うことはできませんでした。しかしロジック毎に別々の wizard に分割すると、プログラムを小さくするための共通構造を突くことができます。</p>
-<p>このプログラムの圧縮によって、簡単に新しい wizard を追加することができます:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="ot">prompt ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb14-4" data-line-number="4">prompt attribute <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb14-5" data-line-number="5">    putStrLn (<span class="st">&quot;What is your &quot;</span> <span class="fu">++</span> attribute <span class="fu">++</span> <span class="st">&quot;?&quot;</span>)</a>
-<a class="sourceLine" id="cb14-6" data-line-number="6">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb14-7" data-line-number="7">    return (putStrLn (<span class="st">&quot;Your &quot;</span> <span class="fu">++</span> attribute <span class="fu">++</span> <span class="st">&quot; is: &quot;</span> <span class="fu">++</span> x))</a>
-<a class="sourceLine" id="cb14-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</a>
-<a class="sourceLine" id="cb14-10" data-line-number="10">runWizard request <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb14-11" data-line-number="11">    respond <span class="ot">&lt;-</span> request</a>
-<a class="sourceLine" id="cb14-12" data-line-number="12">    respond</a>
-<a class="sourceLine" id="cb14-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb14-14" data-line-number="14"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb14-15" data-line-number="15">main <span class="fu">=</span> runWizard (prompt <span class="st">&quot;name&quot;</span> <span class="fu">&lt;&gt;</span> prompt <span class="st">&quot;age&quot;</span> <span class="fu">&lt;&gt;</span> prompt <span class="st">&quot;favorite color&quot;</span>)</a></code></pre></div>
-<p>… そして、モノイド関連の標準ライブラリ関数を活用しましょう。例えば <code>foldMap</code> を使えば wizard を大量に作ることができます。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="ot">prompt ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4">prompt attribute <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb15-5" data-line-number="5">    putStrLn (<span class="st">&quot;What is your &quot;</span> <span class="fu">++</span> attribute <span class="fu">++</span> <span class="st">&quot;?&quot;</span>)</a>
-<a class="sourceLine" id="cb15-6" data-line-number="6">    x <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb15-7" data-line-number="7">    return (putStrLn (<span class="st">&quot;Your &quot;</span> <span class="fu">++</span> attribute <span class="fu">++</span> <span class="st">&quot; is: &quot;</span> <span class="fu">++</span> x))</a>
-<a class="sourceLine" id="cb15-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb15-9" data-line-number="9"><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</a>
-<a class="sourceLine" id="cb15-10" data-line-number="10">runWizard request <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb15-11" data-line-number="11">    respond <span class="ot">&lt;-</span> request</a>
-<a class="sourceLine" id="cb15-12" data-line-number="12">    respond</a>
-<a class="sourceLine" id="cb15-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb15-14" data-line-number="14"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb15-15" data-line-number="15">main <span class="fu">=</span> runWizard (foldMap prompt [ <span class="st">&quot;name&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;favorite color&quot;</span>, <span class="st">&quot;sign&quot;</span> ])</a></code></pre></div>
-<p>より重要なのは、プログラムが何をしているのか一目瞭然になりました。読みやすさは書きやすさに比べ、大きな美徳です。</p>
-<h3 id="最後の例">最後の例</h3>
-<p>ファイル削除の例も同じ観点から見直してみましょう:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">System.Directory</span></a>
-<a class="sourceLine" id="cb16-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb16-5" data-line-number="5">    <span class="co">-- 最初に全ての入力をリクエストする:</span></a>
-<a class="sourceLine" id="cb16-6" data-line-number="6">    files <span class="ot">&lt;-</span> System.Directory.listDirectory <span class="st">&quot;.&quot;</span></a>
-<a class="sourceLine" id="cb16-7" data-line-number="7">    <span class="kw">let</span> askFile file <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb16-8" data-line-number="8">            putStrLn (<span class="st">&quot;Would you like to delete &quot;</span> <span class="fu">++</span> file <span class="fu">++</span> <span class="st">&quot;?&quot;</span>)</a>
-<a class="sourceLine" id="cb16-9" data-line-number="9">            response <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb16-10" data-line-number="10">            <span class="kw">case</span> response <span class="kw">of</span></a>
-<a class="sourceLine" id="cb16-11" data-line-number="11">                <span class="st">&quot;y&quot;</span> <span class="ot">-&gt;</span> return [file]</a>
-<a class="sourceLine" id="cb16-12" data-line-number="12">                _   <span class="ot">-&gt;</span> return []</a>
-<a class="sourceLine" id="cb16-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb16-14" data-line-number="14">    listOfListOfFilesToRemove <span class="ot">&lt;-</span> mapM askFile files</a>
-<a class="sourceLine" id="cb16-15" data-line-number="15">    <span class="kw">let</span> listOfFilesToRemove <span class="fu">=</span> concat listOfListOfFilesToRemove</a>
-<a class="sourceLine" id="cb16-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb16-17" data-line-number="17">    <span class="co">-- 次に全てのアクションを実行する</span></a>
-<a class="sourceLine" id="cb16-18" data-line-number="18">    <span class="kw">let</span> removeFile file <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb16-19" data-line-number="19">            putStrLn (<span class="st">&quot;Removing &quot;</span> <span class="fu">++</span> file)</a>
-<a class="sourceLine" id="cb16-20" data-line-number="20">            System.Directory.removeFile file</a>
-<a class="sourceLine" id="cb16-21" data-line-number="21">    mapM_ removeFile listOfFilesToRemove</a></code></pre></div>
-<p>さっきと同じパターンで、シンプルにすることができます:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">System.Directory</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb17-4" data-line-number="4">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">    files <span class="ot">&lt;-</span> System.Directory.listDirectory <span class="st">&quot;.&quot;</span></a>
-<a class="sourceLine" id="cb17-6" data-line-number="6">    runWizard (foldMap prompt files)</a>
-<a class="sourceLine" id="cb17-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb17-8" data-line-number="8"><span class="ot">prompt ::</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</a>
-<a class="sourceLine" id="cb17-9" data-line-number="9">prompt file <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb17-10" data-line-number="10">    putStrLn (<span class="st">&quot;Would you like to delete &quot;</span> <span class="fu">++</span> file <span class="fu">++</span> <span class="st">&quot;?&quot;</span>)</a>
-<a class="sourceLine" id="cb17-11" data-line-number="11">    response <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb17-12" data-line-number="12">    <span class="kw">case</span> response <span class="kw">of</span></a>
-<a class="sourceLine" id="cb17-13" data-line-number="13">        <span class="st">&quot;y&quot;</span> <span class="ot">-&gt;</span> return (<span class="kw">do</span></a>
-<a class="sourceLine" id="cb17-14" data-line-number="14">            putStrLn (<span class="st">&quot;Removing &quot;</span> <span class="fu">++</span> file)</a>
-<a class="sourceLine" id="cb17-15" data-line-number="15">            System.Directory.removeFile file )</a>
-<a class="sourceLine" id="cb17-16" data-line-number="16">        _   <span class="ot">-&gt;</span> return (return ())</a>
-<a class="sourceLine" id="cb17-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb17-18" data-line-number="18"><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</a>
-<a class="sourceLine" id="cb17-19" data-line-number="19">runWizard request <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb17-20" data-line-number="20">    respond <span class="ot">&lt;-</span> request</a>
-<a class="sourceLine" id="cb17-21" data-line-number="21">    respond</a></code></pre></div>
-<p>やるべきなのは、1つのファイルに対して処理を行う wizard を定義すること、そして <code>foldMap</code> を使って wizard を大量に生成することだけです。<code>IO</code> の <code>Monoid</code> インスタンスは、全てのリクエストを束ねて表示し、後で選択したファイルを削除してくれます。</p>
-<h3 id="結論">結論</h3>
-<p>ユーザーが望む wizard の全てにこのパターンが適用できるわけではありません。例えば、wizard が互いに依存しているような状況では、このパターンはすぐに使い物にならなくなります。しかし、このパターンは <code>Monoid</code> の <code>IO</code> インスタンスを他の <code>Monoid</code> のインスタンスと (もしくは自分自身と!) 連結させ、新しい動作を生成するような一例にはなっています。</p>]]></summary>
 </entry>
 
 </feed>
