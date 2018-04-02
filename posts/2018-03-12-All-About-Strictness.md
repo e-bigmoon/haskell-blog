@@ -390,27 +390,27 @@ go (RunningTotal sum count) (x:xs) =
 しかし、こうしてもメモリ使用率は全く変わりません。なぜこんなことになってしまうのでしょう。これを理解するためには、weak head normal form (弱頭部正規形) というものを理解する必要があります。
 
 ### Weak Head Normal Form
-Note in advance that [there's a great Stack Overflow answer](https://stackoverflow.com/questions/6872898/haskell-what-is-weak-head-normal-form/6889335#6889335) on this topic for further reading.
+まず最初に、このトピックに関して [Stack Overflow に素晴らしい回答があることを](https://stackoverflow.com/questions/6872898/haskell-what-is-weak-head-normal-form/6889335#6889335)示しておきます。
 
-We've been talking about forcing values and evaluating expressions, but what exactly that means hasn't been totally clear. To start simple, what will the output of this program be?
+私たちは値であることを強制し、式を評価することについて話し合ってきましたが、それが実際に何を意味しているのかは全く明らかにしませんでした。まず簡単な例から始めましょう。このプログラムの出力はどうなるでしょうか?
 
 ```haskell
 main = putStrLn $ undefined `seq` "Hello World"
 ```
 
-You'd probably guess that it will print an error about `undefined`, since it will try to evaluate `undefined` before it will evaluate `"Hello World"`, and because `putStrLn` is strict in its argument. And you'd be correct. But let's try something a little bit different:
+`undefined` をプリントするときにエラーが出る、と予測したかもしれませんが、正解です。`"Hello World"` を評価する前に `undefined` を評価しようとし、それは `putStrLn` が引数に対して正格だからです。これは正解でしょう。しかし、少し違う例を試してみましょう:
 
 ```haskell
 main = putStrLn $ Just undefined `seq` "Hello World"
 ```
 
-If you assume that "evaluate" means "fully evaluate into something with no thunks left," you'll say that this, too, prints an `undefined` error. But in fact, it happily prints out "Hello World" with no exceptions. What gives?
+「評価する」という言葉を、「サンクがない状態の何かになるまで完全に評価する」という意味で取っている人は、今回も `undefined` についてエラーを吐く、と答えるでしょう。しかし実際は、例外を吐かずにうまく "Hello World" と表示してくれます。一体どうなっているんでしょう?
 
-It turns out that when we talk about forcing evaluation with `seq`, we're only talking about evaluating to *weak head normal form (WHNF)*. For most data types, this means unwrapping one layer of constructor. In the case of `Just undefined`, it means that we unwrap the `Just` data constructor, but don't touch the `undefined` within it. (We'll see a few ways to deal with this differently below.)
+実は、`seq` を使って評価を強制するとき、*weak head normal form (WHNF)* のみ評価しているのです。ほとんどのデータ型において、これは 1つコンストラクタの層を引き剥がす、という意味になります。`Just undefined` の場合、`Just` というデータコンストラクタを引き剥がすだけで、その中の `undefined` に触れることはありません。(すぐ下でこれに対処する別々の方法をお見せします。)
 
-It turns out that, with a standard data constructor*, the impact of using `seq` is the same as pattern matching the outermost constructor. If you want to monomorphise, for example, you can implement a function of type `seqMaybe :: Maybe a -> b -> b` and use it in the `main` example above. Go ahead and give it a shot... answer below.
+標準データコンストラクタ*を扱う場合、`seq` の使用はパターンマッチングで一番外側のコンストラクタでマッチさせるようなものです。単層化させたいのなら、例えば、`seqMaybe :: Maybe a -> b -> b` と言う関数を実装して、上の `main` で使うことができます。やってみてください。答えは下にあります。
 
-* Hold your horses, we'll talk about `newtypes` later and then you'll understand this weird phrasing.
+* 説明はお待ちください。後で `newtype` の話を読めば、この変なネーミングの意味を理解できるでしょう。
 
 ```haskell
 seqMaybe :: Maybe a -> b -> b
@@ -425,6 +425,8 @@ main = do
 
 Let's up the ante again. What do you think this program will print?
 
+もう一度掛け金を上げてみましょう。このプログラムは何を表示すると思いますか?
+
 ```haskell
 main = do
   putStrLn $ error `seq` "Hello"
@@ -432,13 +434,15 @@ main = do
   putStrLn $ error "foo" `seq` "Goodbye!"
 ```
 
-You might think that ``error `seq` ...`` would be a problem. After all, isn't `error` going to throw an exception? However, `error` is a function. There's no exception getting thrown, or no bottom value being provided, until `error` is given its `String` argument. As a result, evaluating does not, in fact, generate an error. The rule is: any function applied to too few values is automatically in WHNF.
+``error `seq` ...`` が問題になると思うかもしれません。最終的に `error` が例外を吐くんじゃないの? ってね。しかし、`error` は関数です。`error` が `String` を引数に与えられるまで、例外が吐かれることも、ボトムの値が返されることもないのです。結果的に、実は、これを評価してもエラーを生成することはありません。ルールとしては、引数よりも少ない値に適用された関数は、自動的に WHNF になります。
 
-A similar logic applies to `(\x -> undefined)`. Although it's a lambda expression, its type is a function which has not been applied to all arguments. And therefore, it will not throw an exception when evaluated. In other words, it's already in WHNF.
+同じようなロジックは、`(\x -> undefined)` にも適用できます。これはラムダ式ですが、型としては全ての引数に値が適用されていない関数です。したがって、これが評価されても例外を吐くことはありません。言い換えると、この式はすでに WHNF になっています。
 
 However, `error "foo"` is a function fully applied to its arguments. It's no longer a function, it's a value. And when we try to evaluate it to WHNF, its exception blows up in our face.
 
-**EXERCISE** Will the following throw exceptions when evaluated?
+しかし、`error "foo"` は引数が完全に適用された関数です。これはもう関数ではなく、値です。そして WHNF に評価しようとするときに (???)、例外が爆発して顔面に飛んできます。
+
+**演習** 次の式は、評価されたときに例外を吐くでしょうか?
 
 - `(+) undefined`
 - `Just undefined`
