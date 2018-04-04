@@ -519,7 +519,7 @@ go (RunningTotal sum count) (x:xs) =
 ```
 
 || 1 | 2 | 3 | 4 |
-||----|----|----|----|
+|---|---|---|---|---|
 | allocated in the heap | 258,654,520 bytes | 258,654,520 bytes | 192,102,712 bytes | 216,102,712 bytes |
 | copied during GC | 339,889,944 bytes | 339,889,944 bytes | 173,080 bytes | 142,896 bytes |
 | maximum residency | 95,096,512 bytes | 95,096,512 bytes | 44,384 bytes | 44,384 bytes |
