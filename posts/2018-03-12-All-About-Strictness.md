@@ -447,8 +447,8 @@ main = do
 - `undefined 5`
 - `(error "foo" :: Int -> Double)`
 
-### Fixing average
-Having understood WHNF, let's return to our example and see why our first bang pattern did nothing to help us:
+### 平均を直す
+WHNF を理解したところで、例に戻って最初のバンパターンが何もしてくれなかったのか見てみましょう:
 
 ```haskell
 go !rt [] = printAverage rt
@@ -457,7 +457,7 @@ go (RunningTotal sum count) (x:xs) =
    in go rt xs
 ```
 
-In WHNF, forcing evaluation is the same as unwrapping the constructor, which we are already doing in the second clause! The problem is that the values contained inside the `RunningTotal` data constructor are not being evaluated, and therefore are accumulating thunks. Let's see two ways to solve this:
+WHNF では、評価を強制することはコンストラクタを剥がすのと同じことです。これはさっきの節でもうやりましたね! 問題は、`RunningTotal` データコンストラクタの中に含まれる値が評価されていないこと、それが原因でサンクが蓄積されていることです。これを解決する方法は2つあります:
 
 ```haskell
 go rt [] = printAverage rt
@@ -466,7 +466,7 @@ go (RunningTotal !sum !count) (x:xs) =
    in go rt xs
 ```
 
-Instead of putting the bangs on the `RunningTotal` value, I'm putting them on the values within the constructor, forcing them to be evaluated at each loop. We're no longer accumulating a huge chain of thunks, and our maximum residency drops to 44kb. (Total allocations, though, are still up around 192mb. We need to play around with other optimizations outside the scope of this post to deal with the total allocations, so we're going to ignore this value for the rest of the examples.) Another approach is:
+`RunningTotal` の値にバンを置くのはやめて、コンストラクタの中の値に置いて、ループの度に評価させるようにしています。巨大なサンクの連鎖は積まれなくなり、maximum residency は 44kb にまで減少しています。(全体の使用量はまだ 192mb 辺りになっていますが。トータルの使用量をどうにかするためには、この記事のものとは別の最適化をする必要があります。なので、この値はこの記事の例では全て無視することにします。) もう1つのアプローチは:
 
 ```haskell
 go rt [] = printAverage rt
@@ -477,9 +477,9 @@ go (RunningTotal sum count) (x:xs) =
    in go rt xs
 ```
 
-This one instead forces evaluation of the new sum and count before constructing the new `RunningTotal` value. I like this version a bit more, as it's forcing evaluation at the correct point: when creating the value, instead of on the next iteration of the loop when destructing it.
+これは新しい `RunningTotal` を作る前に、新しい sum と count を強制的に評価しています。私はこのバージョンの方がちょっと好きです。というのも、次のループで値をくずすのではなく、正しい場所、つまり値を作るときに評価を強制しているからです。
 
-Moral of the story: make sure you're evaluating the thing you actually need to evaluate, not just its container!
+この話のポイント: コンテナではなく、実際に評価する必要があるものを評価していることを確認すべし
 
 ### deepseq
 The fact that `seq` only evaluates to weak head normal form is annoying. There are lots of times when we would like to fully evaluate down to normal form (NF), meaning all thunks have been evaluated inside our values. While there is nothing built into the language to handle this, there is a semi-standard (meaning it ships with GHC) library to handle this: `deepseq`. It works by providing an `NFData` type class the defines how to reduce a value to normal form (via the `rnf` method).
