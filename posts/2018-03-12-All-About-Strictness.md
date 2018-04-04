@@ -518,13 +518,28 @@ go (RunningTotal sum count) (x:xs) =
    in go rt xs
 ```
 
-|| 1 | 2 | 3 | 4 |
-|---|---|---|---|---|
-| allocated in the heap | 258,654,520 bytes | 258,654,520 bytes | 192,102,712 bytes | 216,102,712 bytes |
-| copied during GC | 339,889,944 bytes | 339,889,944 bytes | 173,080 bytes | 142,896 bytes |
-| maximum residency | 95,096,512 bytes | 95,096,512 bytes | 44,384 bytes | 44,384 bytes |
-| maximum slop | 1,148,312 byte | 1,148,312 bytes | 25,248 bytes | 25,248 bytes |
-| total memory in use | 164 MB | 164 MB | 1 MB | 1 MB |
+##### 5
+原文にはありませんが、`RunningTotal` の定義でバンパターンをつけています。
+
+```haskell
+data RunningTotal = RunningTotal
+  { sum :: !Int
+  , count :: !Int
+  }
+
+go rt [] = printAverage rt
+go (RunningTotal sum count) (x:xs) =
+  let rt = RunningTotal (sum + x) (count + 1)
+   in go rt xs
+```
+
+|| 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| allocated in the heap | 258,654,520 bytes | 258,654,520 bytes | 192,102,712 bytes | 216,102,712 bytes | 176,102,712 bytes |
+| copied during GC | 339,889,944 bytes | 339,889,944 bytes | 173,080 bytes | 142,896 bytes | 164,400 bytes |
+| maximum residency | 95,096,512 bytes | 95,096,512 bytes | 44,384 bytes | 44,384 bytes | 44,384 bytes |
+| maximum slop | 1,148,312 byte | 1,148,312 bytes | 25,248 bytes | 25,248 bytes | 25,248 bytes |
+| total memory in use | 164 MB | 164 MB | 1 MB | 1 MB | 1 MB |
 
 ### deepseq
 The fact that `seq` only evaluates to weak head normal form is annoying. There are lots of times when we would like to fully evaluate down to normal form (NF), meaning all thunks have been evaluated inside our values. While there is nothing built into the language to handle this, there is a semi-standard (meaning it ships with GHC) library to handle this: `deepseq`. It works by providing an `NFData` type class the defines how to reduce a value to normal form (via the `rnf` method).
