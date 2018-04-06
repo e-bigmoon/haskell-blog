@@ -8,8 +8,224 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-03-31T00:00:00Z</updated>
+    <updated>2018-04-06T00:00:00Z</updated>
     <entry>
+    <title>Haskell Quiz No.6 Conduit Part.2</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html</id>
+    <published>2018-04-06T00:00:00Z</published>
+    <updated>2018-04-06T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.6">Haskell Quiz No.6</h2>
+<p>難易度: λλ</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.2</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">trans <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> trans <span class="fu">.|</span> mapM_C print</a></code></pre></div>
+<p>答えは次回。</p>
+<p>最近は <code>Conduit</code> にはまっているので、クイズも <code>Conduit</code> が続きます。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./03-31-quiz-5.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λλ</p>
+<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.0</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">sink <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC show <span class="fu">.|</span> foldC</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  y <span class="ot">&lt;-</span> sumC</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">  return (x, y)</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  print res</a></code></pre></div>
+<h3 id="こたえ">こたえ</h3>
+<p>実際に実行してみましょう！</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">$</span> <span class="fu">./</span>Quiz5.hs</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">(<span class="st">&quot;12345&quot;</span>,<span class="dv">40</span>)</a></code></pre></div>
+<p>どうですか？予想通りでしたか？？</p>
+<h2 id="haskell-quiz-no.5-の解説">Haskell Quiz No.5 の解説</h2>
+<p>この問題を解くためには <a href="https://www.stackage.org/lts-11.3/package/conduit-1.3.0.2">conduit</a> というストリーム処理ライブラリの知識が必要になります。</p>
+<h3 id="conduit-を使うモチベーション">Conduit を使うモチベーション</h3>
+<p>具体例として指定したディレクトリ以下の<strong>ファイル数</strong>と<strong>容量の合計</strong>を出力するようなプログラムを作ってみましょう。</p>
+<p>ディレクトリ操作については <a href="https://www.stackage.org/lts-11.3/package/directory-1.3.0.2">directory</a> パッケージに便利な関数が色々と定義されているので、このパッケージを利用します。</p>
+<p>必要な操作と、対応する関数は以下の通りです。</p>
+<ul>
+<li>ファイルの列挙: <a href="https://www.stackage.org/haddock/lts-11.3/directory-1.3.0.2/System-Directory.html#v:listDirectory">listDirectory</a></li>
+<li>ファイルサイズの取得: <a href="https://www.stackage.org/haddock/lts-11.3/directory-1.3.0.2/System-Directory.html#v:getFileSize">getFileSize</a></li>
+<li>ファイル・ディレクトリの判定: <a href="https://www.stackage.org/haddock/lts-11.3/directory-1.3.0.2/System-Directory.html#v:doesFileExist">doesFileExist</a></li>
+</ul>
+<p>これらの関数を使って、こんな感じでプログラムを作ることができます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">{-</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">  --package extra</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">  --package filepath</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">  --package directory</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw">import</span> <span class="dt">System.Directory</span> (listDirectory, doesFileExist, getFileSize)</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw">import</span> <span class="dt">System.FilePath</span> ((&lt;/&gt;))</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (partitionM, ifM)</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">  arg <span class="ot">&lt;-</span> getArgs</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">  when (length arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">    (cnt, size) <span class="ot">&lt;-</span> recListDir <span class="fu">$</span> head arg</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> show cnt</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> show size</a>
+<a class="sourceLine" id="cb4-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="ot">recListDir ::</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Int</span>, <span class="dt">Integer</span>)</a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">recListDir fp <span class="fu">=</span> loop (<span class="dv">0</span>, <span class="dv">0</span>) [fp]</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">    loop summary [] <span class="fu">=</span> return summary</a>
+<a class="sourceLine" id="cb4-27" data-line-number="27">    loop (accCnt, accSize) (fp<span class="fu">:</span>fps) <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-28" data-line-number="28">      dirs <span class="ot">&lt;-</span> listDirectory fp</a>
+<a class="sourceLine" id="cb4-29" data-line-number="29">      (files, childDirs) <span class="ot">&lt;-</span> partitionM doesFileExist <span class="fu">$</span> map (fp <span class="fu">&lt;/&gt;</span>) dirs</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30">      size <span class="ot">&lt;-</span> sum <span class="fu">&lt;$&gt;</span> mapM getFileSize files</a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">      <span class="kw">let</span> summary <span class="fu">=</span> (accCnt <span class="fu">+</span> length files, accSize <span class="fu">+</span> size)</a>
+<a class="sourceLine" id="cb4-32" data-line-number="32">      loop summary <span class="fu">$</span> fps <span class="fu">++</span> childDirs</a></code></pre></div>
+<p>実際に、プロファイリングを取得しつつ動かしてみます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1">$ <span class="ex">stack</span> ghc Ex <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> ./Ex /home/bm12/Desktop/ +RTS -s</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">総ファイル数: <span class="ex">338866</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">総ファイルサイズ: <span class="ex">37870090712</span></a></code></pre></div>
+<p>とりあえず、上手く動いているような気がします。</p>
+<p>しかし、メモリ使用量は・・・</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">  <span class="ex">13</span>,440,124,048 bytes allocated in the heap</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">   <span class="ex">8</span>,760,418,592 bytes copied during GC</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">   <span class="ex">1</span>,225,650,008 bytes maximum residency (23 sample(s))</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">      <span class="ex">19</span>,423,400 bytes maximum slop</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">            <span class="ex">2599</span> MB total memory in use (0 MB lost due to fragmentation)</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">                                     <span class="ex">Tot</span> time (elapsed)  <span class="ex">Avg</span> pause  Max pause</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">  <span class="ex">Gen</span>  0      9869 colls,     0 par    7.821s   9.831s     0.0010s    1.1223s</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">  <span class="ex">Gen</span>  1        23 colls,     0 par    0.011s   0.013s     0.0006s    0.0009s</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">  <span class="ex">INIT</span>    time    0.000s  (  0.000s elapsed)</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">  <span class="ex">MUT</span>     time    5.255s  (  6.347s elapsed)</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">  <span class="ex">GC</span>      time    7.832s  (  9.845s elapsed)</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">  <span class="ex">EXIT</span>    time    0.032s  (  0.123s elapsed)</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">  <span class="ex">Total</span>   time   13.118s  ( 16.315s elapsed)</a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">  <span class="ex">%GC</span>     time      59.7%  (60.3% elapsed)</a>
+<a class="sourceLine" id="cb6-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">  <span class="ex">Alloc</span> rate    2,557,607,298 bytes per MUT second</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">  <span class="ex">Productivity</span>  40.3% of total user, 39.7% of total elapsed</a></code></pre></div>
+<ul>
+<li><strong>2599 MB total memory in use</strong></li>
+<li><strong>%GC time 59.7% (60.3% elapsed)</strong></li>
+</ul>
+<p>ということで、非常にやばいですね。</p>
+<h3 id="conduit-で書き直そう">Conduit で書き直そう！</h3>
+<p>先程作ったプログラムは、どうやらスペースリークしているようです。指定したディレクトリ以下のファイルの数とファイルサイズの合計を取得するだけなのに、メモリを使いすぎですね。</p>
+<p>解決方法は色々ありますが、今回はストリームライブラリの <code>Conduit</code> を使って解決していきましょう。</p>
+<p><code>Conduit</code> には <a href="https://www.stackage.org/haddock/lts-11.3/conduit-1.3.0.2/Conduit.html#v:sourceDirectoryDeep">sourceDirectoryDeep</a> という、関数が用意されています。</p>
+<p>だいたいこんな感じで書き直すことができます。先程の定義と比べると <strong>sourceDirectoryDeep</strong> 関数のおかげでスッキリした印象です。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">{-</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">  --package conduit</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">  --package extra</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="co">  --package directory</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
+<a class="sourceLine" id="cb7-12" data-line-number="12"><span class="kw">import</span> <span class="dt">System.Directory</span> (doesFileExist, getFileSize)</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (whenM)</a>
+<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">  arg <span class="ot">&lt;-</span> getArgs</a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">  when (length arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20">    (cnt, size) <span class="ot">&lt;-</span></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">      runConduitRes <span class="fu">$</span> sourceDirectoryDeep <span class="dt">True</span> (head arg)</a>
+<a class="sourceLine" id="cb7-22" data-line-number="22">                   <span class="fu">.|</span> awaitForever getInfo</a>
+<a class="sourceLine" id="cb7-23" data-line-number="23">                   <span class="fu">.|</span> getZipSink ((,) <span class="fu">&lt;$&gt;</span> <span class="dt">ZipSink</span> lengthC <span class="fu">&lt;*&gt;</span> <span class="dt">ZipSink</span> sumC)</a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> show cnt</a>
+<a class="sourceLine" id="cb7-25" data-line-number="25">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> show size</a>
+<a class="sourceLine" id="cb7-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb7-27" data-line-number="27"><span class="ot">getInfo ::</span> <span class="dt">MonadResource</span> m <span class="ot">=&gt;</span> FilePath <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> FilePath <span class="dt">Integer</span> m ()</a>
+<a class="sourceLine" id="cb7-28" data-line-number="28">getInfo path <span class="fu">=</span></a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">  whenM (liftIO <span class="fu">$</span> doesFileExist path) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-30" data-line-number="30">    size <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> getFileSize path</a>
+<a class="sourceLine" id="cb7-31" data-line-number="31">    yield size</a></code></pre></div>
+<p>では、同様にプロファイルを取得しつつ、実行してみましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1">$ <span class="ex">stack</span> ghc Ex2 <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> ./Ex2 /home/bm12/Desktop/ +RTS -s</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">総ファイル数: <span class="ex">338866</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">総ファイルサイズ: <span class="ex">37870092264</span></a></code></pre></div>
+<p>肝心のメモリ使用量はと言うと・・・</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1">  <span class="ex">10</span>,742,224,392 bytes allocated in the heap</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">      <span class="ex">86</span>,720,088 bytes copied during GC</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">          <span class="ex">87</span>,576 bytes maximum residency (19 sample(s))</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">          <span class="ex">33</span>,320 bytes maximum slop</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">               <span class="ex">3</span> MB total memory in use (0 MB lost due to fragmentation)</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">                                     <span class="ex">Tot</span> time (elapsed)  <span class="ex">Avg</span> pause  Max pause</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">  <span class="ex">Gen</span>  0     10347 colls,     0 par    0.146s   0.198s     0.0000s    0.0008s</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">  <span class="ex">Gen</span>  1        19 colls,     0 par    0.000s   0.001s     0.0000s    0.0001s</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">  <span class="ex">INIT</span>    time    0.000s  (  0.000s elapsed)</a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">  <span class="ex">MUT</span>     time    5.252s  (  7.444s elapsed)</a>
+<a class="sourceLine" id="cb9-13" data-line-number="13">  <span class="ex">GC</span>      time    0.146s  (  0.198s elapsed)</a>
+<a class="sourceLine" id="cb9-14" data-line-number="14">  <span class="ex">EXIT</span>    time    0.000s  (  0.000s elapsed)</a>
+<a class="sourceLine" id="cb9-15" data-line-number="15">  <span class="ex">Total</span>   time    5.398s  (  7.642s elapsed)</a>
+<a class="sourceLine" id="cb9-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb9-17" data-line-number="17">  <span class="ex">%GC</span>     time       2.7%  (2.6% elapsed)</a>
+<a class="sourceLine" id="cb9-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb9-19" data-line-number="19">  <span class="ex">Alloc</span> rate    2,045,428,118 bytes per MUT second</a>
+<a class="sourceLine" id="cb9-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb9-21" data-line-number="21">  <span class="ex">Productivity</span>  97.3% of total user, 97.4% of total elapsed</a></code></pre></div>
+<ul>
+<li><strong>3 MB total memory in use</strong></li>
+<li><strong>%GC time 2.7% (2.6% elapsed)</strong></li>
+</ul>
+<p>どうですか？ストリーム処理って凄いですよね。</p>
+<h3 id="解説">解説</h3>
+<p>この問題の重要なポイントは、実行すると <code>(&quot;12345&quot;, 6+7+8+9+10)</code> という結果のように、<code>[1..10]</code> のリストの前半と後半で異なる処理になっているという点です。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">$</span> <span class="fu">./</span>Quiz5.hs</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">(<span class="st">&quot;12345&quot;</span>,<span class="dv">40</span>)</a></code></pre></div>
+<p>ここで理解しておきたい知識は以下の3点です。</p>
+<ul>
+<li>データは<strong>パイプ</strong> (ストリーム) を流れて処理されます</li>
+<li><code>yieldMany</code> 関数は受け取ったデータをパイプに流す<strong>準備</strong>をします (<code>yieldMany</code> は自分から積極的にデータを流すことはしません。準備だけしておき <code>await</code> 関数などで、実際に必要になった際にだけデータを流します)</li>
+<li><code>.|</code> はパイプを<strong>合成</strong>します</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">  print res</a></code></pre></div>
+<p><code>sink</code> 関数は <code>takeC 5 .| mapC show .| foldC</code> というパイプと <code>sumC</code> というパイプからなる、大きなパイプです。</p>
+<p><code>takeC 5 .| mapC show .| foldC</code> 関数は <code>takeC 5</code> の部分でデータを <strong>5つだけ</strong> 上流のパイプに要求します。そのため、残りの5つのデータは次の <code>sumC</code> に流れることになります。</p>
+<pre><code>sink :: Monad m =&gt; ConduitM Int o m (String, Int)
+sink = do
+  x &lt;- takeC 5 .| mapC show .| foldC -- 1,2,3,4,5  のデータが処理される
+  y &lt;- sumC                          -- 6,7,8,9,10 のデータが処理される
+  return (x, y)</code></pre>
+<p>そのため、最終的には <code>(&quot;12345&quot;,40)</code> となりました。</p>
+<p><code>&quot;12345&quot;</code> はそれぞれの <strong>Int</strong> 型が <code>mapC show</code> によって <strong>String</strong> 型に変換され、<code>foldC</code> の <code>mappend</code> による畳込みによって文字列連結されます。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>実用的なアプリケーションを作ろうと考えている方は <code>Conduit</code> などのストリームライブラリを理解していると、色々と面倒なことを考えなくて済むのでとても良いですよ。</p>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Haskell Quiz No.5 Conduit Part.1</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/03-31-quiz-5.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/03-31-quiz-5.html</id>
@@ -32,7 +248,7 @@
 <a class="sourceLine" id="cb1-12" data-line-number="12">main <span class="fu">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
 <a class="sourceLine" id="cb1-14" data-line-number="14">  print res</a></code></pre></div>
-<p>答えは次回。</p>
+<p>答えは<a href="04-01-quiz-6.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
 <p><a href="./03-28-quiz-4.html">前回</a>の問題と答えは以下の通りです。</p>
@@ -1451,50 +1667,6 @@ O
 <h2 id="まとめ">まとめ</h2>
 <p><code>Yesod</code> を使っていてもサブサイトについて知らないという人は多いと思いますが、<code>Yesod</code> のアプリケーションが増えてきた時に使える、とても便利な仕組みだと思います。</p>
 <p>サブサイトについて、もっと詳しく知りたい人は <a href="https://www.stackage.org/lts-11.1/package/yesod-static-1.6.0">yesod-static</a> パッケージの実装を見てみると良いでしょう。</p>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>extra-deps に github の短縮形が指定できるようになります</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/03-13-stack-extra-deps-shorthand.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/03-13-stack-extra-deps-shorthand.html</id>
-    <published>2018-03-13T00:00:00Z</published>
-    <updated>2018-03-13T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>今日マージされた <a href="https://github.com/commercialhaskell/stack/pull/3890">Allow ‘github’ shorthand for extra-deps (fixes #3873) #3890</a> がとても便利だと思いますのでご紹介します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">stack</span> --version</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ex">Version</span> 1.7.0, Git revision 4a140342f9b28005bf2fdd5335bdcd32c9370265 (5702 commits) <span class="ex">x86_64</span> hpack-0.21.2</a></code></pre></div>
-<!--more-->
-<p><code>stack.yaml</code> に記述する <code>extra-deps</code> は主に2つの理由で記述することが多いです。</p>
-<ul>
-<li><code>lts</code> に含まれていないパッケージのバージョンを指定するため</li>
-<li>そもそも <code>Hackage</code> に上がっていないパッケージを使うため</li>
-</ul>
-<p>今回は <code>extra-deps</code> の指定方法に <code>github</code> 専用の短縮形が導入されました。</p>
-<p>こんな感じで指定可能です。(コミットの短縮形はいつから使えていたのかわかりませんが、使えます)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">extra-deps:</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> haskell/text</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="fu">commit:</span><span class="at"> 9fac5d</span></a></code></pre></div>
-<p>1.6.5 ではまだ利用できない機能となっております。</p>
-<h2 id="試し方">試し方</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1">$ <span class="ex">stack</span> upgrade --git</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co"># コンパイルするので時間かかります</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">$ <span class="ex">stack</span> --version</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ex">Version</span> 1.7.0, Git revision 4a140342f9b28005bf2fdd5335bdcd32c9370265 (5702 commits) <span class="ex">x86_64</span> hpack-0.21.2</a></code></pre></div>
-<p>遊んでから、元の <code>stack</code> のバージョンに戻す時は以下のようにするだけです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="ex">stack</span> upgrade --binary-version 1.6.5</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ex">...</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">$ <span class="ex">stack</span> --version</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="ex">Version</span> 1.6.5, Git revision 24ab0d6ff07f28276e082c3ce74dfdeb1a2ca9e9 (5514 commits) <span class="ex">x86_64</span> hpack-0.20.0</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># バイナリが落ちてくるのですぐ終わります</span></a></code></pre></div>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li><code>stack 1.7.0</code> ぐらいから利用できるようになるはず</li>
-<li><code>github</code> が新たに追加され <code>user/repo</code> の短縮形で記述できるようになった</li>
-<li><code>commit</code> もいつからか短縮形で記述できるようになっていた</li>
-<li><code>subdirs</code> を指定すれば <code>Yesod</code> のような mega-repo でも指定できる</li>
-</ul>
 <p>以上です。</p>]]></summary>
 </entry>
 

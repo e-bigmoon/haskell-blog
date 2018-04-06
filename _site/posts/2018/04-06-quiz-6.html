@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Haskell Quiz No.6 Conduit Part.2</title>
+  <meta name="description" content="Haskell Quiz No.6
+難易度: λλ
+#!/usr/bin/env stack
+-- stack script --resolver lts-11.2
+import Conduit
+
+trans :: Monad m =&gt; ConduitM Int Int m ()
+trans = do
+  tak">
+  <link rel="canonical" href="../../posts/2018/04-06-quiz-6.html">
+  <link rel="alternate" type="application/atom+xml" title="Haskell Quiz No.6 Conduit Part.2" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="Haskell Quiz No.6 Conduit Part.2" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/04-06-quiz-6.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Haskell Quiz No.6 Conduit Part.2" />
+  <meta property="og:description" content="Haskell Quiz No.6
+難易度: λλ
+#!/usr/bin/env stack
+-- stack script --resolver lts-11.2
+import Conduit
+
+trans :: Monad m =&gt; ConduitM Int Int m ()
+trans = do
+  tak" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Stack
+      </a>
+    </li>
+    <li>
+      <a href="../../liquidhaskell/" class="white-text">
+        <i class="mdi mdi-water left indigo-text text-lighten-3"></i>
+        Liquid Haskell
+      </a>
+    </li>
+    <li>
+        <a href="../../yesod/" class="white-text">
+          <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+          Yesod
+        </a>
+      </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Stack
+      </a>
+    </li>
+    <li>
+      <a href="../../liquidhaskell/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-water left blue-text"></i>
+        LiquidHaskell
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-rss left red-text"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on April  6, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Haskell Quiz No.6 Conduit Part.2</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a>, <a href="../../tags/quiz.html">quiz</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Haskell Quiz No.6 Conduit Part.2&url=https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="haskell-quiz-no.6">Haskell Quiz No.6</h2>
+<p>難易度: λλ</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.2</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">trans <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> trans <span class="fu">.|</span> mapM_C print</a></code></pre></div>
+<p>答えは次回。</p>
+<p>最近は <code>Conduit</code> にはまっているので、クイズも <code>Conduit</code> が続きます。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./03-31-quiz-5.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λλ</p>
+<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.0</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">sink <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC show <span class="fu">.|</span> foldC</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  y <span class="ot">&lt;-</span> sumC</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">  return (x, y)</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  print res</a></code></pre></div>
+<h3 id="こたえ">こたえ</h3>
+<p>実際に実行してみましょう！</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">$</span> <span class="fu">./</span>Quiz5.hs</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">(<span class="st">&quot;12345&quot;</span>,<span class="dv">40</span>)</a></code></pre></div>
+<p>どうですか？予想通りでしたか？？</p>
+<h2 id="haskell-quiz-no.5-の解説">Haskell Quiz No.5 の解説</h2>
+<p>この問題を解くためには <a href="https://www.stackage.org/lts-11.3/package/conduit-1.3.0.2">conduit</a> というストリーム処理ライブラリの知識が必要になります。</p>
+<h3 id="conduit-を使うモチベーション">Conduit を使うモチベーション</h3>
+<p>具体例として指定したディレクトリ以下の<strong>ファイル数</strong>と<strong>容量の合計</strong>を出力するようなプログラムを作ってみましょう。</p>
+<p>ディレクトリ操作については <a href="https://www.stackage.org/lts-11.3/package/directory-1.3.0.2">directory</a> パッケージに便利な関数が色々と定義されているので、このパッケージを利用します。</p>
+<p>必要な操作と、対応する関数は以下の通りです。</p>
+<ul>
+<li>ファイルの列挙: <a href="https://www.stackage.org/haddock/lts-11.3/directory-1.3.0.2/System-Directory.html#v:listDirectory">listDirectory</a></li>
+<li>ファイルサイズの取得: <a href="https://www.stackage.org/haddock/lts-11.3/directory-1.3.0.2/System-Directory.html#v:getFileSize">getFileSize</a></li>
+<li>ファイル・ディレクトリの判定: <a href="https://www.stackage.org/haddock/lts-11.3/directory-1.3.0.2/System-Directory.html#v:doesFileExist">doesFileExist</a></li>
+</ul>
+<p>これらの関数を使って、こんな感じでプログラムを作ることができます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">{-</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">  --package extra</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">  --package filepath</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">  --package directory</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw">import</span> <span class="dt">System.Directory</span> (listDirectory, doesFileExist, getFileSize)</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw">import</span> <span class="dt">System.FilePath</span> ((&lt;/&gt;))</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (partitionM, ifM)</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">  arg <span class="ot">&lt;-</span> getArgs</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">  when (length arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">    (cnt, size) <span class="ot">&lt;-</span> recListDir <span class="fu">$</span> head arg</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> show cnt</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> show size</a>
+<a class="sourceLine" id="cb4-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="ot">recListDir ::</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Int</span>, <span class="dt">Integer</span>)</a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">recListDir fp <span class="fu">=</span> loop (<span class="dv">0</span>, <span class="dv">0</span>) [fp]</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">    loop summary [] <span class="fu">=</span> return summary</a>
+<a class="sourceLine" id="cb4-27" data-line-number="27">    loop (accCnt, accSize) (fp<span class="fu">:</span>fps) <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-28" data-line-number="28">      dirs <span class="ot">&lt;-</span> listDirectory fp</a>
+<a class="sourceLine" id="cb4-29" data-line-number="29">      (files, childDirs) <span class="ot">&lt;-</span> partitionM doesFileExist <span class="fu">$</span> map (fp <span class="fu">&lt;/&gt;</span>) dirs</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30">      size <span class="ot">&lt;-</span> sum <span class="fu">&lt;$&gt;</span> mapM getFileSize files</a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">      <span class="kw">let</span> summary <span class="fu">=</span> (accCnt <span class="fu">+</span> length files, accSize <span class="fu">+</span> size)</a>
+<a class="sourceLine" id="cb4-32" data-line-number="32">      loop summary <span class="fu">$</span> fps <span class="fu">++</span> childDirs</a></code></pre></div>
+<p>実際に、プロファイリングを取得しつつ動かしてみます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1">$ <span class="ex">stack</span> ghc Ex <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> ./Ex /home/bm12/Desktop/ +RTS -s</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">総ファイル数: <span class="ex">338866</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">総ファイルサイズ: <span class="ex">37870090712</span></a></code></pre></div>
+<p>とりあえず、上手く動いているような気がします。</p>
+<p>しかし、メモリ使用量は・・・</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">  <span class="ex">13</span>,440,124,048 bytes allocated in the heap</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">   <span class="ex">8</span>,760,418,592 bytes copied during GC</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">   <span class="ex">1</span>,225,650,008 bytes maximum residency (23 sample(s))</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">      <span class="ex">19</span>,423,400 bytes maximum slop</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">            <span class="ex">2599</span> MB total memory in use (0 MB lost due to fragmentation)</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">                                     <span class="ex">Tot</span> time (elapsed)  <span class="ex">Avg</span> pause  Max pause</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">  <span class="ex">Gen</span>  0      9869 colls,     0 par    7.821s   9.831s     0.0010s    1.1223s</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">  <span class="ex">Gen</span>  1        23 colls,     0 par    0.011s   0.013s     0.0006s    0.0009s</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">  <span class="ex">INIT</span>    time    0.000s  (  0.000s elapsed)</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">  <span class="ex">MUT</span>     time    5.255s  (  6.347s elapsed)</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">  <span class="ex">GC</span>      time    7.832s  (  9.845s elapsed)</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">  <span class="ex">EXIT</span>    time    0.032s  (  0.123s elapsed)</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">  <span class="ex">Total</span>   time   13.118s  ( 16.315s elapsed)</a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">  <span class="ex">%GC</span>     time      59.7%  (60.3% elapsed)</a>
+<a class="sourceLine" id="cb6-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">  <span class="ex">Alloc</span> rate    2,557,607,298 bytes per MUT second</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">  <span class="ex">Productivity</span>  40.3% of total user, 39.7% of total elapsed</a></code></pre></div>
+<ul>
+<li><strong>2599 MB total memory in use</strong></li>
+<li><strong>%GC time 59.7% (60.3% elapsed)</strong></li>
+</ul>
+<p>ということで、非常にやばいですね。</p>
+<h3 id="conduit-で書き直そう">Conduit で書き直そう！</h3>
+<p>先程作ったプログラムは、どうやらスペースリークしているようです。指定したディレクトリ以下のファイルの数とファイルサイズの合計を取得するだけなのに、メモリを使いすぎですね。</p>
+<p>解決方法は色々ありますが、今回はストリームライブラリの <code>Conduit</code> を使って解決していきましょう。</p>
+<p><code>Conduit</code> には <a href="https://www.stackage.org/haddock/lts-11.3/conduit-1.3.0.2/Conduit.html#v:sourceDirectoryDeep">sourceDirectoryDeep</a> という、関数が用意されています。</p>
+<p>だいたいこんな感じで書き直すことができます。先程の定義と比べると <strong>sourceDirectoryDeep</strong> 関数のおかげでスッキリした印象です。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">{-</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">  --package conduit</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">  --package extra</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="co">  --package directory</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
+<a class="sourceLine" id="cb7-12" data-line-number="12"><span class="kw">import</span> <span class="dt">System.Directory</span> (doesFileExist, getFileSize)</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (whenM)</a>
+<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">  arg <span class="ot">&lt;-</span> getArgs</a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">  when (length arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20">    (cnt, size) <span class="ot">&lt;-</span></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">      runConduitRes <span class="fu">$</span> sourceDirectoryDeep <span class="dt">True</span> (head arg)</a>
+<a class="sourceLine" id="cb7-22" data-line-number="22">                   <span class="fu">.|</span> awaitForever getInfo</a>
+<a class="sourceLine" id="cb7-23" data-line-number="23">                   <span class="fu">.|</span> getZipSink ((,) <span class="fu">&lt;$&gt;</span> <span class="dt">ZipSink</span> lengthC <span class="fu">&lt;*&gt;</span> <span class="dt">ZipSink</span> sumC)</a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> show cnt</a>
+<a class="sourceLine" id="cb7-25" data-line-number="25">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> show size</a>
+<a class="sourceLine" id="cb7-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb7-27" data-line-number="27"><span class="ot">getInfo ::</span> <span class="dt">MonadResource</span> m <span class="ot">=&gt;</span> FilePath <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> FilePath <span class="dt">Integer</span> m ()</a>
+<a class="sourceLine" id="cb7-28" data-line-number="28">getInfo path <span class="fu">=</span></a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">  whenM (liftIO <span class="fu">$</span> doesFileExist path) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-30" data-line-number="30">    size <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> getFileSize path</a>
+<a class="sourceLine" id="cb7-31" data-line-number="31">    yield size</a></code></pre></div>
+<p>では、同様にプロファイルを取得しつつ、実行してみましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1">$ <span class="ex">stack</span> ghc Ex2 <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> ./Ex2 /home/bm12/Desktop/ +RTS -s</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">総ファイル数: <span class="ex">338866</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">総ファイルサイズ: <span class="ex">37870092264</span></a></code></pre></div>
+<p>肝心のメモリ使用量はと言うと・・・</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1">  <span class="ex">10</span>,742,224,392 bytes allocated in the heap</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">      <span class="ex">86</span>,720,088 bytes copied during GC</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">          <span class="ex">87</span>,576 bytes maximum residency (19 sample(s))</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">          <span class="ex">33</span>,320 bytes maximum slop</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">               <span class="ex">3</span> MB total memory in use (0 MB lost due to fragmentation)</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">                                     <span class="ex">Tot</span> time (elapsed)  <span class="ex">Avg</span> pause  Max pause</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">  <span class="ex">Gen</span>  0     10347 colls,     0 par    0.146s   0.198s     0.0000s    0.0008s</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">  <span class="ex">Gen</span>  1        19 colls,     0 par    0.000s   0.001s     0.0000s    0.0001s</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">  <span class="ex">INIT</span>    time    0.000s  (  0.000s elapsed)</a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">  <span class="ex">MUT</span>     time    5.252s  (  7.444s elapsed)</a>
+<a class="sourceLine" id="cb9-13" data-line-number="13">  <span class="ex">GC</span>      time    0.146s  (  0.198s elapsed)</a>
+<a class="sourceLine" id="cb9-14" data-line-number="14">  <span class="ex">EXIT</span>    time    0.000s  (  0.000s elapsed)</a>
+<a class="sourceLine" id="cb9-15" data-line-number="15">  <span class="ex">Total</span>   time    5.398s  (  7.642s elapsed)</a>
+<a class="sourceLine" id="cb9-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb9-17" data-line-number="17">  <span class="ex">%GC</span>     time       2.7%  (2.6% elapsed)</a>
+<a class="sourceLine" id="cb9-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb9-19" data-line-number="19">  <span class="ex">Alloc</span> rate    2,045,428,118 bytes per MUT second</a>
+<a class="sourceLine" id="cb9-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb9-21" data-line-number="21">  <span class="ex">Productivity</span>  97.3% of total user, 97.4% of total elapsed</a></code></pre></div>
+<ul>
+<li><strong>3 MB total memory in use</strong></li>
+<li><strong>%GC time 2.7% (2.6% elapsed)</strong></li>
+</ul>
+<p>どうですか？ストリーム処理って凄いですよね。</p>
+<h3 id="解説">解説</h3>
+<p>この問題の重要なポイントは、実行すると <code>(&quot;12345&quot;, 6+7+8+9+10)</code> という結果のように、<code>[1..10]</code> のリストの前半と後半で異なる処理になっているという点です。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">$</span> <span class="fu">./</span>Quiz5.hs</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">(<span class="st">&quot;12345&quot;</span>,<span class="dv">40</span>)</a></code></pre></div>
+<p>ここで理解しておきたい知識は以下の3点です。</p>
+<ul>
+<li>データは<strong>パイプ</strong> (ストリーム) を流れて処理されます</li>
+<li><code>yieldMany</code> 関数は受け取ったデータをパイプに流す<strong>準備</strong>をします (<code>yieldMany</code> は自分から積極的にデータを流すことはしません。準備だけしておき <code>await</code> 関数などで、実際に必要になった際にだけデータを流します)</li>
+<li><code>.|</code> はパイプを<strong>合成</strong>します</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">  print res</a></code></pre></div>
+<p><code>sink</code> 関数は <code>takeC 5 .| mapC show .| foldC</code> というパイプと <code>sumC</code> というパイプからなる、大きなパイプです。</p>
+<p><code>takeC 5 .| mapC show .| foldC</code> 関数は <code>takeC 5</code> の部分でデータを <strong>5つだけ</strong> 上流のパイプに要求します。そのため、残りの5つのデータは次の <code>sumC</code> に流れることになります。</p>
+<pre><code>sink :: Monad m =&gt; ConduitM Int o m (String, Int)
+sink = do
+  x &lt;- takeC 5 .| mapC show .| foldC -- 1,2,3,4,5  のデータが処理される
+  y &lt;- sumC                          -- 6,7,8,9,10 のデータが処理される
+  return (x, y)</code></pre>
+<p>そのため、最終的には <code>(&quot;12345&quot;,40)</code> となりました。</p>
+<p><code>&quot;12345&quot;</code> はそれぞれの <strong>Int</strong> 型が <code>mapC show</code> によって <strong>String</strong> 型に変換され、<code>foldC</code> の <code>mappend</code> による畳込みによって文字列連結されます。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>実用的なアプリケーションを作ろうと考えている方は <code>Conduit</code> などのストリームライブラリを理解していると、色々と面倒なことを考えなくて済むのでとても良いですよ。</p>
+<p>以上です。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/03-31-quiz-5.html"><i class="material-icons left">navigate_before</i>Haskell Quiz No.5 Conduit Part.1</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Haskell Quiz No.6 Conduit Part.2&url=https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/04-06-quiz-6.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
