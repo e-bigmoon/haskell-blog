@@ -252,8 +252,8 @@ trans = do
 <a class="sourceLine" id="cb2-14" data-line-number="14">  print res</a></code></pre></div>
 <h3 id="こたえ">こたえ</h3>
 <p>実際に実行してみましょう！</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">$</span> <span class="fu">./</span>Quiz5.hs</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">(<span class="st">&quot;12345&quot;</span>,<span class="dv">40</span>)</a></code></pre></div>
+<pre class="shell"><code>$ ./Quiz5.hs
+(&quot;12345&quot;,40)</code></pre>
 <p>どうですか？予想通りでしたか？？</p>
 <h2 id="haskell-quiz-no.5-の解説">Haskell Quiz No.5 の解説</h2>
 <p>この問題を解くためには <a href="https://www.stackage.org/lts-11.3/package/conduit-1.3.0.2">conduit</a> というストリーム処理ライブラリの知識が必要になります。</p>
@@ -300,32 +300,32 @@ trans = do
 <a class="sourceLine" id="cb4-31" data-line-number="31">      <span class="kw">let</span> summary <span class="fu">=</span> (accCnt <span class="fu">+</span> length files, accSize <span class="fu">+</span> size)</a>
 <a class="sourceLine" id="cb4-32" data-line-number="32">      loop summary <span class="fu">$</span> fps <span class="fu">++</span> childDirs</a></code></pre></div>
 <p>実際に、プロファイリングを取得しつつ動かしてみます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1">$ <span class="ex">stack</span> ghc Ex <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> ./Ex /home/bm12/Desktop/ +RTS -s</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">総ファイル数: <span class="ex">338866</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">総ファイルサイズ: <span class="ex">37870090712</span></a></code></pre></div>
+<pre class="shell"><code>$ stack ghc Ex &amp;&amp; sudo ./Ex /home/bm12/Desktop/ +RTS -s
+総ファイル数: 338866
+総ファイルサイズ: 37870090712</code></pre>
 <p>とりあえず、上手く動いているような気がします。</p>
 <p>しかし、メモリ使用量は・・・</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">  <span class="ex">13</span>,440,124,048 bytes allocated in the heap</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">   <span class="ex">8</span>,760,418,592 bytes copied during GC</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">   <span class="ex">1</span>,225,650,008 bytes maximum residency (23 sample(s))</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">      <span class="ex">19</span>,423,400 bytes maximum slop</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">            <span class="ex">2599</span> MB total memory in use (0 MB lost due to fragmentation)</a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">                                     <span class="ex">Tot</span> time (elapsed)  <span class="ex">Avg</span> pause  Max pause</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">  <span class="ex">Gen</span>  0      9869 colls,     0 par    7.821s   9.831s     0.0010s    1.1223s</a>
-<a class="sourceLine" id="cb6-9" data-line-number="9">  <span class="ex">Gen</span>  1        23 colls,     0 par    0.011s   0.013s     0.0006s    0.0009s</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">  <span class="ex">INIT</span>    time    0.000s  (  0.000s elapsed)</a>
-<a class="sourceLine" id="cb6-12" data-line-number="12">  <span class="ex">MUT</span>     time    5.255s  (  6.347s elapsed)</a>
-<a class="sourceLine" id="cb6-13" data-line-number="13">  <span class="ex">GC</span>      time    7.832s  (  9.845s elapsed)</a>
-<a class="sourceLine" id="cb6-14" data-line-number="14">  <span class="ex">EXIT</span>    time    0.032s  (  0.123s elapsed)</a>
-<a class="sourceLine" id="cb6-15" data-line-number="15">  <span class="ex">Total</span>   time   13.118s  ( 16.315s elapsed)</a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17">  <span class="ex">%GC</span>     time      59.7%  (60.3% elapsed)</a>
-<a class="sourceLine" id="cb6-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb6-19" data-line-number="19">  <span class="ex">Alloc</span> rate    2,557,607,298 bytes per MUT second</a>
-<a class="sourceLine" id="cb6-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb6-21" data-line-number="21">  <span class="ex">Productivity</span>  40.3% of total user, 39.7% of total elapsed</a></code></pre></div>
+<pre class="shell"><code>  13,440,124,048 bytes allocated in the heap
+   8,760,418,592 bytes copied during GC
+   1,225,650,008 bytes maximum residency (23 sample(s))
+      19,423,400 bytes maximum slop
+            2599 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      9869 colls,     0 par    7.821s   9.831s     0.0010s    1.1223s
+  Gen  1        23 colls,     0 par    0.011s   0.013s     0.0006s    0.0009s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    5.255s  (  6.347s elapsed)
+  GC      time    7.832s  (  9.845s elapsed)
+  EXIT    time    0.032s  (  0.123s elapsed)
+  Total   time   13.118s  ( 16.315s elapsed)
+
+  %GC     time      59.7%  (60.3% elapsed)
+
+  Alloc rate    2,557,607,298 bytes per MUT second
+
+  Productivity  40.3% of total user, 39.7% of total elapsed</code></pre>
 <ul>
 <li><strong>2599 MB total memory in use</strong></li>
 <li><strong>%GC time 59.7% (60.3% elapsed)</strong></li>
@@ -368,31 +368,31 @@ trans = do
 <a class="sourceLine" id="cb7-30" data-line-number="30">    size <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> getFileSize path</a>
 <a class="sourceLine" id="cb7-31" data-line-number="31">    yield size</a></code></pre></div>
 <p>では、同様にプロファイルを取得しつつ、実行してみましょう。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1">$ <span class="ex">stack</span> ghc Ex2 <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> ./Ex2 /home/bm12/Desktop/ +RTS -s</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">総ファイル数: <span class="ex">338866</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">総ファイルサイズ: <span class="ex">37870092264</span></a></code></pre></div>
+<pre class="shell"><code>$ stack ghc Ex2 &amp;&amp; sudo ./Ex2 /home/bm12/Desktop/ +RTS -s
+総ファイル数: 338866
+総ファイルサイズ: 37870092264</code></pre>
 <p>肝心のメモリ使用量はと言うと・・・</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1">  <span class="ex">10</span>,742,224,392 bytes allocated in the heap</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">      <span class="ex">86</span>,720,088 bytes copied during GC</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3">          <span class="ex">87</span>,576 bytes maximum residency (19 sample(s))</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">          <span class="ex">33</span>,320 bytes maximum slop</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">               <span class="ex">3</span> MB total memory in use (0 MB lost due to fragmentation)</a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb9-7" data-line-number="7">                                     <span class="ex">Tot</span> time (elapsed)  <span class="ex">Avg</span> pause  Max pause</a>
-<a class="sourceLine" id="cb9-8" data-line-number="8">  <span class="ex">Gen</span>  0     10347 colls,     0 par    0.146s   0.198s     0.0000s    0.0008s</a>
-<a class="sourceLine" id="cb9-9" data-line-number="9">  <span class="ex">Gen</span>  1        19 colls,     0 par    0.000s   0.001s     0.0000s    0.0001s</a>
-<a class="sourceLine" id="cb9-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb9-11" data-line-number="11">  <span class="ex">INIT</span>    time    0.000s  (  0.000s elapsed)</a>
-<a class="sourceLine" id="cb9-12" data-line-number="12">  <span class="ex">MUT</span>     time    5.252s  (  7.444s elapsed)</a>
-<a class="sourceLine" id="cb9-13" data-line-number="13">  <span class="ex">GC</span>      time    0.146s  (  0.198s elapsed)</a>
-<a class="sourceLine" id="cb9-14" data-line-number="14">  <span class="ex">EXIT</span>    time    0.000s  (  0.000s elapsed)</a>
-<a class="sourceLine" id="cb9-15" data-line-number="15">  <span class="ex">Total</span>   time    5.398s  (  7.642s elapsed)</a>
-<a class="sourceLine" id="cb9-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb9-17" data-line-number="17">  <span class="ex">%GC</span>     time       2.7%  (2.6% elapsed)</a>
-<a class="sourceLine" id="cb9-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb9-19" data-line-number="19">  <span class="ex">Alloc</span> rate    2,045,428,118 bytes per MUT second</a>
-<a class="sourceLine" id="cb9-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb9-21" data-line-number="21">  <span class="ex">Productivity</span>  97.3% of total user, 97.4% of total elapsed</a></code></pre></div>
+<pre class="shell"><code>  10,742,224,392 bytes allocated in the heap
+      86,720,088 bytes copied during GC
+          87,576 bytes maximum residency (19 sample(s))
+          33,320 bytes maximum slop
+               3 MB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0     10347 colls,     0 par    0.146s   0.198s     0.0000s    0.0008s
+  Gen  1        19 colls,     0 par    0.000s   0.001s     0.0000s    0.0001s
+
+  INIT    time    0.000s  (  0.000s elapsed)
+  MUT     time    5.252s  (  7.444s elapsed)
+  GC      time    0.146s  (  0.198s elapsed)
+  EXIT    time    0.000s  (  0.000s elapsed)
+  Total   time    5.398s  (  7.642s elapsed)
+
+  %GC     time       2.7%  (2.6% elapsed)
+
+  Alloc rate    2,045,428,118 bytes per MUT second
+
+  Productivity  97.3% of total user, 97.4% of total elapsed</code></pre>
 <ul>
 <li><strong>3 MB total memory in use</strong></li>
 <li><strong>%GC time 2.7% (2.6% elapsed)</strong></li>
@@ -400,8 +400,8 @@ trans = do
 <p>どうですか？ストリーム処理って凄いですよね。</p>
 <h3 id="解説">解説</h3>
 <p>この問題の重要なポイントは、実行すると <code>(&quot;12345&quot;, 6+7+8+9+10)</code> という結果のように、<code>[1..10]</code> のリストの前半と後半で異なる処理になっているという点です。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">$</span> <span class="fu">./</span>Quiz5.hs</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">(<span class="st">&quot;12345&quot;</span>,<span class="dv">40</span>)</a></code></pre></div>
+<pre class="shell"><code>$ ./Quiz5.hs
+(&quot;12345&quot;,40)</code></pre>
 <p>ここで理解しておきたい知識は以下の3点です。</p>
 <ul>
 <li>データは<strong>パイプ</strong> (ストリーム) を流れて処理されます</li>
@@ -414,11 +414,11 @@ trans = do
 <a class="sourceLine" id="cb11-4" data-line-number="4">  print res</a></code></pre></div>
 <p><code>sink</code> 関数は <code>takeC 5 .| mapC show .| foldC</code> というパイプと <code>sumC</code> というパイプからなる、大きなパイプです。</p>
 <p><code>takeC 5 .| mapC show .| foldC</code> 関数は <code>takeC 5</code> の部分でデータを <strong>5つだけ</strong> 上流のパイプに要求します。そのため、残りの5つのデータは次の <code>sumC</code> に流れることになります。</p>
-<pre><code>sink :: Monad m =&gt; ConduitM Int o m (String, Int)
-sink = do
-  x &lt;- takeC 5 .| mapC show .| foldC -- 1,2,3,4,5  のデータが処理される
-  y &lt;- sumC                          -- 6,7,8,9,10 のデータが処理される
-  return (x, y)</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">sink <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC show <span class="fu">.|</span> foldC <span class="co">-- 1,2,3,4,5  のデータが処理される</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">  y <span class="ot">&lt;-</span> sumC                          <span class="co">-- 6,7,8,9,10 のデータが処理される</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">  return (x, y)</a></code></pre></div>
 <p>そのため、最終的には <code>(&quot;12345&quot;,40)</code> となりました。</p>
 <p><code>&quot;12345&quot;</code> はそれぞれの <strong>Int</strong> 型が <code>mapC show</code> によって <strong>String</strong> 型に変換され、<code>foldC</code> の <code>mappend</code> による畳込みによって文字列連結されます。</p>
 <h2 id="まとめ">まとめ</h2>

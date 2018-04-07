@@ -150,16 +150,44 @@
       <div class="post-heading">
         <h1 class="post-title">プロファイリング</h1>
         
+        <span>最終更新日: 2018/04/07</span>
+        
       </div>
 
       <article class="page-content">
-        <pre class="shell-session"><code>$ stack build --profile
+        <h2 id="プロジェクトのプロファイル">プロジェクトのプロファイル</h2>
+<h3 id="実行ファイル">実行ファイル</h3>
+<pre class="shell"><code>$ stack build --profile
 $ stack exec -- &lt;bin_name&gt; +RTS -p -hc
-
-# テストのプロファイリング
-$ stack test --profile --test-arguments &quot;+RTS -hm&quot;
-
 $ stack exec -- hp2ps -e8in -c &lt;proj_name&gt;.hp</code></pre>
+<h3 id="テスト">テスト</h3>
+<p>引数を渡すためには <code>--test-arguments</code> を使う必要があります。</p>
+<pre class="shell"><code>$ stack test --profile --test-arguments &quot;+RTS -hm&quot;</code></pre>
+<h2 id="単一ファイルのプロファイル">単一ファイルのプロファイル</h2>
+<p><code>Example.hs</code> を実行し、メモリプロファイルを取得する例。</p>
+<pre class="shell"><code>$ stack ghc Example &amp;&amp; sudo ./Example +RTS -s</code></pre>
+<h2 id="プロファイル結果">プロファイル結果</h2>
+<pre class="shell"><code>13,440,124,048 bytes allocated in the heap
+ 8,760,418,592 bytes copied during GC
+ 1,225,650,008 bytes maximum residency (23 sample(s))
+    19,423,400 bytes maximum slop
+          2599 MB total memory in use (0 MB lost due to fragmentation)
+
+                                    Tot time (elapsed)  Avg pause  Max pause
+Gen  0      9869 colls,     0 par    7.821s   9.831s     0.0010s    1.1223s
+Gen  1        23 colls,     0 par    0.011s   0.013s     0.0006s    0.0009s
+
+INIT    time    0.000s  (  0.000s elapsed)
+MUT     time    5.255s  (  6.347s elapsed)
+GC      time    7.832s  (  9.845s elapsed)
+EXIT    time    0.032s  (  0.123s elapsed)
+Total   time   13.118s  ( 16.315s elapsed)
+
+%GC     time      59.7%  (60.3% elapsed)
+
+Alloc rate    2,557,607,298 bytes per MUT second
+
+Productivity  40.3% of total user, 39.7% of total elapsed</code></pre>
       </article>
 
       <div class="pager">
