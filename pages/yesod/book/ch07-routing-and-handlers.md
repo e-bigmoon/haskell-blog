@@ -1,6 +1,6 @@
 ---
 title: Routing and Handlers
-date: 2018/03/18
+date: 2018/04/07
 ---
 
 ## Routing and Handlers
@@ -503,7 +503,7 @@ import           Yesod
 data App = App
 instance Yesod App where
     -- This function controls which messages are logged
-    shouldLog App src level =
+    shouldLogIO App src level = return $
         True -- good for development
         -- level == LevelWarn || level == LevelError -- good for production
 

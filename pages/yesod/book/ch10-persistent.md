@@ -1,6 +1,6 @@
 ---
 title: Persistent
-date: 2018/03/18
+date: 2018/04/07
 ---
 
 ## Persistent
@@ -60,7 +60,7 @@ BlogPost
 
 main :: IO ()
 main = runSqlite ":memory:" $ do
-    runMigration migrateAll
+      runMigration migrateAll :: IO ()
 
     johnId <- insert $ Person "John Doe" $ Just 35
     janeId <- insert $ Person "Jane Doe" Nothing

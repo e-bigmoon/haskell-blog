@@ -1,6 +1,6 @@
 ---
 title: Creating a Subsite
-date: 2018/03/18
+date: 2018/04/07
 ---
 
 ## サブサイトを構築する
@@ -83,7 +83,7 @@ mkYesod "Master" [parseRoutes|
 instance Yesod Master
 
 -- Spelling out type signature again.
-getHomeR :: HandlerT Master IO Html
+getHomeR :: HandlerFor Master Html
 getHomeR = defaultLayout
     [whamlet|
         <h1>Welcome to the homepage

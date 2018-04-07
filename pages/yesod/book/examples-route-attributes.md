@@ -1,6 +1,6 @@
 ---
 title: Route attributes
-date: 2018/03/18
+date: 2018/04/07
 ---
 
 ## ルート属性
@@ -65,7 +65,6 @@ instance YesodAuth App where
     getAuthId = return . Just . credsIdent
     authPlugins _ = [authDummy]
     maybeAuthId = lookupSession credsKey
-    authHttpManager = error "no http manager provided"
 
 getHomeR :: Handler Html
 getHomeR = defaultLayout $ do
@@ -155,7 +154,6 @@ instance YesodAuth App where
     getAuthId = return . Just . credsIdent
     authPlugins _ = [authDummy]
     maybeAuthId = lookupSession credsKey
-    authHttpManager = error "no http manager provided"
 
 getHomeR :: Handler Html
 getHomeR = defaultLayout $ do
