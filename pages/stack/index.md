@@ -1,6 +1,6 @@
 ---
 title: Haskell Stack
-date: 2018/03/18
+date: 2018/04/07
 ---
 
 <div class="row">

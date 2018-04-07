@@ -1,6 +1,6 @@
 ---
 title: stack の更新
-date: 2017/12/24
+date: 2018/04/07
 ---
 
 ## 最新の安定版へアップグレードする方法
@@ -36,7 +36,7 @@ $ stack upgrade --git --git-branch release
 ## stack のバージョンを指定してアップグレードする方法
 
 ```sh
-$ stack upgrade --binary-version 1.5.1
+$ stack upgrade --binary-version 1.6.5
 ```
 
 `--binary-version` オプションを使うことで、以前のバージョンにダウングレードさせることも可能です。
