@@ -618,10 +618,10 @@ instance NFData RunningTotal
 
 **演習** `rnf` と `seq` に関して、 `deepseq` を自分で定義してみてください。
 
-### Strict data
-These approaches work, but they are not ideal. The problem lies in our definition of `RunningTotal`. What we want to say is that, whenever you have a value of type `RunningTotal`, you in fact have two `Int`s. But because of laziness, what we're actually saying is that a `RunningTotal` value could contain two `Int`s, or it could contain thunks that will evaluate to `Int`s, or thunks that will throw exceptions.
+### 正格なデータ
+これらのアプローチはうまくいきましたが、最適解ではありません。問題は、`RunningTotal` の定義に存在します。ここで私たちが考えているのは、`RunningTotal` 型の値があるとき、実は2つの `Int` が存在しているということです。しかし遅延性のせいで、`RunningTotal` の値は2つの `Int` か `Int` に評価することができるサンク、もしくは例外を投げるサンクを持つことができる、といった意味合いになってしまいます。
 
-Instead, we'd like to make it impossible to construct a `RunningTotal` value that has any laziness room left over. And to do that, we can use strictness annotations in our definition of the data type:
+そうではなく、`RunningTotal` の値に遅延性が入りこむ余地を無くしたいものですね。定義のデータ型で正格性注釈をつけることでそれを実現できます:
 
 ```haskell
 data RunningTotal = RunningTotal
@@ -649,19 +649,19 @@ main :: IO ()
 main = printListAverage [1..1000000]
 ```
 
-All we've done is put bangs in front of the `Int`s in the definition of `RunningTotal`. We have no other references to strictness or evaluation in our program. However, by placing the strictness annotations on those fields, we're saying something simple and yet profound:
+`RunningTotal` の中で `Int` の前にバンを置いただけです。他に正格性や評価を指定するようなものはありません。しかし、これらのフィールドに正格性注釈を置くことで、簡単ですが重要なことを言うことができます:
 
-**Whenever you evaluate a value of type `RunningTotal`, you must also evaluate the two `Int`s it contains**
+**`RunningTotal` 型の値を評価するときは、その中に含まれる2つの `Int` も評価しなければならない**
 
-As we mentioned above, our second `go` clause forces evaluation of the `RunningTotal` value by taking apart its constructor. This act now automatically forces evaluation of `sum` and `count`, which we previously needed to achieve via a bang pattern.
+上で言及したように、2つ目の `go` は コンストラクタを剥ぎ取ることで、`RunningTotal` の値の評価を強制しています。今、この動きは自動的に `sum` と `count` の評価を強制します。前回はバンパターンを使う必要がありましたね。
 
-There's one other advantage to this, which is slightly out of scope but worth mentioning. When dealing with small values like an `Int`, GHC will automatically unbox strict fields. This means that, instead of keeping a pointer to an `Int` inside `RunningTotal`, it will keep the `Int` itself. This can further reduce memory usage.
+これ以外のアドバンテージも1つあります。少し話からは脱線しますが、それでも言及して置く価値はあります。 `Int` のような小さな値を扱うとき、GHC は自動的に正格なフィールドをアンボックス化します。これは、`RunningTotal` の中で `Int` へのポインタを持ち続けるよりも、`Int` そのものを持つようになるという意味です。こうすることで、もっとメモリ使用量を減らすことができます。
 
-You're probably asking a pretty good question right now: "how do I know if I should use a strictness annotation on my data fields?" This answer is slightly controversial, but my advice and recommended best practice: unless you know that you want laziness for a field, make it strict. Making your fields strict helps in a few ways:
+こういうすごく良い質問をしてくれるかもしれません: 「データのフィールドで性格性注釈を使うかべきどうか、どうやったらわかるの?」この回答は少し議論の余地があるかもしれませんが、私のアドバイスとしては、フィールドに対して遅延性を持たせたいとき以外は、正格にすることです。フィールドを正格にすることで、以下のようなメリットが得られます:
 
-- Avoids accidental space leaks, like we're doing here
-- Avoids accidentally including bottom values
-- When constructing a value with record syntax, GHC will give you an error if you forget a strict field. It will only give you a warning for non-strict fields.
+- ここで私たちがやっているように、うっかりスペースリークを起こしてしまうのを避ける
+- うっかりボトムの値を含んでしまうのを避ける
+- レコード構文で値を生成するとき、正格なフィールドを忘れた時に GHC がエラーを出してくれる。正格ではないフィールドに対しては警告しか出してくれない。
 
 ### The curious case of newtype
 Let's define three very similar data types:
