@@ -554,7 +554,7 @@ go (RunningTotal sum count) (x:xs) =
 | total memory in use | 164 MB | 164 MB | 1 MB | 1 MB | 1 MB | 1 MB |
 
 ### deepseq
-The fact that `seq` only evaluates to weak head normal form is annoying. There are lots of times when we would like to fully evaluate down to normal form (NF), meaning all thunks have been evaluated inside our values. While there is nothing built into the language to handle this, there is a semi-standard (meaning it ships with GHC) library to handle this: `deepseq`. It works by providing an `NFData` type class the defines how to reduce a value to normal form (via the `rnf` method).
+`seq` が weak head normal form にしか評価してくれないのはイライラしますよね。normal form (NF) にまで完全に評価したいような状況はいくらでもあります。つまり、値の中の全てのサンクを評価したいということですね。これをどうにかする言語にビルトインの方法はないですが、半分標準の (GHC についてくるということ) ライブラリはあります。`deepseq` です。`NFData` という、値をどうやって normal form にするのか定義した型クラスを提供することで、それを達成します (`rnf` メソッド経由で)。
 
 ```haskell
 {-# LANGUAGE BangPatterns #-}
@@ -586,7 +586,7 @@ main :: IO ()
 main = printListAverage [1..1000000]
 ```
 
-This has a maximum residency, once again, of 44kb. We define our `NFData` instance, which includes an `rnf` method. The approach of simply `deepseq`ing all of the values within a data constructor is almost always the approach to take for `NFData` instances. In fact, it's so common, that you can get away with just using `Generic` deriving and have GHC do the work for you:
+もう一度言いますが、これの maximum residency は 44kb です。ここでは `NFData` のインスタンスを定義して、`rnf` メソッドも含んでいます。単純にデータコンストラクタ中の全ての値を `deepseq` するのは、`NFData` インスタンスを定義するときにほとんどいつも使う方法です。これは常套手段なので、実は `Generic` 導出を使うだけで GHC に同じ仕事をさせることができます:
 
 ```haskell
 {-# LANGUAGE DeriveGeneric #-}
@@ -601,9 +601,9 @@ data RunningTotal = RunningTotal
 instance NFData RunningTotal
 ```
 
-The true beauty of having `NFData` instances is the ability to abstract over many different data types. We can use this not only to avoid space leaks (as we're doing here), but also to avoid accidentally including exceptions inside thunks within a value. For an example of that, check out the [tryAnyDeep](https://www.stackage.org/haddock/lts-9.3/safe-exceptions-0.1.6.0/Control-Exception-Safe.html#v:tryAnyDeep) function from the [safe-exceptions library](https://haskell-lang.org/library/safe-exceptions).
+`NFData` のインスタンスにすることの一番の魅力は、多くのデータ型に対する抽象化の能力です。(ここでやっているように) スペースリークを避けるだけではなく、値の中のサンクに例外が誤って含まれてしまうのを防ぐことができます。例として、[safe-exceptions library](https://haskell-lang.org/library/safe-exceptions) の [tryAnyDeep](https://www.stackage.org/haddock/lts-9.3/safe-exceptions-0.1.6.0/Control-Exception-Safe.html#v:tryAnyDeep) 関数を見てみてください。
 
-**EXERCISE** Define the `deepseq` function yourself in terms of `rnf` and `seq`.
+**演習** `rnf` と `seq` に関して、 `deepseq` を自分で定義してみてください。
 
 ### Strict data
 These approaches work, but they are not ideal. The problem lies in our definition of `RunningTotal`. What we want to say is that, whenever you have a value of type `RunningTotal`, you in fact have two `Int`s. But because of laziness, what we're actually saying is that a `RunningTotal` value could contain two `Int`s, or it could contain thunks that will evaluate to `Int`s, or thunks that will throw exceptions.
