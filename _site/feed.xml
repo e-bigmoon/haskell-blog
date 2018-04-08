@@ -8,8 +8,95 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-04-07T00:00:00Z</updated>
+    <updated>2018-04-08T00:00:00Z</updated>
     <entry>
+    <title>Haskell Quiz No.8 Conduit Part.4</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/04-08-quiz-8.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/04-08-quiz-8.html</id>
+    <published>2018-04-08T00:00:00Z</published>
+    <updated>2018-04-08T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.8">Haskell Quiz No.8</h2>
+<p>難易度: λλλ</p>
+<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> return () <span class="fu">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">    sinkList</a></code></pre></div>
+<p>答えは次回。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./04-07-quiz-7.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λλ</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">myTakeWhileC f <span class="fu">=</span> loop</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">    loop <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">      mx <span class="ot">&lt;-</span> await</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">      <span class="kw">case</span> mx <span class="kw">of</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> return ()</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">        <span class="dt">Just</span> x</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">          <span class="fu">|</span> otherwise <span class="ot">-&gt;</span> return ()</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="fu">&lt;=</span> <span class="dv">5</span>) <span class="fu">.|</span> sinkList</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">  y <span class="ot">&lt;-</span> sinkList</a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">  return (x, y)</a></code></pre></div>
+<h3 id="こたえ">こたえ</h3>
+<p>実際に実行してみましょう！</p>
+<pre class="shell"><code>$ ./Quiz7.hs
+([1,2,3,4,5],[7,8,9,10])</code></pre>
+<p><strong>6</strong> が抜けていることに注意してくださいね！</p>
+<h3 id="解説">解説</h3>
+<p>今回の問題は <code>[1,2,3,4,5],[7,8,9,10]</code> ではなく <code>[1,2,3,4,5],[6,7,8,9,10]</code> と思った人もいるのではないでしょうか？</p>
+<p>では何故このような動作になってしまうのか、それは <code>myTakeWhileC</code> 関数に秘密があります。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">myTakeWhileC f <span class="fu">=</span> loop</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    loop <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">      mx <span class="ot">&lt;-</span> await</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">      <span class="kw">case</span> mx <span class="kw">of</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> return ()</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">        <span class="dt">Just</span> x</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">          <span class="fu">|</span> otherwise <span class="ot">-&gt;</span> return ()</a></code></pre></div>
+<p>この関数を理解するためには、以下の2点を抑えておけば十分です。</p>
+<ul>
+<li><code>await</code> は上流のパイプに対して、値をチャンクサイズで1つ要求する関数です。(チャンクサイズは型によって違います。リストであれば要素1つですが、<code>ByteString</code> であれば <strong>1byte</strong> や <strong>1文字</strong> ではなく！ <strong>32kbyte</strong>になります。)</li>
+<li><code>yield</code> は下流のパイプに値を流す関数です</li>
+</ul>
+<p>つまり、この関数は上流からデータを取得し、<code>f x</code> が <code>True</code> であれば下流にデータを流す準備を行い、同じ処理を繰り返します。(また、上流のデータが無くなれば <code>await</code> の結果は <code>Nothing</code> となるため、そこで処理が止まります)</p>
+<p>今回の <code>f</code> は <code>(&lt;= 5)</code> なので流れてくる値が <code>5</code> 以下の間は、上流から流れてきた値をそのまま下流に流す準備をします。</p>
+<p>図で書くとこんな感じでしょうか。<code>yield</code> の準備完了と <code>await</code> の要求を青と赤の実線で表現しています。(破線はそうでない場合)</p>
+<p>下記の図は一番最初の <code>await</code> です。<code>sinkList</code> も <code>await</code> していますが、先に <code>myTakeWhileC</code> 関数によって消費されてしまうため、データは届きません。</p>
+<p><code>myTakeWhileC</code> に適用した <strong>1</strong> は条件を満たすため、さらに下流の <code>sinkList</code> にデータを流す準備を行い、<code>sinkList</code> が <code>await</code> したタイミングでデータが流れます。</p>
+<p><img class="no-border" src="/images/2018/04-08/quiz8-1.png"></p>
+<p><strong>2 〜 5</strong> の場合も同様に処理されます。そのため、<code>main</code> 関数の <code>x &lt;- myTakeWhileC (&lt;= 5) .| sinkList</code> の <code>x</code> は <code>[1,2,3,5,]</code> という値になります。</p>
+<p>次に条件を満たさない <strong>6</strong> の場合を考えましょう。</p>
+<p>この場合は <code>myTakeWhileC</code> 関数は <code>return ()</code> を返します。そのため下流の <code>sinkList</code> にはデータを流しません。</p>
+<p><img class="no-border" src="/images/2018/04-08/quiz8-2.png"></p>
+<p>ここで <strong>6</strong> のデータが消え去ります。通常、一度消費してしまった値については再利用できません。(ここでは解説しませんが、<code>Conduit</code> では <code>leftover</code> という関数を使って一度消費してしまった値を上流に返すための関数が定義されています)</p>
+<p><img class="no-border" src="/images/2018/04-08/quiz8-3.png"></p>
+<p>そのため、次は <strong>7</strong> が2つ目の <code>sinkList</code> に流れます。</p>
+<p><strong>8 〜 10</strong> についても同様に処理されるため、結果として <code>y &lt;- sinkList</code> の <code>y</code> は <code>[7,8,9,10]</code> となります。</p>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>パイプを流れるデータは<strong>チャンクサイズ</strong>ということを意識する。</li>
+<li>消費してしまったデータは <code>leftover</code> を使わない限り取り戻せない</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Haskell Quiz No.7 Conduit Part.3</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/04-07-quiz-7.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/04-07-quiz-7.html</id>
@@ -17,6 +104,7 @@
     <updated>2018-04-07T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.7">Haskell Quiz No.7</h2>
 <p>難易度: λλ</p>
+<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
@@ -37,7 +125,7 @@
 <a class="sourceLine" id="cb1-18" data-line-number="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="fu">&lt;=</span> <span class="dv">5</span>) <span class="fu">.|</span> sinkList</a>
 <a class="sourceLine" id="cb1-19" data-line-number="19">  y <span class="ot">&lt;-</span> sinkList</a>
 <a class="sourceLine" id="cb1-20" data-line-number="20">  return (x, y)</a></code></pre></div>
-<p>答えは次回。</p>
+<p>答えは<a href="04-08-quiz-8.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
 <p><a href="./04-06-quiz-6.html">前回</a>の問題と答えは以下の通りです。</p>
@@ -103,6 +191,7 @@
     <updated>2018-04-06T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.6">Haskell Quiz No.6</h2>
 <p>難易度: λλ</p>
+<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.2</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
@@ -1381,153 +1470,6 @@ O
 <a class="sourceLine" id="cb2-7" data-line-number="7">yInt <span class="fu">=</span> <span class="fu">???</span></a></code></pre></div>
 <p>全部正解できたら普通にすごいです。</p>
 <p>答えは<a href="./03-25-quiz-2.html">次回</a>！</p>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>アプリケーションのバージョンに Git の情報を出してみよう！</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/03-20-gitrev.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/03-20-gitrev.html</id>
-    <published>2018-03-20T00:00:00Z</published>
-    <updated>2018-03-20T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>今回は <a href="https://www.stackage.org/package/gitrev">gitrev</a> パッケージと <a href="https://www.stackage.org/package/optparse-simple">optparse-simple</a> パッケージを使ってアプリケーションに <code>Git</code> の情報を含めてみようと思います！</p>
-<p>利用者の多いアプリケーションだと、バグ報告時にどのコミットでビルドしたものなのか知りたい場合に便利です。</p>
-<p>表示されるバージョン情報はこんな感じになります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot"># gitrev の例</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="fu">$</span> <span class="fu">./</span>Main.hs</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">Main.hs<span class="fu">:</span> [panic master<span class="fu">@</span>3a0bd17fdfb8a3e334292a560280e8e0791e941c (<span class="dt">Tue</span> <span class="dt">Mar</span> <span class="dv">20</span> <span class="dv">02</span><span class="fu">:</span><span class="dv">00</span><span class="fu">:</span><span class="dv">17</span> <span class="dv">2018</span> <span class="fu">+</span><span class="dv">0900</span>) (<span class="dv">1</span> commits <span class="kw">in</span> <span class="dt">HEAD</span>)]</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot"># optparse-simple の例</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="fu">$</span> stack exec <span class="co">-- example-version-exe</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="dt">Version</span> <span class="fl">0.1</span><span class="fu">.</span><span class="fl">0.0</span>, <span class="dt">Git</span> revision <span class="fl">341e785</span>b02c4c599f64b922b4aa9cfff3c006945</a></code></pre></div>
-<p>以下のアプリケーション等でも利用されているように、実用度はとても高めです。</p>
-<ul>
-<li><a href="https://github.com/commercialhaskell/stack">stack</a></li>
-<li><a href="https://github.com/haskell/haskell-ide-engine">hie</a></li>
-<li><a href="https://github.com/ucsd-progsys/liquidhaskell">liquidhaskell</a></li>
-</ul>
-<p>また、実装コストもそれほどかからないため、オススメです！</p>
-<!--more-->
-<h2 id="gitrev-パッケージ">gitrev パッケージ</h2>
-<p><a href="https://www.stackage.org/haddock/lts-11.1/gitrev-1.3.1/Development-GitRev.html">gitrev</a> パッケージは <code>Template Haskell</code> の機能を使ってコンパイル時に以下の情報を取得可能です。</p>
-<ul>
-<li>ブランチ名および、タグ名</li>
-<li>コミット数</li>
-<li>コミット日</li>
-<li>コミットの describe</li>
-<li>コミットのハッシュ</li>
-</ul>
-<p>そのため、表示する情報を自分の好きなようにカスタマイズしたい場合に便利でしょう。</p>
-<h3 id="サンプルアプリケーション">サンプルアプリケーション</h3>
-<p>以下のコードは <code>Hackage</code> に載っているコードです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack --resolver lts-11.1 script</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Development.GitRev</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ot">panic ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">panic msg <span class="fu">=</span> error panicMsg</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="kw">where</span> panicMsg <span class="fu">=</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">          concat [ <span class="st">&quot;[panic &quot;</span>, <span class="fu">$</span>(gitBranch), <span class="st">&quot;@&quot;</span>, <span class="fu">$</span>(gitHash)</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">                 , <span class="st">&quot; (&quot;</span>, <span class="fu">$</span>(gitCommitDate), <span class="st">&quot;)&quot;</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">                 , <span class="st">&quot; (&quot;</span>, <span class="fu">$</span>(gitCommitCount), <span class="st">&quot; commits in HEAD)&quot;</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">                 , dirty, <span class="st">&quot;] &quot;</span>, msg ]</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">        dirty <span class="fu">|</span> <span class="fu">$</span>(gitDirty) <span class="fu">=</span> <span class="st">&quot; (uncommitted files present)&quot;</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">              <span class="fu">|</span> otherwise   <span class="fu">=</span> <span class="st">&quot;&quot;</span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">main <span class="fu">=</span> panic <span class="st">&quot;oh no!&quot;</span></a></code></pre></div>
-<p>実際に実行してみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1">$ <span class="ex">tree</span> .</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="ex">.</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">└── <span class="ex">Main.hs</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ex">0</span> directories, 1 file</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">$ <span class="fu">chmod</span> u+x Main.hs</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">$ <span class="ex">./Main.hs</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="ex">Main.hs</span>: [panic UNKNOWN@UNKNOWN (UNKNOWN) <span class="kw">(</span><span class="ex">UNKNOWN</span> commits in HEAD<span class="kw">)</span>] <span class="ex">oh</span> no!</a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="ex">CallStack</span> (from HasCallStack)<span class="bu">:</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11">  <span class="ex">error</span>, called at /home/bm12/Desktop/gitrev-sample/Main.hs:7:13 in main:Main</a></code></pre></div>
-<p>現状は <code>git</code> のコミットが無いため、全て <code>UNKNOWN</code> として表示されています。</p>
-<p>実際に <code>git</code> リポジトリを作ってコミットしてみましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="fu">git</span> init</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ex">Initialized</span> empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">$ <span class="fu">git</span> add -A</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">$ <span class="fu">git</span> commit -m <span class="st">&quot;TEST&quot;</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">[<span class="ex">master</span> (root-commit) <span class="ex">3a0bd17</span>] TEST</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"> <span class="ex">1</span> file changed, 16 insertions(+)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"> <span class="ex">create</span> mode 100755 Main.hs</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">$ <span class="ex">./Main.hs</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="ex">Main.hs</span>: [panic master@3a0bd17fdfb8a3e334292a560280e8e0791e941c (Tue Mar 20 02:00:17 2018 +0900) <span class="kw">(</span><span class="ex">1</span> commits in HEAD<span class="kw">)</span>] <span class="ex">oh</span> no!</a></code></pre></div>
-<p>こんな感じで <code>git</code> の情報を自由に組み合わせることができます。</p>
-<h2 id="optparse-simple-パッケージ">optparse-simple パッケージ</h2>
-<p>あまり書式を気にせず、定形で良い場合はもっと簡単な方法があります。</p>
-<p>それは <code>optparse-simple</code> パッケージの <a href="https://www.stackage.org/haddock/lts-11.1/optparse-simple-0.1.0/Options-Applicative-Simple.html#v:simpleVersion">simpleVersion</a> を使う方法です。</p>
-<p><code>simpleVersion</code> では <code>git</code> の情報だけでなく、アプリケーションのバージョンも一緒に表示することができます。</p>
-<h3 id="simpleversion">simpleVersion</h3>
-<p><a href="https://www.stackage.org/haddock/lts-11.1/optparse-simple-0.1.0/src/Options.Applicative.Simple.html#simpleVersion">simpleVersion</a> の定義は以下のようになっています。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">simpleVersion ::</span> <span class="dt">Version</span> <span class="ot">-&gt;</span> <span class="dt">Q</span> <span class="dt">Exp</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">simpleVersion version <span class="fu">=</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">  [<span class="fu">|</span>concat ([<span class="st">&quot;Version &quot;</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">           ,<span class="fu">$</span>(TH.lift <span class="fu">$</span> showVersion version)</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">           ] <span class="fu">++</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">           <span class="kw">if</span> <span class="fu">$</span>gitHash <span class="fu">==</span> (<span class="st">&quot;UNKNOWN&quot;</span><span class="ot"> ::</span> <span class="dt">String</span>)</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">             <span class="kw">then</span> []</a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">             <span class="kw">else</span></a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">               [<span class="st">&quot;, Git revision &quot;</span></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">               ,<span class="fu">$</span>gitHash</a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">               ,<span class="kw">if</span> <span class="fu">$</span>gitDirty</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">                   <span class="kw">then</span> <span class="st">&quot; (dirty)&quot;</span></a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">                   <span class="kw">else</span> <span class="st">&quot;&quot;</span></a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">               ])<span class="fu">|</span>]</a></code></pre></div>
-<p><code>$gitHash</code> や <code>$gitDirty</code> を見ればわかる通り、内部的に <code>gitrev</code> パッケージを利用して <code>git</code> の情報を取得しています。</p>
-<p>また、第一引数の <code>Version</code> 型は <code>base</code> パッケージの <a href="https://www.stackage.org/haddock/lts-11.1/base-4.10.1.0/Data-Version.html">Data.Version</a> で定義されている型です。</p>
-<p>以下のように <code>makeVersion :: [Int] -&gt; Version</code> 関数を使って <code>Version</code> 型の値を作ることができます。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="kw">import</span>           <span class="dt">Options.Applicative.Simple</span> (simpleVersion)</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">import</span>           <span class="dt">Data.Version</span> (makeVersion)</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">main <span class="fu">=</span> putStrLn <span class="fu">$</span>(simpleVersion <span class="fu">$</span> makeVersion [<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>])</a></code></pre></div>
-<p>適当にプロジェクトを作って、上記の内容を実行してみましょう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1">$ <span class="ex">stack</span> exec example-exe </a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ex">Version</span> 100.0.0.0</a></code></pre></div>
-<p>まだ <code>git</code> で管理していないため、バージョン情報のみが表示されます。</p>
-<p>では、先ほどの例と同様に <code>git</code> リポジトリを作ってコミットした結果を見てみましょう。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1">$ <span class="fu">git</span> init</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ex">Initialized</span> empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">$ <span class="fu">git</span> add -A</a>
-<a class="sourceLine" id="cb8-5" data-line-number="5">$ <span class="fu">git</span> commit -m <span class="st">&quot;TEST&quot;</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6">[<span class="ex">master</span> (root-commit) <span class="ex">3a0bd17</span>] TEST</a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"> <span class="ex">1</span> file changed, 16 insertions(+)</a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"> <span class="ex">create</span> mode 100755 Main.hs</a>
-<a class="sourceLine" id="cb8-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb8-10" data-line-number="10">$ <span class="ex">stack</span> clean</a>
-<a class="sourceLine" id="cb8-11" data-line-number="11">$ <span class="ex">stack</span> build</a>
-<a class="sourceLine" id="cb8-12" data-line-number="12">$ <span class="ex">stack</span> exec example-exe </a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="ex">Version</span> 100.0.0.0, Git revision e106394f7fdded0c9908cbf8edc87c5d5d5b4309</a></code></pre></div>
-<p>このようにちゃんとリビジョンが表示されるようになりました。</p>
-<h3 id="アプリケーションのバージョンを自動的に更新する">アプリケーションのバージョンを自動的に更新する</h3>
-<p>アプリケーションのリリースごとに <code>makeVersion</code> を使って更新する作業はとても面倒ですし、いつか間違えてしまうかもしれません。</p>
-<p>これを解決するためには <code>.cabal</code> ファイルからバージョン情報を自動取得して <code>simpleVersion</code> 関数に渡してあげるようにすれば良いのです。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">import</span>           <span class="dt">Options.Applicative.Simple</span> (simpleVersion)</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Paths_XXXX</span>               <span class="kw">as</span> <span class="dt">Meta</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-7" data-line-number="7">main <span class="fu">=</span> putStrLn <span class="fu">$</span>(simpleVersion Meta.version)</a></code></pre></div>
-<p><code>Paths_XXXX</code> の <code>XXXX</code> はアプリケーション名 (<code>cabal</code> ファイルの <code>name</code> の値) を指定します。これで <code>cabal</code> ファイルのバージョン情報を直接取得できるようになります。</p>
-<p>表示される結果はこんな感じです。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" data-line-number="1">$ <span class="ex">stack</span> exec -- example-version-exe</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="ex">Version</span> 0.1.0.0, Git revision 341e785b02c4c599f64b922b4aa9cfff3c006945</a></code></pre></div>
-<p>めちゃめちゃ簡単なのでオススメの方法です。</p>
-<h2 id="まとめ">まとめ</h2>
-<p>自分のアプリケーションがとてもカッコよくなるので是非ためしてみてください！</p>
 <p>以上です。</p>]]></summary>
 </entry>
 
