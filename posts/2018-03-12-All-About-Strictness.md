@@ -545,19 +545,32 @@ go (RunningTotal sum count) (x:xs) =
    in go rt xs
 ```
 
-|| 1 | 2 | 3 | 4 | 5 | 6 |
-|---|---|---|---|---|---|---|
-| allocated in the heap | 258,654,520 bytes | 258,654,520 bytes | 192,102,712 bytes | 216,102,712 bytes | 176,102,712 bytes | 176,102,712 bytes |
-| copied during GC | 339,889,944 bytes | 339,889,944 bytes | 173,080 bytes | 142,896 bytes | 164,400 bytes | 164,400 bytes |
-| maximum residency | 95,096,512 bytes | 95,096,512 bytes | 44,384 bytes | 44,384 bytes | 44,384 bytes | 44,384 bytes |
-| maximum slop | 1,148,312 byte | 1,148,312 bytes | 25,248 bytes | 25,248 bytes | 25,248 bytes | 25,248 bytes |
-| total memory in use | 164 MB | 164 MB | 1 MB | 1 MB | 1 MB | 1 MB |
-
-### deepseq
-`seq` が weak head normal form にしか評価してくれないのはイライラしますよね。normal form (NF) にまで完全に評価したいような状況はいくらでもあります。つまり、値の中の全てのサンクを評価したいということですね。これをどうにかする言語にビルトインの方法はないですが、半分標準の (GHC についてくるということ) ライブラリはあります。`deepseq` です。`NFData` という、値をどうやって normal form にするのか定義した型クラスを提供することで、それを達成します (`rnf` メソッド経由で)。
+##### 7
+deepseq のセクションのものです
 
 ```haskell
-{-# LANGUAGE BangPatterns #-}
+data RunningTotal = RunningTotal
+  { sum :: Int
+  , count :: Int
+  }
+instance NFData RunningTotal where
+  rnf (RunningTotal sum count) = sum `deepseq` count `deepseq` ()
+```
+
+|| 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|
+| allocated in the heap | 258,654,520 bytes | 258,654,520 bytes | 192,102,712 bytes | 216,102,712 bytes | 176,102,712 bytes | 176,102,712 bytes | 256,135,480 bytes |
+| copied during GC | 339,889,944 bytes | 339,889,944 bytes | 173,080 bytes | 142,896 bytes | 164,400 bytes | 164,400 bytes | 168,640 bytes |
+| maximum residency | 95,096,512 bytes | 95,096,512 bytes | 44,384 bytes | 44,384 bytes | 44,384 bytes | 44,384 bytes | 44,384 bytes |
+| maximum slop | 1,148,312 byte | 1,148,312 bytes | 25,248 bytes | 25,248 bytes | 25,248 bytes | 25,248 bytes | 25,248 bytes |
+| total memory in use | 164 MB | 164 MB | 1 MB | 1 MB | 1 MB | 1 MB | 1 MB
+
+### deepseq
+`seq` が weak head normal form にしか評価してくれないのはイライラしますよね。normal form (NF) にまで完全に評価したいような状況はいくらでもあります。つまり、値の中の全てのサンクを評価したいということですね。これをどうにかする言語にビルトインの方法はないですが、半分標準の (GHC についてくるということ) ライブラリはあります。`deepseq` です。`deepseq` は `rnf`メソッドを使って定義されます。`rnf`メソッドは `NFData`型クラスに存在し、値を normal form にする定義になっています。
+
+`NFData` 型クラスで定義される `rnf`メソッドを使うことで、値をどうやって normal form にするのか定義した型クラスを提供することで、それを達成します (`rnf` メソッド経由で)。
+
+```haskell
 import Control.DeepSeq
 
 data RunningTotal = RunningTotal
