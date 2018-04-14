@@ -8,8 +8,109 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-04-08T00:00:00Z</updated>
+    <updated>2018-04-14T00:00:00Z</updated>
     <entry>
+    <title>LiquidHaskell の --prune-unsorted フラグ</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html</id>
+    <published>2018-04-14T00:00:00Z</published>
+    <updated>2018-04-14T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><code>LiquidHaskell</code> では <code>measure</code> という仕組みを使って <code>Haskell</code> の関数を <code>LH</code> の述語に持ち上げることができます。</p>
+<p>しかし、以下の <code>nLen</code> 関数は <code>measure</code> によって持ち上げることができません。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">{-@ measure nLen @-}</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
+<p>結論から言えば、これを解決するためには <code>--prune-unsorted</code> フラグを利用します。</p>
+<p>以下は <code>measure</code> の基本的な使い方等についての説明です。</p>
+<!--more-->
+<h2 id="measure-の基本的な使い方">measure の基本的な使い方</h2>
+<p>例えばリストの長さを求める <code>lLen</code> という関数を述語に持ち上げるにはこのようにします。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">{-@ measure lLen @-}</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ot">lLen ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">lLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">lLen (_<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> lLen xs</a></code></pre></div>
+<pre class="shell"><code>$ liquid LH.hs
+LiquidHaskell Version 0.8.2.4, Git revision 5b68dc72f628a4c16a77616fb32d8c685580ed2d (dirty)
+Copyright 2013-18 Regents of the University of California. All Rights Reserved.
+
+**** DONE:  A-Normalization ****************************************************
+**** DONE:  Extracted Core using GHC *******************************************
+**** DONE:  Transformed Core ***************************************************
+Working 150% [=================================================================]
+**** DONE:  annotate ***********************************************************
+**** RESULT: SAFE **************************************************************</code></pre>
+<p>実際にはこんな感じで長さ付きリストのリファインメント型をつけます。先程から<strong>述語</strong>と言っているのはリファインメント型 <code>{ | }</code> の <code>|</code> の右側のことです。<code>measure</code> によってこの部分で <code>Haskell</code> で定義した <code>lLen</code> 関数が使えるようになります。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">{-@ type ListN a N = {v:[a] | lLen v = N} @-}</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">{-@ goodList :: ListN Int 2 @-}</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="ot">goodList ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">goodList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
+<p>当然ですが、仕様を満たしていない場合は <code>UNSAFE</code> になります。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">{-@ badList :: ListN Int 1 @-}</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="ot">badList ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">badList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
+<pre class="shell"><code>**** RESULT: UNSAFE ************************************************************
+Error: Liquid Type Mismatch
+
+ 14 | badList = [1,2]
+      ^^^^^^^
+   Inferred type
+     VV : {v : [Int] | Main.lLen v == 1 + Main.lLen ?d
+                       &amp;&amp; len v == 1 + len ?d
+                       &amp;&amp; tail v == ?d
+                       &amp;&amp; head v == (1 : int)
+                       &amp;&amp; len v &gt;= 0}
+
+   not a subtype of Required type
+     VV : {VV : [Int] | Main.lLen VV == 1}
+
+   In Context
+     ?b : {?b : [Int] | Main.lLen ?b == 0
+                        &amp;&amp; len ?b == 0
+                        &amp;&amp; len ?b &gt;= 0}
+
+     ?d : {?d : [Int] | Main.lLen ?d == 1 + Main.lLen ?b
+                        &amp;&amp; len ?d == 1 + len ?b
+                        &amp;&amp; tail ?d == ?b
+                        &amp;&amp; head ?d == (2 : int)
+                        &amp;&amp; len ?d &gt;= 0}</code></pre>
+<p>エラーメッセージがつらいですが、とりあえずは以下の部分に着目すれば良いでしょう。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1">not a subtype <span class="kw">of</span> <span class="dt">Required</span> <span class="kw">type</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">     <span class="dt">VV</span> <span class="fu">:</span> {<span class="dt">VV</span> <span class="fu">:</span> [<span class="dt">Int</span>] <span class="fu">|</span> Main.lLen <span class="dt">VV</span> <span class="fu">==</span> <span class="dv">1</span>}</a></code></pre></div>
+<p><code>lLen VV == 1</code> の制約が満たされていない。つまり、<code>lLen</code> の結果が <code>1</code> になってないよ。ということです。</p>
+<h2 id="measure-でエラーが出る場合">measure でエラーが出る場合</h2>
+<p><code>measure</code> はどんな関数にも使えるわけではありません。</p>
+<p>例えば、以下のような数値のリストに対して、リストの値の合計を返す関数 <code>nLen</code> を考えましょう。(<code>sum</code> と同じですが <code>Preude</code> とかぶるので名前を変更しています)</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">{-@ measure nLen @-}</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
+<p><code>LiquidHaskell</code> はこの定義に対してエラーを表示します。これは <code>nLen</code> 関数がリストの型変数 <code>a</code> を <code>Int</code> に特殊化しているためです。(<a href="https://github.com/ucsd-progsys/liquidhaskell#prune-unsorted-predicates">Prune Unsorted Predicates</a>)</p>
+<p>こういう関数に対しては <code>--prune-unsorted</code> フラグを用いれば良いです。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">{-@ LIQUID &quot;--prune-unsorted&quot; @-}</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">{-@ measure nLen @-}</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
+<p><code>nLen</code> を使った型は、先ほどの <code>lLen</code> とほとんど同じです。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">{-@ type ListSum a N = {v:[a] | nLen v = N} @-}</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">{-@ goodListSum :: ListSum Int 111 @-}</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="ot">goodListSum ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">goodListSum <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">100</span>]</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">{-@ badListSum :: ListSum Int 111 @-}</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="ot">badListSum ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">badListSum <span class="fu">=</span> [<span class="dv">1</span>]</a></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>型パラメータが特殊化された関数を <code>measure</code> で述語に持ち上げる際には <code>--prune-unsorted</code> を使う</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Haskell Quiz No.8 Conduit Part.4</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/04-08-quiz-8.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/04-08-quiz-8.html</id>
@@ -1416,60 +1517,6 @@ O
 <div class="sourceCode" id="cb24"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" data-line-number="1">yInt <span class="fu">=</span> <span class="dv">1</span></a></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <p>解説がとても長くなってしまいました・・・。間違ってたらご報告ください。</p>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>Haskell Quiz はじめました。 No.1 type, newtype, data</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/03-24-quiz-1.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/03-24-quiz-1.html</id>
-    <published>2018-03-24T00:00:00Z</published>
-    <updated>2018-03-24T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>何となくクイズはじめました！(頑張って続けます・・・)</p>
-<p>間違ってたら <code>twitter</code> や <a href="https://github.com/e-bigmoon/haskell-blog/issues">github の issue</a> で教えてください！</p>
-<!--more-->
-<h2 id="haskell-quiz-no.1-type-newtype-data">Haskell Quiz No.1 type, newtype, data</h2>
-<p>難易度: λλλ</p>
-<p>元ネタは <code>Haskell wiki</code> だったと思いますが、忘れてしまいました・・・。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Foo</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Foo1</span> <span class="fu">=</span> <span class="dt">Foo1</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">data</span> <span class="dt">Foo2</span> <span class="fu">=</span> <span class="dt">Foo2</span> <span class="fu">!</span><span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">newtype</span> <span class="dt">Foo3</span> <span class="fu">=</span> <span class="dt">Foo3</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">x1 <span class="fu">=</span> <span class="kw">case</span> <span class="dt">Foo1</span> undefined <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">     <span class="dt">Foo1</span> _ <span class="ot">-&gt;</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">x2 <span class="fu">=</span> <span class="kw">case</span> <span class="dt">Foo2</span> undefined <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">     <span class="dt">Foo2</span> _ <span class="ot">-&gt;</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">x3 <span class="fu">=</span> <span class="kw">case</span> <span class="dt">Foo3</span> undefined <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">     <span class="dt">Foo3</span> _ <span class="ot">-&gt;</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb1-16" data-line-number="16">y1 <span class="fu">=</span> <span class="kw">case</span> undefined <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17">     <span class="dt">Foo1</span> _ <span class="ot">-&gt;</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb1-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb1-19" data-line-number="19">y2 <span class="fu">=</span> <span class="kw">case</span> undefined <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-20" data-line-number="20">     <span class="dt">Foo2</span> _ <span class="ot">-&gt;</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb1-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22">y3 <span class="fu">=</span> <span class="kw">case</span> undefined <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-23" data-line-number="23">     <span class="dt">Foo3</span> _ <span class="ot">-&gt;</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb1-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="ot">int ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-26" data-line-number="26">int <span class="fu">=</span> undefined</a>
-<a class="sourceLine" id="cb1-27" data-line-number="27"></a>
-<a class="sourceLine" id="cb1-28" data-line-number="28">yInt <span class="fu">=</span> <span class="kw">case</span> int <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-29" data-line-number="29">       _ <span class="ot">-&gt;</span> <span class="dv">1</span></a></code></pre></div>
-<p>以下の値はそれぞれ何になるでしょう？</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1">x1   <span class="fu">=</span> <span class="fu">???</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">x2   <span class="fu">=</span> <span class="fu">???</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">x3   <span class="fu">=</span> <span class="fu">???</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">y1   <span class="fu">=</span> <span class="fu">???</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">y2   <span class="fu">=</span> <span class="fu">???</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">y3   <span class="fu">=</span> <span class="fu">???</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">yInt <span class="fu">=</span> <span class="fu">???</span></a></code></pre></div>
-<p>全部正解できたら普通にすごいです。</p>
-<p>答えは<a href="./03-25-quiz-2.html">次回</a>！</p>
 <p>以上です。</p>]]></summary>
 </entry>
 
