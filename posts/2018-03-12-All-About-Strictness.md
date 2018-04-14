@@ -663,8 +663,8 @@ main = printListAverage [1..1000000]
 - うっかりボトムの値を含んでしまうのを避ける
 - レコード構文で値を生成するとき、正格なフィールドを忘れた時に GHC がエラーを出してくれる。正格ではないフィールドに対しては警告しか出してくれない。
 
-### The curious case of newtype
-Let's define three very similar data types:
+### newtype の興味深いケース
+3つ、よく似たデータ型を定義して見ましょう:
 
 ```haskell
 data Foo = Foo Int
@@ -674,6 +674,8 @@ newtype Baz = Baz Int
 
 Let's play a game, and guess the output of the following potential bodies for `main`. Try to work through each case in your head before reading the explanation below.
 
+ゲームをしましょう。以下のコードを `main` 関数に置いたときの出力 (???) を推測してみてください。下にある説明を読む前に、それぞれのケースを頭の中で考えてくださいね。
+
 1. `case undefined of { Foo _ -> putStrLn "Still alive!" }`
 2. `case Foo undefined of { Foo _ -> putStrLn "Still alive!" }`
 3. `case undefined of { Bar _ -> putStrLn "Still alive!" }`
@@ -681,17 +683,17 @@ Let's play a game, and guess the output of the following potential bodies for `m
 5. `case undefined of { Baz _ -> putStrLn "Still alive!" }`
 6. `case Baz undefined of { Baz _ -> putStrLn "Still alive!" }`
 
-Case (1) is relatively straightforward: we try to unwrap one layer of data constructor (the `Foo`) and find a bottom value. So this thing throws an exception. The same thing applies to (3).
+ケース (1) は比較的単純ですね。データコンストラクタを1層剥いで (`Foo`)、ボトムの値を見つけます。なので、これは例外を投げます。これは (3) にも当てはまります。
 
-(2) does not throw an exception. We have a `Foo` data constructor in our expression, and it contains a bottom value. However, since there is no strictness annotation on the `Int` in `Foo`, uwnrapping the `Foo` does not force evaluation of the `Int`, and therefore no exception is thrown. By contrast, in (4), we do have a strictness annotation, and therefore `case`ing on `Bar` throws an exception.
+(2) は例外を投げません。`Foo` データコンストラクタがあって、それはボトムの値を含んでいます。しかし、`Foo` の中の `Int` に正格性注釈がないので、`Foo` を剥いでも `Int` を強制的に評価することはなく、例外が投げられることはありません。これとは対照的に、(4) では正格性注釈があるので、`Bar` のケースに通したら例外が投げられます。
 
-What about `newtype`s? What we know about `newtype`s is that they have no runtime representation. Therefore, it's impossible for the `Baz` data constructor to be hiding an extra layer of bottomness. In other words, `Baz undefined` and `undefined` are indistinguishable. That may sound like `Bar` at first, but interestingly it's not.
+`newtype` はどうでしょう? `newtype` について知っていることといえば、実行時に表現されることはないということでしょうか。ということは、`Baz` データコンストラクタがボトムの余分な層を隠すことは不可能です。言い換えれば、`Baz undefined` と `undefined` を区別することはできません。こう考えると、ぱっと見 `Bar` のようになりそうですが、おもしろいことに、そうではないんです。
 
-You see, unwrapping a `Baz` constructor can have no effect on runtime behavior, since it was never there in the first place. The pattern match inside (5), therefore, does nothing. It is equivalent to `case undefined of { _ -> putStrLn "Still alive!" }`. And since we're not inspecting the `undefined` at all (because we're using a wildcard pattern and not a data constructor), no exception is thrown.
+`Baz` コンストラクタが実行時に動きになんら影響がないことはわかりますよね? そもそもそこには存在していないんだから。よって、(5) の中のパターンマッチは何の意味もありません。これは `case undefined of { _ -> putStrLn "Still alive!" }` と等しくなります。そして `undefined` について調べることはないので (データコンストラクタではなく、ワイルドカードパターンを使っているので)、例外が投げられることはありません。
 
-Similarly, in case (6), we've applied a `Baz` constructor to `undefined`, but since it has no runtime representation, it may as well not be there. So once again, no exception is thrown.
+同じように、ケース (6) でも `Baz` コンストラクタを `undefined` に適用していますが、実行時に表現されることはないので、これもまた存在しません。なので、ここでも例外が投げられることはありません。
 
-**EXERCISE** What is the output of the program ``main = Baz undefined `seq` putStrLn "Still alive!"? Why``?
+**演習** `main = Baz undefined `seq` putStrLn "Still alive!"` の出力はどうなるでしょうか? そうなるのはなぜでしょう?
 
 ### Convenience operators and functions
 It can be inconvenient, as you may have noticed already, to use `seq` and `deepseq` all over the place. Bang patterns help, but there are other ways to force evaluation. Perhaps the most common is the `$!` operator, e.g.:
