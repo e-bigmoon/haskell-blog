@@ -674,7 +674,7 @@ newtype Baz = Baz Int
 
 Let's play a game, and guess the output of the following potential bodies for `main`. Try to work through each case in your head before reading the explanation below.
 
-ゲームをしましょう。以下のコードを `main` 関数に置いたときの出力 (???) を推測してみてください。下にある説明を読む前に、それぞれのケースを頭の中で考えてくださいね。
+ゲームをしましょう。以下のコードを `main` 関数に置いたときの出力を推測してみてください。下にある説明を読む前に、それぞれのケースを頭の中で考えてくださいね。
 
 1. `case undefined of { Foo _ -> putStrLn "Still alive!" }`
 2. `case Foo undefined of { Foo _ -> putStrLn "Still alive!" }`
@@ -689,11 +689,11 @@ Let's play a game, and guess the output of the following potential bodies for `m
 
 `newtype` はどうでしょう? `newtype` について知っていることといえば、実行時に表現されることはないということでしょうか。ということは、`Baz` データコンストラクタがボトムの余分な層を隠すことは不可能です。言い換えれば、`Baz undefined` と `undefined` を区別することはできません。こう考えると、ぱっと見 `Bar` のようになりそうですが、おもしろいことに、そうではないんです。
 
-`Baz` コンストラクタが実行時に動きになんら影響がないことはわかりますよね? そもそもそこには存在していないんだから。よって、(5) の中のパターンマッチは何の意味もありません。これは `case undefined of { _ -> putStrLn "Still alive!" }` と等しくなります。そして `undefined` について調べることはないので (データコンストラクタではなく、ワイルドカードパターンを使っているので)、例外が投げられることはありません。
+`Baz` コンストラクタが実行時の動きになんら影響がないことはわかりますよね? そもそもそこには存在していないんだから。よって、(5) の中のパターンマッチは何の意味もありません。これは `case undefined of { _ -> putStrLn "Still alive!" }` と等しくなります。そして `undefined` について調べることはないので (データコンストラクタではなく、ワイルドカードパターンを使っているので)、例外が投げられることはありません。
 
 同じように、ケース (6) でも `Baz` コンストラクタを `undefined` に適用していますが、実行時に表現されることはないので、これもまた存在しません。なので、ここでも例外が投げられることはありません。
 
-**演習** `main = Baz undefined `seq` putStrLn "Still alive!"` の出力はどうなるでしょうか? そうなるのはなぜでしょう?
+**演習** ```main = Baz undefined `seq` putStrLn "Still alive!"``` の出力はどうなるでしょうか? そうなるのはなぜでしょう?
 
 ### Convenience operators and functions
 It can be inconvenient, as you may have noticed already, to use `seq` and `deepseq` all over the place. Bang patterns help, but there are other ways to force evaluation. Perhaps the most common is the `$!` operator, e.g.:
