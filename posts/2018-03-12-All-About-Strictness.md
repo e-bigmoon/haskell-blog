@@ -695,8 +695,8 @@ Let's play a game, and guess the output of the following potential bodies for `m
 
 **演習** ```main = Baz undefined `seq` putStrLn "Still alive!"``` の出力はどうなるでしょうか? そうなるのはなぜでしょう?
 
-### Convenience operators and functions
-It can be inconvenient, as you may have noticed already, to use `seq` and `deepseq` all over the place. Bang patterns help, but there are other ways to force evaluation. Perhaps the most common is the `$!` operator, e.g.:
+### 便利な演算子と関数
+すでにお気づきかもしれませんが、`seq` と `deepseq` をあらゆるところで使うのは不都合なことがあります。バンパターンも助けにはなりますが、評価を強制する方法は他にもあります。おそらく、最も普通に使われているのは `$!` 演算子でしょう。例えば、以下のような感じです:
 
 ```haskell
 mysum :: [Int] -> Int
@@ -709,9 +709,9 @@ mysum list0 =
 main = print $ mysum [1..1000000]
 ```
 
-This forces evaluation of `total + x` before recursing back into the `go` function, avoiding a space leak. (EXERCISE: do the same thing with a bang pattern, and with the `seq` function.)
+上の例では、`go` 関数の再帰に入る前に `total + x` の評価を強制しています。結果、スペースリークを防ぐことができます。(演習: 同じことを、バンパターンと `seq` 関数を使ってやってみてください。)
 
-The `$!!` operator is the same, except instead of working with `seq`, it uses `deepseq` and therefore evaluates to normal form.
+`$!!` 演算子も、`seq` ではなく `deepseq` を使っていること以外は同じです。そのため、この演算子を使うと normal form に評価されます。
 
 ```haskell
 import Control.DeepSeq
@@ -726,14 +726,14 @@ average list0 =
 main = print $ average [1..1000000]
 ```
 
-Another nice helper function is `force`. What this does is makes it that, when the expression you're looking at is evaluated to WHNF, it's actually evaluated to NF. For example, we can rewrite the `go` function above as:
+他にも、いい感じのヘルパー関数に `force` というものがあります。これは、対象の式が WHNF に評価されるときに、実際には NF への評価を強制しています。例えば、上の `go` 関数は以下のように書き換えることができます:
 
 ```haskell
 go [] (total, count) = fromIntegral total / count
 go (x:xs) (total, count) = go xs $! force (total + x, count + 1)
 ```
 
-**EXERCISE** Define these convenience functions and operators yourself in terms of `seq` and `deepseq`.
+**演習** これらの便利な関数と演算子を、`seq` と `deepseq` を使って自分で定義してみましょう。
 
 ## Data structures
 Alright, I swear that's all of the really complicated stuff. If you've absorbed all of those details, the rest of this just follows naturally and introduces a little bit more terminology to help us understand things.
