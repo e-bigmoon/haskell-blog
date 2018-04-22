@@ -735,10 +735,11 @@ go (x:xs) (total, count) = go xs $! force (total + x, count + 1)
 
 **演習** これらの便利な関数と演算子を、`seq` と `deepseq` を使って自分で定義してみましょう。
 
-## Data structures
-Alright, I swear that's all of the really complicated stuff. If you've absorbed all of those details, the rest of this just follows naturally and introduces a little bit more terminology to help us understand things.
+## データ構造
+はい、以上が一番複雑な部分でした。もしもそれら全てを理解していたら、残りは自然に理解できて、より深く理解するための用語を少し導入するだけになります。
 
-Let's start off slowly: what's the output of this program:
+ゆっくり始めましょう: このプログラムの出力はどうなるでしょうか:
+
 
 ```haskell
 data List a = Cons a (List a) | Nil
@@ -746,13 +747,14 @@ data List a = Cons a (List a) | Nil
 main = Cons undefined undefined `seq` putStrLn "Hello World"
 ```
 
-Well, using our principles from above: `Cons undefined undefined` is already in WHNF, since we've got the outermost constructor available. So this program prints "Hello World", without any exceptions. Cool. Now let's realize that `Cons` is the same as the `:` data constructor for lists, and see that the above is identical to:
+えー、上で紹介した法則を使うと、一番外側のコンストラクタがあるので、`Cons undefined undefined` はすでに WHNF になっています。なので、このプログラムは例外を吐くことなく "Hello World" と表示します。いいですね。さて、`Cons` は `:` データコンストラクタと等しいことを意識してください。そうすると、上の例は以下のプログラムと同一であることがわかります:
 
 ```haskell
 main = (undefined:undefined) `seq` putStrLn "Hello World"
 ```
 
-This tells me that lists are a lazy data structure: I have a bottom value for the first element, a bottom value for the rest of the list, and yet this first cell is not bottom. Let's try something a little bit different:
+ということは、リストはレイジーなデータ構造だということですね。最初の要素はボトムで、残りのリストもボトムです。しかし全体としてはボトムではありません。少し違う例を試してみましょう:
+
 
 ```haskell
 data List a = Cons a !(List a) | Nil
@@ -760,7 +762,7 @@ data List a = Cons a !(List a) | Nil
 main = Cons undefined undefined `seq` putStrLn "Hello World"
 ```
 
-This is going to explode in our faces! We are now strict in the tail of the list. However, the following is fine:
+これは顔面で爆発します! リストの tail が正格だからです。しかし、以下の例は大丈夫です:
 
 ```haskell
 data List a = Cons a !(List a) | Nil
@@ -768,7 +770,7 @@ data List a = Cons a !(List a) | Nil
 main = Cons undefined (Cons undefined Nil) `seq` putStrLn "Hello World"
 ```
 
-With this definition of a list, we need to know all the details about the list itself, but the values can remain undefined. This is called spine strict. By contrast, we can also be strict in the values and be value strict:
+このリストの定義では、リストそのものについては詳細の全てを知る必要があります。しかし、値は undefined のままでもいいのです。これは spine strict と呼ばれています。対照的に、値に対して正格にすることも可能です。やってみましょう:
 
 ```haskell
 data List a = Cons !a !(List a) | Nil
@@ -776,17 +778,17 @@ data List a = Cons !a !(List a) | Nil
 main = Cons undefined (Cons undefined Nil) `seq` putStrLn "Hello World"
 ```
 
-This will explode in our faces, as we'd expect.
+これは期待通り、顔面で爆発するでしょう。
 
-There's one final definition of list you may be expecting, one strict in values but not in the tail:
+お分かりかもしれませんが、もう1つリストの定義が残っています。値に対して正格で、残りはそうではないものです:
 
 ```haskell
 data List a = Cons !a (List a) | Nil
 ```
 
-In practice, I'm aware of no data structures in Haskell that follow this pattern, and therefore it doesn't have a name. (If there are such data structures, and this does have a name, please let me know, I'd be curious about the use cases for it.)
+実際のところ、このパターンを取る Haskell のデータ構造は知りません。よって名前もありません。(もしもこんなデータ構造があって名前があるのなら、教えてください。どんな使われ方をしているのか気になります。)
 
-So standard lists are lazy. Let's look at a few other data types:
+なので、標準のリストはレイジーです。他にもいくつかデータ型を見てみましょう:
 
 ### Vectors
 The vectors in `Data.Vector` (also known as boxed vectors) are spine strict. Assuming an import of `import qualified Data.Vector as V`, what would be the results of the following programs?
