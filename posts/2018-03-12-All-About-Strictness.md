@@ -825,12 +825,12 @@ containers と unordered-containers パッケージを見てみれば、`Strict`
 
 **演習** `Data.Sequence.Seq` データ型を調べて、lazy、spine strict、value strict のいずれかに分類してください。
 
-## Function arguments
-A function is considered strict in one of its arguments if, when the function is applied to a bottom value for that argument, the result is bottom. As we saw way above, `+` for `Int` is strict in both of its arguments, since: `undefined + x` is bottom, and `x + undefined` is bottom.
+## 関数の引数
+ある関数がある引数に渡されたボトムの値に適用されるとき、結果がボトムになるのなら、その関数は引数の1つに対して正格だと考えられます。上の例で見たように、`Int` に対して `+` を適用するときはどちらの引数に対しても正格ですが、`undefined + x` と `x + undefined` はボトムです。
 
-By contrast, the `const` function, defined as `const a b = a`, is strict in its first argument and lazy in its second argument.
+対して、`const` 関数は `const a b = a` と定義されますが、これは最初の引数に対して正格で、2番目の引数に対してはレイジーです。
 
-The `:` data constructor for lists is lazy in both its first and second argument. But if you have `data List = Cons !a !(List a) | Nil`, `Cons` is strict in both its first and second argument.
+リストの `:` データコンストラクタは、第1引数と第2引数に対してレイジーです。しかし、`data List = Cons !a !(List a) | Nil` という定義では、`Cons` はどちらの引数に対しても正格になります。
 
 ## Folds
 A common place to end up getting tripped up by laziness is dealing with folds. The most infamous example is the `foldl` function, which lulls you into a false sense of safety only to dash your hopes and destroy your dreams:
