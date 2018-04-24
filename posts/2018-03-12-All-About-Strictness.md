@@ -832,8 +832,8 @@ containers と unordered-containers パッケージを見てみれば、`Strict`
 
 リストの `:` データコンストラクタは、第1引数と第2引数に対してレイジーです。しかし、`data List = Cons !a !(List a) | Nil` という定義では、`Cons` はどちらの引数に対しても正格になります。
 
-## Folds
-A common place to end up getting tripped up by laziness is dealing with folds. The most infamous example is the `foldl` function, which lulls you into a false sense of safety only to dash your hopes and destroy your dreams:
+## Fold
+遅延性を扱う上でつまづきやすいポイントは、fold です。もっとも悪名高い例は `foldl` 関数でしょう。こいつは偽りの安心感をいざない、夢と希望をぶち壊してくれます:
 
 ```haskell
 mysum :: [Int] -> Int
@@ -843,7 +843,7 @@ main :: IO ()
 main = print $ mysum [1..1000000]
 ```
 
-This is so close to correct, and yet uses 53mb of resident memory! The solution is but a tick away, using the strict left fold `foldl'` function:
+これは限りなく正解に近いですが、53mb も resident memory を使っています! 答えはチョンっとつけて正格な左畳み込み `foldl` 関数を使うことです。
 
 ```haskell
 import Data.List (foldl')
@@ -855,11 +855,11 @@ main :: IO ()
 main = print $ mysum [1..1000000]
 ```
 
-Why does the `Prelude` expose a function (`foldl`) which is almost always the wrong one to use?
+`Prelude` はなんでこんな常に使うのが間違っているような関数 (`foldl`) を提供しているのでしょうか?
 
 
 
-But the important thing to note about almost all functions that claim to be strict is that they are only strict to weak head normal form. Pulling up our `average` example from before, this still has a space leak:
+ただ、ほとんど全ての正格であると称している関数は、実際のところ weak head normal form に対してのみ正格であることに留意しなければいけません。前の `average` 関数の例を見てみると、まだスペースリークがあります:
 
 ```haskell
 import Data.List (foldl')
@@ -875,7 +875,7 @@ main :: IO ()
 main = print $ average [1..1000000]
 ```
 
-My advice is to use a helper data type with strict fields. But perhaps you don't want to do that, and you're frustrated that there is no `foldl'` that evaluates to normal form. Fortunately for you, by just throwing in a call to `force`, you can easily upgrade a WHNF fold into a NF fold:
+私のアドバイスは、正格なフィールドを持つヘルパーデータ型を使うことです。しかしあなたはそうしたくないかもしれませんし、normal form に評価するような `foldl'` がないことにイライラしているかもしれません。そんなあなたに朗報です。`force` を使うだけで、簡単に WHNF fold を NF fold にアップグレードすることができます:
 
 ```haskell
 import Data.List (foldl')
@@ -892,7 +892,7 @@ main :: IO ()
 main = print $ average [1..1000000]
 ```
 
-Like a good plumber, `force` patches that leak right up!
+腕のいい水道工事業者のように、`force` はすぐにリークを止めてくれます!
 
 ### Streaming data
 One of the claims of streaming data libraries (like conduit) is that they promote constant memory usage. This may make you think that you can get away without worrying about space leaks. However, all of the comments about WHNF vs NF mentioned above apply. To prove the point, let's do average badly with conduit:
