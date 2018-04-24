@@ -790,16 +790,16 @@ data List a = Cons !a (List a) | Nil
 
 なので、標準のリストはレイジーです。他にもいくつかデータ型を見てみましょう:
 
-### Vectors
-The vectors in `Data.Vector` (also known as boxed vectors) are spine strict. Assuming an import of `import qualified Data.Vector as V`, what would be the results of the following programs?
+### ベクター
+`Data.Vector` の中のベクター (ボックスベクターとも) は、spine strict です。`import qualified Data.Vector as V` でインポートしたとして、以下のプログラムの結果はどうなるでしょうか?
 
 1. ``main = V.fromList [undefined] `seq` putStrLn "Hello World"``
 2. ``main = V.fromList (undefined:undefined) `seq` putStrLn "Hello World"``
 3. ``main = V.fromList undefined `seq` putStrLn "Hello World"``
 
-The first succeeds: we have the full spine of the vector defined. The fact that it contains a bottom value is irrelevant. The second fails, since the spine of the tail of the list is undefined, making the spine undefined. And finally the third (of course) fails, since the entire list is undefined.
+最初は成功します。ベクターの背骨部分は定義してあるからです。ボトムを含んでいるかどうかは無関係です。2番目は失敗します。背骨であるリスト後部が undefined なので、背骨部分は　undefined になります。最後の例も (当然) 失敗します。リスト全体が undefined だからです。
 
-Now let's look at unboxed vectors. Because of inference issues, we need to help out GHC a little bit more. So starting with this head of a program:
+さて、アンボックスベクターについても見てみましょう。推論の都合上、GHC を少し手助けして必要があります。なので、この部分から始めましょう:
 
 ```haskell
 import qualified Data.Vector.Unboxed as V
@@ -808,15 +808,15 @@ fromList :: [Int] -> V.Vector Int
 fromList = V.fromList
 ```
 
-What happens with the three cases above?
+この場合、さっきの例はどうなるでしょうか?
 
 1. ``main = fromList [undefined] `seq` putStrLn "Hello World"``
 2. ``main = fromList (undefined:undefined) `seq` putStrLn "Hello World"``
 3. ``main = fromList undefined `seq` putStrLn "Hello World"``
 
-As you'd expect, (2) and (3) have the same behavior as with boxed vectors. However, (1) also throws an exception, since unboxed vectors are value strict, not just spine strict. The same applies to storable and primitive vectors.
+ご想像の通り、(2) と (3) はボックスベクターのときと同じ動きをします。しかし、(1) も例外を投げるようになります。これは、アンボックスベクターが spine strict なだけではなく、値に対しても正格だからです。storable vector と primitive vector も同じ振る舞いをします。
 
-Unfortunately, to my knowledge, there is no definition of a strict, boxed vector in a public library. Such a data type would be useful to help avoid space leaks (such as the original question that triggered this blog post).
+残念ながら、私の知る限り、公開されているライブラリに正格なボックスベクターは存在しません。そのようなデータ型はスペースリーク対策に役立つと思うんですが (この記事を書くきっかけになった質問のように)。
 
 ### Sets and Maps
 If you look at the containers and unordered-containers packages, you may have noticed that the Map-like modules come in `Strict` and `Lazy` variants (e.g., `Data.HashMap.Strict` and `Data.HashMap.Lazy`) while the Set-like modules do not (e.g., `Data.IntSet`). This is because all of these containers are spine strict, and therefore must be strict in the keys. Since a set only has keys, no separate values, it must also be value strict.
