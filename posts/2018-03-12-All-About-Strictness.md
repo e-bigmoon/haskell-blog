@@ -818,12 +818,12 @@ fromList = V.fromList
 
 残念ながら、私の知る限り、公開されているライブラリに正格なボックスベクターは存在しません。そのようなデータ型はスペースリーク対策に役立つと思うんですが (この記事を書くきっかけになった質問のように)。
 
-### Sets and Maps
-If you look at the containers and unordered-containers packages, you may have noticed that the Map-like modules come in `Strict` and `Lazy` variants (e.g., `Data.HashMap.Strict` and `Data.HashMap.Lazy`) while the Set-like modules do not (e.g., `Data.IntSet`). This is because all of these containers are spine strict, and therefore must be strict in the keys. Since a set only has keys, no separate values, it must also be value strict.
+### Set と Map
+containers と unordered-containers パッケージを見てみれば、`Strict` と `Lazy` バリアント(???) の中に、Set なんとかのようなモジュールは存在しないのに (`Data.IntSet` など)、Map なんとかは存在することに気がつくと思います (例えば、`Data.HashMap.Strict` と `Data.HashMap.Lazy`)。これは、これら全てのコンテナが spine strict で、キーに対して正格でなければならないからです。set は別に分けられた値を持たず、キーだけ持っているので、値に対して正格でなければいけません。
 
-A map, by contrast, has both keys and values. The lazy variants of the map-like modules are spine-strict, value-lazy, whereas the strict variants are both spine and value strict.
+対照的に、map はキーと値の両方を持っています。map なんとかモジュールのレイジーなバリアントは spine strict で、値についてレイジーです。対して、正格なバリアントは spine と値の両方について正格です。
 
-**EXERCISE** Analyze the `Data.Sequence.Seq` data type and classify it as either lazy, spine strict, or value strict.
+**演習** `Data.Sequence.Seq` データ型を調べて、lazy、spine strict、value strict のいずれかに分類してください。
 
 ## Function arguments
 A function is considered strict in one of its arguments if, when the function is applied to a bottom value for that argument, the result is bottom. As we saw way above, `+` for `Int` is strict in both of its arguments, since: `undefined + x` is bottom, and `x + undefined` is bottom.
