@@ -13,6 +13,7 @@ date: 2018/05/05
 - [おすすめの開発方法](tips/recommend-dev.html)
 - [script interpreter + stack script でスクリプティング！](tips/script-interpreter.html)
 - [カスタムスナップショットの紹介](/posts/2017/12-23-stack161.html)
+- [config.yaml のよくある設定](tips/config-yaml.html)
 
 ## HLint
 

@@ -1,10 +1,13 @@
 ---
 title: ライブラリの作成
+date: 2018/05/05
 prev: ./create-prj.html
 next: ./exec-prg.html
 ---
 
-それでは書籍のコードを `src/Minfree.hs` として保存してみましょう。
+## ライブラリの作成
+
+それでは以下のコードを **src/Minfree.hs** として保存しましょう。
 
 ```hs:src/Minfree.hs
 module Minfree (minfree, minfree') where
@@ -54,4 +57,24 @@ minfrom a (n, xs)
       (us, vs) = partition (<b) xs
       b = a + 1 + n `div` 2
       m = length us
+```
+
+このコードは **app/Main.hs** から利用されることを想定しています。
+
+## 関数のエクスポート
+
+**Haskell** ではエクスポートリストを明記することで、外部に公開する関数を制限することができます。
+
+今回の例では以下の部分が該当します。
+
+```hs
+module Minfree (minfree, minfree') where
+```
+
+この場合 **minfree** と **minfree'** 関数を外部に公開することになります。
+
+仮に、このように省略した場合は全ての関数が外部に公開されます。
+
+```hs
+module Minfree where
 ```
