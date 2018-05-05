@@ -150,16 +150,32 @@
       <div class="post-heading">
         <h1 class="post-title">おすすめの開発方法</h1>
         
-        <span>最終更新日: 2018/01/07</span>
+        <span>最終更新日: 2018/05/05</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="ビルド">ビルド</h2>
-<p>僕は <code>vscode</code> のターミナルに以下のコマンドを打ち込んで自動的にビルドさせています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">stack</span> test --fast --file-watch</a></code></pre></div>
-<p>警告が許せない人は以下のように <code>--pedantic</code> を付けて開発しましょう。(個人的には付けずに開発しつつ <code>CI</code> でチェックするスタイルの方が効率が上がって良いと思います)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">$ <span class="ex">stack</span> test --fast --file-watch --pedantic</a></code></pre></div>
+        <h2 id="開発環境">開発環境</h2>
+<p>弊社で主に利用しているエディタとツールは以下の通りです。</p>
+<ul>
+<li><a href="https://code.visualstudio.com/">VS CODE</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine">haskell-ide-engine</a></li>
+<li><a href="https://github.com/jaspervdj/stylish-haskell">stylish-haskell</a></li>
+</ul>
+<p><strong>haskell-ide-engine</strong> は <a href="https://github.com/jaspervdj/stylish-haskell">Language Server Protocol (LSP)</a> が利用できれば、どのエディタでも利用可能です。</p>
+<p>そのた、エディタについては <strong>Emacs</strong>, <strong>NeoVim</strong>, <strong>Atom</strong>, <strong>Sublime Text</strong> などと連携させて自由に利用しています。</p>
+<h2 id="開発中のビルド方法">開発中のビルド方法</h2>
+<p>僕は <a href="https://code.visualstudio.com/">VS CODE</a> のターミナルに以下のコマンドを打ち込んで自動的にビルドさせています。</p>
+<pre class="shell"><code>$ stack test --fast --file-watch</code></pre>
+<h2 id="最後の仕上げ">最後の仕上げ</h2>
+<p>基本的に <strong>GHC</strong> と <strong>hlint</strong> の警告を全て消したのち <strong>stylish-haskell</strong> でコードを整えています。</p>
+<p><code>--pedantic</code> オプションを利用すれば <strong>GHC</strong> の警告が出た段階でビルドがストップするので、効率的に修正できます。</p>
+<pre class="shell"><code># GHC 警告チェック
+$ stack clean
+$ stack test --fast --file-watch --pedantic
+
+# hlint チェック
+$ curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</code></pre>
 <h2 id="オプションの紹介">オプションの紹介</h2>
 <p>各オプションの意味は以下の通りです。</p>
 <table>

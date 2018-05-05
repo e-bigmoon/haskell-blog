@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Script interpreter 形式でアプリケーションを実行</title>
+  <title>script interpreter + stack script でスクリプティング！</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/tips/script-interpreter.html">
-  <link rel="alternate" type="application/atom+xml" title="Script interpreter 形式でアプリケーションを実行" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="script interpreter + stack script でスクリプティング！" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Script interpreter 形式でアプリケーションを実行" />
+  <meta property="og:title" content="script interpreter + stack script でスクリプティング！" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/tips/script-interpreter.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Script interpreter 形式でアプリケーションを実行" />
+  <meta property="og:site_name" content="script interpreter + stack script でスクリプティング！" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -148,72 +148,93 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">Script interpreter 形式でアプリケーションを実行</h1>
+        <h1 class="post-title">script interpreter + stack script でスクリプティング！</h1>
         
-        <span>最終更新日: 2018/03/19</span>
+        <span>最終更新日: 2018/05/05</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="script-interpreter-形式とは">Script Interpreter 形式とは？</h2>
-<p>一言で言えばシェルスクリプトの <code>Haskell</code> バージョンです。</p>
-<p><code>stack</code> を使って自分で作成したプログラムを実行する方法はいくつかあります。</p>
+        <h2 id="stack-script-コマンドとは">stack script コマンドとは？</h2>
+<p><strong>stack</strong> を使って自分で作成したプログラムを実行する方法はいくつかあります。</p>
 <ul>
-<li><code>stack repl</code></li>
-<li><code>stack exec</code></li>
-<li><code>stack interpreter</code></li>
+<li><strong>stack repl (または stack ghci)</strong></li>
+<li><strong>stack exec</strong></li>
+<li><strong>stack script</strong></li>
 </ul>
-<p><code>script interpreter</code> 形式のメリットは容易に実行可能な形式で配布できる点にあります。また、大抵の場合は利用するパッケージを明示的に指定しなくても良いという点もあります。</p>
-<p>例えば、ブログ記事で読者にコードを実行してもらいたい場合はこの形式が適しているでしょう。</p>
-<p>逆に、アプリケーションの一部だけを見せたい場合などには向いていません。<code>stack interpreter</code> 形式は実行可能なファイルである必要があります。 (つまり <code>main</code> 関数が必要です)</p>
-<h2 id="使い方">使い方</h2>
-<p>通常の <code>Haskell</code> ファイルの先頭に以下のような行を追加するだけです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack --resolver lts-11.1 script</span></a></code></pre></div>
-<p><code>lts-11.1</code> の部分は自分の好きな<a href="https://www.stackage.org/">スナップショット</a>を指定しましょう。</p>
+<p><strong>stack script</strong> コマンドは、利用する <strong>resolver</strong> を明示的に必ず指定するため、通常は利用するパッケージを指定することなく実行できます。</p>
+<p>もちろん明示的にパッケージを明記することも可能です。</p>
+<h3 id="使い方">使い方</h3>
+<p>具体的には、このように使います。</p>
+<p>ファイル名は自由ですが、<code>--resolver lts-11.7</code> のようにスナップショットの指定は必須です。</p>
+<pre class="shell"><code>$ stack script --resolver lts-11.7 App.hs</code></pre>
+<p>また、アプリケーションが引数を利用する場合はいつも通り <code>--</code> で区切ります。</p>
+<pre class="shell"><code>$ stack script --resolver lts-11.7 -- App.hs [1,2,3]</code></pre>
+<p>注意点として <strong>stack script</strong> で処理するファイルには <code>main</code> 関数が含まれている必要があります。</p>
+<h2 id="script-interpreter-形式とは">script interpreter 形式とは？</h2>
+<p>一言で言えばシェルスクリプトの <strong>Haskell</strong> バージョンです。</p>
+<p><strong>script interpreter</strong> 形式のメリットは容易に実行可能な形式で配布できる点にあります。</p>
+<p>例えば <strong>ghci</strong> に大量のオプションを渡す必要があるなど、毎回入力するのが面倒な場合に便利です。</p>
+<h3 id="使い方-1">使い方</h3>
+<p>通常の <strong>Haskell</strong> ファイルの先頭に次の1行を追加するだけです。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a></code></pre></div>
+<p>実際には、そのすぐ次の行に <strong>stack repl</strong> や <strong>stack script</strong> などを指定して使うことになります。</p>
+<h2 id="組み合わせてみよう">組み合わせてみよう！</h2>
+<p><strong>script interpreter</strong> と <strong>stack script</strong> を組み合わせると非常にポータブルな <strong>Haskell</strong> スクリプトを作ることができます。</p>
+<p>個人的には以下のようなメリットを感じています。</p>
+<ul>
+<li><strong>スナップショット</strong>が明示的に指定されるため、いつでも動くサンプルが簡単に作れる</li>
+<li>実行時に必要なオプション等を全てファイルの中に含めることができるため、実行方法が可視化される</li>
+<li>ブログのサンプルコードなどに適した形式</li>
+</ul>
+<h3 id="使い方-2">使い方</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.7</span></a></code></pre></div>
+<p><strong>lts-11.7</strong> の部分は自分の好きな<a href="https://www.stackage.org/">スナップショット</a>を指定しましょう。</p>
 <p>実際に実行する場合はシェルスクリプト同様に実行権限を付与し、ファイルを実行します。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">$ <span class="fu">chmod</span> u+x Main.hs</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ex">./Main.hs</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1">$ <span class="fu">chmod</span> u+x Main.hs</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="ex">./Main.hs</span></a></code></pre></div>
 <h3 id="明示的にパッケージを指定する場合">明示的にパッケージを指定する場合</h3>
 <p>基本的にはパッケージを省略して動作しますが、ごく稀に明示的にパッケージを指定する必要があります。</p>
 <p>その場合は、このように <code>--package</code> 引数を指定する事で実行できるようになります。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">-- stack --resolver lts-11.1 script --package yesod --package yesod-core</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.7 --package yesod --package yesod-core</span></a></code></pre></div>
 <p>パッケージが多い場合は複数行コメントにすると見やすくなります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">{- stack --resolver lts-11.1 script</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">   --package yesod</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">   --package yesod-core</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">{- stack script</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">   --resolver lts-11.7</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">   --package yesod</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">   --package yesod-core</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="co">-}</span></a></code></pre></div>
 <h2 id="具体例">具体例</h2>
-<p>以下のコードは <code>Yesod</code> のサンプルアプリケーションを <code>stack interpreter</code> 形式にしたものです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">-- stack --resolver lts-11.1 script</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">/ HomeR GET</a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">|]</a>
-<a class="sourceLine" id="cb5-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
-<a class="sourceLine" id="cb5-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb5-19" data-line-number="19">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
-<a class="sourceLine" id="cb5-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb5-21" data-line-number="21"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-22" data-line-number="22">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
-<p>上記のファイルを <code>YesodEx.hs</code> として保存して実行してみましょう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">$ <span class="fu">chmod</span> u+x YesodEx.hs</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">$ <span class="ex">./YesodEx.hs</span></a></code></pre></div>
-<p><a href="http://localhost:3000" class="uri">http://localhost:3000</a> にアクセスすると <code>Hello World</code> の文字が表示されたのではないでしょうか。</p>
-<p>このように、とても簡単に実行できるため、シェルスクリプトの代わりに <code>Haskell</code> でスクリプトを書くことも普通にできるようになります。</p>
+<p>以下のコードは <strong>Yesod</strong> のサンプルアプリケーションを <strong>stack interpreter</strong> + <strong>stack script</strong> にしたものです。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.7</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb8-13" data-line-number="13">/ HomeR GET</a>
+<a class="sourceLine" id="cb8-14" data-line-number="14">|]</a>
+<a class="sourceLine" id="cb8-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb8-16" data-line-number="16"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb8-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb8-18" data-line-number="18"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb8-19" data-line-number="19">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
+<a class="sourceLine" id="cb8-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb8-21" data-line-number="21"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb8-22" data-line-number="22">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
+<p>上記のファイルを <strong>YesodEx.hs</strong> として保存して実行してみましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1">$ <span class="fu">chmod</span> u+x YesodEx.hs</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">$ <span class="ex">./YesodEx.hs</span></a></code></pre></div>
+<p><a href="http://localhost:3000" class="uri">http://localhost:3000</a> にアクセスすると <strong>Hello World</strong> の文字が表示されたのではないでしょうか。</p>
+<p>このようにとても簡単に実行できるため、シェルスクリプトの代わりに <strong>Haskell</strong> でスクリプトを書くことも普通にできるようになります。</p>
       </article>
 
       <div class="pager">
@@ -229,7 +250,7 @@
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Script interpreter 形式でアプリケーションを実行&url=https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=script interpreter + stack script でスクリプティング！&url=https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html"><i class="mdi mdi-facebook white-text"></i></a>
