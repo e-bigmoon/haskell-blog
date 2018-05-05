@@ -1,34 +1,74 @@
 ---
-title: Script interpreter 形式でアプリケーションを実行
-date: 2018/03/19
+title: script interpreter + stack script でスクリプティング！
+date: 2018/05/05
 ---
 
-## Script Interpreter 形式とは？
+## stack script コマンドとは？
 
-一言で言えばシェルスクリプトの `Haskell` バージョンです。
+**stack** を使って自分で作成したプログラムを実行する方法はいくつかあります。
 
-`stack` を使って自分で作成したプログラムを実行する方法はいくつかあります。
+- **stack repl (または stack ghci)**
+- **stack exec**
+- **stack script**
 
-- `stack repl`
-- `stack exec`
-- `stack interpreter`
+**stack script** コマンドは、利用する **resolver** を明示的に必ず指定するため、通常は利用するパッケージを指定することなく実行できます。
 
-`script interpreter` 形式のメリットは容易に実行可能な形式で配布できる点にあります。また、大抵の場合は利用するパッケージを明示的に指定しなくても良いという点もあります。
+もちろん明示的にパッケージを明記することも可能です。
 
-例えば、ブログ記事で読者にコードを実行してもらいたい場合はこの形式が適しているでしょう。
+### 使い方
 
-逆に、アプリケーションの一部だけを見せたい場合などには向いていません。`stack interpreter` 形式は実行可能なファイルである必要があります。 (つまり `main` 関数が必要です)
+具体的には、このように使います。
 
-## 使い方
+ファイル名は自由ですが、`--resolver lts-11.7` のようにスナップショットの指定は必須です。
 
-通常の `Haskell` ファイルの先頭に以下のような行を追加するだけです。
+```shell
+$ stack script --resolver lts-11.7 App.hs
+```
+
+また、アプリケーションが引数を利用する場合はいつも通り `--` で区切ります。
+
+```shell
+$ stack script --resolver lts-11.7 -- App.hs [1,2,3]
+```
+
+注意点として **stack script** で処理するファイルには `main` 関数が含まれている必要があります。
+
+## script interpreter 形式とは？
+
+一言で言えばシェルスクリプトの **Haskell** バージョンです。
+
+**script interpreter** 形式のメリットは容易に実行可能な形式で配布できる点にあります。
+
+例えば **ghci** に大量のオプションを渡す必要があるなど、毎回入力するのが面倒な場合に便利です。
+
+### 使い方
+
+通常の **Haskell** ファイルの先頭に次の1行を追加するだけです。
 
 ```hs
 #!/usr/bin/env stack
--- stack --resolver lts-11.1 script
 ```
 
-`lts-11.1` の部分は自分の好きな[スナップショット](https://www.stackage.org/)を指定しましょう。
+実際には、そのすぐ次の行に **stack repl** や **stack script** などを指定して使うことになります。
+
+## 組み合わせてみよう！
+
+**script interpreter** と **stack script** を組み合わせると非常にポータブルな **Haskell** スクリプトを作ることができます。
+
+個人的には以下のようなメリットを感じています。
+
+- **スナップショット**が明示的に指定されるため、いつでも動くサンプルが簡単に作れる
+- 実行時に必要なオプション等を全てファイルの中に含めることができるため、実行方法が可視化される
+- ブログのサンプルコードなどに適した形式
+
+### 使い方
+
+```hs
+#!/usr/bin/env stack
+-- stack script --resolver lts-11.7
+```
+
+**lts-11.7** の部分は自分の好きな[スナップショット](https://www.stackage.org/)を指定しましょう。
 
 実際に実行する場合はシェルスクリプト同様に実行権限を付与し、ファイルを実行します。
 
@@ -45,14 +85,15 @@ $ chmod u+x Main.hs
 
 ```hs
 #!/usr/bin/env stack
--- stack --resolver lts-11.1 script --package yesod --package yesod-core
+-- stack script --resolver lts-11.7 --package yesod --package yesod-core
 ```
 
 パッケージが多い場合は複数行コメントにすると見やすくなります。
 
 ```hs
 #!/usr/bin/env stack
-{- stack --resolver lts-11.1 script
+{- stack script
+   --resolver lts-11.7
    --package yesod
    --package yesod-core
 -}
@@ -60,11 +101,11 @@ $ chmod u+x Main.hs
 
 ## 具体例
 
-以下のコードは `Yesod` のサンプルアプリケーションを `stack interpreter` 形式にしたものです。
+以下のコードは **Yesod** のサンプルアプリケーションを **stack interpreter** + **stack script** にしたものです。
 
 ```hs
 #!/usr/bin/env stack
--- stack --resolver lts-11.1 script
+-- stack script --resolver lts-11.7
 
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
@@ -87,13 +128,13 @@ main :: IO ()
 main = warp 3000 HelloWorld
 ```
 
-上記のファイルを `YesodEx.hs` として保存して実行してみましょう。
+上記のファイルを **YesodEx.hs** として保存して実行してみましょう。
 
 ```sh
 $ chmod u+x YesodEx.hs
 $ ./YesodEx.hs
 ```
 
-[http://localhost:3000](http://localhost:3000) にアクセスすると `Hello World` の文字が表示されたのではないでしょうか。
+[http://localhost:3000](http://localhost:3000) にアクセスすると **Hello World** の文字が表示されたのではないでしょうか。
 
-このように、とても簡単に実行できるため、シェルスクリプトの代わりに `Haskell` でスクリプトを書くことも普通にできるようになります。
+このようにとても簡単に実行できるため、シェルスクリプトの代わりに **Haskell** でスクリプトを書くことも普通にできるようになります。

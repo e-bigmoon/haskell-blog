@@ -1,6 +1,6 @@
 ---
 title: Haskell Stack
-date: 2018/04/07
+date: 2018/05/05
 ---
 
 <div class="row">
@@ -8,10 +8,11 @@ date: 2018/04/07
 
 ## Tips
 
-- [stack の更新](tips/stack-upgrade.html)
+- [Stack の更新](tips/stack-upgrade.html)
 - [完全なリビルド](tips/full-rebuild.html)
 - [おすすめの開発方法](tips/recommend-dev.html)
-- [script interpreter 形式でアプリケーションを実行](tips/script-interpreter.html)
+- [script interpreter + stack script でスクリプティング！](tips/script-interpreter.html)
+- [カスタムスナップショットの紹介](/posts/2017/12-23-stack161.html)
 
 ## HLint
 
@@ -23,11 +24,17 @@ date: 2018/04/07
 - [HLint のヒントを無視する方法](hlint/hlint-ignore.html)
 - [CI を回す!](hlint/hlint-ci.html)
 
+## Tools
+
+ソースコード整形
+
+- [stylish-haskell](etc/stylish-haskell.html)
+- brittany
+- hindent
+
 ## その他
 
-- [プログラムの配布](etc/stack-script.html)
 - [HLint](etc/hlint.html)
-- [フォーマットツール](etc/format.html)
 - [hoogle](etc/hoogle.html)
 - [プロファイリング](etc/profiling.html)
 - [コマンドリファレンス](etc/cmd-ref.html)

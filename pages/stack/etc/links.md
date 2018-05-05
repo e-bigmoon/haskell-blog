@@ -1,6 +1,6 @@
 ---
 title: Links
-date: 2018/01/08
+date: 2018/05/05
 ---
 
 ## Tools
@@ -29,12 +29,6 @@ date: 2018/01/08
 
 - [hpack - An alternative format for Haskell packages](http://typeful.net/talks/hpack)
 - [Cleaning Up Our Projects with Hpack!](https://mmhaskell.com/blog/2017/7/17/cleaning-up-our-projects-with-hpack)
-
-### hpack-convert
-
-- [yamadapc/hpack-convert on GitHub](https://github.com/yamadapc/hpack-convert)
-- [hpack-convert on Stackage](https://www.stackage.org/package/hpack-convert)
-- [hpack-convert on Hackage](https://hackage.haskell.org/package/hpack-convert)
 
 ### haddock
 
