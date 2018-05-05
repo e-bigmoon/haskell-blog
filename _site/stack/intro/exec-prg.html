@@ -150,56 +150,87 @@
       <div class="post-heading">
         <h1 class="post-title">プログラムの実行</h1>
         
+        <span>最終更新日: 2018/05/05</span>
+        
       </div>
 
       <article class="page-content">
-        <p>ここまでの内容を対話環境で実行したいと思います。</p>
-<pre class="shell-session"><code>$ stack ghci
+        <h2 id="ghci-を使ってプログラムのデバッグを行う">ghci を使ってプログラムのデバッグを行う</h2>
+<p>ここまでの内容を対話環境で実行したいと思います。</p>
+<pre class="shell"><code>$ stack repl
 PFAD-0.1.0.0: configure (lib + exe)
 Configuring PFAD-0.1.0.0...
 PFAD-0.1.0.0: initial-build-steps (lib + exe)
 The following GHC options are incompatible with GHCi and have not been passed to it: -threaded
 Configuring GHCi with the following packages: PFAD
-Using main module: 1. Package `PFAD' component exe:PFAD-exe with main-is file: /home/bm12/Desktop/PFAD/app/Main.hs
-GHCi, version 8.0.2: http://www.haskell.org/ghc/  :? for help
-[1 of 2] Compiling Minfree          ( /home/bm12/Desktop/PFAD/src/Minfree.hs, interpreted )
+Using main module: 1. Package `PFAD' component exe:PFAD-exe with main-is file: /Users/bm12/Desktop/PFAD/app/Main.hs
+GHCi, version 8.2.2: http://www.haskell.org/ghc/  :? for help
+[1 of 2] Compiling Main             ( /Users/bm12/Desktop/PFAD/app/Main.hs, interpreted )
+[2 of 2] Compiling Minfree          ( /Users/bm12/Desktop/PFAD/src/Minfree.hs, interpreted )
 
-/home/bm12/Desktop/PFAD/src/Minfree.hs:3:1: error:
-    Failed to load interface for ‘Data.Array’
-    It is a member of the hidden package ‘array-0.5.1.1’.
+/Users/bm12/Desktop/PFAD/src/Minfree.hs:3:1: error:
+    Could not find module ‘Data.Array’
+    Perhaps you meant Data.Proxy (from base-4.10.1.0)
     Use -v to see a list of the files searched for.
+  |
+3 | import Data.Array (Array, elems, accumArray, assocs)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-/home/bm12/Desktop/PFAD/src/Minfree.hs:4:1: error:
-    Failed to load interface for ‘Data.Array.ST’
-    It is a member of the hidden package ‘array-0.5.1.1’.
+/Users/bm12/Desktop/PFAD/src/Minfree.hs:4:1: error:
+    Could not find module ‘Data.Array.ST’
     Use -v to see a list of the files searched for.
-Failed, modules loaded: none.
+  |
+4 | import Data.Array.ST (runSTArray, newArray, writeArray)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Failed, one module loaded.
 
 &lt;no location info&gt;: error:
     Could not find module ‘Minfree’
     It is not a module in the current program, or in any known package.
-Loaded GHCi configuration from /tmp/ghci308/ghci-script</code></pre>
-<p>このエラーメッセージでは、<code>Data.Array</code> と <code>Data.Array.ST</code> がインポートできていないため、エラーとなってしまったことを教えてくれています。また、<code>array-0.5.1.1</code> を利用したら良いこともこのエラーメッセージから読み取ることができます。</p>
-<p><code>ghci</code> の対話セッションから抜ける際は <code>:q</code> と入力します。</p>
-<h5 id="ghc-について">GHC について</h5>
-<p><code>ghci</code> は <code>Glasgow Haskell Compiler’s interactive environment</code> の意味です。 <code>GHC</code> はイギリスのグラスゴー大学で開発された <code>Haskell</code> コンパイラなのでこのような名前がついています。注意して欲しい点としては <code>Haskell == GHC</code> と理解してしまうことです。</p>
-<p><code>Haskell</code> というプログラミング言語の仕様が <code>Haskell98</code>, <code>Haskell2010</code> と続いてきたなかで実際にこの仕様に沿ったプログラムを実行できるコンパイラ (処理系) の一つが <code>GHC</code> というのが正しい理解です。他にも <code>UHC</code> や <code>LHc</code> などがあるそうです。ですので、<code>Haskell2010</code> の仕様に無い機能等は <code>GHC拡張</code> として実装されています。=&gt; <a href="https://wiki.haskell.org/Implementations">Implementations</a></p>
-<p>処理系が複数あると言っても主流 (デファクトスタンダード) は <code>GHC</code> です。なので、基本的に <code>Haskell</code> の話をする時はみんな頭の中に <code>GHC</code> がインストールされていると思いますし、実務でも <code>GHC</code> 以外を採用することは一般的に考えにくいです。</p>
-<h5 id="依存関係の追加">依存関係の追加</h5>
-<p><code>base</code> パッケージに含まれていないモジュールを <code>import</code> して使いたいというのは実際の開発においても頻繁に起こります。</p>
-<p>今回の場合は先ほどのエラーメッセージから <code>array</code> パッケージをインストールすれば良いことがわかっています。</p>
-<p><code>package.yaml</code> ファイルの <code>library</code> に <code>dependencies</code> を追記します。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml:package.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">library:</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="fu">source-dirs:</span><span class="at"> src</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="kw">-</span> array</a></code></pre></div>
-<p>そして次のコマンドでプロジェクトをビルドするだけで、<code>stack</code> は自動的に <code>array</code> パッケージ及び、その依存関係をインストールしてくれます。</p>
-<pre class="shell-session"><code>$ stack build</code></pre>
-<h5 id="ghc">GHC</h5>
-<h6 id="glasgow-haskell-compiler-users-guide">Glasgow Haskell Compiler User’s Guide</h6>
+Loaded GHCi configuration from /private/var/folders/z2/kqfdprn54qn582gkscbfncq80000gn/T/haskell-stack-ghci/59ba0db0/ghci-script</code></pre>
+<p>残念ながらコンパイルエラーになってしまいました。</p>
+<p>エラーメッセージを確認しつつ、エラーを修正していきましょう！</p>
+<h3 id="エラーメッセージの読み方">エラーメッセージの読み方</h3>
+<pre class="shell"><code>/Users/bm12/Desktop/PFAD/src/Minfree.hs:3:1: error:
+    Could not find module ‘Data.Array’</code></pre>
+<p>このエラーメッセージから以下のことがわかります。</p>
 <ul>
-<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html">8. Profiling</a></li>
+<li><strong>/Users/bm12/Desktop/PFAD/src/Minfree.hs</strong> ファイルでエラーが起きている</li>
+<li>上記ファイルの <strong>3行目</strong> の <strong>1列目</strong> 付近があやしい</li>
+<li><strong>Data.Array</strong> というモジュールが見つからなかった</li>
 </ul>
+<p>逆に、続く以下のメッセージは初心者殺しだと思います・・・。</p>
+<pre class="shell"><code>Perhaps you meant Data.Proxy (from base-4.10.1.0)</code></pre>
+<p>これは <strong>Data.Array</strong> モジュールが見つからなかったため、<strong>GHC</strong> は <strong>もしかしたら</strong> 入力ミスなんじゃないか？と親切に考えてくれます。</p>
+<p>つまり、<strong>GHC</strong> が見つけられる範囲で <strong>Data.Array</strong> に一番近いモジュール名を提示してくれます。</p>
+<p><strong>package.yaml</strong> で <strong>base</strong> パッケージを指定しているため <strong>GHC</strong> は <strong>base</strong> パッケージに含まれているモジュール名から検索を行い、一番近い <strong>Data.Proxy</strong> ではないですか？とメッセージを表示してくれています。</p>
+<p>このメッセージどおり修正しても別のコンパイルエラーになるだけです。</p>
+<p>今回のエラーの原因は <strong>Data.Array</strong> が <strong>base</strong> パッケージに存在しないことに起因しているため、正しい解決策としては <strong>Data.Array</strong> を含むパッケージを依存関係に追加する。ということになります。</p>
+<h2 id="ghci-でよく使うコマンド">ghci でよく使うコマンド</h2>
+<p><strong>ghci</strong> の対話セッションから抜ける際は <strong>:q</strong> と入力します。</p>
+<h2 id="ghc-について">GHC について</h2>
+<p><strong>ghci</strong> は <strong>Glasgow Haskell Compiler’s interactive environment</strong> の意味です。 <strong>GHC</strong> はイギリスのグラスゴー大学で開発された <strong>Haskell</strong> コンパイラなのでこのような名前がついています。注意して欲しい点としては <strong>Haskell == GHC</strong> と理解してしまうことです。</p>
+<p><strong>Haskell</strong> というプログラミング言語の仕様が <strong>Haskell98</strong>, <strong>Haskell2010</strong> と続いてきたなかで実際にこの仕様に沿ったプログラムを実行できるコンパイラ (処理系) の一つが <strong>GHC</strong> というのが正しい理解です。他にも <strong>UHC</strong> や <strong>LHc</strong> などがあるそうです。ですので、<strong>Haskell2010</strong> の仕様に無い機能等は <strong>GHC拡張</strong> として実装されています (<a href="https://wiki.haskell.org/Implementations">Implementations</a>)。</p>
+<p>処理系が複数あると言っても主流 (デファクトスタンダード) は <strong>GHC</strong> です。なので、基本的に <strong>Haskell</strong> の話をする時はみんな頭の中に <strong>GHC</strong> がインストールされていると思いますし、実際の開発において <strong>GHC</strong> 以外を採用することは一般的に考えにくいです。</p>
+<h2 id="依存関係の追加">依存関係の追加</h2>
+<p><strong>base</strong> パッケージに含まれていないモジュールを <strong>import</strong> して使いたいというのは実際の開発においても頻繁に起こります。</p>
+<p>モジュール名からパッケージ名を検索するためには <a href="http://hayoo.fh-wedel.de/">Hayoo!</a> や <a href="https://www.haskell.org/hoogle/">Hoogle</a> を使うと便利です。</p>
+<p>実際に<a href="http://hayoo.fh-wedel.de/?query=Data.Array">Hayoo! で検索</a>してみると <a href="https://www.stackage.org/haddock/lts-11.7/array-0.5.2.0/Data-Array.html">array</a> パッケージに含まれていそうだということがわかります。</p>
+<p><strong>package.yaml</strong> ファイルの <strong>dependencies</strong> に <strong>array</strong> を追記します。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode package.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">-</span> base &gt;= 4.7 &amp;&amp; &lt; 5</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">-</span> array</a></code></pre></div>
+<p>そしてプロジェクトをビルドするだけで、<strong>stack</strong> は自動的に <strong>array</strong> パッケージ及び、その依存関係をインストールしてくれます。</p>
+<p>では、もう一度対話環境で読み込んでみましょう。</p>
+<p>今度はコンパイルエラーにならず <strong>minfree</strong> 関数と <strong>minfree’</strong> 関数が利用できるようになっているはずです。</p>
+<pre class="shell"><code>$ stack repl
+...
+
+*Main Minfree&gt; minfree [0,1,3,4]
+2
+
+*Main Minfree&gt; minfree’ [0,1,3,4]
+2</code></pre>
       </article>
 
       <div class="pager">
