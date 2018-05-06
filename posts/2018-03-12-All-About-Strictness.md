@@ -797,9 +797,9 @@ data List a = Cons !a (List a) | Nil
 2. ``main = V.fromList (undefined:undefined) `seq` putStrLn "Hello World"``
 3. ``main = V.fromList undefined `seq` putStrLn "Hello World"``
 
-最初は成功します。ベクターの背骨部分は定義してあるからです。ボトムを含んでいるかどうかは無関係です。2番目は失敗します。背骨であるリスト後部が undefined なので、背骨部分は　undefined になります。最後の例も (当然) 失敗します。リスト全体が undefined だからです。
+最初は成功します。ベクターの背骨部分は定義してあるからです。ボトムを含んでいるかどうかは無関係です。2番目は失敗します。背骨であるリスト後部が undefined なので、背骨部分は undefined になります。最後の例も (当然) 失敗します。リスト全体が undefined だからです。
 
-さて、アンボックスベクターについても見てみましょう。推論の都合上、GHC を少し手助けして必要があります。なので、この部分から始めましょう:
+さて、アンボックスベクターについても見てみましょう。推論の都合上、GHC を少し手助けしてやる必要があります。なので、この部分から始めましょう:
 
 ```haskell
 import qualified Data.Vector.Unboxed as V
@@ -819,7 +819,7 @@ fromList = V.fromList
 残念ながら、私の知る限り、公開されているライブラリに正格なボックスベクターは存在しません。そのようなデータ型はスペースリーク対策に役立つと思うんですが (この記事を書くきっかけになった質問のように)。
 
 ### Set と Map
-containers と unordered-containers パッケージを見てみれば、`Strict` と `Lazy` バリアント(???) の中に、Set なんとかのようなモジュールは存在しないのに (`Data.IntSet` など)、Map なんとかは存在することに気がつくと思います (例えば、`Data.HashMap.Strict` と `Data.HashMap.Lazy`)。これは、これら全てのコンテナが spine strict で、キーに対して正格でなければならないからです。set は別に分けられた値を持たず、キーだけ持っているので、値に対して正格でなければいけません。
+containers と unordered-containers パッケージを見てみれば、`Strict` と `Lazy` バリアントの中に、Set なんとかのようなモジュールは存在しないのに (`Data.IntSet` など)、Map なんとかは存在することに気がつくと思います (例えば、`Data.HashMap.Strict` と `Data.HashMap.Lazy`)。これは、これら全てのコンテナが spine strict で、キーに対して正格でなければならないからです。set は別に分けられた値を持たず、キーだけ持っているので、値に対して正格でなければいけません。
 
 対照的に、map はキーと値の両方を持っています。map なんとかモジュールのレイジーなバリアントは spine strict で、値についてレイジーです。対して、正格なバリアントは spine と値の両方について正格です。
 
@@ -857,7 +857,7 @@ main = print $ mysum [1..1000000]
 
 `Prelude` はなんでこんな常に使うのが間違っているような関数 (`foldl`) を提供しているのでしょうか?
 
-
+![Hysterical Raisins](https://www.fpcomplete.com/static/hysterical-raisins.jpg)
 
 ただ、ほとんど全ての正格であると称している関数は、実際のところ weak head normal form に対してのみ正格であることに留意しなければいけません。前の `average` 関数の例を見てみると、まだスペースリークがあります:
 
@@ -896,6 +896,9 @@ main = print $ average [1..1000000]
 
 ### Streaming data
 One of the claims of streaming data libraries (like conduit) is that they promote constant memory usage. This may make you think that you can get away without worrying about space leaks. However, all of the comments about WHNF vs NF mentioned above apply. To prove the point, let's do average badly with conduit:
+
+### ストリーミングデータ
+conduit のようなストリーミングデータライブラリの主張の1つに、メモリ使用が定数のオーダーになる、というものがあります。この主張を聞くと、スペースリークについて心配することなく、こいつとおさらばできるという印象を受けます。が、WHNF vs NF 問題はここでも当てはまります。私の言い分を証明するために、conduit で average をひどいやり方で計算してみましょう:
 
 ```haskell
 import Conduit
