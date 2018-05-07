@@ -86,3 +86,7 @@ date: 2018/05/05
 - [GHC Developer Wiki](https://ghc.haskell.org/trac/ghc/)
 - [ghc-proposals/ghc-proposals](https://github.com/ghc-proposals/ghc-proposals)
 - [Mirror of the Glasgow Haskell Compiler](https://github.com/ghc/ghc)
+
+## スタイルガイド
+
+- [Haskell Style Guide - tweag/guides](https://github.com/tweag/guides/blob/master/style/Haskell.md)
