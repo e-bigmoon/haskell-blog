@@ -925,8 +925,8 @@ $ ./Main +RTS -s
 3. 正格なフィールドを持つカスタムデータ型
 
 
-## Chain reaction
-Look at this super strict program. It's got a special value-strict list data type. I've liberally sprinkled bang patterns and calls to `seq` throughout. I've used `$!`. How much memory do you think it uses?
+## 連鎖反応
+この超正格なプログラムをご覧ください。値に正格な特別なデータ型を持っています。私はふんだんにバンパターンを散りばめ、至るところで `seq` を呼び出しています。`$!` を使いました。メモリ使用率はどうなるでしょうか?
 
 ```haskell
 #!/usr/bin/env stack
@@ -963,16 +963,16 @@ main = do
   putStrLn string
 ```
 
-Look carefully, read the code well, and make a guess. Ready? Good.
+よーく見て、コードをよく読んで、予想して見てください。準備はいいですか? いきましょう。
 
-It uses 44kb of memory. "What?!" you may exclaim. "But this thing has to hold onto a million `Int`s in a strict linked list!" Ehh... almost. It's true, our program is going to do a hell of a lot of evaluation as soon as we force the `evens` value. And as soon as we force the `string'` value in `main`, we'll force `evens`.
+メモリ利用率は 44kb です。「なんで!?」と叫びたくなるかもしれません。「100万回正格なリンクトリストを回しているじゃないか!」ってね。惜しい。このプログラムは `evens` の値を評価を強制した直後に、死ぬほど評価を繰り返すでしょう。これは正しい。そして、`main` の中の `string'` という値の評価を強制した直後に `evens` は評価されます。
 
-However, our program never actually forces evaluation of either of these! If you look carefully, the last line in the program uses the `string` value. It never looks at `string'` or `evens`. When executing our program, GHC is only interested in performing the `IO` actions it is told to perform by the `main` function. And `main` only says something about `putStrLn string`.
+しかし、このプログラムはどちらの評価も強制することはありません! 注意深く見てみれば、プログラムの最後の行は `string` という値を使っています。`string` も `evens` も使うことはないんですね。プログラムを実行するとき、GHC は `main` 関数によって指定された `IO` アクションを実行することにのみ関心を持ちます。そして、その `main` は `putStrLn string` ということしか言っていないわけです。
 
-This is vital to understand. You can build up as many chains of evaluation using `seq` and `deepseq` as you want in your program. But ultimately, unless you force evaluation via some `IO` action of the value at the top of the chain, it will all remain an unevaluated thunk.
+このことの理解は極めて重要です。プログラム中で `seq` や `deepseq` を使い、好きなだけ評価の連鎖を組み立てることができます。しかし結局は、`IO` アクション経由で連鎖の最初に値を評価してやらないと、評価されないサンクのままなのです。
 
-**EXERCISES**
+**演習**
 
-1. Change `putStrLn string` to `putStrLn string'` and see what happens to memory usage. (Then undo that change for the other exercises.)
-2. Use a bang pattern in `main` somewhere to get the great memory usage.
-3. Add a `seq` somewhere in the `putStrLn string` line to force the greater memory usage.
+1. `putStrLn string` を `putStrLn string'` にして、メモリ使用率がどうなるか観察してください (終わったら戻してください)
+2. `main` のどこかにバンパターンを置くと、メモリ利用率がはね上がります。それはどこでしょう?
+3. `putStrLn string` の行のどこかに `seq` を置くと、メモリ利用率が大きくなります。それはどこでしょう?
