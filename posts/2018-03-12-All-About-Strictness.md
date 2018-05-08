@@ -894,9 +894,6 @@ main = print $ average [1..1000000]
 
 腕のいい水道工事業者のように、`force` はすぐにリークを止めてくれます!
 
-### Streaming data
-One of the claims of streaming data libraries (like conduit) is that they promote constant memory usage. This may make you think that you can get away without worrying about space leaks. However, all of the comments about WHNF vs NF mentioned above apply. To prove the point, let's do average badly with conduit:
-
 ### ストリーミングデータ
 conduit のようなストリーミングデータライブラリの主張の1つに、メモリ使用が定数のオーダーになる、というものがあります。この主張を聞くと、スペースリークについて心配することなく、こいつとおさらばできるという印象を受けます。が、WHNF vs NF 問題はここでも当てはまります。私の言い分を証明するために、conduit で average をひどいやり方で計算してみましょう:
 
@@ -914,18 +911,18 @@ main :: IO ()
 main = print $ runConduitPure $ enumFromToC 1 1000000 .| average
 ```
 
-You can test the memory usage of this with:
+こうやってメモリ使用率を確かめることができます:
 
 ```haskell
 $ stack --resolver lts-9.3 ghc --package conduit-combinators -- Main.hs -O2
 $ ./Main +RTS -s
 ```
 
-**EXERCISE** Make this program run in constant resident memory, by using:
+**演習** 以下のものを使って、このプログラムを定数メモリ使用率で実行してください:
 
-1. The `force` function
-2. Bang patterns
-3. A custom data type with strict fields
+1. `force` 関数
+2. バンパターン
+3. 正格なフィールドを持つカスタムデータ型
 
 
 ## Chain reaction
