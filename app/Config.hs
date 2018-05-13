@@ -4,10 +4,10 @@
 module Config where
 
 import           Data.Extensible
-import           Data.Yaml       (FromJSON, decodeFile)
+import           Data.Yaml       (FromJSON, decodeFileEither, ParseException)
 
-fromConfig :: (FromJSON a) => FilePath -> IO (Maybe a)
-fromConfig = decodeFile
+fromConfig :: (FromJSON a) => FilePath -> IO (Either ParseException a)
+fromConfig = decodeFileEither
 
 type Style = Record
   [ "headerColour"            >: Colour

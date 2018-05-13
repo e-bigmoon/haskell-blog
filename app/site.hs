@@ -19,7 +19,7 @@ import           Hakyll.Web.Sass (sassCompiler)
 main :: IO ()
 main = do
   msiteConfig <- C.fromConfig "config.yml"
-  maybe (error "Expected file 'config.yml' not found") main' msiteConfig
+  either (error "Expected file 'config.yml' not found") main' msiteConfig
 
 main' :: C.Site -> IO ()
 main' siteConfig = hakyllWith hakyllConfig $ do
