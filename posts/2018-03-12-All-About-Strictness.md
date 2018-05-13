@@ -1,6 +1,11 @@
-# 正格性のすべて
+---
+title: 正格性のすべて
+author: Michael Snoyman
+translator: pythonissam, Shinya Yamaguchi
+tags: fpcomplete, 翻訳
+---
 
-12 Sep 2017 Michael Snoyman
+Original post: [ALL ABOUT STRICTNESS](https://www.fpcomplete.com/blog/2017/09/all-about-strictness)
 
 Haskell は (もしかすると、評判のよろしくない？) 遅延言語です。遅延性の基本的なアイデアは「値は必要となったときにのみ計算される」という、たった一言で説明できるぐらい簡単なものです。しかし、この裏には様々なことが隠れています。特に、メモリと時間について効率的なコードを書こうとしたときに、必要不可欠なトピックがいくつもあります。
 
