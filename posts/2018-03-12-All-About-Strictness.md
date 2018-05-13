@@ -18,6 +18,8 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延言語�
 
 この記事は効率的な [conduit](https://haskell-lang.org/library/conduit) コードを書くためのいくつかの質問にインスパイアされたものであり、記事の最後でそれらについて本気で取り組んでみようと思います。ここで紹介する概念は一般的なものであり、ストリーミングライブラリ一般に限定されるものではありません。
 
+<!--more-->
+
 **ノート**
 この記事は現実とは逆に、遅延性を解決すべき問題として取り扱います。遅延性は有利にも不利にもなります。私たちの目標は遅延性の問題の大枠とその回避策を理解することなので、悪い点にのみ焦点を当てることにします。遅延性にはとても大きなメリットが数多くありますが、ここで取り上げることはしません。なぜなら、私の読者はコメントで遅延性の素晴らしさについて紹介している記事へのリンクをいくつも追加してくれるでしょうから :)
 
@@ -139,7 +141,7 @@ add x y = x `seq` y `seq` x + y
 
 もちろん、`let` と `in` を使ってこんなに長いコードを書くのは大変なので、大抵のプログラマは最後の行のように `seq` を中置記法で使います。
 
-**練習問題** `in part1` の代わりに `in part2` とした場合どうなるでしょうか？また `in answer` ではどうでしょうか？
+**演習** `in part1` の代わりに `in part2` とした場合どうなるでしょうか？また `in answer` ではどうでしょうか？
 
 バンパターンから `let` を使う方法への変換はどんな場合でも可能です。先ほどの `main` 関数は次のように書き換えても同じことです。
 
@@ -249,7 +251,7 @@ main = do
 - GHC は `1 + 2` と `undefined` のどちらも最初に評価してもいい。ここでは `1 + 2` を最初に評価しているものとするが、2つの評価済みの値 (`1` と `2`) を `+` に渡し、`3` を得る。全て順調。
 - しかし、`undefined` を評価しようとして、実行時例外が投げられる。
 
-**問題** 上の質問に戻りますが: `add` 関数の内部にバンパターンを持たせたら、何か変わるでしょうか? このプログラムの出力が何になるか考えてみてください:
+**質問** 上の質問に戻りますが: `add` 関数の内部にバンパターンを持たせたら、何か変わるでしょうか? このプログラムの出力が何になるか考えてみてください:
 
 ```haskell
 #!/usr/bin/env stack
@@ -621,6 +623,44 @@ instance NFData RunningTotal
 
 **演習** `rnf` と `seq` に関して、 `deepseq` を自分で定義してみてください。
 
+**解答**
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-11.2 script
+
+{-# LANGUAGE BangPatterns #-}
+import Control.DeepSeq hiding ( deepseq )
+
+data RunningTotal = RunningTotal
+  { sum :: Int
+  , count :: Int
+  }
+instance NFData RunningTotal where
+  rnf (RunningTotal sum count) = sum `deepseq` count `deepseq` ()
+
+deepseq :: NFData a => a -> b -> b
+deepseq x y = const y (const x x)
+
+printAverage :: RunningTotal -> IO ()
+printAverage (RunningTotal sum count)
+  | count == 0 = error "Need at least one value!"
+  | otherwise = print (fromIntegral sum / fromIntegral count :: Double)
+
+-- | A fold would be nicer... we'll see that later
+printListAverage :: [Int] -> IO ()
+printListAverage =
+  go (RunningTotal 0 0)
+  where
+    go rt [] = printAverage rt
+    go (RunningTotal sum count) (x:xs) =
+      let rt = RunningTotal (sum + x) (count + 1)
+       in rt `deepseq` go rt xs
+
+main :: IO ()
+main = printListAverage [1..1000000]
+```
+
 ### 正格なデータ
 これらのアプローチはうまくいきましたが、最適解ではありません。問題は、`RunningTotal` の定義に存在します。ここで私たちが考えているのは、`RunningTotal` 型の値があるとき、実は2つの `Int` が存在しているということです。しかし遅延性のせいで、`RunningTotal` の値は2つの `Int` か `Int` に評価することができるサンク、もしくは例外を投げるサンクを持つことができる、といった意味合いになってしまいます。
 
@@ -667,7 +707,7 @@ main = printListAverage [1..1000000]
 - レコード構文で値を生成するとき、正格なフィールドを忘れた時に GHC がエラーを出してくれる。正格ではないフィールドに対しては警告しか出してくれない。
 
 ### newtype の興味深いケース
-3つ、よく似たデータ型を定義して見ましょう:
+3つ、よく似たデータ型を定義してみましょう:
 
 ```haskell
 data Foo = Foo Int
@@ -695,6 +735,10 @@ newtype Baz = Baz Int
 同じように、ケース (6) でも `Baz` コンストラクタを `undefined` に適用していますが、実行時に表現されることはないので、これもまた存在しません。なので、ここでも例外が投げられることはありません。
 
 **演習** ```main = Baz undefined `seq` putStrLn "Still alive!"``` の出力はどうなるでしょうか? そうなるのはなぜでしょう?
+
+**解答**
+
+エラーを吐く。`seq` によって `Baz undefined` 、つまり `undefined` が評価されるから。
 
 ### 便利な演算子と関数
 すでにお気づきかもしれませんが、`seq` と `deepseq` をあらゆるところで使うのは不都合なことがあります。バンパターンも助けにはなりますが、評価を強制する方法は他にもあります。おそらく、最も普通に使われているのは `$!` 演算子でしょう。例えば、以下のような感じです:
@@ -735,6 +779,13 @@ go (x:xs) (total, count) = go xs $! force (total + x, count + 1)
 ```
 
 **演習** これらの便利な関数と演算子を、`seq` と `deepseq` を使って自分で定義してみましょう。
+
+**解答**
+
+```haskell
+force :: (NFData a) => a -> a
+force x = x `deepseq` x
+```
 
 ## データ構造
 はい、以上が一番複雑な部分でした。もしもそれら全てを理解していたら、残りは自然に理解できて、より深く理解するための用語を少し導入するだけになります。
@@ -826,6 +877,19 @@ containers と unordered-containers パッケージを見てみれば、`Strict`
 
 **演習** `Data.Sequence.Seq` データ型を調べて、lazy、spine strict、value strict のいずれかに分類してください。
 
+**解答**
+
+```haskell
+#!/usr/bin/env stack
+-- stack script --resolver lts-11.2 --package containers
+
+import Data.Sequence (fromList)
+
+main = fromList [0,0,0,undefined,0,0] `seq` putStrLn "Alive!"
+```
+
+これを実行すると `Alive!` と表示されるので、spine strict
+
 ## 関数の引数
 ある関数がある引数に渡されたボトムの値に適用されるとき、結果がボトムになるのなら、その関数は引数の1つに対して正格だと考えられます。上の例で見たように、`Int` に対して `+` を適用するときはどちらの引数に対しても正格ですが、`undefined + x` と `x + undefined` はボトムです。
 
@@ -842,6 +906,14 @@ mysum = foldl (+) 0
 
 main :: IO ()
 main = print $ mysum [1..1000000]
+```
+
+```plain
+     169,311,296 bytes allocated in the heap
+     230,806,408 bytes copied during GC
+      53,397,048 bytes maximum residency (8 sample(s))
+         903,624 bytes maximum slop
+             106 MB total memory in use (0 MB lost due to fragmentation)
 ```
 
 これは限りなく正解に近いですが、53mb も resident memory を使っています! 答えはチョンっとつけて正格な左畳み込み `foldl` 関数を使うことです。
@@ -876,6 +948,14 @@ main :: IO ()
 main = print $ average [1..1000000]
 ```
 
+```plain
+     306,654,600 bytes allocated in the heap
+     390,431,392 bytes copied during GC
+      88,082,496 bytes maximum residency (10 sample(s))
+       1,160,496 bytes maximum slop
+             181 MB total memory in use (0 MB lost due to fragmentation)
+```
+
 私のアドバイスは、正格なフィールドを持つヘルパーデータ型を使うことです。しかしあなたはそうしたくないかもしれませんし、normal form に評価するような `foldl'` がないことにイライラしているかもしれません。そんなあなたに朗報です。`force` を使うだけで、簡単に WHNF fold を NF fold にアップグレードすることができます:
 
 ```haskell
@@ -891,6 +971,14 @@ average =
 
 main :: IO ()
 main = print $ average [1..1000000]
+```
+
+```plain
+     240,102,848 bytes allocated in the heap
+          54,552 bytes copied during GC
+          44,384 bytes maximum residency (2 sample(s))
+          21,152 bytes maximum slop
+               1 MB total memory in use (0 MB lost due to fragmentation)
 ```
 
 腕のいい水道工事業者のように、`force` はすぐにリークを止めてくれます!
@@ -917,6 +1005,14 @@ main = print $ runConduitPure $ enumFromToC 1 1000000 .| average
 ```haskell
 $ stack --resolver lts-9.3 ghc --package conduit-combinators -- Main.hs -O2
 $ ./Main +RTS -s
+```
+
+```plain
+     265,361,840 bytes allocated in the heap
+     205,193,384 bytes copied during GC
+      50,201,912 bytes maximum residency (8 sample(s))
+         686,792 bytes maximum slop
+              98 MB total memory in use (0 MB lost due to fragmentation)
 ```
 
 **演習** 以下のものを使って、このプログラムを定数メモリ使用率で実行してください:
@@ -966,6 +1062,14 @@ main = do
 
 よーく見て、コードをよく読んで、予想して見てください。準備はいいですか? いきましょう。
 
+```plain
+          51,912 bytes allocated in the heap
+           3,408 bytes copied during GC
+          44,504 bytes maximum residency (1 sample(s))
+          25,128 bytes maximum slop
+               2 MB total memory in use (0 MB lost due to fragmentation)
+```
+
 メモリ利用率は 44kb です。「なんで!?」と叫びたくなるかもしれません。「100万回正格なリンクトリストを回しているじゃないか!」ってね。惜しい。このプログラムは `evens` の値の評価を強制した直後に、死ぬほど評価を繰り返すでしょう。これは正しい。そして、`main` の中の `string'` という値の評価を強制した直後に `evens` は評価されます。
 
 しかし、このプログラムはどちらの評価も強制することはありません! 注意深く見てみれば、プログラムの最後の行は `string` という値を使っています。`string` も `evens` も使うことはないんですね。プログラムを実行するとき、GHC は `main` 関数によって指定された `IO` アクションを実行することにのみ関心を持ちます。そして、その `main` は `putStrLn string` ということしか言っていないわけです。
@@ -977,6 +1081,12 @@ main = do
 1. `putStrLn string` を `putStrLn string'` にして、メモリ使用率がどうなるか観察してください (終わったら戻してください)
 2. `main` のどこかにバンパターンを置くと、メモリ利用率がはね上がります。それはどこでしょう?
 3. `putStrLn string` の行のどこかに `seq` を置くと、メモリ利用率が大きくなります。それはどこでしょう?
+
+**解答**
+
+1. 略
+2. `string'` の前
+3. 略
 
 ## もっと先に
 Sebastian Graf は[このブログ記事を分析する](http://fixpt.de/blog/2017-12-04-strictness-analysis-part-1.html)というタイトルで、素晴らしいブログ記事を書いています。このブログ記事は、正格性のケース毎に GHC がどのように解析、最適化をしているのかというところまでもっと踏み込んだ解説をしています。作者である彼の言葉を引用します。
