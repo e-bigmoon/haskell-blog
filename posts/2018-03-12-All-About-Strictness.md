@@ -423,8 +423,6 @@ main = do
   putStrLn $ undefined `seqMaybe` "Goodbye!"
 ```
 
-Let's up the ante again. What do you think this program will print?
-
 もう一度掛け金を上げてみましょう。このプログラムは何を表示すると思いますか?
 
 ```haskell
@@ -671,8 +669,6 @@ data Foo = Foo Int
 data Bar = Bar !Int
 newtype Baz = Baz Int
 ```
-
-Let's play a game, and guess the output of the following potential bodies for `main`. Try to work through each case in your head before reading the explanation below.
 
 ゲームをしましょう。以下のコードを `main` 関数に置いたときの出力を推測してみてください。下にある説明を読む前に、それぞれのケースを頭の中で考えてくださいね。
 
@@ -965,7 +961,7 @@ main = do
 
 よーく見て、コードをよく読んで、予想して見てください。準備はいいですか? いきましょう。
 
-メモリ利用率は 44kb です。「なんで!?」と叫びたくなるかもしれません。「100万回正格なリンクトリストを回しているじゃないか!」ってね。惜しい。このプログラムは `evens` の値を評価を強制した直後に、死ぬほど評価を繰り返すでしょう。これは正しい。そして、`main` の中の `string'` という値の評価を強制した直後に `evens` は評価されます。
+メモリ利用率は 44kb です。「なんで!?」と叫びたくなるかもしれません。「100万回正格なリンクトリストを回しているじゃないか!」ってね。惜しい。このプログラムは `evens` の値の評価を強制した直後に、死ぬほど評価を繰り返すでしょう。これは正しい。そして、`main` の中の `string'` という値の評価を強制した直後に `evens` は評価されます。
 
 しかし、このプログラムはどちらの評価も強制することはありません! 注意深く見てみれば、プログラムの最後の行は `string` という値を使っています。`string` も `evens` も使うことはないんですね。プログラムを実行するとき、GHC は `main` 関数によって指定された `IO` アクションを実行することにのみ関心を持ちます。そして、その `main` は `putStrLn string` ということしか言っていないわけです。
 
