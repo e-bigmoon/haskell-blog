@@ -14,6 +14,7 @@ date: 2018/05/05
 - [script interpreter + stack script でスクリプティング！](tips/script-interpreter.html)
 - [カスタムスナップショットの紹介](/posts/2017/12-23-stack161.html)
 - [config.yaml のよくある設定](tips/config-yaml.html)
+- [推奨 ghc-options](tips/recommended-ghc-options.html)
 
 ## HLint
 
