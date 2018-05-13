@@ -30,6 +30,33 @@ jobs:
             curl -sSL https://get.haskellstack.org/ | sh -s - -f
             stack build
             stack exec site rebuild
+      - run:
+          name: Run stack test
+          command: stack --no-terminal test
+      - run:
+          name: Run stack test --pedantic
+          command: |
+            stack clean
+            stack --no-terminal test --pedantic
+      - run:
+          name: Run HLint
+          command: |
+            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version
+            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
+      - run:
+          name: Run stack exec site rebuild
+          command: stack exec site rebuild
+      - run:
+          name: deploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              git clone --branch=site git@github.com:e-bigmoon/haskell-blog.git
+              cd haskell-blog
+              cp -r ../_site/ .
+              git add -A
+              git commit -m "by Circle CI (build: ${CIRCLE_BUILD_NUM})) : ${CIRCLE_BUILD_URL}"
+              git push origin site
+            fi
       - store_artifacts:
           path: _site
       - run:
