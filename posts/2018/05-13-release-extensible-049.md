@@ -22,12 +22,19 @@ BIG MOON では、業務に必要なツールを自社開発しており、プ�
 
 この wiki もまた **Haskell** で作られており [apus](https://github.com/fumieval/apus) という名前で公開されています。
 
+<<<<<<< HEAD
 今回の extensible-0.4.9 の[アップデート](https://github.com/fumieval/extensible/blob/v0.4.9/CHANGELOG.md)は、攻略wiki のコンテンツを拡充していく中で出てきたアイデアや、関数などがいくつか追加されました。
 
 今回はその内容について簡単な例とともに解説を行いたいと思います。
 
 - [Hackage extensible-0.4.9](https://hackage.haskell.org/package/extensible)
 
+=======
+今回の extensible-0.4.9 の[アップデート](https://github.com/fumieval/extensible/blob/master/CHANGELOG.md)は、攻略wiki のコンテンツを拡充していく中で出てきたアイデアや、関数などがいくつか追加されました。
+
+今回はその内容について簡単な例とともに解説を行いたいと思います。
+
+>>>>>>> d3e6802d6f58ff6666d5e3d0713227aca8f4ec38
 <!--more-->
 
 ## アップデート内容
@@ -60,8 +67,13 @@ debug = hfoldMapFor poly (print . fork id typeOf . runIdentity . getField)
 
 ```hs
 >>> debug person
+<<<<<<< HEAD
 ("bigmoon",[Char])
 (10,Int)
+=======
+("\"bigmoon\"",[Char])
+("10",Int)
+>>>>>>> d3e6802d6f58ff6666d5e3d0713227aca8f4ec38
 ```
 
 [完全なコード](https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/And.hs)
@@ -93,7 +105,11 @@ keys xs = henumerateFor (Proxy @ (KeyIs KnownSymbol)) xs ((:) . stringAssocKey) 
 
 prettyprinter パッケージについては[過去のブログ記事](https://haskell.e-bigmoon.com/posts/2018/03-30-prettyprinter.html)で少し紹介しているので、興味ある方はそちらをご確認ください。
 
+<<<<<<< HEAD
 以下のような出力になるそうです。
+=======
+まだ `master` にはマージされていないようですが、以下のようになるとのことです。
+>>>>>>> d3e6802d6f58ff6666d5e3d0713227aca8f4ec38
 
 ```hs
 [ name: DA-192H
@@ -131,12 +147,20 @@ config = $$(Yaml.TH.decodeFile "config.yaml")
 
 [hmapWithIndex](https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hmapWithIndex) の多相バージョンです。
 
+<<<<<<< HEAD
 例えば以下のようにして拡張可能レコードから **aeson** パッケージの [Value](https://www.stackage.org/haddock/lts-11.9/aeson-1.2.4.0/Data-Aeson.html#t:Value) をフィールドとして持つ拡張可能レコードに変換できます。
+=======
+例えば以下のようにして拡張可能レコードから **aeson** パッケージの [Value](https://www.stackage.org/haddock/lts-11.9/aeson-1.2.4.0/Data-Aeson.html#t:Value) をラッパーとして持つ拡張可能レコードに変換できます。
+>>>>>>> d3e6802d6f58ff6666d5e3d0713227aca8f4ec38
 
 ```hs
 toJSONRecord :: Forall (ValueIs ToJSON) xs => Record xs -> RecordOf (Const' Value) xs
 toJSONRecord = hmapWithIndexFor poly $ \m ->
+<<<<<<< HEAD
     Field . Const' . toJSON . view _Wrapper
+=======
+    Field . Const' . toJSON . runIdentity . getField
+>>>>>>> d3e6802d6f58ff6666d5e3d0713227aca8f4ec38
   where poly = Proxy @ (ValueIs ToJSON)
 ```
 
