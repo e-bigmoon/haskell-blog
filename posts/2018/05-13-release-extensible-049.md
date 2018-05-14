@@ -32,31 +32,78 @@ BIG MOON では、業務に必要なツールを自社開発しており、プ�
 
 ## アップデート内容
 
+```hs
+type Person = Record
+  '[ "name" :> String
+   , "age"  :> Int
+   ]
+
+person :: Person
+person = #name @= "bigmoon"
+      <: #age  @= 10
+      <: nil
+```
+
+以降の例では、上記の `Person` 型と `person` 変数が宣言されているものとします。
+
+---
+
 - MonadIO のインスタンスを一般化しました。
 
 ベースモナドとして **ResourceT IO** などが使えるようになりました。
+
+今までは `Associate "IO" (ResourceT IO)` のように書けませんでしたが、こんな感じのコードが書けるようになりました。また、[ResourceT IO](https://www.stackage.org/haddock/lts-11.9/resourcet-1.2.1/Control-Monad-Trans-Resource.html#t:ResourceT) 以外にも [MonadIO](https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Control-Monad-IO-Class.html#t:MonadIO) のインスタンスであれば何でも指定可能です。
+
+```hs
+type ExampleM = Eff '[ "IO" >: ResourceT IO ]
+
+main :: IO ()
+main = runResourceT . retractEff . runConduit $
+  bracketP (openFile "data.csv" ReadMode) hClose $ \handle ->
+    (sourceHandle handle :: ConduitT i ByteString ExampleM ()) .| stdoutC
+
+instance (Associate "IO" (ResourceT IO) xs) => MonadResource (Eff xs) where
+  liftResourceT = liftEff (Proxy @ "IO")
+```
+
+ただ単に `csv` ファイルを読み込んで表示するだけの例です。
+
+```csv
+-- data.csv
+"bigmoon", 10, "watch"
+"wado", 100, art
+
+```
+
+```hs
+*Main> main
+"bigmoon", 10, "watch"
+"wado", 100, art
+```
+
+[完全なコード](https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/MonadIO.hs)
 
 ---
 
 - 新しい制約コンビネータ [And](https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Dictionary.html#t:And) を追加しました。
 
-このコンビネータを利用することで **Forall** の制約を二つ以上指定することができます。
+このコンビネータを利用することで [Forall](https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#t:Forall) の制約を二つ以上指定することができます。
 
 ```hs
 And :: (k -> Constraint) -> (k -> Constraint) -> k -> Constraint
 ```
 
-以下は簡単な例ですが、拡張可能レコードの値が **Show** かつ [Typeable](https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Data-Typeable.html) の両方を満たすという制約で [hfoldMapFor](https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hfoldMapFor) 関数を使うことができます。
+以下は拡張可能レコードの値が **Show** かつ [Typeable](https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Data-Typeable.html) の両方を満たすという制約で [hfoldMapFor](https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hfoldMapFor) 関数を使う例です。
 
 ```hs
 debug :: Forall (ValueIs (And Show Typeable)) xs => Record xs -> IO ()
-debug = hfoldMapFor poly (print . fork id typeOf . runIdentity . getField)
+debug = hfoldMapFor c (print . fork id typeOf . view _Wrapper)
   where
-    poly = Proxy @ (ValueIs (And Show Typeable))
+    c = Proxy @ (ValueIs (And Show Typeable))
     fork f g x = (f x, g x)
 ```
 
-この関数は与えられた拡張可能レコードの **値** と **型** を表示することができます。
+例として定義した **debug** 関数は与えられた拡張可能レコードの **値** と **型** を表示することができます。
 
 ```hs
 >>> debug person
@@ -85,6 +132,16 @@ keys xs = henumerateFor (Proxy @ (KeyIs KnownSymbol)) xs ((:) . stringAssocKey) 
 
 [IsString](https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Data-String.html#t:IsString) のインスタンスであれば何でも良いので、**String** に限らず **Text**, **ByteString** などを返すことができます。
 
+```hs
+*Main> mapM_ putStrLn $ keys person
+name
+age
+
+*Main> mapM_ Data.Text.IO.putStrLn $ keys person
+name
+age
+```
+
 [完全なコード](https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/StringAssocKey.hs)
 
 ---
@@ -112,6 +169,14 @@ prettyprinter パッケージについては[過去のブログ記事](https://h
 
 現状は `prettyprinter` 側のバグ？で上手く表示されていないようですが、そのうち直ると思います。
 
+```hs
+*Main> pretty person
+{ name: bigmoon; age: 10
+
+*Main> pretty [person, person]
+[{ name: bigmoon; age: 10 }, { name: bigmoon; age: 10 }]
+```
+
 [完全なコード](https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/Pretty.hs)
 
 ---
@@ -123,6 +188,19 @@ prettyprinter パッケージについては[過去のブログ記事](https://h
 ```hs
 config :: Config
 config = $$(Yaml.TH.decodeFile "config.yaml")
+```
+
+実行例:
+
+```yaml
+# config.yaml
+name: "bigmoon"
+age: 10
+```
+
+```hs
+*Main> config
+name @= "bigmoon" <: age @= 10 <: nil
 ```
 
 [完全なコード](https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/Lift.hs)
@@ -137,9 +215,19 @@ config = $$(Yaml.TH.decodeFile "config.yaml")
 
 ```hs
 toJSONRecord :: Forall (ValueIs ToJSON) xs => Record xs -> RecordOf (Const' Value) xs
-toJSONRecord = hmapWithIndexFor poly $ \m ->
+toJSONRecord = hmapWithIndexFor c $ \m ->
     Field . Const' . toJSON . view _Wrapper
-  where poly = Proxy @ (ValueIs ToJSON)
+  where c = Proxy @ (ValueIs ToJSON)
+```
+
+実行例:
+
+```hs
+*Main> person
+name @= "bigmoon" <: age @= 10 <: nil
+
+*Main> toJSONRecord person
+name @= String "bigmoon" <: age @= Number 10.0 <: nil
 ```
 
 [完全なコード](https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/HmapWithIndexFor.hs)
@@ -151,3 +239,9 @@ toJSONRecord = hmapWithIndexFor poly $ \m ->
 ---
 
 - [Wrapper](https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Wrapper.html#t:Wrapper) に Either e のインスタンスを追加しました。
+
+## まとめ
+
+**extensible** パッケージは初見では全く使い方がわからないレベルで難しいですが、実際に使ってみると、今までリアルワールド Haskell っぽいコードだね。仕方ないね。と妥協していた部分がとても綺麗に書けるようになります。
+
+[extensible 攻略Wiki](https://wiki.hask.moe/) の内容はこれからもっと充実して行くので、気になる人はチェックしてみてください！
