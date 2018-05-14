@@ -54,6 +54,8 @@ person = #name @= "bigmoon"
 
 今までは `Associate "IO" (ResourceT IO)` のように書けませんでしたが、こんな感じのコードが書けるようになりました。また、[ResourceT IO](https://www.stackage.org/haddock/lts-11.9/resourcet-1.2.1/Control-Monad-Trans-Resource.html#t:ResourceT) 以外にも [MonadIO](https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Control-Monad-IO-Class.html#t:MonadIO) のインスタンスであれば何でも指定可能です。
 
+ここでは [MonadResource](https://www.stackage.org/haddock/lts-11.9/resourcet-1.2.1/Control-Monad-Trans-Resource.html#t:MonadResource) のインスタンスを自分で定義しましたが、次回リリース (0.4.10) でライブラリに追加される予定？です。(たぶん)
+
 ```hs
 type ExampleM = Eff '[ "IO" >: ResourceT IO ]
 
