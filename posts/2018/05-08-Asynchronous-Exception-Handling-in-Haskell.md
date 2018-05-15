@@ -49,3 +49,44 @@ badRace ioa iob = do
   killThread tidb
   return res
 ```
+
+# モチベーションの例 (???)
+例外の一番複雑な部分は、希少なリソース (???) や失敗の可能性があるアロケーションです。良い例がファイルの処理です。それには以下の処理が必要です:
+
+* ファイルハンドルを開く。これは失敗しうる
+* ファイルハンドルを扱う。これも失敗しうる
+* ファイルディスクリプタは希少なリソースなので、ファイルハンドルを閉じる (???)
+
+## 純粋なコード
+例外は純粋なコードで受け取ることはできません。これは設計上こうなっているもので、このトピックで扱うのが最適でしょう。正しい例外処理はリソースのアロケーションとその後始末です (???)。純粋なコードは希少なリソースを確保することはできませんし、それを始末することもできません。そのため、例外を処理することはできません。
+
+ただ、他の全てのルールのように、これにも例外はあります:
+
+* 純粋なコードから投げることはできる
+* アロケーションに `unsafePerformIO` を使うことができる
+* 純粋なコードから、非明示的にメモリにアクセスすることができる
+  * 矛盾ではない! メモリを希少なリソースとはみなさないので
+* 本当に必要なら、またも `unsafePerformIO` 経由で例外を捕らえることができる。
+
+しかし大部分で、私たちは純粋ではないコード、特に IO モナドに集中することにします。後で脱線して、トランスフォーマーにも言及することにします (???)。
+
+# 例外が存在しない国
+実行時例外が存在しない理論上の Haskell で、ファイルを扱ってみましょう。全ての失敗するケースを、具体的な返り値ごとに表現する必要があります。
+
+```haskell
+openFile :: FilePath -> IOMode -> IO (Either IOException Handle)
+hClose :: Handle -> IO () -- こいつは失敗できないと考えて
+usesFileHandle :: Handle -> IO (Either IOException MyResult)
+
+myFunc :: FilePath -> IO (Either IOException MyResult)
+myFunc fp = do
+  ehandle <- openFile fp ReadMode
+  case ehandle of
+    Left e -> return (Left e)
+    Right handle -> do
+      eres <- usesFileHandle handle
+      hClose handle
+      return eres
+```
+
+型システムのせいで、それぞれの関数が成功したのか失敗したのか、具体的に確認することを強制されます。`usesFileHandle` のケースでは、本質的に失敗を無視して、それを関数の呼び出し元へ渡します。そして `hClose` が呼ばれることを保証しています。
