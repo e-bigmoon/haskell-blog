@@ -183,3 +183,68 @@ withFile fp mode = bracket (openFile fp mode) hClose
 **質問** `cleanup` が例外を投げると何が起こるでしょうか? 何が起こるようにするべきでしょうか?
 
 **解答** 無視される。が、この場合 `throwIO` で例外を投げるようにすべき。
+
+# 拡張可能な例外
+`catch` と `throwIO` に使った型シグネチャは、実際には嘘です。私たちは全ての例外が `IOException` の型を持つものとして話を進めてきました。が、実際には、GHC のおかげで任意の型を作って例外として投げることができます。背景にある考えは Java と同じで、クラスのヒエラルキーを作るようなものです。
+
+関連する定義を見てみましょう:
+
+```haskell
+data SomeException = forall e . Exception e => SomeException e
+
+class (Typeable e, Show e) => Exception e where
+  toException   :: e -> SomeException
+  fromException :: SomeException -> Maybe e
+
+throwIO :: Exception e => e -> IO a
+try :: Exception e => IO a -> IO (Either e a)
+```
+
+`Exception` 型クラスは、値を `SomeException` に変換する方法を定義しています。そして `SomeException` から与えられた型に変換する方法も定義しています。`throwIO` はその型クラスのインスタンスである任意の型について処理できるように一般化されています。`Show` インスタンスは例外を表示するためのもので、`Typeable` は実行時キャスティング (???) のためのものです。
+
+例外のデータ型の簡単な例です:
+
+```haskell
+data InvalidInput = InvalidInput String
+  deriving (Show, Typeable)
+instance Exception InvalidInput where
+  toException ii = SomeException ii
+  fromException (SomeException e) = cast e -- Typeable にある
+```
+
+しかし、`toException` と `fromException` のどちらも上のコードと同じようなデフォルト実装を持っているので、(???) ただこのように書くことができます:
+
+```haskell
+instance Exception InvalidInput
+```
+
+例外のヒエラルキーを作ることもできます。例えば、
+
+```haskell
+{-# LANGUAGE ExistentialQuantification #-}
+import Control.Exception
+import Data.Typeable
+
+data MyAppException
+  = InvalidInput String
+  | SomethingElse SomeException
+  deriving (Show, Typeable)
+instance Exception MyAppException
+
+data SubException = NetworkFailure String
+  deriving (Show, Typeable)
+instance Exception SubException where
+  toException = toException . SomethingElse . SomeException
+  fromException se = do
+    SomethingElse (SomeException e) <- fromException se
+    cast e
+
+main :: IO ()
+main = do
+  e <- try $ throwIO $ NetworkFailure "Hello there"
+  print (e :: Either SomeException ())
+```
+
+オブジェクト指向の用語では、`SubException` は `MyAppException` の子クラスである、と表現します。オブジェクト指向が採用されているのは気に食わないかもしれませんが、これは GHC Haskell の例外のメカニズムです。そして、これは後々非同期例外を扱う上で、極めて重要になります。ここで議論しているのはそういう訳です。
+
+さて、別の話題に進みましょう!
