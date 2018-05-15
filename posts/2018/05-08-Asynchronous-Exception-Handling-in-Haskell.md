@@ -90,3 +90,96 @@ myFunc fp = do
 ```
 
 型システムのせいで、それぞれの関数が成功したのか失敗したのか、具体的に確認することを強制されます。`usesFileHandle` のケースでは、本質的に失敗を無視して、それを関数の呼び出し元へ渡します。そして `hClose` が呼ばれることを保証しています。
+
+# LAND OF SYNCHYRONOUS EXCEPTIONS
+Now let's uses a variant of Haskell which has synchronous exceptions. We'll get into exception hierarchy stuff later, but for now we'll just assume that all exceptions are IOExceptions. We add in two new primitive functions:
+
+# 同期例外の国
+さて、同期例外ができる Haskell のバリアントを使ってみましょう。例外のヒエラルキー辺りの話は後でするので、全ての例外が `IOException` だと仮定して話を進めましょう。2つのプリミティブ関数を導入します:
+
+```haskell
+throwIO :: IOException -> IO a
+try :: IO a -> IO (Either IOException a)
+```
+
+These functions throw synchronous exceptions. We'll define synchronous exceptions as:
+
+**Synchronous exceptions are exceptions which are generated directly from the IO actions you are calling.**
+
+Let's do the simplest transformation from our code above:
+
+これらの関数は同期例外を投げます。ここでは同期例外を以下のように定義します:
+
+**同期例外とは、呼んでいる `IO` アクションから直接生成される例外のことである。**
+
+さっきのコードを一番シンプルにいじってみましょう:
+
+```haskell
+openFile :: FilePath -> IOMode -> IO Handle
+hClose :: Handle -> IO ()
+usesFileHandle :: Handle -> IO MyResult
+
+myFunc :: FilePath -> IO MyResult
+myFunc fp = do
+  handle <- openFile fp ReadMode
+  res <- usesFileHandle handle
+  hClose handle
+  return res
+```
+
+コードは確実に短くなっていて、型もより読みやすくなりました。変わったものとしては:
+
+* 型シグネチャを見て、`openFile` や `hClose` が失敗するのかどうか判別できなくなった (???)
+* `openFile` の結果をパターンマッチする必要がなくなった。これは自動的に処理される
+
+不幸な話ですが、このコードにはバグがあります! もしも `usesFileHandle` が例外を投げたらどうなるでしょうか。`hClose` が呼ばれることはありません。これを `try` と `throwIO` を使って直せるかやってみましょう:
+
+```haskell
+myFunc :: FilePath -> IO MyResult
+myFunc fp = do
+  handle <- openFile fp ReadMode
+  eres <- try (usesFileHandle handle)
+  hClose handle
+  case eres of
+    Left e -> throwIO e
+    Right res -> return res
+```
+
+私たちのコードは、少なくとも同期例外の世界において、例外に対して安全になりました。
+
+しかし残念なことに、これはすごく良い方法というわけではありません。私たちは人民に対して、ファイルを扱う度に同じことを考えさせたくありません。そのため、ヘルパー関数でこのパターンを捉えることにします:
+
+```haskell
+withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+withFile fp mode inner = do
+  handle <- openFile fp mode
+  eres <- try (inner handle)
+  hClose handle
+  case eres of
+    Left e -> throwIO e
+    Right res -> return res
+
+myFunc :: FilePath -> IO MyResult
+myFunc fp = withFile fp ReadMode usesFileHandle
+```
+
+**通常の原則** アロケーションをするだけ、掃除をするだけの関数の使用をできる限り避ける。その代わりに、どちらの操作も保証するヘルパー関数を使う。
+
+しかし、`withFile` でさえもアロケーションと掃除のどちらのアクションもするような何かに一般化することができます。これを `bracket` と呼ぶことにします。そして同期のみの世界では、こんな感じになるでしょう:
+
+```haskell
+bracket :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
+bracket allocate cleanup inner = do
+  a <- allocate
+  ec <- try (inner a)
+  _ignored <- cleanup a
+  case ec of
+    Left e -> throwIO e
+    Right c -> return c
+
+withFile fp mode = bracket (openFile fp mode) hClose
+```
+
+**質問** `cleanup` が例外を投げると何が起こるでしょうか? 何が起こるようにするべきでしょうか?
+
+**解答** 無視される。が、この場合 `throwIO` で例外を投げるようにすべき。
