@@ -16,6 +16,7 @@ date: 2018/05/05
 - [config.yaml のよくある設定](tips/config-yaml.html)
 - [ghc-options の推奨設定](tips/recommended-ghc-options.html)
 - [HDD の容量が少なくなってきた時](tips/hdd-space.html)
+- [最小のプロジェクト](tips/minimal-stack-proj.html)
 
 ## HLint
 
