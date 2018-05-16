@@ -17,6 +17,7 @@ date: 2018/05/05
 - [ghc-options の推奨設定](tips/recommended-ghc-options.html)
 - [HDD の容量が少なくなってきた時](tips/hdd-space.html)
 - [最小のプロジェクト](tips/minimal-stack-proj.html)
+- [ファイル単位で ghc-options を指定する方法](tips/enable-ghc-options-by-file.html)
 
 ## HLint
 
