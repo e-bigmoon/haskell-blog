@@ -15,6 +15,7 @@ date: 2018/05/05
 - [カスタムスナップショットの紹介](/posts/2017/12-23-stack161.html)
 - [config.yaml のよくある設定](tips/config-yaml.html)
 - [ghc-options の推奨設定](tips/recommended-ghc-options.html)
+- [HDD の容量が少なくなってきた時](tips/hdd-space.html)
 
 ## HLint
 
