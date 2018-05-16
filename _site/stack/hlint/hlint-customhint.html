@@ -150,7 +150,7 @@
       <div class="post-heading">
         <h1 class="post-title">HLint のカスタムヒント</h1>
         
-        <span>最終更新日: 2018/02/12</span>
+        <span>最終更新日: 2018/05/16</span>
         
       </div>
 
@@ -222,14 +222,14 @@
 <a class="sourceLine" id="cb2-58" data-line-number="58"></a>
 <a class="sourceLine" id="cb2-59" data-line-number="59"><span class="co"># To generate a suitable file for HLint do:</span></a>
 <a class="sourceLine" id="cb2-60" data-line-number="60"><span class="co"># $ hlint --default &gt; .hlint.yaml</span></a></code></pre></div>
-<p><code>HLint</code> はデフォルトヒントが記述されている <code>hlint.yaml</code> と、カスタムヒントが記述されている <code>.hlint.yaml</code> の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、<code>.hlint.yaml</code> に記述していくことになります。</p>
+<p><strong>HLint</strong> はデフォルトヒントが記述されている <code>hlint.yaml</code> と、カスタムヒントが記述されている <code>.hlint.yaml</code> の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、<code>.hlint.yaml</code> に記述していくことになります。</p>
 <h2 id="カスタムヒントの追加">カスタムヒントの追加</h2>
-<p>ここでは説明のため以下のような <code>tshow</code> という関数があるとしましょう。この関数は <code>show :: Show a =&gt; a -&gt; String</code> の <code>Text</code> バージョンです。</p>
+<p>ここでは説明のため以下のような <strong>tshow</strong> という関数があるとしましょう。この関数は <code>show :: Show a =&gt; a -&gt; String</code> の <strong>Text</strong> バージョンです。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">tshow <span class="fu">=</span> pack <span class="fu">.</span> show</a></code></pre></div>
-<p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <code>tshow</code> に直すようにヒントを出させることです。</p>
+<p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <strong>tshow</strong> に直すようにヒントを出させることです。</p>
 <p>まだヒントを追加していないため、当然ながら現時点では <code>pack . show</code> というコードが使われていたとしても何も起こりません。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
@@ -243,7 +243,7 @@ No hints</code></pre>
 <p>それでは <code>.hlint.yaml</code> に <code>tshow = pack . show</code> を検出するためのヒントを追記しましょう。</p>
 <p>以下の1行を追記するだけです。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">-</span> <span class="fu">error:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs:</span><span class="at"> pack (show x)</span><span class="kw">,</span> <span class="fu">rhs:</span><span class="at"> tshow x</span><span class="kw">}</span></a></code></pre></div>
-<p><code>lhs</code>, <code>rhs</code> はそれぞれ <code>Left Hand Side (左辺)</code>, <code>Right Hand Side (右辺)</code> の略です。またヒントのレベルは <code>error</code> 以外にも <code>warm</code>, <code>suggest (hint キーワードはただのエイリアスです)</code> も指定できるため、好きなレベルを指定しましょう。(ヒントレベルの使い分けについては <a href="https://github.com/ndmitchell/hlint#what-is-the-difference-between-errorwarningsuggestion">What is the difference between error/warning/suggestion?</a> をご参照ください)</p>
+<p><strong>lhs</strong>, <strong>rhs</strong> はそれぞれ <strong>Left Hand Side (左辺)</strong>, <strong>Right Hand Side (右辺)</strong> の略です。またヒントのレベルは <strong>error</strong> 以外にも <strong>warm</strong>, <strong>suggest</strong> (<strong>hint</strong> キーワードはただのエイリアスです) も指定できるため、好きなレベルを指定しましょう。(ヒントレベルの使い分けについては <a href="https://github.com/ndmitchell/hlint#what-is-the-difference-between-errorwarningsuggestion">What is the difference between error/warning/suggestion?</a> をご参照ください)</p>
 <p>では、実行してみましょう。</p>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:14:13: Error: Use tshow
@@ -253,8 +253,8 @@ Why not:
   tshow
 
 1 hint</code></pre>
-<p>無事に <code>Error</code> として <code>tshow</code> のためのヒントが表示されました！</p>
-<p>ヒントの修正方法は、先程定義した <code>intToText</code> 関数の実装をヒント通りに書き換えるだけです。</p>
+<p>無事に <strong>Error</strong> として <strong>tshow</strong> のためのヒントが表示されました！</p>
+<p>ヒントの修正方法は、先程定義した <strong>intToText</strong> 関数の実装をヒント通りに書き換えるだけです。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">intToText <span class="fu">=</span> tshow</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
@@ -281,8 +281,14 @@ Why not:
   tshow
 
 1 hint</code></pre>
-<p><code>intToText</code> と <code>intToText2</code> どちらも検出して欲しいですが <code>intToText</code> しか検出できていません。</p>
-<p><code>HLint</code> では自動的に η-簡約 (eta-reduction) が行われるため <code>error: {lhs: pack (show x), rhs: tshow x}</code> というように定義しておいた方が良いでしょう。</p>
+<p><strong>intToText</strong> と <strong>intToText2</strong> どちらも検出して欲しいですが <strong>intToText</strong> しか検出できていません。</p>
+<p><strong>HLint</strong> では自動的に η-簡約 (eta-reduction) が行われるため <code>error: {lhs: pack (show x), rhs: tshow x}</code> のように定義しておいた方が良いでしょう。</p>
+<h2 id="hlint-に渡す引数を指定する">hlint に渡す引数を指定する</h2>
+<p>具体的には、<strong>QuasiQuotes</strong> を <strong>package.yaml</strong> の <strong>default-extensions</strong> に指定する場合などで役に立ちます。</p>
+<p>以下のように <strong>arguments</strong> に <strong>-XQuasiQuotes</strong> を指定します。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co"># .hlint.yaml</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">-</span> <span class="fu">arguments:</span><span class="at"> </span><span class="kw">[</span> -XQuasiQuotes <span class="kw">]</span></a></code></pre></div>
+<p><strong>arguments</strong> に指定できるのは言語拡張だけでなく <code>--color</code>, <code>--cpp-simple</code> など、<code>hlint</code> に渡せる引数であれば何でも指定することができます。</p>
       </article>
 
       <div class="pager">
