@@ -8,8 +8,123 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-05-14T00:00:00Z</updated>
+    <updated>2018-05-23T00:00:00Z</updated>
     <entry>
+    <title>Prelude を カスタムPrelude で置き換える</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html</id>
+    <published>2018-05-23T00:00:00Z</published>
+    <updated>2018-05-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>つい最近 haskell-jp で <strong>皆さんPreludeは何を使っていますか？</strong> という話がありました。</p>
+<p>まとめるとだいたこんな感じです。</p>
+<table>
+<thead>
+<tr class="header">
+<th>カスタム Prelude パッケージ</th>
+<th>利用しているプロジェクト</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://github.com/nikita-volkov/base-prelude">base-prelude</a></td>
+<td>???</td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/snoyberg/mono-traversable/tree/master/classy-prelude">classy-prelude</a></td>
+<td><a href="https://github.com/yesodweb/yesod">Yesod</a></td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/sdiehl/protolude">protolude</a></td>
+<td><a href="https://github.com/purescript/purescript">purescript</a></td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/serokell/universum">universum</a></td>
+<td><a href="https://github.com/input-output-hk/cardano-sl">cardano-sl</a></td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/commercialhaskell/rio">rio</a></td>
+<td><a href="https://github.com/commercialhaskell/stack">stack</a></td>
+</tr>
+</tbody>
+</table>
+<p>カスタム Prelude を使うモチベーションは、自分のよく使う関数を Prelude に入れたいとか、<strong>fromJust</strong> みたいな部分関数を排除したいなど、色々あります。</p>
+<p>実際にカスタム Prelude を使うためにはファイルの先頭に <strong>NoImplicitPrelude</strong> 言語拡張とカスタムPreludeの <strong>import</strong> 宣言を追加する必要があります。(具体例として <strong>rio</strong> パッケージを利用します)</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">{-# LANGUAGE NoImplicitPrelude #-}</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">import</span> <span class="dt">RIO</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="fu">...</span></a></code></pre></div>
+<p>新しいファイルを作るたびに、ファイルの先頭に上記の宣言を書いても良いのですが、今回はこの作業なしにカスタム Prelude を使う方法をご紹介したいと思います。</p>
+<!--more-->
+<h2 id="default-extensions-を利用する">default-extensions を利用する</h2>
+<p><code>{-# LANGUAGE NoImplicitPrelude #-}</code> を自動的に有効化させることは意外と簡単です。</p>
+<p><strong>package.yaml</strong> や <strong>cabal</strong> ファイルの <strong>default-extensions</strong> に追加するだけです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># package.yaml</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="fu">default-extensions:</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">-</span> NoImplicitPrelude</a></code></pre></div>
+<pre><code># project.cabal
+default-extensions: NoImplicitPrelude</code></pre>
+<p>この場合、全てのファイルで自動的に <strong>NoImplicitPrelude</strong> が有効になるため、カスタム Prelude の import 宣言のみが必要となります。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">import</span> <span class="dt">RIO</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="fu">...</span></a></code></pre></div>
+<p>まだ <code>import RIO</code> が残っているので、こいつをなんとかしましょう。</p>
+<h2 id="base-noprelude-パッケージ">base-noprelude パッケージ</h2>
+<p><a href="https://ghc.haskell.org/trac/ghc/ticket/9499?cversion=0&amp;cnum_hist=8">Add -prelude-is flag</a> というチケットで紹介されている方法を使えば、<code>import RIO</code> を記述することなく、<strong>Prelude</strong> のように利用できるようになります。</p>
+<p>このチケットによれば <strong>-prelude-is</strong> というオプションを導入しようとしていたようですが、そんなことしなくても <strong>Prelude</strong> を置き換えれるよ！という話です。</p>
+<p>具体的には <a href="https://github.com/haskell-hvr/base-noprelude">base-noprelude</a> パッケージを利用します。</p>
+<h3 id="最小構成">最小構成</h3>
+<p>この方法もかなり簡単で、<strong>stack.yaml</strong>, <strong>package.yaml</strong>, <strong>src/Prelude.hs</strong> をちょこっと書くだけで完成です。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># stack.yaml</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="fu">resolver:</span><span class="at"> nightly-2018-05-23</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="fu">packages:</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">-</span> .</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="fu">extra-deps:</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="kw">-</span> base-noprelude-4.11.1.0</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># package.yaml</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="fu">name:</span><span class="at"> extended-prelude</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="kw">-</span> base-noprelude</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="kw">-</span> rio</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="fu">library:</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">  <span class="fu">source-dirs:</span><span class="at"> src</span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">  <span class="fu">other-modules:</span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">  <span class="kw">-</span> Prelude</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">-- src/Prelude.hs</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Prelude</span> (<span class="kw">module</span> <span class="dt">RIO</span>) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="kw">import</span> <span class="dt">RIO</span></a></code></pre></div>
+<h3 id="確認">確認</h3>
+<p>ファイルに <code>import RIO</code> を書かなくても本当に良いのか確かめてみます。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">-- src/Sample.hs</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Sample</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="ot">f ::</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">f <span class="fu">=</span> tshow <span class="st">&quot;a&quot;</span></a></code></pre></div>
+<p>当然、通常の <strong>Prelude</strong> には <strong>Text</strong> も <strong>tshow</strong> も無いので、<code>import RIO</code> が有効になっていなければ、ビルドエラーになるはずです。</p>
+<p><strong>ghci</strong> で確認してみましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">$</span> stack repl</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">ghci<span class="fu">&gt;</span> f</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">&quot;\&quot;a\&quot;&quot;</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">ghci<span class="fu">&gt;</span> <span class="fu">:</span>t fromJust</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="fu">&lt;</span>interactive<span class="fu">&gt;:</span><span class="dv">1</span><span class="fu">:</span><span class="dv">1</span><span class="fu">:</span> error<span class="fu">:</span> <span class="dt">Variable</span> not <span class="kw">in</span> scope<span class="fu">:</span> fromJust</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">ghci<span class="fu">&gt;</span> <span class="fu">:</span>t view</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10"><span class="ot">view ::</span> <span class="dt">MonadReader</span> s m <span class="ot">=&gt;</span> <span class="dt">Getting</span> a s a <span class="ot">-&gt;</span> m a</a></code></pre></div>
+<p>ちゃんと動いてそうですね。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>実際にこの手法で開発を進めているわけではないので、もしかすると落とし穴があるかもしれませんが、思ったより使いやすくてびっくりしました。</p>
+<p>元の Prelude に戻すことも簡単だと思うので、興味があれば試してみて下さい。(結構前のチケットなので、周知の事実だったらすみません・・・。)</p>]]></summary>
+</entry>
+<entry>
     <title>extensible-0.4.9 がリリースされました。</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/05-14-release-extensible-049.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/05-14-release-extensible-049.html</id>
@@ -2217,213 +2332,6 @@ Error: Liquid Type Mismatch
 <h2 id="まとめ">まとめ</h2>
 <p>めちゃめちゃ簡単だったので、使ってみると楽しいですよー。ドキュメントが充実しているのが良いですね。</p>
 <p>今回は短めでした。</p>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>Haskell Quiz No.4 幅優先探索と深さ優先探索</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/03-28-quiz-4.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/03-28-quiz-4.html</id>
-    <published>2018-03-28T00:00:00Z</published>
-    <updated>2018-03-28T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.4">Haskell Quiz No.4</h2>
-<p>難易度: λ</p>
-<p>今回は、与えられた値がリストのリストに含まれているかどうかを判定する問題です。</p>
-<p>幅優先で探索する関数 <code>bfs</code> と深さ優先で探索する関数 <code>dfs</code> をそれぞれ定義してみましょう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">bfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">bfs <span class="fu">=</span> undefined</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ot">dfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">dfs <span class="fu">=</span> undefined</a></code></pre></div>
-<p>実行結果はだいたいこんな感じです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">$ <span class="ex">stack</span> repl -- Quiz4.hs</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ex">*Quiz4</span><span class="op">&gt;</span> xs = [[10..],[4,5,6],[7,8,9]]</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ex">*Quiz4</span><span class="op">&gt;</span> bfs 9 xs</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ex">True</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ex">.....</span></a></code></pre></div>
-<p>答えは<a href="03-31-quiz-5.html">次回</a>。</p>
-<!--more-->
-<h2 id="はじめに">はじめに</h2>
-<p><a href="./03-27-quiz-3.html">前回</a>の問題と答えは以下の通りです。</p>
-<h3 id="問題">問題</h3>
-<p>難易度: λ</p>
-<p><code>propIsDigit</code> テストをパスするように <code>Digit</code> 型の <code>Arbitrary</code> インスタンスを定義してみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Quiz3</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Char</span> (isDigit)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">newtype</span> <span class="dt">Digit</span> <span class="fu">=</span> <span class="dt">Digit</span> <span class="dt">Char</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">  <span class="kw">deriving</span> <span class="dt">Show</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="ot">propIsDigit ::</span> <span class="dt">Digit</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">propIsDigit (<span class="dt">Digit</span> c) <span class="fu">=</span> isDigit c</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Digit</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">  arbitrary <span class="fu">=</span> undefined</a></code></pre></div>
-<p>テストは以下のように実行します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="ex">stack</span> repl --package QuickCheck -- Quiz3.hs</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ex">*Quiz3</span><span class="op">&gt;</span> quickCheck propIsDigit</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="ex">+++</span> OK, passed 100 tests.</a></code></pre></div>
-<h3 id="こたえ">こたえ</h3>
-<p>実装方法はいくつかあるのですが、例えば <a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck.html#v:elements">elements</a> を使う方法だとこんな感じです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Digit</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">  arbitrary <span class="fu">=</span> <span class="dt">Digit</span> <span class="fu">&lt;$&gt;</span> elements <span class="st">&quot;1234567890&quot;</span></a></code></pre></div>
-<p>ちょっと反則っぽいですが <a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck.html#v:suchThat">suchThat</a> を使う方法もありそうですね。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Digit</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">  arbitrary <span class="fu">=</span> <span class="dt">Digit</span> <span class="fu">&lt;$&gt;</span> arbitrary <span class="ot">`suchThat`</span> isDigit</a></code></pre></div>
-<p>こんな方法もあるよーと言う方は教えてください！</p>
-<h2 id="haskell-quiz-no.3-の解説">Haskell Quiz No.3 の解説</h2>
-<p><code>QuickCheck</code> を使っている人にとっては簡単な問題だったと思います。</p>
-<p>逆に全く使ったこと無い人にとっては、結構難しかったのではないでしょうか。</p>
-<h3 id="arbitrary-型クラス">Arbitrary 型クラス</h3>
-<p><a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck.html#t:Arbitrary">Arbitrary</a> 型クラスは <a href="https://www.stackage.org/lts-11.2/package/QuickCheck-2.10.1">QuickCheck</a> パッケージの <a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck-Arbitrary.html#t:Arbitrary">Test.QuickCheck.Arbitrary</a> で定義されています。</p>
-<p><code>Minimal complete definition</code> は <code>arbitrary</code> メソッド (関数) です。</p>
-<p><code>Minimal complete definition</code> とは、型クラスのインスタンスを全て実装しなくても <code>Minimal complete definition</code> だけ実装すれば全てのメソッドが (デフォルト実装で) 利用できるというものです。効率が悪い場合もあるので、その場合は自分で定義を上書きします。</p>
-<p>つまり、今回の場合だと <code>arbitrary</code> メソッドさえ定義してしまえば <a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck-Arbitrary.html#v:shrink">shrink</a> メソッドも同様に利用可能になるということです。</p>
-<p>実際の定義は以下の通りです。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">class</span> <span class="dt">Arbitrary</span> a <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ot">  arbitrary ::</span> <span class="dt">Gen</span> a</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="ot">  shrink ::</span> a <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">  shrink _ <span class="fu">=</span> []</a></code></pre></div>
-<h3 id="arbitrary-メソッド">arbitrary メソッド</h3>
-<p><code>arbitrary</code> の型は <code>Arbitrary a =&gt; Gen a</code> なので、最初はどうやって定義して良いのか困惑してしまうかもしれません。</p>
-<p><code>Gen a</code> はランダムな値を生成するジェネレータを意味する型です。</p>
-<p>定義の方法は本当に色々ありますが、まずは基本のユーティリティ関数を抑えておきましょう。</p>
-<p><a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck.html#g:6">Generator combinators</a> に列挙されている関数の一部をご紹介します。</p>
-<h4 id="elements">elements</h4>
-<p>与えられたリストの値を元に <code>Gen a</code> を作ります。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> <span class="fu">:</span>t elements</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ot">elements ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> elements <span class="st">&quot;1234567890&quot;</span></a>
-<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="st">&quot;55316502254&quot;</span></a></code></pre></div>
-<p>今回の問題もこれを使って <code>isDigit</code> に通る値のみをリストに含めてあげたら良いのです。</p>
-<h4 id="choose">choose</h4>
-<p>タプルで指定した範囲で値を生成します。その際 <code>Random</code> 型クラスのクラス制約が発生することに注意してください。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> <span class="fu">:</span>t choose</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="ot">choose ::</span> random<span class="fu">-</span><span class="fl">1.1</span><span class="fu">:</span><span class="dt">System.Random.Random</span> a <span class="ot">=&gt;</span> (a, a) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> choose (<span class="dv">1</span>,<span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">[<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">5</span>,<span class="dv">9</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">2</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">1</span>]</a></code></pre></div>
-<h4 id="oneof">oneof</h4>
-<p><code>oneof</code> は <code>[Gen a]</code> からランダムに1つ <code>Gen a</code> を選びます。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> <span class="fu">:</span>t oneof</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="ot">oneof ::</span> [<span class="dt">Gen</span> a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> oneof [choose (<span class="dv">1</span>,<span class="dv">3</span>)]</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">[<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> oneof [choose (<span class="dv">1</span>,<span class="dv">3</span>), choose (<span class="dv">10</span>,<span class="dv">30</span>)]</a>
-<a class="sourceLine" id="cb10-8" data-line-number="8">[<span class="dv">18</span>,<span class="dv">26</span>,<span class="dv">2</span>,<span class="dv">17</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">25</span>,<span class="dv">13</span>,<span class="dv">25</span>,<span class="dv">16</span>,<span class="dv">2</span>]</a></code></pre></div>
-<h4 id="frequency">frequency</h4>
-<p><code>oneof</code> と似ていますが、完全にランダムではなく頻出度合いを制御することができます。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> <span class="fu">:</span>t frequency</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="ot">frequency ::</span> [(<span class="dt">Int</span>, <span class="dt">Gen</span> a)] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> frequency  [(<span class="dv">1</span>,choose (<span class="dv">1</span>,<span class="dv">1</span>)), (<span class="dv">100</span>,choose (<span class="dv">100</span>,<span class="dv">100</span>))]</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">[<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>]</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> frequency  [(<span class="dv">30</span>,choose (<span class="dv">1</span>,<span class="dv">1</span>)), (<span class="dv">70</span>,choose (<span class="dv">100</span>,<span class="dv">100</span>))]</a>
-<a class="sourceLine" id="cb11-8" data-line-number="8">[<span class="dv">100</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">1</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">1</span>]</a></code></pre></div>
-<h4 id="suchthat">suchThat</h4>
-<p>第二引数の述語を満たす値だけで <code>Gen a</code> を作ります。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> <span class="fu">:</span>t suchThat</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="ot">suchThat ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a</a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> suchThat arbitrary even</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">[<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">6</span>,<span class="fu">-</span><span class="dv">8</span>,<span class="dv">10</span>,<span class="fu">-</span><span class="dv">10</span>,<span class="fu">-</span><span class="dv">6</span>,<span class="fu">-</span><span class="dv">6</span>,<span class="fu">-</span><span class="dv">6</span>,<span class="fu">-</span><span class="dv">22</span>]</a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> suchThat arbitrary odd</a>
-<a class="sourceLine" id="cb12-8" data-line-number="8">[<span class="fu">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>,<span class="fu">-</span><span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">11</span>,<span class="fu">-</span><span class="dv">9</span>,<span class="dv">7</span>,<span class="fu">-</span><span class="dv">11</span>,<span class="fu">-</span><span class="dv">13</span>]</a></code></pre></div>
-<h4 id="vectorof">vectorOf</h4>
-<p>与えられた長さの <code>[Gen a]</code> を作ります。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> <span class="fu">:</span>t vectorOf</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="ot">vectorOf ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]</a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="fu">*</span><span class="dt">Quiz3</span><span class="fu">&gt;</span> sample&#39; <span class="fu">$</span> vectorOf <span class="dv">2</span> (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>)</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">[[<span class="dv">0</span>,<span class="dv">0</span>],[<span class="dv">0</span>,<span class="fu">-</span><span class="dv">2</span>],[<span class="dv">0</span>,<span class="dv">4</span>],[<span class="fu">-</span><span class="dv">3</span>,<span class="fu">-</span><span class="dv">2</span>],[<span class="dv">2</span>,<span class="fu">-</span><span class="dv">5</span>],[<span class="dv">6</span>,<span class="fu">-</span><span class="dv">8</span>],[<span class="dv">1</span>,<span class="fu">-</span><span class="dv">10</span>],[<span class="fu">-</span><span class="dv">12</span>,<span class="dv">9</span>],[<span class="dv">3</span>,<span class="fu">-</span><span class="dv">5</span>],[<span class="dv">13</span>,<span class="dv">4</span>],[<span class="fu">-</span><span class="dv">8</span>,<span class="dv">12</span>]]</a></code></pre></div>
-<h3 id="shrink-メソッド">shrink メソッド</h3>
-<p>参考: <a href="https://stackoverflow.com/questions/16968549/what-is-a-shrink-with-regard-to-haskells-quickcheck/16970029">What is a shrink, with regard to Haskell’s QuickCheck?</a></p>
-<p><code>shrink</code> はテストに失敗した際にできるだけ小さな反例を返すために利用されるようです。</p>
-<p><a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck.html#v:verboseCheck">verboseCheck</a> 関数を使えば、実際に生成されたテストケースと結果を全てみることができます。</p>
-<p>例として <code>5</code> を含まないリストという <code>prop</code> でチェックしてみましょう。(結果は少し見やすいように整形してあります)</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="op">&gt;&gt;&gt;</span> <span class="ex">prop</span> l = all (/= 5) <span class="ex">l</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="op">&gt;&gt;&gt;</span> <span class="ex">verboseCheck</span> prop</a>
-<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="ex">Passed</span>:[1,2]</a>
-<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="ex">Passed</span>:[2,2]</a>
-<a class="sourceLine" id="cb14-7" data-line-number="7"><span class="ex">Passed</span>:[-1,1,2]</a>
-<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="ex">Passed</span>:[3,-1]</a>
-<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="ex">Passed</span>:[-4,-4,-5,3,-4]</a>
-<a class="sourceLine" id="cb14-10" data-line-number="10"><span class="ex">Passed</span>:[-6,1,4,-6,-5]</a>
-<a class="sourceLine" id="cb14-11" data-line-number="11"><span class="ex">Passed</span>:[4]</a>
-<a class="sourceLine" id="cb14-12" data-line-number="12"><span class="ex">Passed</span>:[2,-2]</a>
-<a class="sourceLine" id="cb14-13" data-line-number="13"><span class="ex">Passed</span>:[2,8,7]</a>
-<a class="sourceLine" id="cb14-14" data-line-number="14"><span class="ex">Passed</span>:[-7,-8,7,6,9,-10,1]</a>
-<a class="sourceLine" id="cb14-15" data-line-number="15"><span class="ex">Passed</span>:[-10,11,2]</a>
-<a class="sourceLine" id="cb14-16" data-line-number="16"><span class="ex">Passed</span>:[12,0,3,-12,7,-13,-6,9,-8,7,-10,9]</a>
-<a class="sourceLine" id="cb14-17" data-line-number="17"><span class="ex">Passed</span>:[4,4,-11,3,-7]</a>
-<a class="sourceLine" id="cb14-18" data-line-number="18"><span class="ex">Passed</span>:[2,1,-9]</a>
-<a class="sourceLine" id="cb14-19" data-line-number="19"><span class="ex">Passed</span>:[16,3,-8,14,-7,-7,9,-3,-15,3,-10,-14,9,-8,-3]</a>
-<a class="sourceLine" id="cb14-20" data-line-number="20"><span class="ex">Passed</span>:[-2,0,-6,0,4,8,17,13]</a>
-<a class="sourceLine" id="cb14-21" data-line-number="21"><span class="ex">Passed</span>:[1,15,17]</a>
-<a class="sourceLine" id="cb14-22" data-line-number="22"><span class="ex">Passed</span>:[9,-17,-15,-16,-18,16,-19,15]</a>
-<a class="sourceLine" id="cb14-23" data-line-number="23"><span class="ex">Passed</span>:[0,10,6,8,0,4,-9,-12,20,0,3,1,-2,14,13,-11]</a>
-<a class="sourceLine" id="cb14-24" data-line-number="24"><span class="ex">Passed</span>:[16,-5,-21,2,2,-6,6]</a>
-<a class="sourceLine" id="cb14-25" data-line-number="25"><span class="ex">Passed</span>:[-22,14,10,-18,-22,-10,8,8,-14,12,-22]</a>
-<a class="sourceLine" id="cb14-26" data-line-number="26"><span class="ex">Passed</span>:[-18,18,0,-1,-16,-4,13,0,11,-20,10,11,0,-9]</a>
-<a class="sourceLine" id="cb14-27" data-line-number="27"><span class="ex">Passed</span>:[-9,22,-2,-18,-9,-4,21,-7,0,9,-11]</a>
-<a class="sourceLine" id="cb14-28" data-line-number="28"><span class="ex">Passed</span>:[9,21,11,-17,8,-10,0,6,16,17,6,-16,10,24,-7,9,-1,11,-14,-22,-1,-5,2,11,12]</a>
-<a class="sourceLine" id="cb14-29" data-line-number="29"><span class="ex">Passed</span>:[-9,-21,25,-11,9,-11,-14,16,-9,-17,-8,9,4,-10,-6,-6,-17,-21,-26,-12]</a>
-<a class="sourceLine" id="cb14-30" data-line-number="30"><span class="ex">Passed</span>:[-8,-11,-21,3,4,13,27,-24,-13,-12,-21,-13,-25,10]</a>
-<a class="sourceLine" id="cb14-31" data-line-number="31"></a>
-<a class="sourceLine" id="cb14-32" data-line-number="32"><span class="ex">Failed</span>:[25,10,-17,27,8,17,5,14,-1,22,-13,13,-9,-23,26,16,0,10]</a></code></pre></div>
-<p>生成されるリストがどんどん大きくなり、やっとリストに <code>5</code> を含む反例 <code>[25,10,-17,27,8,17,5,14,-1,22,-13,13,-9,-23,26,16,0,10]</code> を見つけました。この反例をそのまま返しても良いのですが、もしかしたらもっと小さな反例が見つかるかもしれません。</p>
-<p><code>verboseCheck</code> は実際にさきほどの反例を、今度は逆に減らしてテストしていきます。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="ex">***</span> Failed!</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="ex">Passed</span>:[22,-13,13,-9,-23,26,16,0,10]</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="ex">Failed</span>:[25,10,-17,27,8,17,5,14,-1]   -- より小さい反例が見つかった</a>
-<a class="sourceLine" id="cb15-5" data-line-number="5"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb15-6" data-line-number="6"><span class="ex">Failed</span>:[8,17,5,14,-1]                -- より小さい反例が見つかった</a>
-<a class="sourceLine" id="cb15-7" data-line-number="7"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb15-8" data-line-number="8"><span class="ex">Failed</span>:[5,14,-1]                     -- より小さい反例が見つかった</a>
-<a class="sourceLine" id="cb15-9" data-line-number="9"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb15-10" data-line-number="10"><span class="ex">Passed</span>:[14,-1]</a>
-<a class="sourceLine" id="cb15-11" data-line-number="11"><span class="ex">Failed</span>:[5,-1]                        -- より小さい反例が見つかった</a>
-<a class="sourceLine" id="cb15-12" data-line-number="12"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb15-13" data-line-number="13"><span class="ex">Passed</span>:[-1]</a>
-<a class="sourceLine" id="cb15-14" data-line-number="14"><span class="ex">Failed</span>:[5]                           -- 最小の反例が見つかった</a>
-<a class="sourceLine" id="cb15-15" data-line-number="15"><span class="ex">Passed</span>:[]</a>
-<a class="sourceLine" id="cb15-16" data-line-number="16"><span class="ex">Passed</span>:[0]</a>
-<a class="sourceLine" id="cb15-17" data-line-number="17"><span class="ex">Passed</span>:[3]</a>
-<a class="sourceLine" id="cb15-18" data-line-number="18"><span class="ex">Passed</span>:[4]</a>
-<a class="sourceLine" id="cb15-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb15-20" data-line-number="20"><span class="ex">Falsifiable</span> (after 29 tests and 5 shrinks)<span class="bu">:</span></a>
-<a class="sourceLine" id="cb15-21" data-line-number="21">[<span class="ex">5</span>]</a></code></pre></div>
-<p>ということで <code>Falsifiable (after 29 tests and 5 shrinks): [5]</code> は <strong>テストの29回目に反例が見つかりました。さらにその反例を5回小さくしたよ</strong> という意味になります。</p>
-<p>デフォルト実装では <code>shrink _ = []</code> となっていたので、見つかった反例をそのまま返すようですね。(<a href="https://www.stackage.org/haddock/lts-11.2/QuickCheck-2.10.1/Test-QuickCheck.html#v:shrink">haddock</a> を見るともっと詳しく書いてあるので、気になる方はそちらをご参照ください)</p>
-<h2 id="quickcheck-instances-パッケージ">quickcheck-instances パッケージ</h2>
-<p>ここまでで <code>QuickCheck</code> がどんなものか何となくわかってもらえたと思います。</p>
-<p><code>base</code> パッケージで提供されている型については、ほとんどデフォルトで <code>Arbitrary</code> のインスタンス定義があります。</p>
-<p>しかしながら、<a href="https://www.stackage.org/lts-11.2/package/time-1.8.0.2">time</a> パッケージの <a href="https://www.stackage.org/haddock/lts-11.2/time-1.8.0.2/Data-Time-Clock.html#t:UTCTime">UTCTime</a> 型や <a href="https://www.stackage.org/lts-11.2/package/text-1.2.3.0">text</a> パッケージの <a href="https://www.stackage.org/haddock/lts-11.2/text-1.2.3.0/Data-Text.html#t:Text">Text</a> 型などのインスタンス定義は別途自分で書かなくてはなりません。</p>
-<p><a href="https://www.stackage.org/package/quickcheck-instances">quickcheck-instances</a> パッケージはそういった、よく使うパッケージのインスタンス定義をまとめたものです。</p>
-<p>このパッケージの定義で満足いかない場合は自分でカスタマイズするというようにすれば、効率的に開発が進むと思いますよ！</p>
-<h2 id="haskell-の入門書を読み終えたあとは">Haskell の入門書を読み終えたあとは・・・？</h2>
-<p><code>Haskell</code> の入門書を読み終わった後のオススメの勉強法は以下の2つです。</p>
-<ul>
-<li>アカデミックコース: 論文を読む</li>
-<li>エンジニアコース: ライブラリとアプリケーションのソースコードを読む</li>
-</ul>
-<p>論文の知識が無いと読めないライブラリもありますし、実装力がないと深い理解が得られない論文もあると思いますが、続けていると不思議とわかるようになります。</p>
-<p>また、驚くべきことに <code>Haskell</code> 界隈ではカジュアルにドキュメントのリンクが論文だったりしますが、時間が経てばわかりやすい解説がいくつも出てくるものなので、その時はわからなくてもそのうちわかるようになるかもしれません。</p>
-<p>ちなみに <code>QuickCheck</code> に関連する論文も (いくつか) ありますよ。</p>
-<h2 id="まとめ">まとめ</h2>
-<p><code>shrink</code> なんて使ったことなかったので、今まで良くわかんない関数でしたが、今後機会があれば定義してみようと思います。</p>
-<p><code>QuickCheck</code> はランダムテストだと思えば、すぐに理解できますよ！性質テストって言われると難しい感じがしてしまいます・・・。(僕だけかも)</p>
 <p>以上です。</p>]]></summary>
 </entry>
 
