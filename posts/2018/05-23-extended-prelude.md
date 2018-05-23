@@ -1,5 +1,5 @@
 ---
-title: カスタム Prelude の import を自動的に行う
+title: Prelude を カスタムPrelude で置き換える
 author: Shinya Yamaguchi
 tags: bigmoon, extensible
 ---
