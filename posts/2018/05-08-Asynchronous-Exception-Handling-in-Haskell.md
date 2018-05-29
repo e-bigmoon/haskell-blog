@@ -294,3 +294,26 @@ main = do
 4. `return $! throw Dummy` はほとんど5番と同じですが、`$!` を使っていて、これは水面下で `seq` を使っています。今日は `evaluate` と `seq` の違いに飛び込むのはやめておきましょう。
 
 5. `return $ throw Dummy` は異質です。`()` 型の `throw Dummy` を使ってサンクを作っていて、それが評価されれば例外が投げられるはずです。それは `return` を使って `IO ()` の値にラップされています。`try` は `IO ()` の値の評価を強制していますが、`()` の値の評価までは強制しません。そのため、まだ実行時例外が投げられることはありません。次に `Either Dummy ()` という型の値が出てきます。これは `Right (throw Dummy)` という値です。`printer` はこの値を出力しようとし、最終的に `throw Dummy` を評価します。 この値は `try` によって処理されていないので、プログラムはクラッシュします。
+
+いいでしょう、では、以上のポイントは何だったんでしょうか? 2つあります:
+
+1. 今回、何かについて判決を下すことはありませんでしたが、少しやってみましょう。非純粋例外は本当に困惑させられるものです。`throw` と `error` を使うのは、部分関数と不完全なパターンマッチと同様、できれば常に避けるべきです。例外を扱うときには、`throwIO` を使ってください。
+
+2. 例外の値がほとんどランダムな位置に現れるように見えても、あなたのプログラムをぶち壊す、非純粋例外のトリガーは常に同じです。例外を隠しているサンクを評価することです。なので、非純粋例外は絶対に同期例外です (???)。今現在扱っている `IO` アクションが、例外を投げることになります。
+
+ほとんどの場合、私たちは例外安全なコードを書く上で、非純粋例外について深く考えることはないでしょう。`withFile` の例をもう一度見てみましょう:
+
+```haskell
+withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+withFile fp mode inner = do
+  handle <- openFile fp mode
+  eres <- try (inner handle)
+  hClose handle
+  case eres of
+    Left e -> throwIO e
+    Right res -> return res
+```
+
+If inner returns an impure exception, it won't cause us any problem in withFile, since we never force the returned value. We're going to mostly ignore impure exceptions for the rest of this talk, and focus only on synchronous versus asynchronous exceptions.
+
+もしも `inner` が非純粋例外を返しても、`withFile` の中では別に問題にはなりません。返ってきた値を評価することがないからです。今回は、非純粋例外についてほとんど無視することにします。そして同期例外と非同期例外に集中することにします。
