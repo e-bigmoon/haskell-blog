@@ -314,6 +314,79 @@ withFile fp mode inner = do
     Right res -> return res
 ```
 
-If inner returns an impure exception, it won't cause us any problem in withFile, since we never force the returned value. We're going to mostly ignore impure exceptions for the rest of this talk, and focus only on synchronous versus asynchronous exceptions.
-
 もしも `inner` が非純粋例外を返しても、`withFile` の中では別に問題にはなりません。返ってきた値を評価することがないからです。今回は、非純粋例外についてほとんど無視することにします。そして同期例外と非同期例外に集中することにします。
+
+# 同期例外のメリット
+そもそも、なぜ同期例外なんてものが必要とされたのか考えてみましょう。簡単な例から始めます。`timeout` 関数です。アクションを決められた時間だけ走らせて、それまでに終わらなかったらそれを殺すような関数が欲しいとします:
+
+```haskell
+timeout :: Int -- microseconds
+        -> IO a -> IO (Maybe a)
+```
+
+そして、これを直接ランタイムシステムに組み込み、すぐにスレッドが死ぬことを許可したとします。以下のようなプログラムを作りました:
+
+```haskell
+timeout 1000000 $ bracket
+  (openFile "foo.txt" ReadMode)
+  hClose
+  somethingReallySlow
+```
+
+`somethingReallySlow` に対して、処理を完遂するのに1秒与えました。しかし1秒以上かかったらどうでしょうか? 既に言及したように、スレッドは単純にすぐに死にます。結果 `hClose` の処理が終わることはありません (??? hClose の処理が終わってなかったってこと?)。これは例外安全の仕組みをぶち壊しています!
+
+その代わりに、ランタイムシステムの外側で何か作ってみましょう。タイムアウトになったかどうか、追跡するミュータブル変数を作り、操作の結果を `MVar` に保存します。そして、ヘルパー関数を作って、スレッドを終了させるべきかどうか確認することにします。こんな感じになるでしょうね:
+
+```haskell
+import Control.Concurrent (threadDelay, forkIO)
+import Control.Concurrent.MVar
+import Control.Exception
+import Control.Monad (when, forever)
+import Data.IORef
+import Data.Typeable
+
+data Timeout = Timeout
+  deriving (Show, Typeable)
+instance Exception Timeout
+
+type CheckTimeout = IO ()
+
+timeout :: Int -> (CheckTimeout -> IO a) -> IO (Maybe a)
+timeout micros inner = do
+  retval <- newEmptyMVar
+  expired <- newIORef False
+  let checkTimeout = do
+        expired' <- readIORef expired
+        when expired' $ throwIO Timeout
+  _ <- forkIO $ do
+    threadDelay micros
+    writeIORef expired True
+  _ <- forkIO $ do
+    eres <- try $ inner checkTimeout
+    putMVar retval $
+      case eres of
+        Left Timeout -> Nothing
+        Right a -> Just a
+  takeMVar retval
+
+myInner :: CheckTimeout -> IO ()
+myInner checkTimeout = bracket_
+  (putStrLn "allocate")
+  (putStrLn "cleanup")
+  (forever $ do
+    putStrLn "In myInner"
+    checkTimeout
+    threadDelay 100000)
+
+main :: IO ()
+main = timeout 1000000 myInner >>= print
+```
+
+光の面としては、この実装はもともと存在していた実行時例外のシステムを再利用して、例外安全を保証してくれています (???)。やったね! しかし、このアプローチのダークサイドを分析してみましょう:
+
+* `checkTimeout` は `IO` の中で動くので、純粋なコードの中で使うことができない。 つまり、これは CPU を長く使う計算を中断させることができないということを意味している (???)。
+* 関連する全ての場所で、`checkTimeout` を呼ぶ必要がある。そうしないと、`timeout` は正確に動かない。
+
+**ボーナス問題** 上のコードは、誤った同期例外の扱い方をしていて、デッドロックを起こす可能性があります。見つけてみてください!
+
+この種類のアプローチは動くことには動きますが、書いていて楽しいものではありません。非同期例外に進んでみましょう。
