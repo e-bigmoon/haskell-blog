@@ -446,5 +446,42 @@ withFile fp mode inner = do
 mask_ :: IO a -> IO a
 ```
 
-この関数は、「与えられたアクションを実行してくれ。そして、これを実行している間は非同期例外を許可しないでくれ」ということを言っています。こいつを使って、`withFile` を手直しできます:
+この関数は、「与えられたアクションを実行してくれ。そして、これを実行している間は非同期例外を許可しないでくれ」ということを言っています。こいつを使って、`withFile` を手直しします:
 
+```haskell
+withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+withFile fp mode inner = mask_ $ do
+  -- doesn't run, masked! -- checkAsync -- 1
+  handle <- openFile fp mode
+  -- same -- checkAsync -- 2
+  eres <- try (inner handle)
+  -- same -- checkAsync -- 3
+  hClose handle
+  -- same -- checkAsync -- 4
+  case eres of
+    Left e -> throwIO e
+    Right res -> return res
+```
+
+さて、リソースリークは解決しましたが、また新たな問題が生まれました。非同期例外を `inner` も含め、`withFile` のどこかにに送る方法が完全に失われました。このままでは、ユーザが提供するアクションの実行に長い時間がかかれば、`timeout` 関数の存在意義が無くなってしまいます。。これをどうにかするために、`mask` 関数を使う必要があって、これは前回のマスキングの状態を復元する方法を提供してくれます:
+
+```haskell
+mask :: ((forall a. IO a -> IO a) -> IO b) -> IO b
+```
+
+**発展** この関数がなぜ、マスキングを解除するのではなく、前回のマスキングの状態を復元するのかと不思議に思うかもしれません。これはネストしたマスキングと関係があり、「ワームホール」問題と言います。これについて深く掘り下げることはしません。
+
+これでかなりいい感じの `withFile` を書くことができます:
+
+```haskell
+withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+withFile fp mode inner = mask $ \restore -> do
+  handle <- openFile fp mode
+  eres <- try (restore (inner handle))
+  hClose handle
+  case eres of
+    Left e -> throwIO e
+    Right res -> return res
+```
+
+マスキングの状態を上のコードの位置で復元するのは完全に安全です。なぜなら、`try` でラップされているので、全ての非同期例外を捉えることができるからです。そのため、何があっても `openFile` が成功したときには、`hClose` が呼ばれることは保証されています。
