@@ -485,3 +485,20 @@ withFile fp mode inner = mask $ \restore -> do
 ```
 
 マスキングの状態を上のコードの位置で復元するのは完全に安全です。なぜなら、`try` でラップされているので、全ての非同期例外を捉えることができるからです。そのため、何があっても `openFile` が成功したときには、`hClose` が呼ばれることは保証されています。
+
+## 全部捕まえろ!
+型チェックをさせるために、`withFile` の例をもう一捻りする必要があります。該当する部分を見てみましょう:
+
+```haskell
+eres <- try (restore (inner handle))
+case eres of
+  Left e -> throwIO e
+```
+
+ここでの問題は、`try` と `throwIO` が、例外の型について多層型であることです (`Exception` のインスタンスであれば何でもよい)。GHC は、あなたが具体的にどんな型を求めているのか知らされていません。今回は、*全ての*例外を捉えることにします。そのためには、`SomeException` 型、オブジェクト指向の世界では全例外クラスのスーパークラスのようなものを使います。必要なものは型シグネチャだけです:
+
+```haskell
+eres <- try (restore (inner handle))
+case eres of
+  Left e -> throwIO (e :: SomeException)
+```
