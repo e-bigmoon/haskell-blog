@@ -486,7 +486,7 @@ withFile fp mode inner = mask $ \restore -> do
 
 マスキングの状態を上のコードの位置で復元するのは完全に安全です。なぜなら、`try` でラップされているので、全ての非同期例外を捉えることができるからです。そのため、何があっても `openFile` が成功したときには、`hClose` が呼ばれることは保証されています。
 
-## 全部捕まえろ!
+## みーんなゲットだぜ!
 型チェックをさせるために、`withFile` の例をもう一捻りする必要があります。該当する部分を見てみましょう:
 
 ```haskell
@@ -503,7 +503,7 @@ case eres of
   Left e -> throwIO (e :: SomeException)
 ```
 
-# 復帰 vs 解放
+## 復帰 vs 解放
 今までのコードには何も間違っている部分はありませんでした。今度は少し違うコードを使って、問題が起こるかどうか見てみましょう。
 
 ```haskell
@@ -554,3 +554,128 @@ Res: Just (Left <<timeout>>)
 しかし、非同期例外では、復帰したいと思うことはないでしょう。非同期例外は、現在実行している世界の外側から送る、「お前は今すぐ死ななければならない」というメッセージのようなものです。こういった例外を捨ててしまうと、`timeout` の例でやったように、非同期例外のメカニズムの本質的な部分を壊すことになります。そのため、非同期例外では復帰ではなく、リソースの解放をするわけです。
 
 さて、理論はいいでしょう。しかし、実際にはどうやって実装しているのでしょうか?
+
+## GHC の非同期例外処理のフロー
+例外を発生させるとき、どうやって例外が同期例外か、非同期例外か判別すればよいのでしょうか? それは簡単です。最終的に `throwIO` 関数 (同期) を使っているか、`throwTo` 関数 (非同期) を使っているかどうかです。そのため、この (???) ロジックを実装するためには、`try` を使った後に、どちらの関数が例外を投げたのか確認する方法が必要になってきます。
+
+しかし残念なことに、そのような関数は存在しません。それはライブラリ関数が存在しないというだけの問題ではなく、GHC のランタイムシステムそのものが、例外に関する情報を何一つ追跡しないのです。よって、この方法で区別することはできません!
+
+私は長年、同期・非同期例外を区別するために、2つの方法を取ってきました。昔使っていた方法はスレッドをフォークするというもので、`enclosed-exceptions` というパッケージに取りこまれています。ただ、これは重い処理なので、今使うのはおすすめしません。それに代わって最近は、型ベースのアプローチをおすすめするようにしています。これは `safe-exceptions` と `unliftio` パッケージに取りこまれています。(この3つのパッケージについては後ほど説明します。)
+
+### 警告という言葉
+今から解説しようとしているメカニズムは、直接 `Control.Exception` を使うことでだますことは十分可能です。そのため、総合的にこのモジュールを直接使うのは避け、私が今から説明する、型ベースのロジックを実装しているヘルパーモジュールを使用することをおすすめします。故意に型ベースの検知をだまそうとしても、この後議論するインバリアントを壊すところで終わるでしょう (???)。ここでは `Control.Exception` を使うほとんどの場合において、このメカニズムを壊すことがその目的にある、と述べておきます。
+
+GHC が あの笑える オブジェクト指向っぽい例外の階層を実現する上で、どのように拡張可能な例外のメカニズムを実装していたのか、思い出してください。全ての例外が、どのように `SomeException` の子クラスになっていたのか思い出してください。GHC 7.8 から、`SomeException` には新しい子クラスが追加されました。`SomeAsyncException` です。これは全ての非同期例外型のスーパークラスになっています。これで、例外が非同期例外型かどうか、以下のような関数で確認することが可能になりました:
+
+```haskell
+isSyncException :: Exception e => e -> Bool
+isSyncException e =
+    case fromException (toException e) of
+        Just (SomeAsyncException _) -> False
+        Nothing -> True
+
+isAsyncException :: Exception e => e -> Bool
+isAsyncException = not . isSyncException
+```
+
+`throwIO` と `throwTo` はそれぞれ、同期例外、非同期例外でのみ使われるということを保証したいですよね。これは、ヘルパー型、ラッパー型を使って解決することにします:
+
+```haskell
+data SyncExceptionWrapper = forall e. Exception e => SyncExceptionWrapper e
+instance Exception SyncExceptionWrapper
+
+data AsyncExceptionWrapper = forall e. Exception e => AsyncExceptionWrapper e
+instance Exception AsyncExceptionWrapper where
+    toException = toException . SomeAsyncException
+    fromException se = do
+        SomeAsyncException e <- fromException se
+        cast e
+```
+
+次に変換用のヘルパー関数です:
+
+```haskell
+toSyncException :: Exception e => e -> SomeException
+toSyncException e =
+    case fromException se of
+        Just (SomeAsyncException _) -> toException (SyncExceptionWrapper e)
+        Nothing -> se
+  where
+    se = toException e
+
+toAsyncException :: Exception e => e -> SomeException
+toAsyncException e =
+    case fromException se of
+        Just (SomeAsyncException _) -> se
+        Nothing -> toException (AsyncExceptionWrapper e)
+  where
+    se = toException e
+```
+
+```haskell
+toSyncException :: Exception e => e -> SomeException
+toSyncException e =
+    case fromException se of
+        Just (SomeAsyncException _) -> toException (SyncExceptionWrapper e)
+        Nothing -> se
+  where
+    se = toException e
+
+toAsyncException :: Exception e => e -> SomeException
+toAsyncException e =
+    case fromException se of
+        Just (SomeAsyncException _) -> se
+        Nothing -> toException (AsyncExceptionWrapper e)
+  where
+    se = toException e
+```
+
+それから、`throwIO` と `throwTO`, `impureThrow` (`throw` 関数の代替) をいじって実装します:
+
+```haskell
+import qualified Control.Exception as EUnsafe
+
+throwIO :: (MonadIO m, Exception e) => e -> m a
+throwIO = liftIO . EUnsafe.throwIO . toSyncException
+
+throwTo :: (Exception e, MonadIO m) => ThreadId -> e -> m ()
+throwTo tid = liftIO . EUnsafe.throwTo tid . toAsyncException
+
+impureThrow :: Exception e => e -> a
+impureThrow = EUnsafe.throw . toSyncException
+```
+
+全ての例外はこれら3つの関数から生成されるとして、これで例外の種類の区別を型に頼ることができます。最後のステップとして、ヘルパー関数を任意の例外型について動く **cleanup** (して例外を投げ直す) 系関数と、**recover** (して例外を投げ直さない) 系関数に分けることにします。不完全ですが、こういった分け方になります:
+
+* 復帰
+  * `catch`
+  * `try`
+  * `handle`
+* 解放
+  * `bracket`
+  * `onException`
+  * `finally`
+
+`catch` 関数を簡潔に書くとこんな感じになります:
+
+```haskell
+import qualified Control.Exception as EUnsafe
+
+catch :: Exception e => IO a -> (e -> IO a) -> IO a
+catch f g = f `EUnsafe.catch` \e ->
+  if isSyncException e
+    then g e
+    -- 意図的に非同期例外を同期的に投げ直している
+    -- これは非同期例外の振る舞いを維持するため
+    else EUnsafe.throwIO e
+```
+
+これらのヘルパー関数を使えば、安全な非同期例外処理のルールは自動的に満たされることになります。ポケモンのような例外ハンドラを作ることも可能です ([ポケモンみーんなゲットだぜ](http://eikaiwa.dmm.com/blog/40042/)):
+
+```haskell
+tryAny :: MonadUnliftIO m => m a -> m (Either SomeException a)
+tryAny = try
+
+main :: IO ()
+main = tryAny (readFile "foo.txt") >>= print
+```
