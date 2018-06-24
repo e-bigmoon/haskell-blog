@@ -555,15 +555,15 @@ Res: Just (Left <<timeout>>)
 
 さて、理論はいいでしょう。しかし、実際にはどうやって実装しているのでしょうか?
 
-## GHC の非同期例外処理のフロー
-例外を発生させるとき、どうやって例外が同期例外か、非同期例外か判別すればよいのでしょうか? それは簡単です。最終的に `throwIO` 関数 (同期) を使っているか、`throwTo` 関数 (非同期) を使っているかどうかです。そのため、この (???) ロジックを実装するためには、`try` を使った後に、どちらの関数が例外を投げたのか確認する方法が必要になってきます。
+## GHC の非同期例外処理の欠陥
+例外を発生させるとき、どうやって例外が同期例外か、非同期例外か判別すればよいのでしょうか? それは簡単です。最終的に `throwIO` 関数 (同期) を使っているか、`throwTo` 関数 (非同期) を使っているかどうかです。そのため、このロジックを実装するためには、`try` を使った後に、どちらの関数が例外を投げたのか確認する方法が必要になってきます。
 
 しかし残念なことに、そのような関数は存在しません。それはライブラリ関数が存在しないというだけの問題ではなく、GHC のランタイムシステムそのものが、例外に関する情報を何一つ追跡しないのです。よって、この方法で区別することはできません!
 
 私は長年、同期・非同期例外を区別するために、2つの方法を取ってきました。昔使っていた方法はスレッドをフォークするというもので、`enclosed-exceptions` というパッケージに取りこまれています。ただ、これは重い処理なので、今使うのはおすすめしません。それに代わって最近は、型ベースのアプローチをおすすめするようにしています。これは `safe-exceptions` と `unliftio` パッケージに取りこまれています。(この3つのパッケージについては後ほど説明します。)
 
 ### 警告という言葉
-今から解説しようとしているメカニズムは、直接 `Control.Exception` を使うことでだますことは十分可能です。そのため、総合的にこのモジュールを直接使うのは避け、私が今から説明する、型ベースのロジックを実装しているヘルパーモジュールを使用することをおすすめします。故意に型ベースの検知をだまそうとしても、この後議論するインバリアントを壊すところで終わるでしょう (???)。ここでは `Control.Exception` を使うほとんどの場合において、このメカニズムを壊すことがその目的にある、と述べておきます。
+今から解説しようとしているメカニズムは、直接 `Control.Exception` を使うことでだますことは十分可能です。そのため、総合的にこのモジュールを直接使うのは避け、私が今から説明する、型ベースのロジックを実装しているヘルパーモジュールを使用することをおすすめします。故意に型ベースの検知を使わなかった場合、この後議論する不変性が壊れて終わります。ここでは `Control.Exception` を使うほとんどの場合において、このメカニズムを壊すことがその目的にある、と述べておきます。
 
 GHC が あの笑える オブジェクト指向っぽい例外の階層を実現する上で、どのように拡張可能な例外のメカニズムを実装していたのか、思い出してください。全ての例外が、どのように `SomeException` の子クラスになっていたのか思い出してください。GHC 7.8 から、`SomeException` には新しい子クラスが追加されました。`SomeAsyncException` です。これは全ての非同期例外型のスーパークラスになっています。これで、例外が非同期例外型かどうか、以下のような関数で確認することが可能になりました:
 
@@ -593,24 +593,6 @@ instance Exception AsyncExceptionWrapper where
 ```
 
 次に変換用のヘルパー関数です:
-
-```haskell
-toSyncException :: Exception e => e -> SomeException
-toSyncException e =
-    case fromException se of
-        Just (SomeAsyncException _) -> toException (SyncExceptionWrapper e)
-        Nothing -> se
-  where
-    se = toException e
-
-toAsyncException :: Exception e => e -> SomeException
-toAsyncException e =
-    case fromException se of
-        Just (SomeAsyncException _) -> se
-        Nothing -> toException (AsyncExceptionWrapper e)
-  where
-    se = toException e
-```
 
 ```haskell
 toSyncException :: Exception e => e -> SomeException
@@ -681,8 +663,6 @@ main = tryAny (readFile "foo.txt") >>= print
 ```
 
 ## 中断不可能なマスキング
-Before going down this rabbit hole, it's worth remembering: if you use Control.Exception.Safe or UnliftIO.Exception, the complexity of interruptible versus uninterruptible masking is handled for you correctly in the vast majority of cases, and you don't need to worry about it. There are extreme corner case bugs that occur, but in my experience this is very low down on the list of common bugs experienced when trying to write exception safe code.
-
 このウサギの巣 (注: 不思議の国のアリスから派生して、不思議なものという意味) に飛び込む前に、思い出してください。`Control.Exception.Safe` や `UnliftIO.Exception` を使えば、多くの場合において、中断可能なマスキングとそうではないマスキングを、正しく扱ってくれます。もうこれを心配することはありません。コーナーケースのバグも多くありますが、経験上、例外安全なコードを書くときにそのバグが起こることはあまりありません。
 
 さて、これまで同期例外 (今現在のスレッドのアクションによって生成された例外) と非同期例外 (別のスレッドで生成され、今現在のスレッドに投げられた例外) の2つの例外を説明してきました。そして、一時的に全ての非同期例外をブロックする `mask` 関数を紹介しましたね?
