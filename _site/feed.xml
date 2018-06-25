@@ -8,8 +8,45 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-05-23T00:00:00Z</updated>
+    <updated>2018-06-25T00:00:00Z</updated>
     <entry>
+    <title>stack run コマンド</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/06-25-stack-run.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/06-25-stack-run.html</id>
+    <published>2018-06-25T00:00:00Z</published>
+    <updated>2018-06-25T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>先日 stack の master ブランチに <a href="https://github.com/commercialhaskell/stack/pull/3952">Introduce stack run command line option #3952</a> がマージされました。とても便利なので紹介したいと思います。</p>
+<p><strong>stack run</strong> コマンドについて簡単に説明するとこんな感じです。</p>
+<ul>
+<li><strong>cabal run</strong> の <strong>stack</strong> バージョンです。</li>
+<li><code>stack build &amp;&amp; stack exec foo</code> の短縮形です。</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">stack</span> --version</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ex">Version</span> 1.8.0, Git revision 466da22ce21cddc20323fc2611cd2a2d3cc56ec6 (dirty) <span class="kw">(</span><span class="ex">5998</span> commits<span class="kw">)</span> <span class="ex">x86_64</span> hpack-0.28.2</a></code></pre></div>
+<p>現在の <strong>stack</strong> の最新バージョンは <strong>1.7.1</strong> です。</p>
+<!--more-->
+<h2 id="stack-run-コマンド">stack run コマンド</h2>
+<p>実際にプロジェクトを作って試してみましょう。</p>
+<pre class="shell"><code>$ stack new stack-run-test
+$ cd stack-run-test</code></pre>
+<p>初回は通常通りビルドが実行され、その後に someFunc が出力されます。</p>
+<pre class="shell"><code>$ stack run
+Building all executables for `stack-run-test&#39; once. After a successful build of all of them, only specified executables
+
+...
+
+Registering library for stack-run-test-0.1.0.0..
+someFunc</code></pre>
+<p>2回目以降はビルド結果がキャッシュされているので、ファイルを変更しなれければ再ビルドされることはありません。</p>
+<pre class="shell"><code>$ stack run
+someFunc</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<p><code>stack run</code> コマンドは <a href="https://github.com/commercialhaskell/stack/issues/233">Wishlist: stack run #233</a> によって2015年6月に提案されているので3年越しの実装ということになります。この調子で色々と便利なコマンドが増えると良いですね。</p>
+<p>実行ファイル名の指定を省略できるのは、非常に便利なので僕も使っていこうと思います。</p>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Prelude を カスタムPrelude で置き換える</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html</id>
@@ -2246,92 +2283,6 @@ Error: Liquid Type Mismatch
 <h2 id="まとめ">まとめ</h2>
 <p>Haskell 2010 Language Report ってどういう時に利用するんだろう？って思っている人もいるとは思いますが、こういう場合に参照すると便利です。</p>
 <p>今回は幅優先探索と深さ優先探索を <strong>リストのリスト</strong> で説明しましたが、一般的に説明される木構造では、これが少し複雑になっただけです。</p>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>prettyprinter パッケージ</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/03-30-prettyprinter.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/03-30-prettyprinter.html</id>
-    <published>2018-03-30T00:00:00Z</published>
-    <updated>2018-03-30T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>今回は <a href="https://www.stackage.org/package/prettyprinter">prettyprinter</a> を使ってみました。</p>
-<p>使おうと思ったモチベーションとしては、以下のようなデータ型をデバッグ表示させる際に <code>prettyprinter</code> 系パッケージを使って良い感じに表示してみようかな？という感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span> <span class="dt">Text</span> <span class="dt">String</span></a></code></pre></div>
-<p>表示をカスタマイズするために <code>Show</code> クラスのインスタンスを書き換えることは、経験上嫌なことしか起きないです・・。</p>
-<p>自分でそれっぽい型クラスを作っても良いのですが、普通は素直に <code>prettyprinter</code> 系のパッケージを使った方が良いと思います！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">$ <span class="ex">stack</span> repl --package text</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ex">Prelude</span><span class="op">&gt;</span> import Data.Text</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> data Person = Person Text String deriving Show</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> :set -XOverloadedStrings</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> Person <span class="st">&quot;はすける&quot;</span> <span class="st">&quot;らむだ&quot;</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ex">Person</span> <span class="st">&quot;\12399\12377\12369\12427&quot;</span> <span class="st">&quot;\12425\12416\12384&quot;</span></a></code></pre></div>
-<!--more-->
-<h2 id="パッケージの選定理由">パッケージの選定理由</h2>
-<p>ぐぐって一番始めに出てきたのは <a href="https://github.com/haskell/pretty">pretty</a> というパッケージだったんですが <code>String</code> にしか対応してない感じだったので見送りました。</p>
-<p><code>prettyprinter</code> は <strong>A modern, easy to use, well-documented, extensible prettyprinter.</strong> というコメント通り、とても使いやすいです。</p>
-<h2 id="使ってみました">使ってみました</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">-- stack --resolver lts-11.2 script</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="kw">import</span> <span class="dt">Data.Text.Prettyprint.Doc</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">import</span> <span class="dt">Data.Text.Prettyprint.Doc.Render.Text</span> (putDoc)</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="kw">data</span> <span class="dt">A</span> <span class="fu">=</span> <span class="dt">A</span> <span class="dt">Text</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12">  <span class="kw">deriving</span> <span class="dt">Show</span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="kw">data</span> <span class="dt">B</span> <span class="fu">=</span> <span class="dt">B</span> <span class="dt">Text</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb3-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb3-16" data-line-number="16"><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-17" data-line-number="17">  pretty (<span class="dt">B</span> l r) <span class="fu">=</span> <span class="st">&quot;B&quot;</span> <span class="fu">&lt;+&gt;</span> pretty l <span class="fu">&lt;+&gt;</span> pretty r</a>
-<a class="sourceLine" id="cb3-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb3-20" data-line-number="20">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-21" data-line-number="21">  print <span class="fu">$</span> <span class="dt">A</span> <span class="st">&quot;あ&quot;</span> <span class="st">&quot;a&quot;</span></a>
-<a class="sourceLine" id="cb3-22" data-line-number="22">  putDoc <span class="fu">$</span> pretty <span class="fu">$</span> <span class="dt">B</span> <span class="st">&quot;あ&quot;</span> <span class="st">&quot;a&quot;</span></a>
-<a class="sourceLine" id="cb3-23" data-line-number="23">  putStrLn <span class="st">&quot;&quot;</span></a></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="fu">chmod</span> u+x Pretty.hs</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">$ <span class="ex">./Pretty.hs</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="ex">B</span> あ a</a></code></pre></div>
-<p><a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#t:Pretty">Pretty</a> 型クラスのインスタンスを普通に定義するだけです。</p>
-<p>適当に改行したい場合は <a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:line">line</a> を追加するだけです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">  pretty (<span class="dt">B</span> l r) <span class="fu">=</span> <span class="st">&quot;B&quot;</span> <span class="fu">&lt;&gt;</span> line</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">                <span class="fu">&lt;+&gt;</span> pretty l <span class="fu">&lt;&gt;</span> line</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">                <span class="fu">&lt;+&gt;</span> pretty r</a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">$ <span class="ex">./test.hs</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="ex">B</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"> あ</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"> <span class="ex">a</span></a></code></pre></div>
-<p>区切りの空白が不要な場合は <a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--43--62-">&lt;+&gt;</a> を <a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--62-">&lt;&gt;</a> にするだけです。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">  pretty (<span class="dt">B</span> l r) <span class="fu">=</span> <span class="st">&quot;B&quot;</span> <span class="fu">&lt;&gt;</span> line</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">                <span class="fu">&lt;&gt;</span> pretty l <span class="fu">&lt;&gt;</span> line</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">                <span class="fu">&lt;&gt;</span> pretty r</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1">$ <span class="ex">./test.hs</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="ex">B</span></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">あ</a>
-<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="ex">a</span></a></code></pre></div>
-<p>適当にネストさせたい場合も簡単です。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">  pretty (<span class="dt">B</span> l r) <span class="fu">=</span> nest <span class="dv">4</span> (<span class="st">&quot;B&quot;</span> <span class="fu">&lt;&gt;</span> line</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3">                <span class="fu">&lt;&gt;</span> pretty l <span class="fu">&lt;&gt;</span> line</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">                <span class="fu">&lt;&gt;</span> pretty r)</a></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" data-line-number="1">$ <span class="ex">./test.hs</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="ex">B</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">    あ</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">    <span class="ex">a</span></a></code></pre></div>
-<h2 id="まとめ">まとめ</h2>
-<p>めちゃめちゃ簡単だったので、使ってみると楽しいですよー。ドキュメントが充実しているのが良いですね。</p>
-<p>今回は短めでした。</p>
 <p>以上です。</p>]]></summary>
 </entry>
 
