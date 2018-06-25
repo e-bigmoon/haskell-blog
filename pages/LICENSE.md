@@ -3,7 +3,7 @@ title: MIT License
 ---
 MIT License
 
-Copyright (c) 2012-2017 BIG MOON
+Copyright (c) 2012-2018 BIG MOON
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

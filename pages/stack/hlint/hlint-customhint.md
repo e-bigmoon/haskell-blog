@@ -1,6 +1,6 @@
 ---
 title: HLint のカスタムヒント
-date: 2018/02/12
+date: 2018/05/16
 ---
 
 ## カスタムヒント
@@ -82,11 +82,11 @@ $ hlint --default > .hlint.yaml
 # $ hlint --default > .hlint.yaml
 ```
 
-`HLint` はデフォルトヒントが記述されている `hlint.yaml` と、カスタムヒントが記述されている `.hlint.yaml` の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、`.hlint.yaml` に記述していくことになります。
+**HLint** はデフォルトヒントが記述されている `hlint.yaml` と、カスタムヒントが記述されている `.hlint.yaml` の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、`.hlint.yaml` に記述していくことになります。
 
 ## カスタムヒントの追加
 
-ここでは説明のため以下のような `tshow` という関数があるとしましょう。この関数は `show :: Show a => a -> String` の `Text` バージョンです。
+ここでは説明のため以下のような **tshow** という関数があるとしましょう。この関数は `show :: Show a => a -> String` の **Text** バージョンです。
 
 ```haskell
 import Data.Text (pack)
@@ -95,7 +95,7 @@ tshow :: Show a => a -> Text
 tshow = pack . show
 ```
 
-目的としてはプロジェクトのコード中で `pack . show` となっている部分を `tshow` に直すようにヒントを出させることです。
+目的としてはプロジェクトのコード中で `pack . show` となっている部分を **tshow** に直すようにヒントを出させることです。
 
 まだヒントを追加していないため、当然ながら現時点では `pack . show` というコードが使われていたとしても何も起こりません。
 
@@ -122,7 +122,7 @@ No hints
 - error: {lhs: pack (show x), rhs: tshow x}
 ```
 
-`lhs`, `rhs` はそれぞれ `Left Hand Side (左辺)`, `Right Hand Side (右辺)` の略です。またヒントのレベルは `error` 以外にも `warm`, `suggest (hint キーワードはただのエイリアスです)` も指定できるため、好きなレベルを指定しましょう。(ヒントレベルの使い分けについては [What is the difference between error/warning/suggestion?](https://github.com/ndmitchell/hlint#what-is-the-difference-between-errorwarningsuggestion) をご参照ください)
+**lhs**, **rhs** はそれぞれ **Left Hand Side (左辺)**, **Right Hand Side (右辺)** の略です。またヒントのレベルは **error** 以外にも **warm**, **suggest** (**hint** キーワードはただのエイリアスです) も指定できるため、好きなレベルを指定しましょう。(ヒントレベルの使い分けについては [What is the difference between error/warning/suggestion?](https://github.com/ndmitchell/hlint#what-is-the-difference-between-errorwarningsuggestion) をご参照ください)
 
 では、実行してみましょう。
 
@@ -137,9 +137,9 @@ Why not:
 1 hint
 ```
 
-無事に `Error` として `tshow` のためのヒントが表示されました！
+無事に **Error** として **tshow** のためのヒントが表示されました！
 
-ヒントの修正方法は、先程定義した `intToText` 関数の実装をヒント通りに書き換えるだけです。
+ヒントの修正方法は、先程定義した **intToText** 関数の実装をヒント通りに書き換えるだけです。
 
 ```haskell
 intToText :: Int -> Text
@@ -185,6 +185,19 @@ Why not:
 1 hint
 ```
 
-`intToText` と `intToText2` どちらも検出して欲しいですが `intToText` しか検出できていません。
+**intToText** と **intToText2** どちらも検出して欲しいですが **intToText** しか検出できていません。
 
-`HLint` では自動的に η-簡約 (eta-reduction) が行われるため `error: {lhs: pack (show x), rhs: tshow x}` というように定義しておいた方が良いでしょう。
+**HLint** では自動的に η-簡約 (eta-reduction) が行われるため `error: {lhs: pack (show x), rhs: tshow x}` のように定義しておいた方が良いでしょう。
+
+## hlint に渡す引数を指定する
+
+具体的には、**QuasiQuotes** を **package.yaml** の **default-extensions** に指定する場合などで役に立ちます。
+
+以下のように **arguments** に **-XQuasiQuotes** を指定します。
+
+```yaml
+# .hlint.yaml
+- arguments: [ -XQuasiQuotes ]
+```
+
+**arguments** に指定できるのは言語拡張だけでなく `--color`, `--cpp-simple` など、`hlint` に渡せる引数であれば何でも指定することができます。
