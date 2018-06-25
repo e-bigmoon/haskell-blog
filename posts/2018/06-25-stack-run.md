@@ -1,7 +1,7 @@
 ---
 title: stack run コマンド
 author: Shinya Yamaguchi
-tags: bigmoon, extensible
+tags: bigmoon, stack
 ---
 
 ## はじめに
