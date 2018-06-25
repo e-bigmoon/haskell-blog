@@ -2,8 +2,7 @@
 
 module Hakyll.Ext where
 
-import           Data.List                   (intersperse, sortBy)
-import           Data.Ord                    (comparing)
+import           Data.List
 import           Data.Time
 import           Hakyll
 import           Text.Blaze.Html             (toHtml, toValue, (!))
@@ -48,7 +47,7 @@ tagsFieldWithSep sep =
   tagsFieldWith getTags simpleRenderLink (mconcat . intersperse sep)
 
 sortByM :: (Monad m, Ord k) => (a -> m k) -> [a] -> m [a]
-sortByM f = fmap (map fst . sortBy (comparing snd)) . mapM (fmap <$> (,) <*> f)
+sortByM f = fmap (map fst . sortOn snd) . mapM (fmap <$> (,) <*> f)
 
 simpleRenderLink :: String -> Maybe FilePath -> Maybe H.Html
 simpleRenderLink tag =
