@@ -533,7 +533,7 @@ go (RunningTotal sum count) (x:xs) =
    in go rt xs
 ```
 
-##### 5 原文にはありませんが、`RunningTotal` の定義でバンパターンをつけています。
+##### 5 原文にはありませんが、`RunningTotal` の定義で正格性注釈をつけています。
 
 ```haskell
 data RunningTotal = RunningTotal
