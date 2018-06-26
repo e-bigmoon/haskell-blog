@@ -905,7 +905,7 @@ main = print $ mysum [1..1000000]
              106 MB total memory in use (0 MB lost due to fragmentation)
 ```
 
-これは限りなく正解に近いですが、最大メモリ常駐量は 53mb にもなっています! 答えはチョンっとつけて正格な左畳み込み `foldl` 関数を使うことです。
+これは限りなく正解に近いですが、最大メモリ常駐量は 53mb にもなっています! 答えはチョンっとつけて正格な左畳み込み `foldl'` 関数を使うことです。
 
 ```haskell
 import Data.List (foldl')
