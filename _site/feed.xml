@@ -8,8 +8,130 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-06-26T00:00:00Z</updated>
+    <updated>2018-06-27T00:00:00Z</updated>
     <entry>
+    <title>namespaced templates</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html</id>
+    <published>2018-06-27T00:00:00Z</published>
+    <updated>2018-06-27T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>つい先日 <a href="https://github.com/commercialhaskell/stack/pull/4103">namespaced templates</a> という、PRが <strong>master</strong> にマージされました。(<a href="https://github.com/commercialhaskell/stack/issues/4039">Namespaced templates #4039</a> が該当する isssue です)</p>
+<p>通常、<strong>stack new</strong> コマンドを実行すると、ローカルに保存されている <a href="https://github.com/commercialhaskell/stack-templates/blob/master/new-template.hsfiles">new-template</a> の内容に基づいてプロジェクトの雛形が作成されます。</p>
+<p>もし、ローカルに保存されているテンプレートの内容を確認したい場合は以下のようなコマンドを実行すれば良いでしょう。</p>
+<pre class="shell"><code>$ cat $(stack path --stack-root)/templates/new-template.hsfiles</code></pre>
+<p><strong>config.yaml</strong> を変更すれば、このデフォルトテンプレートを変更することもできます。(詳しくは <a href="https://haskell.e-bigmoon.com/stack/tips/config-yaml.html">config.yaml のよくある設定</a> をご確認ください)</p>
+<p>今回新たに実装された namespaced templates 機能は、これらのテンプレート機能をより強化するものとなっています。</p>
+<p>具体的には <strong>username/foo</strong> という形式でリモートリポジトリから自分のプロジェクトテンプレートをダウンロードし、それをもとにプロジェクトを作成できるようになります。</p>
+<p>それでは使い方を見ていきたいと思います。</p>
+<pre class="shell"><code>$ stack --version
+Version 1.8.0, Git revision 466da22ce21cddc20323fc2611cd2a2d3cc56ec6 (dirty) (5998 commits) x86_64 hpack-0.28.2</code></pre>
+<!--more-->
+<h2 id="リポジトリを用意しよう">リポジトリを用意しよう！</h2>
+<p>namespaced templates 機能は以下のサービスで利用可能です。</p>
+<ul>
+<li>github</li>
+<li>gitlab</li>
+<li>bitbucket</li>
+</ul>
+<p>まずは、<strong>stack-templates</strong> という名前でリポジトリを作っておいてください。(今のところは任意の名前に変更する方法はありません。)</p>
+<p>この名前のリポジトリに存在するテンプレートファイルを参照することができます。</p>
+<h2 id="テンプレートファイルを作ってみよう">テンプレートファイルを作ってみよう！</h2>
+<ul>
+<li>テンプレートの参考になるのは <a href="https://github.com/commercialhaskell/stack-templates/blob/master/simple.hsfiles">commercialhaskell/simple.hsfiles</a> です。</li>
+<li>テンプレートエンジンは <a href="https://mustache.github.io/mustache.1.html">mustache</a> を使っているそうです。</li>
+<li>今から作るテンプレートファイルは <a href="https://github.com/e-bigmoon/stack-templates/blob/master/sample.hsfiles">e-bigmoon/sample.hsfiles</a> にあります。</li>
+</ul>
+<h3 id="最小のプロジェクトテンプレート">最小のプロジェクトテンプレート</h3>
+<p>とりあえず <strong>Readme.md</strong> ぐらいは欲しいですよね。</p>
+<pre class="mastache"><code>{-# START_FILE README.md #-}
+# {{name}}</code></pre>
+<ul>
+<li><code>{-# START_FILE README.md #-}</code> はそれ以降に続く内容で <strong>README.md</strong> というファイルを作ります ｰ <code>{{name}}</code> には、<strong>stack new</strong> の引数で与えたプロジェクト名が挿入されます。</li>
+</ul>
+<p>ここまでで実際に動かして確認してみます。</p>
+<pre class="shell"><code>$ cd /tmp
+$ stack new test-proj e-bigmoon/sample
+Downloading template &quot;e-bigmoon/sample&quot; to create project &quot;test-proj&quot; in test-proj/ ...
+The template &quot;e-bigmoon/sample&quot; is invalid and could not be used. The error was: Template does not contain a .cabal or package.yaml file</code></pre>
+<p>怒られました。どうやら <strong>cabal</strong> ファイルか <strong>package.yaml</strong> が含まれている必要があるみたいです。</p>
+<p><strong>package.yaml</strong> ファイルも追加して作成するために、少し編集しましょう。</p>
+<pre class="mastache"><code>{-# START_FILE README.md #-}
+# {{name}}
+
+{-# START_FILE package.yaml #-}
+name: {{name}}
+dependencies:
+  - base
+library: {}</code></pre>
+<p>もう一度実行してみます。</p>
+<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample
+...
+All done.
+
+$ tree test-proj/
+test-proj/
+├── package.yaml
+├── README.md
+├── stack.yaml
+└── test-proj.cabal</code></pre>
+<p>今度は成功しました。簡単でいいですね。</p>
+<p>ダウンロードしたテンプレートファイルは <code>~/.stack/templates/&lt;username&gt;/&lt;template&gt;</code> というパスで保存されています。</p>
+<h2 id="stack-new-コマンド">stack new コマンド</h2>
+<p>先程は github リポジトリ上のテンプレートファイルを取得したので以下のコマンドを実行しました。</p>
+<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample</code></pre>
+<p>このコマンドは次のコマンドの省略形です。</p>
+<pre class="shell"><code>$ stack new test-proj github:e-bigmoon/sample.hsfiles</code></pre>
+<p>そのため gitlab や bitbucket にあるテンプレートファイルをダウンロードする場合は以下のようになります。</p>
+<pre class="shell"><code># gitlab
+$ stack new test-proj gitlab:e-bigmoon/sample.hsfiles
+
+# bitbucket
+$ stack new test-proj bitbucket:e-bigmoon/sample.hsfiles</code></pre>
+<p>また、テンプレート名を省略した場合は公式のテンプレートが利用されるため、次のコマンドを実行していることと同じです。</p>
+<pre class="shell"><code>$ stack new test-proj commercialhaskell/new-template</code></pre>
+<p>完全なURLで別のサーバーにあるテンプレートファイルを指定することも可能です。</p>
+<pre class="shell"><code>$ stack new test-proj https://my-site.com/content/template9.hsfiles</code></pre>
+<p>github のテンプレートファイルを完全なURLで指定する際、上記のURLは invalid なので注意。ちゃんと raw の URL を指定しましょう。</p>
+<pre class="shell"><code># NG
+$ stack new test-proj https://github.com/commercialhaskell/stack-templates/blob/master/hspec.hsfiles
+
+# OK
+$ stack new test-proj https://raw.githubusercontent.com/commercialhaskell/stack-templates/master/new-template.hsfiles</code></pre>
+<h2 id="stack.yaml-が含まれる場合">stack.yaml が含まれる場合</h2>
+<p>プロジェクトテンプレートに <strong>stack.yaml</strong> が含まれる場合は初期化処理がスキップされます。(<a href="https://haskell.e-bigmoon.com/posts/2018/05-04-stack171.html">v1.7.1</a> で導入された修正ですね)</p>
+<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample
+Downloading template &quot;e-bigmoon/sample&quot; to create project &quot;test-proj&quot; in test-proj/ ...
+Initialized empty Git repository in /tmp/test-proj/.git/</code></pre>
+<h2 id="もっと複雑なテンプレート">もっと複雑なテンプレート</h2>
+<p><code>~/.stack/config.yaml</code> に変数を定義しておき、プロジェクトテンプレートから参照することもできます。</p>
+<p><strong>config.yaml</strong> ファイルの内容が以下のようになっているとしましょう。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="fu">templates:</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">  <span class="fu">params:</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">    <span class="fu">author-email:</span><span class="at"> chrisdone@gmail.com</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">    <span class="fu">author-name:</span><span class="at"> Chris Done</span></a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">    <span class="fu">copyright:</span><span class="at"> 2018 Chris Done</span></a>
+<a class="sourceLine" id="cb14-6" data-line-number="6">    <span class="fu">github-username:</span><span class="at"> chrisdone</span></a>
+<a class="sourceLine" id="cb14-7" data-line-number="7">    <span class="fu">category:</span><span class="at"> Development</span></a></code></pre></div>
+<p>テンプレートファイル内から単純に <code>{{author-email}}</code> の形式で変数を展開できます。</p>
+<pre><code>{-# START_FILE {{name}}.cabal #-}
+name:                {{name}}
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}#readme
+license:             BSD3
+license-file:        LICENSE
+author:              {{author-name}}{{^author-name}}Author name here{{/author-name}}
+maintainer:          {{author-email}}{{^author-email}}example@example.com{{/author-email}}
+copyright:           {{copyright}}{{^copyright}}{{year}}{{^year}}2018{{/year}} {{author-name}}{{^author-name}}Author name here{{/author-name}}{{/copyright}}
+category:            {{category}}{{^category}}Web{{/category}}</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<p>今までも自分で作ったプロジェクトテンプレートを使うことはできましたが、<strong>new-template</strong> を置き換えるか <strong>config.yml</strong> を設定する必要がありました。</p>
+<p>今回の機能追加により、<strong>stack new</strong> コマンドで直接プロジェクトテンプレートを簡単に指定できるため、自作テンプレート作りがはかどりそうです。</p>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>ContT を使ってコードを綺麗にしよう！</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/06-26-cont-param.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/06-26-cont-param.html</id>
@@ -2683,93 +2805,6 @@ Error: Liquid Type Mismatch
 <li>パイプを流れるデータは<strong>チャンクサイズ</strong>ということを意識する。</li>
 <li>消費してしまったデータは <code>leftover</code> を使わない限り取り戻せない</li>
 </ul>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>Haskell Quiz No.7 Conduit Part.3</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/04-07-quiz-7.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/04-07-quiz-7.html</id>
-    <published>2018-04-07T00:00:00Z</published>
-    <updated>2018-04-07T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.7">Haskell Quiz No.7</h2>
-<p>難易度: λλ</p>
-<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">myTakeWhileC f <span class="fu">=</span> loop</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">    loop <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">      mx <span class="ot">&lt;-</span> await</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">      <span class="kw">case</span> mx <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> return ()</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">        <span class="dt">Just</span> x</a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">          <span class="fu">|</span> otherwise <span class="ot">-&gt;</span> return ()</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-17" data-line-number="17">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-18" data-line-number="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="fu">&lt;=</span> <span class="dv">5</span>) <span class="fu">.|</span> sinkList</a>
-<a class="sourceLine" id="cb1-19" data-line-number="19">  y <span class="ot">&lt;-</span> sinkList</a>
-<a class="sourceLine" id="cb1-20" data-line-number="20">  return (x, y)</a></code></pre></div>
-<p>答えは<a href="04-08-quiz-8.html">次回</a>。</p>
-<!--more-->
-<h2 id="はじめに">はじめに</h2>
-<p><a href="./04-06-quiz-6.html">前回</a>の問題と答えは以下の通りです。</p>
-<h3 id="問題">問題</h3>
-<p>難易度: λλ</p>
-<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.2</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">trans <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> trans <span class="fu">.|</span> mapM_C print</a></code></pre></div>
-<h3 id="こたえ">こたえ</h3>
-<p>実際に実行してみましょう！</p>
-<pre class="shell"><code>$ ./Quiz6.hs
-2
-3
-4
-5
-6
-12
-14
-16
-18
-20</code></pre>
-<h2 id="haskell-quiz-no.6-の解説">Haskell Quiz No.6 の解説</h2>
-<p>この問題で重要なのは <code>trans</code> 関数です。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">trans <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a></code></pre></div>
-<ul>
-<li>1つめのパイプ <code>takeC 5 .| mapC (+ 1)</code> によって <code>[1..10]</code> のうち <code>[1..5]</code> が <code>mapC (+ 1)</code> によって処理されます。</li>
-<li>2つめのパイプ <code>mapC (* 2)</code> によって残りの <code>[6..10]</code> が <code>mapC (* 2)</code> によって処理されます。</li>
-</ul>
-<p>そのため、結果として以下のような出力となりました。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="dv">2</span>  <span class="co">-- 1+1</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="dv">3</span>  <span class="co">-- 2+1</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="dv">4</span>  <span class="co">-- 3+1</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="dv">5</span>  <span class="co">-- 4+1</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="dv">6</span>  <span class="co">-- 5+1</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="dv">12</span> <span class="co">-- 6*2</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="dv">14</span> <span class="co">-- 7*2</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="dv">16</span> <span class="co">-- 8*2</span></a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="dv">18</span> <span class="co">-- 9*2</span></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="dv">20</span> <span class="co">-- 10*2</span></a></code></pre></div>
-<p>大前提として、このパイプにデータが流れるのは <code>mapM_C print</code> によって上流のデータが無くなるまでデータを要求するという操作があるためです。</p>
-<p>そのため、 <code>mapM_C print</code> を <code>sinkNull</code> にすると何も表示されなくなります。</p>
-<h2 id="まとめ">まとめ</h2>
-<p><code>Conduit</code> は何も知らずにいつも通りの感覚で利用すると、直感と違う動きをすることがあるので、簡単な例を通して慣れていくと良いと思います。</p>
 <p>以上です。</p>]]></summary>
 </entry>
 
