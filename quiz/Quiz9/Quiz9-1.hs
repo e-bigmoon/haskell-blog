@@ -1,8 +1,8 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-11.3
+-- stack script --resolver lts-11.16
 import Conduit
 
 main :: IO ()
 main = print $ runConduitPure $ return () .| do
-    mapM_ leftover [1..10]
-    sinkList
+  mapM_ leftover [1..10]
+  sinkList
