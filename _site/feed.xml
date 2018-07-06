@@ -8,8 +8,143 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-06-27T00:00:00Z</updated>
+    <updated>2018-07-06T00:00:00Z</updated>
     <entry>
+    <title>Haskell Quiz No.9 Conduit Part.5</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/07-06-quiz-9.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/07-06-quiz-9.html</id>
+    <published>2018-07-06T00:00:00Z</published>
+    <updated>2018-07-06T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.9">Haskell Quiz No.9</h2>
+<p>難易度: λλ</p>
+<p>以下の2つのコードのうち、1つめはコンパイルできますが、2つめはコンパイルできません。</p>
+<p>なぜでしょう！</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.16</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> return () <span class="fu">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  sinkList</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.16</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  sinkList</a></code></pre></div>
+<p>エラーメッセージ</p>
+<pre class="shell"><code>error:
+    • No instance for (Num ()) arising from the literal ‘1’
+    • In the expression: 1
+      In the second argument of ‘mapM_’, namely ‘[1 .. 10]’
+      In a stmt of a &#39;do&#39; block: mapM_ leftover [1 .. 10]
+
+    mapM_ leftover [1..10]</code></pre>
+<p>答えは次回。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./04-08-quiz-8.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λλλ</p>
+<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> return () <span class="fu">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">  mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">  sinkList</a></code></pre></div>
+<h3 id="こたえ">こたえ</h3>
+<p>実際に実行してみましょう！</p>
+<pre class="shell"><code>$ ./Quiz8.hs
+[10,9,8,7,6,5,4,3,2,1]</code></pre>
+<p><code>leftover</code> に <code>[1..10]</code> を与えたのに、なぜか逆順になってしまいましたね。</p>
+<h3 id="解説">解説</h3>
+<p>この問題で抑えておきたいポイントは <code>leftover</code> の動作についてです。</p>
+<p>問題の例を上記のように <code>leftover</code> ではなく <code>sourceList</code> を使うように修正した場合、プログラムの実行結果は次のようになります。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Conduit.List</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> sourceList [(<span class="dv">1</span><span class="ot">::</span><span class="dt">Int</span>)<span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">                             <span class="fu">.|</span> sinkList</a></code></pre></div>
+<pre class="shell"><code>[1,2,3,4,5,6,7,8,9,10]</code></pre>
+<p>入力として与えたリストの順番がきちんと保存されています。</p>
+<p>この挙動を理解するためには <code>Conduit</code> の内部をちょっとだけみていく必要があります。</p>
+<h4 id="定義の確認">定義の確認</h4>
+<p>まずは <code>sourceList</code>, <code>yield</code>, <code>leftover</code> の定義を確認してみましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">sourceList ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i a m ()</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">sourceList <span class="fu">=</span> Prelude.mapM_ yield</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="ot">yield ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> o <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i o m ()</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">yield    o <span class="fu">=</span> <span class="dt">ConduitT</span> <span class="fu">$</span> \rest <span class="ot">-&gt;</span> <span class="dt">HaveOutput</span> (rest ()) o</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="ot">leftover ::</span> i <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i o m ()</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">leftover i <span class="fu">=</span> <span class="dt">ConduitT</span> <span class="fu">$</span> \rest <span class="ot">-&gt;</span> <span class="dt">Leftover</span>   (rest ()) i</a></code></pre></div>
+<p><code>yeld</code> と <code>leftover</code> はほとんど同じ関数です。本質的に異なる点は <code>HaveOutput</code> と <code>Leftover</code> という構成子の違いだけです。</p>
+<p>しかし、この違いが今回のような違いを生み出します。</p>
+<p>次に、<code>runConduitPure</code> 関数の定義を確認します。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">runConduitPure ::</span> <span class="dt">ConduitT</span> () <span class="dt">Void</span> <span class="dt">Identity</span> r <span class="ot">-&gt;</span> r</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">runConduitPure <span class="fu">=</span> runIdentity <span class="fu">.</span> runConduit</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="ot">runConduit ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> () <span class="dt">Void</span> m r <span class="ot">-&gt;</span> m r</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">runConduit (<span class="dt">ConduitT</span> p) <span class="fu">=</span> runPipe <span class="fu">$</span> injectLeftovers <span class="fu">$</span> p <span class="dt">Done</span></a></code></pre></div>
+<p><code>injectLeftovers</code> が今回の問題で一番重要な関数です。</p>
+<h4 id="injectleftovers-関数">injectLeftovers 関数</h4>
+<p><code>injectLeftovers</code> 関数の定義は以下のとおりです。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="ot">injectLeftovers ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">Pipe</span> i i o u m r <span class="ot">-&gt;</span> <span class="dt">Pipe</span> l i o u m r</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">injectLeftovers <span class="fu">=</span> go []</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">    go ls (<span class="dt">HaveOutput</span> p o) <span class="fu">=</span> <span class="dt">HaveOutput</span> (go ls p) o</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">    go (l<span class="fu">:</span>ls) (<span class="dt">NeedInput</span> p _) <span class="fu">=</span> go ls <span class="fu">$</span> p l</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">    go [] (<span class="dt">NeedInput</span> p c) <span class="fu">=</span> <span class="dt">NeedInput</span> (go [] <span class="fu">.</span> p) (go [] <span class="fu">.</span> c)</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">    go _ (<span class="dt">Done</span> r) <span class="fu">=</span> <span class="dt">Done</span> r</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">    go ls (<span class="dt">PipeM</span> mp) <span class="fu">=</span> <span class="dt">PipeM</span> (liftM (go ls) mp)</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">    go ls (<span class="dt">Leftover</span> p l) <span class="fu">=</span> go (l<span class="fu">:</span>ls) p</a></code></pre></div>
+<p><code>go</code> が少しごちゃごちゃしていますが、実際に着目すべきポイントは以下の行です。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">injectLeftovers ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">Pipe</span> i i o u m r <span class="ot">-&gt;</span> <span class="dt">Pipe</span> l i o u m r</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">injectLeftovers <span class="fu">=</span> go []</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">  　<span class="fu">...</span></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">    go ls (<span class="dt">Leftover</span> p l) <span class="fu">=</span> go (l<span class="fu">:</span>ls) p</a></code></pre></div>
+<p><code>go</code> 関数の第一引数の <code>ls</code> は <code>leftover</code> によって上流に戻される値を保存しておくための蓄積変数です。</p>
+<p>ここで <code>mapM_ leftover [1..10]</code> はこんなような形をしているパイプです。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1">p <span class="fu">=</span> <span class="dt">Leftover</span> (<span class="dt">Leftover</span> (<span class="dt">Leftover</span> nextPipe <span class="dv">3</span>) <span class="dv">2</span>) <span class="dv">1</span></a></code></pre></div>
+<p><code>mapM_ leftover [1..10]</code> のときに、<code>ls</code> が逆順になっていることを確認するため、実際に <code>go</code> 関数を簡約してみます。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1">go [] p</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">  <span class="fu">=</span> go [] (<span class="dt">Leftover</span> (<span class="dt">Leftover</span> (<span class="dt">Leftover</span> p <span class="dv">3</span>) <span class="dv">2</span>) <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">  <span class="fu">=</span> go (<span class="dv">1</span><span class="fu">:</span>[]) (<span class="dt">Leftover</span> (<span class="dt">Leftover</span> p <span class="dv">3</span>) <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">  <span class="fu">=</span> go (<span class="dv">2</span><span class="fu">:</span>(<span class="dv">1</span><span class="fu">:</span>[])) (<span class="dt">Leftover</span> p <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">  <span class="fu">=</span> go (<span class="dv">3</span><span class="fu">:</span>(<span class="dv">2</span><span class="fu">:</span>(<span class="dv">1</span><span class="fu">:</span>[]))) p</a></code></pre></div>
+<p>ここで <code>leftover</code> した値が逆順で蓄積され、次のパイプに渡されることになります。</p>
+<p>今回の例では、次のパイプは <code>sinkList</code> となっていました。実装は次のようになっています。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="ot">sinkList ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> a o m [a]</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">sinkList <span class="fu">=</span> loop id</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">    loop front <span class="fu">=</span> await <span class="fu">&gt;&gt;=</span> maybe (return <span class="fu">$</span> front []) (\x <span class="ot">-&gt;</span> loop <span class="fu">$</span> front <span class="fu">.</span> (x<span class="fu">:</span>))</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="ot">await ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">Consumer</span> i m (<span class="dt">Maybe</span> i)</a>
+<a class="sourceLine" id="cb14-7" data-line-number="7">await <span class="fu">=</span> <span class="dt">ConduitT</span> <span class="fu">$</span> \f <span class="ot">-&gt;</span> <span class="dt">NeedInput</span> (f <span class="fu">.</span> <span class="dt">Just</span>) (const <span class="fu">$</span> f <span class="dt">Nothing</span>)</a></code></pre></div>
+<p><code>await</code> は <code>NeedInput</code> になっていますね。</p>
+<p>これは <code>injectLeftovers</code> の <code>go</code> ではこのようにパターンマッチしていました。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1">go (l<span class="fu">:</span>ls) (<span class="dt">NeedInput</span> p _) <span class="fu">=</span> go ls <span class="fu">$</span> p l</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">go [] (<span class="dt">NeedInput</span> p c) <span class="fu">=</span> <span class="dt">NeedInput</span> (go [] <span class="fu">.</span> p) (go [] <span class="fu">.</span> c)</a></code></pre></div>
+<p>つまり、先に <code>leftover</code> で積んだ値を全て消費してから、上流に対して値を要求します。</p>
+<h2 id="おわりに">おわりに</h2>
+<ul>
+<li><code>leftover</code> を使えば任意の値を上流に返すことができる。(実際には消費した値を返すことが多いと思う)</li>
+<li>値を1つだけ上流に返す場合は特に気にすることは無い</li>
+<li>一度にまとめて複数の値を返そうとすると、処理の順番が変わってしまうことがあるので注意が必要</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>namespaced templates</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html</id>
@@ -2676,134 +2811,6 @@ Error: Liquid Type Mismatch
 <h2 id="まとめ">まとめ</h2>
 <ul>
 <li>型パラメータが特殊化された関数を <code>measure</code> で述語に持ち上げる際には <code>--prune-unsorted</code> を使う</li>
-</ul>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>Haskell Quiz No.8 Conduit Part.4</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/04-08-quiz-8.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/04-08-quiz-8.html</id>
-    <published>2018-04-08T00:00:00Z</published>
-    <updated>2018-04-08T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.8">Haskell Quiz No.8</h2>
-<p>難易度: λλλ</p>
-<p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> return () <span class="fu">.|</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">    mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">    sinkList</a></code></pre></div>
-<p>答えは次回。</p>
-<!--more-->
-<h2 id="はじめに">はじめに</h2>
-<p><a href="./04-07-quiz-7.html">前回</a>の問題と答えは以下の通りです。</p>
-<h3 id="問題">問題</h3>
-<p>難易度: λλ</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">myTakeWhileC f <span class="fu">=</span> loop</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">    loop <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">      mx <span class="ot">&lt;-</span> await</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">      <span class="kw">case</span> mx <span class="kw">of</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> return ()</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">        <span class="dt">Just</span> x</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">          <span class="fu">|</span> otherwise <span class="ot">-&gt;</span> return ()</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="fu">&lt;=</span> <span class="dv">5</span>) <span class="fu">.|</span> sinkList</a>
-<a class="sourceLine" id="cb2-19" data-line-number="19">  y <span class="ot">&lt;-</span> sinkList</a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">  return (x, y)</a></code></pre></div>
-<h3 id="こたえ">こたえ</h3>
-<p>実際に実行してみましょう！</p>
-<pre class="shell"><code>$ ./Quiz7.hs
-([1,2,3,4,5],[7,8,9,10])</code></pre>
-<p><strong>6</strong> が抜けていることに注意してくださいね！</p>
-<h3 id="解説の補足">解説の補足</h3>
-<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja">
-<p lang="ja" dir="ltr">
-面白いシリーズありがとうございます(いまさらながら読んでます)。ところで細かい点なんですが、conduitは内部ではチャンクサイズ自体は管理していません。sourceFile等でByteStringが32KBになるのはそのソースがByteStringのdefaultChunkSizeで分割して流してるだけですね
-</p>
-— 水無麻那 (<span class="citation" data-cites="Mizunashi_Mana">@Mizunashi_Mana</span>) <a href="https://twitter.com/Mizunashi_Mana/status/996221192208969728?ref_src=twsrc%5Etfw">2018年5月15日</a>
-</blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja">
-<p lang="ja" dir="ltr">
-なので、型毎に決まるというよりはソース毎に決まるが正しい気がします(例えば、yieldMany [“aa”, “bb” :: ByteString]をawaitすると、そのまま“aa”、“bb”が流れてきます)
-</p>
-— 水無麻那 (<span class="citation" data-cites="Mizunashi_Mana">@Mizunashi_Mana</span>) <a href="https://twitter.com/Mizunashi_Mana/status/996221636838735873?ref_src=twsrc%5Etfw">2018年5月15日</a>
-</blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<p>確かに指摘通りで、<strong>型によって</strong>チャンクサイズが決まるのではなく、<strong>利用する Source</strong> によって決まるの方が正確ですね！ご指摘ありがとうございます。</p>
-<p>ソースコードを読むとすぐにわかるのですが、せっかくなので少し解説します。</p>
-<p>まず <a href="https://www.stackage.org/haddock/lts-11.9/conduit-1.3.0.2/src/Data.Conduit.Combinators.html#sourceFile">sourceFile</a> 関数の内部で readChunk 関数の呼び出しがあります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">sourceFile ::</span> <span class="dt">MonadResource</span> m</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">           <span class="ot">=&gt;</span> FilePath</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">           <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i <span class="dt">S.ByteString</span> m ()</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">sourceFile fp <span class="fu">=</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">    bracketP</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">        (FR.openFile fp)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">         FR.closeFile</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">         loop</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">    loop h <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">        bs <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> FR.readChunk h</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">        unless (S.null bs) <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">            yield bs</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">            loop h</a></code></pre></div>
-<p>この <a href="https://www.stackage.org/haddock/lts-11.9/streaming-commons-0.1.19/src/Data.Streaming.FileRead.html#readChunk">readChunk</a> 関数の defaultChunkSize が実際のチャンクサイズです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">readChunk ::</span> <span class="dt">ReadHandle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">S.ByteString</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">readChunk (<span class="dt">ReadHandle</span> h) <span class="fu">=</span> S.hGetSome h defaultChunkSize</a></code></pre></div>
-<p><a href="https://github.com/haskell/bytestring/blob/master/Data/ByteString/Lazy/Internal.hs#L198">defaultChunkSize</a> の定義は以下のとおりです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">-- | The chunk size used for I\/O. Currently set to 32k, less the memory management overhead</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="ot">defaultChunkSize ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">defaultChunkSize <span class="fu">=</span> <span class="dv">32</span> <span class="fu">*</span> k <span class="fu">-</span> chunkOverhead</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">   <span class="kw">where</span> k <span class="fu">=</span> <span class="dv">1024</span></a></code></pre></div>
-<p>このため、<strong>sourceFile</strong> を利用した場合は <strong>32kbyte</strong> のチャンクサイズでデータが流れるということになります。</p>
-<h3 id="解説">解説</h3>
-<p>今回の問題は <code>[1,2,3,4,5],[7,8,9,10]</code> ではなく <code>[1,2,3,4,5],[6,7,8,9,10]</code> と思った人もいるのではないでしょうか？</p>
-<p>では何故このような動作になってしまうのか、それは <code>myTakeWhileC</code> 関数に秘密があります。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">myTakeWhileC f <span class="fu">=</span> loop</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">    loop <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">      mx <span class="ot">&lt;-</span> await</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">      <span class="kw">case</span> mx <span class="kw">of</span></a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> return ()</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">        <span class="dt">Just</span> x</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">          <span class="fu">|</span> otherwise <span class="ot">-&gt;</span> return ()</a></code></pre></div>
-<p>この関数を理解するためには、以下の2点を抑えておけば十分です。</p>
-<ul>
-<li><code>await</code> は上流のパイプに対して、値をチャンクサイズで1つ要求する関数です。(チャンクサイズは型 (より正確に言えば <strong>Source</strong>) によって違います。リストであれば要素1つですが、<code>ByteString</code> (<strong>sourceFile</strong> を利用した場合) であれば <strong>1byte</strong> や <strong>1文字</strong> ではなく！ <strong>32kbyte</strong>になります。)</li>
-<li><code>yield</code> は下流のパイプに値を流す関数です</li>
-</ul>
-<p>つまり、この関数は上流からデータを取得し、<code>f x</code> が <code>True</code> であれば下流にデータを流す準備を行い、同じ処理を繰り返します。(また、上流のデータが無くなれば <code>await</code> の結果は <code>Nothing</code> となるため、そこで処理が止まります)</p>
-<p>今回の <code>f</code> は <code>(&lt;= 5)</code> なので流れてくる値が <code>5</code> 以下の間は、上流から流れてきた値をそのまま下流に流す準備をします。</p>
-<p>図で書くとこんな感じでしょうか。<code>yield</code> の準備完了と <code>await</code> の要求を青と赤の実線で表現しています。(破線はそうでない場合)</p>
-<p>下記の図は一番最初の <code>await</code> です。<code>sinkList</code> も <code>await</code> していますが、先に <code>myTakeWhileC</code> 関数によって消費されてしまうため、データは届きません。</p>
-<p><code>myTakeWhileC</code> に適用した <strong>1</strong> は条件を満たすため、さらに下流の <code>sinkList</code> にデータを流す準備を行い、<code>sinkList</code> が <code>await</code> したタイミングでデータが流れます。</p>
-<p><img class="no-border" src="/images/2018/04-08/quiz8-1.png"></p>
-<p><strong>2 〜 5</strong> の場合も同様に処理されます。そのため、<code>main</code> 関数の <code>x &lt;- myTakeWhileC (&lt;= 5) .| sinkList</code> の <code>x</code> は <code>[1,2,3,5,]</code> という値になります。</p>
-<p>次に条件を満たさない <strong>6</strong> の場合を考えましょう。</p>
-<p>この場合は <code>myTakeWhileC</code> 関数は <code>return ()</code> を返します。そのため下流の <code>sinkList</code> にはデータを流しません。</p>
-<p><img class="no-border" src="/images/2018/04-08/quiz8-2.png"></p>
-<p>ここで <strong>6</strong> のデータが消え去ります。通常、一度消費してしまった値については再利用できません。(ここでは解説しませんが、<code>Conduit</code> では <code>leftover</code> という関数を使って一度消費してしまった値を上流に返すための関数が定義されています)</p>
-<p><img class="no-border" src="/images/2018/04-08/quiz8-3.png"></p>
-<p>そのため、次は <strong>7</strong> が2つ目の <code>sinkList</code> に流れます。</p>
-<p><strong>8 〜 10</strong> についても同様に処理されるため、結果として <code>y &lt;- sinkList</code> の <code>y</code> は <code>[7,8,9,10]</code> となります。</p>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li>パイプを流れるデータは<strong>チャンクサイズ</strong>ということを意識する。</li>
-<li>消費してしまったデータは <code>leftover</code> を使わない限り取り戻せない</li>
 </ul>
 <p>以上です。</p>]]></summary>
 </entry>
