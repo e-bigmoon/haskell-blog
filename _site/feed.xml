@@ -8,8 +8,111 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-07-06T00:00:00Z</updated>
+    <updated>2018-07-08T00:00:00Z</updated>
     <entry>
+    <title>Haskell Quiz No.10 Conduit Part.6</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/07-08-quiz-10.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/07-08-quiz-10.html</id>
+    <published>2018-07-08T00:00:00Z</published>
+    <updated>2018-07-08T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.10">Haskell Quiz No.10</h2>
+<p>難易度: λ</p>
+<p>以下の実行結果はどうなるでしょう！</p>
+<pre class="shell"><code>#!/usr/bin/env stack
+-- stack script --resolver lts-11.17
+import Conduit
+
+main :: IO ()
+main = runConduit $ yieldMany [1..10] .| iterMC print .| return ()</code></pre>
+<p>答えは次回。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./07-06-quiz-9.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λλ</p>
+<p>以下の2つのコードのうち、1つめはコンパイルできますが、2つめはコンパイルできません。</p>
+<p>なぜでしょう！</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.16</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> return () <span class="fu">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  sinkList</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.16</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">main <span class="fu">=</span> print <span class="fu">$</span> runConduitPure <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">  mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">  sinkList</a></code></pre></div>
+<p>エラーメッセージ</p>
+<pre class="shell"><code>error:
+    • No instance for (Num ()) arising from the literal ‘1’
+    • In the expression: 1
+      In the second argument of ‘mapM_’, namely ‘[1 .. 10]’
+      In a stmt of a &#39;do&#39; block: mapM_ leftover [1 .. 10]
+
+    mapM_ leftover [1..10]</code></pre>
+<h3 id="こたえ">こたえ</h3>
+<h3 id="解説">解説</h3>
+<p>先に2つ目の例がエラーとなってしまう理由を確認します。</p>
+<p>まずは関数の型を確認しておきましょう。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">runConduitPure ::</span> <span class="dt">ConduitT</span> () <span class="dt">Void</span> <span class="dt">Identity</span> r <span class="ot">-&gt;</span> r</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="ot">leftover ::</span> i <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i o m ()</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="ot">sinkList ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> a o m [a]</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">mapM_<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> m ()</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">mapM_<span class="ot"> leftover ::</span> t i <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i o m ()</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]<span class="ot"> ::</span> (<span class="dt">Enum</span> i, <span class="dt">Num</span> i) <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> i o m ()</a></code></pre></div>
+<p>次にモナドの型クラスも一応確認しておきます。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">class</span> <span class="dt">Applicative</span> m <span class="ot">=&gt;</span> <span class="dt">Monad</span> (<span class="ot">m ::</span> <span class="fu">*</span> <span class="ot">-&gt;</span> <span class="fu">*</span>) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="ot">  return ::</span> a <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="ot">  (&gt;&gt;=)  ::</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="ot">  (&gt;&gt;)   ::</span> m a <span class="ot">-&gt;</span> m b <span class="ot">-&gt;</span> m b</a></code></pre></div>
+<p>さらに型を確認していきます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1">mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">&gt;&gt;</span> sinkList</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ot">  ::</span> (<span class="dt">Monad</span> m, <span class="dt">Enum</span> i, <span class="dt">Num</span> i) <span class="ot">=&gt;</span>  <span class="dt">ConduitT</span> i o m [i]</a></code></pre></div>
+<p>さて、ここまで確認するとなぜ2つ目の結果がエラーとなることがわかります。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">runConduitPure ::</span> <span class="dt">ConduitT</span> () <span class="dt">Void</span> <span class="dt">Identity</span> r <span class="ot">-&gt;</span> r</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">&gt;&gt;</span> sinkList</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="ot">  ::</span> (<span class="dt">Monad</span> m, <span class="dt">Enum</span> i, <span class="dt">Num</span> i) <span class="ot">=&gt;</span>  <span class="dt">ConduitT</span> i o m [i]</a></code></pre></div>
+<p><code>ConduitT</code> のパラメータはそれぞれ以下のような具体的な型になります。</p>
+<ul>
+<li><code>i</code> = <code>()</code></li>
+<li><code>o</code> = <code>Void</code></li>
+<li><code>m</code> = <code>Identity</code></li>
+<li><code>r</code> = <code>[i]</code></li>
+</ul>
+<p>さらに <code>m</code> と <code>i</code> にはクラス制約があるため以下のインスタンス定義が要求されます。</p>
+<ul>
+<li><code>instance Monad Identity</code></li>
+<li><code>instance Enum ()</code></li>
+<li><code>instance Num ()</code></li>
+</ul>
+<p>ここで <a href="https://www.stackage.org/haddock/lts-11.17/base-4.10.1.0/Prelude.html#t:Num">Num</a> クラスのインスタンス定義には <code>()</code> が含まれないため、エラーとなってしまいました。</p>
+<h4 id="つ目の例がエラーにならない理由">１つ目の例がエラーにならない理由</h4>
+<p>ではなぜ <code>return () .|</code> が追加されるとエラーにならないのでしょうか？</p>
+<p>型を確認してみます。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">(.|)   ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> a b m () <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> b c m r <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> a c m r</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">return<span class="ot"> ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> m a</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1">return<span class="ot"> ()      ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> i o m ()</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">(return () <span class="fu">.|</span>)<span class="ot"> ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> o c m r <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i c m r</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1">mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">&gt;&gt;</span> sinkList</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="ot">  ::</span> (<span class="dt">Monad</span> m, <span class="dt">Enum</span> i, <span class="dt">Num</span> i) <span class="ot">=&gt;</span>  <span class="dt">ConduitT</span> i o m [i]</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">(return () <span class="fu">.|</span> mapM_ leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">&gt;&gt;</span> sinkList)</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="ot">  ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> i o m [i]</a></code></pre></div>
+<p>2つ目の例では <code>runConduitPure</code> に直接適用してしまったため、型クラス制約が必要になりましたが、今回は <code>return ()</code> と合成した結果を <code>runConduitPure</code> に適用するため、この問題を回避することができています。</p>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>runConduitPure</code> に適用する時に今回のようなエラーが出てしまう場合は <code>return () .|</code> として合成してから適用すると良い。</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Haskell Quiz No.9 Conduit Part.5</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/07-06-quiz-9.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/07-06-quiz-9.html</id>
@@ -43,7 +146,7 @@
       In a stmt of a &#39;do&#39; block: mapM_ leftover [1 .. 10]
 
     mapM_ leftover [1..10]</code></pre>
-<p>答えは次回。</p>
+<p>答えは<a href="./07-08-quiz-10.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
 <p><a href="./04-08-quiz-8.html">前回</a>の問題と答えは以下の通りです。</p>
@@ -2712,107 +2815,6 @@ commit
 <p>手作業で毎回削除してて、絶対何かおかしいと思ってましたが、ちゃんと直りました！！！やったね！</p>
 <p>以上です。</p>
 <!--more-->]]></summary>
-</entry>
-<entry>
-    <title>LiquidHaskell の --prune-unsorted フラグ</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html</id>
-    <published>2018-04-14T00:00:00Z</published>
-    <updated>2018-04-14T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><code>LiquidHaskell</code> では <code>measure</code> という仕組みを使って <code>Haskell</code> の関数を <code>LH</code> の述語に持ち上げることができます。</p>
-<p>しかし、以下の <code>nLen</code> 関数は <code>measure</code> によって持ち上げることができません。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">{-@ measure nLen @-}</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
-<p>結論から言えば、これを解決するためには <code>--prune-unsorted</code> フラグを利用します。</p>
-<p>以下は <code>measure</code> の基本的な使い方等についての説明です。</p>
-<!--more-->
-<h2 id="measure-の基本的な使い方">measure の基本的な使い方</h2>
-<p>例えばリストの長さを求める <code>lLen</code> という関数を述語に持ち上げるにはこのようにします。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">{-@ measure lLen @-}</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ot">lLen ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">lLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">lLen (_<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> lLen xs</a></code></pre></div>
-<pre class="shell"><code>$ liquid LH.hs
-LiquidHaskell Version 0.8.2.4, Git revision 5b68dc72f628a4c16a77616fb32d8c685580ed2d (dirty)
-Copyright 2013-18 Regents of the University of California. All Rights Reserved.
-
-**** DONE:  A-Normalization ****************************************************
-**** DONE:  Extracted Core using GHC *******************************************
-**** DONE:  Transformed Core ***************************************************
-Working 150% [=================================================================]
-**** DONE:  annotate ***********************************************************
-**** RESULT: SAFE **************************************************************</code></pre>
-<p>実際にはこんな感じで長さ付きリストのリファインメント型をつけます。先程から<strong>述語</strong>と言っているのはリファインメント型 <code>{ | }</code> の <code>|</code> の右側のことです。<code>measure</code> によってこの部分で <code>Haskell</code> で定義した <code>lLen</code> 関数が使えるようになります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">{-@ type ListN a N = {v:[a] | lLen v = N} @-}</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">{-@ goodList :: ListN Int 2 @-}</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="ot">goodList ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">goodList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
-<p>当然ですが、仕様を満たしていない場合は <code>UNSAFE</code> になります。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">{-@ badList :: ListN Int 1 @-}</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="ot">badList ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">badList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
-<pre class="shell"><code>**** RESULT: UNSAFE ************************************************************
-Error: Liquid Type Mismatch
-
- 14 | badList = [1,2]
-      ^^^^^^^
-   Inferred type
-     VV : {v : [Int] | Main.lLen v == 1 + Main.lLen ?d
-                       &amp;&amp; len v == 1 + len ?d
-                       &amp;&amp; tail v == ?d
-                       &amp;&amp; head v == (1 : int)
-                       &amp;&amp; len v &gt;= 0}
-
-   not a subtype of Required type
-     VV : {VV : [Int] | Main.lLen VV == 1}
-
-   In Context
-     ?b : {?b : [Int] | Main.lLen ?b == 0
-                        &amp;&amp; len ?b == 0
-                        &amp;&amp; len ?b &gt;= 0}
-
-     ?d : {?d : [Int] | Main.lLen ?d == 1 + Main.lLen ?b
-                        &amp;&amp; len ?d == 1 + len ?b
-                        &amp;&amp; tail ?d == ?b
-                        &amp;&amp; head ?d == (2 : int)
-                        &amp;&amp; len ?d &gt;= 0}</code></pre>
-<p>エラーメッセージがつらいですが、とりあえずは以下の部分に着目すれば良いでしょう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1">not a subtype <span class="kw">of</span> <span class="dt">Required</span> <span class="kw">type</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">     <span class="dt">VV</span> <span class="fu">:</span> {<span class="dt">VV</span> <span class="fu">:</span> [<span class="dt">Int</span>] <span class="fu">|</span> Main.lLen <span class="dt">VV</span> <span class="fu">==</span> <span class="dv">1</span>}</a></code></pre></div>
-<p><code>lLen VV == 1</code> の制約が満たされていない。つまり、<code>lLen</code> の結果が <code>1</code> になってないよ。ということです。</p>
-<h2 id="measure-でエラーが出る場合">measure でエラーが出る場合</h2>
-<p><code>measure</code> はどんな関数にも使えるわけではありません。</p>
-<p>例えば、以下のような数値のリストに対して、リストの値の合計を返す関数 <code>nLen</code> を考えましょう。(<code>sum</code> と同じですが <code>Preude</code> とかぶるので名前を変更しています)</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">{-@ measure nLen @-}</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
-<p><code>LiquidHaskell</code> はこの定義に対してエラーを表示します。これは <code>nLen</code> 関数がリストの型変数 <code>a</code> を <code>Int</code> に特殊化しているためです。(<a href="https://github.com/ucsd-progsys/liquidhaskell#prune-unsorted-predicates">Prune Unsorted Predicates</a>)</p>
-<p>こういう関数に対しては <code>--prune-unsorted</code> フラグを用いれば良いです。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">{-@ LIQUID &quot;--prune-unsorted&quot; @-}</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">{-@ measure nLen @-}</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
-<p><code>nLen</code> を使った型は、先ほどの <code>lLen</code> とほとんど同じです。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">{-@ type ListSum a N = {v:[a] | nLen v = N} @-}</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">{-@ goodListSum :: ListSum Int 111 @-}</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="ot">goodListSum ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">goodListSum <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">100</span>]</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">{-@ badListSum :: ListSum Int 111 @-}</span></a>
-<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="ot">badListSum ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb10-9" data-line-number="9">badListSum <span class="fu">=</span> [<span class="dv">1</span>]</a></code></pre></div>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li>型パラメータが特殊化された関数を <code>measure</code> で述語に持ち上げる際には <code>--prune-unsorted</code> を使う</li>
-</ul>
-<p>以上です。</p>]]></summary>
 </entry>
 
 </feed>
