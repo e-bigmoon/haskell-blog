@@ -8,8 +8,50 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-07-08T00:00:00Z</updated>
+    <updated>2018-07-09T00:00:00Z</updated>
     <entry>
+    <title>Haskell Quiz No.11 isUpper と isAsciiUpper</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/07-09-quiz-11.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/07-09-quiz-11.html</id>
+    <published>2018-07-09T00:00:00Z</published>
+    <updated>2018-07-09T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.11">Haskell Quiz No.11</h2>
+<p>難易度: λ</p>
+<p>以下のプログラムの実行結果はどうなるでしょうか？</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.17</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Data.Char</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  print <span class="fu">$</span> isUpper <span class="ch">&#39;あ&#39;</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  print <span class="fu">$</span> isAsciiUpper <span class="ch">&#39;あ&#39;</span></a></code></pre></div>
+<p>答えは次回。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./07-08-quiz-10.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λ</p>
+<p>以下の実行結果はどうなるでしょう！</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.17</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> return ()</a></code></pre></div>
+<h3 id="こたえ">こたえ</h3>
+<p>何も表示されない。</p>
+<pre class="shell"><code>$ ./Quiz10.hs</code></pre>
+<h3 id="解説">解説</h3>
+<p><code>yieldMany</code> 関数があるので <code>iterMC print</code> によって <code>1 〜 10</code> が表示されるように思うかもしれません。</p>
+<p>しかし、最後のパイプが <code>return ()</code> となっているため、何も起きません。</p>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>Conduit は値が上流から自然に流れてくるのではなく、必要な時に下流から引っ張っているイメージで考えると良い。</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Haskell Quiz No.10 Conduit Part.6</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/07-08-quiz-10.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/07-08-quiz-10.html</id>
@@ -24,7 +66,7 @@
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> return ()</a></code></pre></div>
-<p>答えは次回。</p>
+<p>答えは<a href="./07-09-quiz-11.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
 <p><a href="./07-06-quiz-9.html">前回</a>の問題と答えは以下の通りです。</p>
@@ -2795,25 +2837,6 @@ commit
 <li>Compile Cabal-simple with gmp when using Nix. See <a href="https://github.com/commercialhaskell/stack/issues/2944">#2944</a></li>
 <li><code>stack ghci</code> now replaces the stack process with ghci. This improves signal handling behavior. In particular, handling of Ctrl-C. To make this possible, the generated files are now left behind after exit. The paths are based on hashing file contents, and it’s stored in the system temporary directory, so this shouldn’t result in too much garbage. See <a href="https://github.com/commercialhaskell/stack/issues/3821">#3821</a>.</li>
 </ul>]]></summary>
-</entry>
-<entry>
-    <title>HIE でコード整形時に改行が追加されてしまうバグが直りました</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/04-18-hie.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/04-18-hie.html</id>
-    <published>2018-04-18T00:00:00Z</published>
-    <updated>2018-04-18T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><strong>vscode</strong> + <strong>Haskell IDE Engine</strong> の組み合わせで <code>Haskell</code> を書き続けて半年ぐらいになります。</p>
-<p><code>hie</code> が採用している整形ツールは <a href="https://github.com/lspitzner/brittany">brittany</a> なのですが、個人的には <a href="https://github.com/commercialhaskell/hindent">hindent</a> よりも気に入っています。(最近 <a href="https://github.com/lspitzner/brittany/pull/124">Add import and module support #124</a> が実装されたんですけど、この部分は正直気に入っていない・・・。<code>stylish-haskell</code> の結果の方が好きです。)</p>
-<p>今回のバグはコード整形時にファイルの最後に空行が追加されてしまうというものでした・・・。(100回実行すると100行追加されます・・・)</p>
-<ul>
-<li><a href="https://github.com/haskell/haskell-ide-engine/issues/289">Newline added on every save #289</a></li>
-<li><a href="https://github.com/haskell/haskell-ide-engine/issues/521">Formatting code adds newline at the end of the file #521</a></li>
-</ul>
-<p>上記の <code>issue</code> が <a href="https://github.com/haskell/haskell-ide-engine/pull/525">Fix extra newline being added when formatting document #525</a> で修正されました。</p>
-<p>手作業で毎回削除してて、絶対何かおかしいと思ってましたが、ちゃんと直りました！！！やったね！</p>
-<p>以上です。</p>
-<!--more-->]]></summary>
 </entry>
 
 </feed>
