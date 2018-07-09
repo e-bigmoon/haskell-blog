@@ -19,3 +19,9 @@ main = do
   -- 日本語
   print $ isUpper 'あ'
   print $ isAsciiUpper 'あ'
+
+  print $ isUpper 'A'
+  print $ isAsciiUpper 'A'
+
+  print $ isUpper 'Ａ'
+  print $ isAsciiUpper 'Ａ'
