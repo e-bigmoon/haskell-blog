@@ -1,6 +1,6 @@
 ARG resolver
 
-FROM fpco/stack-build:$resolver
+FROM ubuntu:18.04
 
 ARG stack_version
 
