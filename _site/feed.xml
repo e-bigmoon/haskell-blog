@@ -8,8 +8,81 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-07-10T00:00:00Z</updated>
+    <updated>2018-07-11T00:00:00Z</updated>
     <entry>
+    <title>Haskell Quiz No.13 Conduit Part.8</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/07-11-quiz-13.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/07-11-quiz-13.html</id>
+    <published>2018-07-11T00:00:00Z</published>
+    <updated>2018-07-11T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.13">Haskell Quiz No.13</h2>
+<p>難易度: λλ</p>
+<p>以下のプログラムの実行結果はどうなるでしょうか？</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-12.0</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> return () <span class="fu">.|</span> sinkNull</a></code></pre></div>
+<p>答えは次回。</p>
+<!--more-->
+<h2 id="はじめに">はじめに</h2>
+<p><a href="./07-10-quiz-12.html">前回</a>の問題と答えは以下の通りです。</p>
+<h3 id="問題">問題</h3>
+<p>難易度: λ</p>
+<p>以下のプログラムの実行結果はどうなるでしょうか？</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.17</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> sinkNull</a></code></pre></div>
+<h3 id="こたえ">こたえ</h3>
+<pre class="shell"><code>$ ./Quiz12.hs
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10</code></pre>
+<h3 id="解説">解説</h3>
+<p><a href="./07-08-quiz-10.html">Quiz10</a> でよく似た問題を出題しました。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot"># Quiz10</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> return ()</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="ot"># Quiz12</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> sinkNull</a></code></pre></div>
+<p>異なるのは最後の <code>return ()</code> と <code>sinkNull</code> だけです。</p>
+<p>Quiz10 の結果は何も表示されませんでしたが、今回は <code>1 ~ 10</code> の数字が表示されています。</p>
+<p>この挙動を理解するために <code>sinkNull</code> の実装を確認してみましょう。</p>
+<h4 id="sinknull">sinkNull</h4>
+<p><a href="https://www.stackage.org/haddock/lts-11.17/conduit-1.3.0.3/Data-Conduit-Combinators.html#v:sinkNull">sinkNull</a> 関数の実装は以下の通りです。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">sinkNull ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> i o m ()</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">sinkNull <span class="fu">=</span> awaitForever <span class="fu">$</span> \_ <span class="ot">-&gt;</span> return ()</a></code></pre></div>
+<p>非常にシンプルな実装になっています。 <a href="https://www.stackage.org/haddock/lts-11.17/conduit-1.3.0.3/Data-Conduit.html#v:awaitForever">awaitForever</a> の実装は以下の通りです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">awaitForever ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i o m r) <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i o m ()</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">awaitForever f <span class="fu">=</span> <span class="dt">ConduitT</span> <span class="fu">$</span> \rest <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">    <span class="kw">let</span> go <span class="fu">=</span> <span class="dt">NeedInput</span> (\i <span class="ot">-&gt;</span> unConduitT (f i) (const go)) rest</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">     <span class="kw">in</span> go</a></code></pre></div>
+<p>つまり、上流に対して値を要求し、その値に対して、引数として与えられた関数 <code>f</code> を適用するという関数です。 <code>Forever</code> という名前の通り、この関数は上流の値が無くなるまで値を要求し続けます。(そのため、<code>yieldMany [1..]</code> のような無限リストの場合は停止しません。)</p>
+<p><a href="https://www.stackage.org/haddock/lts-11.17/conduit-1.3.0.3/Data-Conduit.html#v:await">await</a> 関数はこのような定義だったので、とても似ていますね。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">await ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitT</span> i o m (<span class="dt">Maybe</span> i)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">await <span class="fu">=</span> <span class="dt">ConduitT</span> <span class="fu">$</span> \f <span class="ot">-&gt;</span> <span class="dt">NeedInput</span> (f <span class="fu">.</span> <span class="dt">Just</span>) (const <span class="fu">$</span> f <span class="dt">Nothing</span>)</a></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>sinkNull</code> は上流で用意した値を全て処理するために使うと便利</li>
+<li><code>await</code> は上流の値を一度だけ要求する</li>
+<li><code>awaitForever</code> は上流の値が無くなるまで要求する</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Haskell Quiz No.12 Conduit Part.7</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/07-10-quiz-12.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/07-10-quiz-12.html</id>
@@ -24,7 +97,7 @@
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> sinkNull</a></code></pre></div>
-<p>答えは次回。</p>
+<p>答えは<a href="./07-11-quiz-13.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
 <p><a href="./07-09-quiz-11.html">前回</a>の問題と答えは以下の通りです。</p>
@@ -322,7 +395,7 @@ False</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">injectLeftovers ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">Pipe</span> i i o u m r <span class="ot">-&gt;</span> <span class="dt">Pipe</span> l i o u m r</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2">injectLeftovers <span class="fu">=</span> go []</a>
 <a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">  　<span class="fu">...</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">    <span class="fu">...</span></a>
 <a class="sourceLine" id="cb11-5" data-line-number="5">    go ls (<span class="dt">Leftover</span> p l) <span class="fu">=</span> go (l<span class="fu">:</span>ls) p</a></code></pre></div>
 <p><code>go</code> 関数の第一引数の <code>ls</code> は <code>leftover</code> によって上流に戻される値を保存しておくための蓄積変数です。</p>
 <p>ここで <code>mapM_ leftover [1..10]</code> はこんなような形をしているパイプです。</p>
@@ -1506,169 +1579,6 @@ default-extensions: NoImplicitPrelude</code></pre>
 <h2 id="まとめ">まとめ</h2>
 <p>実際にこの手法で開発を進めているわけではないので、もしかすると落とし穴があるかもしれませんが、思ったより使いやすくてびっくりしました。</p>
 <p>元の Prelude に戻すことも簡単だと思うので、興味があれば試してみて下さい。(結構前のチケットなので、周知の事実だったらすみません・・・。)</p>]]></summary>
-</entry>
-<entry>
-    <title>extensible-0.4.9 がリリースされました。</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/05-14-release-extensible-049.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/05-14-release-extensible-049.html</id>
-    <published>2018-05-14T00:00:00Z</published>
-    <updated>2018-05-14T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>BIG MOON では、業務に必要なツールを自社開発しており、プログラミング言語に <strong>Haskell</strong> を採用しています。実用的に利用し始めて3年ぐらい？です。</p>
-<p>僕らが <strong>Haskell</strong> を利用していて一番困った点はレコードの取り扱いです。</p>
-<ul>
-<li>異なる型のフィールドラベルに同じ名前を付けたい</li>
-<li>フィールド全体対して関数を適用したい</li>
-<li>フィールド多相な関数を定義したい</li>
-</ul>
-<p>このような問題に対して <a href="https://github.com/fumieval/extensible">extensible</a> という、(当初は謎に包まれていた) パッケージの利用を検討し、実際に既存のシステムを <strong>extensible</strong> で置き換えました。(当時アルバイトしていた <a href="https://github.com/matsubara0507">matsubara0507</a> さんが居なければ実現不可能だったと思います)</p>
-<p>今回、縁あって作者の <a href="https://twitter.com/fumieval">fumieval</a> さんと一緒に仕事できる機会に恵まれました。fumieval さんは簡単な質問でも、とても気さくに答えてくれます。</p>
-<p>僕達のノウハウはまだまだとても少ないですが、この素晴らしいパッケージを広く知って欲しいと思い、まだまだ作成途中ではありますが <a href="https://wiki.hask.moe/">extensible 攻略Wiki</a> という親しみやすい雰囲気で情報を発信していくことになりました。</p>
-<p>この wiki もまた <strong>Haskell</strong> で作られており <a href="https://github.com/fumieval/apus">apus</a> という名前で公開されています。</p>
-<p>今回の extensible-0.4.9 の<a href="https://github.com/fumieval/extensible/blob/master/CHANGELOG.md">アップデート</a>は、攻略wiki のコンテンツを拡充していく中で出てきたアイデアや、関数などがいくつか追加されました。(matsubara0507 さんと弊社も色々と貢献できているはずです！)</p>
-<p>今回はその内容について簡単な例とともに解説を行いたいと思います。</p>
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible">Hackage extensible-0.4.9</a></li>
-</ul>
-<!--more-->
-<h2 id="アップデート内容">アップデート内容</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">type</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Record</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">  &#39;[ <span class="st">&quot;name&quot;</span> <span class="fu">:&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">   , <span class="st">&quot;age&quot;</span>  <span class="fu">:&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">   ]</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="ot">person ::</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">person <span class="fu">=</span> <span class="fu">#</span>name <span class="fu">@=</span> <span class="st">&quot;bigmoon&quot;</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">      <span class="fu">&lt;:</span> <span class="fu">#</span>age  <span class="fu">@=</span> <span class="dv">10</span></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">      <span class="fu">&lt;:</span> nil</a></code></pre></div>
-<p>以降の例では、上記の <code>Person</code> 型と <code>person</code> 変数が宣言されているものとします。</p>
-<hr />
-<ul>
-<li>MonadIO のインスタンスを一般化しました。</li>
-</ul>
-<p>ベースモナドとして <strong>ResourceT IO</strong> などが使えるようになりました。</p>
-<p>今までは <code>Associate &quot;IO&quot; (ResourceT IO)</code> のように書けませんでしたが、こんな感じのコードが書けるようになりました。また、<a href="https://www.stackage.org/haddock/lts-11.9/resourcet-1.2.1/Control-Monad-Trans-Resource.html#t:ResourceT">ResourceT IO</a> 以外にも <a href="https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Control-Monad-IO-Class.html#t:MonadIO">MonadIO</a> のインスタンスであれば何でも指定可能です。</p>
-<p>ここでは <a href="https://www.stackage.org/haddock/lts-11.9/resourcet-1.2.1/Control-Monad-Trans-Resource.html#t:MonadResource">MonadResource</a> のインスタンスを自分で定義しましたが、次回リリース (0.4.10) でライブラリに追加される予定？です。(たぶん)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">type</span> <span class="dt">ExampleM</span> <span class="fu">=</span> <span class="dt">Eff</span> &#39;[ <span class="st">&quot;IO&quot;</span> <span class="fu">&gt;:</span> <span class="dt">ResourceT</span> <span class="dt">IO</span> ]</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">main <span class="fu">=</span> runResourceT <span class="fu">.</span> retractEff <span class="fu">.</span> runConduit <span class="fu">$</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  bracketP (openFile <span class="st">&quot;data.csv&quot;</span> <span class="dt">ReadMode</span>) hClose <span class="fu">$</span> \handle <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">    (sourceHandle<span class="ot"> handle ::</span> <span class="dt">ConduitT</span> i <span class="dt">ByteString</span> <span class="dt">ExampleM</span> ()) <span class="fu">.|</span> stdoutC</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">instance</span> (<span class="dt">Associate</span> <span class="st">&quot;IO&quot;</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>) xs) <span class="ot">=&gt;</span> <span class="dt">MonadResource</span> (<span class="dt">Eff</span> xs) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">  liftResourceT <span class="fu">=</span> liftEff (<span class="dt">Proxy</span> <span class="fu">@</span> <span class="st">&quot;IO&quot;</span>)</a></code></pre></div>
-<p>ただ単に <code>csv</code> ファイルを読み込んで表示するだけの例です。</p>
-<pre class="csv"><code>-- data.csv
-&quot;bigmoon&quot;, 10, &quot;watch&quot;
-&quot;wado&quot;, 100, art
-</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> main</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">&quot;bigmoon&quot;</span>, <span class="dv">10</span>, <span class="st">&quot;watch&quot;</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">&quot;wado&quot;</span>, <span class="dv">100</span>, art</a></code></pre></div>
-<p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/MonadIO.hs">完全なコード</a></p>
-<hr />
-<ul>
-<li>新しい制約コンビネータ <a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Dictionary.html#t:And">And</a> を追加しました。</li>
-</ul>
-<p>このコンビネータを利用することで <a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#t:Forall">Forall</a> の制約を二つ以上指定することができます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="dt">And</span><span class="ot"> ::</span> (k <span class="ot">-&gt;</span> <span class="dt">Constraint</span>) <span class="ot">-&gt;</span> (k <span class="ot">-&gt;</span> <span class="dt">Constraint</span>) <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Constraint</span></a></code></pre></div>
-<p>以下は拡張可能レコードの値が <strong>Show</strong> かつ <a href="https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Data-Typeable.html">Typeable</a> の両方を満たすという制約で <a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hfoldMapFor">hfoldMapFor</a> 関数を使う例です。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">debug ::</span> <span class="dt">Forall</span> (<span class="dt">ValueIs</span> (<span class="dt">And</span> <span class="dt">Show</span> <span class="dt">Typeable</span>)) xs <span class="ot">=&gt;</span> <span class="dt">Record</span> xs <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">debug <span class="fu">=</span> hfoldMapFor c (print <span class="fu">.</span> fork id typeOf <span class="fu">.</span> view _Wrapper)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">    c <span class="fu">=</span> <span class="dt">Proxy</span> <span class="fu">@</span> (<span class="dt">ValueIs</span> (<span class="dt">And</span> <span class="dt">Show</span> <span class="dt">Typeable</span>))</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">    fork f g x <span class="fu">=</span> (f x, g x)</a></code></pre></div>
-<p>例として定義した <strong>debug</strong> 関数は与えられた拡張可能レコードの <strong>値</strong> と <strong>型</strong> を表示することができます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">&gt;&gt;&gt;</span> debug person</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">(<span class="st">&quot;bigmoon&quot;</span>,[<span class="dt">Char</span>])</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">(<span class="dv">10</span>,<span class="dt">Int</span>)</a></code></pre></div>
-<p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/And.hs">完全なコード</a></p>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Field.html#v:stringAssocKey">stringAssocKey</a> 関数を追加しました。</li>
-</ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">stringAssocKey ::</span> (<span class="dt">IsString</span> a, <span class="dt">KnownSymbol</span> (<span class="dt">AssocKey</span> kv)) <span class="ot">=&gt;</span> proxy kv <span class="ot">-&gt;</span> a</a></code></pre></div>
-<p>この関数を使えば、拡張可能レコードのキーを文字列として取得することができます。</p>
-<p>例えば、拡張可能レコードのキーを全て集めてリストにして返す関数は以下のように作ることができます。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">keys ::</span> (<span class="dt">IsString</span> key, <span class="dt">Forall</span> (<span class="dt">KeyIs</span> <span class="dt">KnownSymbol</span>) xs) <span class="ot">=&gt;</span> proxy xs <span class="ot">-&gt;</span> [key]</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">keys xs <span class="fu">=</span> henumerateFor (<span class="dt">Proxy</span> <span class="fu">@</span> (<span class="dt">KeyIs</span> <span class="dt">KnownSymbol</span>)) xs ((<span class="fu">:</span>) <span class="fu">.</span> stringAssocKey) []</a></code></pre></div>
-<p><a href="https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Data-String.html#t:IsString">IsString</a> のインスタンスであれば何でも良いので、<strong>String</strong> に限らず <strong>Text</strong>, <strong>ByteString</strong> などを返すことができます。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> mapM_ putStrLn <span class="fu">$</span> keys person</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">name</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">age</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> mapM_ Data.Text.IO.putStrLn <span class="fu">$</span> keys person</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">name</a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">age</a></code></pre></div>
-<p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/StringAssocKey.hs">完全なコード</a></p>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/prettyprinter">prettyprinter</a> パッケージの <strong>Pretty</strong> のインスタンスを追加しました。</li>
-</ul>
-<p>prettyprinter パッケージについては<a href="https://haskell.e-bigmoon.com/posts/2018/03-30-prettyprinter.html">過去のブログ記事</a>で少し紹介しているので、興味ある方はそちらをご確認ください。</p>
-<p>以下のような出力になるそうです。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1">[ name<span class="fu">:</span> <span class="dt">DA</span><span class="fu">-</span>192H</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">  weight<span class="fu">:</span> <span class="fl">260.0</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">  price<span class="fu">:</span> <span class="dv">120</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">  featured<span class="fu">:</span> <span class="dt">True</span></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">  description<span class="fu">:</span> <span class="dt">High</span><span class="fu">-</span>quality (24bit 192kHz), lightweight portable <span class="dt">DAC</span></a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">  quantity<span class="fu">:</span> <span class="dv">20</span></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7">, name<span class="fu">:</span> <span class="dt">HHP</span><span class="fu">-</span><span class="dv">150</span></a>
-<a class="sourceLine" id="cb11-8" data-line-number="8">  weight<span class="fu">:</span> <span class="fl">200.0</span></a>
-<a class="sourceLine" id="cb11-9" data-line-number="9">  price<span class="fu">:</span> <span class="dv">330</span></a>
-<a class="sourceLine" id="cb11-10" data-line-number="10">  featured<span class="fu">:</span> <span class="dt">False</span></a>
-<a class="sourceLine" id="cb11-11" data-line-number="11">  description<span class="fu">:</span> <span class="dt">Premium</span> wooden headphone</a>
-<a class="sourceLine" id="cb11-12" data-line-number="12">  quantity<span class="fu">:</span> <span class="dv">55</span> ]</a></code></pre></div>
-<p>現状は <code>prettyprinter</code> 側のバグ？で上手く表示されていないようですが、そのうち直ると思います。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> pretty person</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">{ name<span class="fu">:</span> bigmoon; age<span class="fu">:</span> <span class="dv">10</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> pretty [person, person]</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">[{ name<span class="fu">:</span> bigmoon; age<span class="fu">:</span> <span class="dv">10</span> }, { name<span class="fu">:</span> bigmoon; age<span class="fu">:</span> <span class="dv">10</span> }]</a></code></pre></div>
-<p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/Pretty.hs">完全なコード</a></p>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/th-lift">th-lift</a> の <strong>Lift</strong> のインスタンスを追加しました。</li>
-</ul>
-<p><strong>Lift</strong> のインスタンスになったので例えば、<strong>Data.Yaml.TH</strong> モジュールの <a href="https://www.stackage.org/haddock/lts-11.9/yaml-0.8.30/Data-Yaml-TH.html#v:decodeFile">decodeFile</a> 関数を使ってコンパイル時に <strong>yaml</strong> ファイルから一気に拡張可能レコードを作り上げることができます。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">config ::</span> <span class="dt">Config</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">config <span class="fu">=</span> <span class="fu">$$</span>(Yaml.TH.decodeFile <span class="st">&quot;config.yaml&quot;</span>)</a></code></pre></div>
-<p>実行例:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># config.yaml</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="fu">name:</span><span class="at"> </span><span class="st">&quot;bigmoon&quot;</span></a>
-<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="fu">age:</span><span class="at"> 10</span></a></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> config</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">name <span class="fu">@=</span> <span class="st">&quot;bigmoon&quot;</span> <span class="fu">&lt;:</span> age <span class="fu">@=</span> <span class="dv">10</span> <span class="fu">&lt;:</span> nil</a></code></pre></div>
-<p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/Lift.hs">完全なコード</a></p>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hmapWithIndexFor">hmapWithIndexFor</a> を追加しました。</li>
-</ul>
-<p><a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hmapWithIndex">hmapWithIndex</a> の制約付きバージョンです。</p>
-<p>例えば以下のようにして拡張可能レコードから <strong>aeson</strong> パッケージの <a href="https://www.stackage.org/haddock/lts-11.9/aeson-1.2.4.0/Data-Aeson.html#t:Value">Value</a> をフィールドとして持つ拡張可能レコードに変換できます。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="ot">toJSONRecord ::</span> <span class="dt">Forall</span> (<span class="dt">ValueIs</span> <span class="dt">ToJSON</span>) xs <span class="ot">=&gt;</span> <span class="dt">Record</span> xs <span class="ot">-&gt;</span> <span class="dt">RecordOf</span> (<span class="dt">Const&#39;</span> <span class="dt">Value</span>) xs</a>
-<a class="sourceLine" id="cb16-2" data-line-number="2">toJSONRecord <span class="fu">=</span> hmapWithIndexFor c <span class="fu">$</span> \m <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb16-3" data-line-number="3">    <span class="dt">Field</span> <span class="fu">.</span> <span class="dt">Const&#39;</span> <span class="fu">.</span> toJSON <span class="fu">.</span> view _Wrapper</a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">  <span class="kw">where</span> c <span class="fu">=</span> <span class="dt">Proxy</span> <span class="fu">@</span> (<span class="dt">ValueIs</span> <span class="dt">ToJSON</span>)</a></code></pre></div>
-<p>実行例:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> person</a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">name <span class="fu">@=</span> <span class="st">&quot;bigmoon&quot;</span> <span class="fu">&lt;:</span> age <span class="fu">@=</span> <span class="dv">10</span> <span class="fu">&lt;:</span> nil</a>
-<a class="sourceLine" id="cb17-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> toJSONRecord person</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">name <span class="fu">@=</span> <span class="dt">String</span> <span class="st">&quot;bigmoon&quot;</span> <span class="fu">&lt;:</span> age <span class="fu">@=</span> <span class="dt">Number</span> <span class="fl">10.0</span> <span class="fu">&lt;:</span> nil</a></code></pre></div>
-<p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/HmapWithIndexFor.hs">完全なコード</a></p>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Wrapper.html#t:Const-39-">Const’</a> に Monoid のインスタンスを追加しました。</li>
-</ul>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Wrapper.html#t:Wrapper">Wrapper</a> に Either e のインスタンスを追加しました。</li>
-</ul>
-<h2 id="まとめ">まとめ</h2>
-<p><strong>extensible</strong> パッケージは初見では全く使い方がわからないレベルで難しいですが、実際に使ってみると、今までリアルワールド Haskell っぽいコードだね。仕方ないね。と妥協していた部分がとても綺麗に書けるようになります。</p>
-<p><a href="https://wiki.hask.moe/">extensible 攻略Wiki</a> の内容はこれからもっと充実して行くので、気になる人はチェックしてみてください！</p>]]></summary>
 </entry>
 
 </feed>
