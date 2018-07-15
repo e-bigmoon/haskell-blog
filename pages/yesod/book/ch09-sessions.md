@@ -97,7 +97,7 @@ instance Yesod App where
 `sslOnlyMiddleware` のタイムアウトが少なくともセッションタイムアウト以上の長さであるように設定します。
 これらを一緒に使うことで、セッションクッキーが暗号化されずに送信されてしまわないことを保証します。
 
-＃# Session Operations
+## Session Operations
 
 多くのフレームワークのように Yesod のセッションはキーと値を格納します。
 ベースとなるセッションAPIは4つの関数です。
