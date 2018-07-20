@@ -1,16 +1,9 @@
-ARG resolver
-
-FROM ubuntu:18.04
+FROM fpco/stack-build:lts
 
 ARG stack_version
 
 RUN apt-get update && apt-get install -y \
     build-essential \
-    curl \
-    libffi-dev \
-    libgmp-dev \
-    zlib1g-dev \
-    git \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
