@@ -76,8 +76,14 @@ jobs:
             curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
             git --no-pager diff --exit-code
       - *save_build_results
+      - store_artifacts:
+          path: _site
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./_site
 
-  deploy:
+  preview:
     docker:
       - image: quay.io/haskell_works/stack-build-minimal
     <<: *default_env
@@ -88,10 +94,15 @@ jobs:
       - *display_stack_version
       - run:
           name: Send Artifacts URL to GitHub when PR
-          command: |
-            stack build
-            stack exec site rebuild
-            ./.circleci/preview.hs
+          command: ./.circleci/preview.hs
+      - *save_preview_results
+
+  deploy:
+    docker:
+      - image: quay.io/haskell_works/stack-build-minimal
+    steps:
+      - attach_workspace:
+          at: .
       - run:
           name: deploy
           command: |
@@ -105,15 +116,13 @@ jobs:
               git commit -m "by Circle CI (build: ${CIRCLE_BUILD_NUM})) : ${CIRCLE_BUILD_URL}"
               git push origin site
             fi
-      - store_artifacts:
-          path: _site
-      - *save_preview_results
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
       - build
+      - preview
       - deploy:
           requires:
             - build
