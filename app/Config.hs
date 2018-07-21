@@ -4,7 +4,7 @@
 module Config where
 
 import           Data.Extensible
-import           Data.Yaml       (FromJSON, decodeFileEither, ParseException)
+import           Data.Yaml       (FromJSON, ParseException, decodeFileEither)
 
 fromConfig :: (FromJSON a) => FilePath -> IO (Either ParseException a)
 fromConfig = decodeFileEither

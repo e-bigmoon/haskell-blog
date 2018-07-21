@@ -1,7 +1,7 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-12.0
 
-import System.IO.Extra
+import           System.IO.Extra
 
 main :: IO ()
 main = do

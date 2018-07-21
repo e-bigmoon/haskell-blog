@@ -1,7 +1,7 @@
 module Quiz3 where
 
-import Test.QuickCheck
-import Data.Char (isDigit)
+import           Data.Char       (isDigit)
+import           Test.QuickCheck
 
 newtype Digit = Digit Char
   deriving Show

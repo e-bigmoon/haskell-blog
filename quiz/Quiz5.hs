@@ -1,6 +1,6 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-11.0
-import Conduit
+import           Conduit
 
 sink :: Monad m => ConduitM Int o m (String, Int)
 sink = do

@@ -1,6 +1,6 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-11.3
-import Conduit
+import           Conduit
 
 myTakeWhileC :: Monad m => (i -> Bool) -> ConduitM i i m ()
 myTakeWhileC f = loop

@@ -1,6 +1,6 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-11.2
-import Conduit
+import           Conduit
 
 trans :: Monad m => ConduitM Int Int m ()
 trans = do
