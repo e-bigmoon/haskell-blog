@@ -66,6 +66,22 @@ jobs:
             stack clean
             stack test --pedantic --fast
       - run:
+          name: Genereate site files
+          command: stack exec site rebuild
+      - *save_build_results
+      - store_artifacts:
+          path: _site
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./_site
+
+  cehck:
+    docker:
+      - image: quay.io/haskell_works/stack-build-minimal
+    steps:
+      - checkout
+      - run:
           name: Run HLint
           command: |
             curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version
@@ -76,16 +92,6 @@ jobs:
             # TODO: https://github.com/jaspervdj/stylish-haskell/pull/218
             curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
             git --no-pager diff --exit-code
-      - run:
-          name: Genereate site files
-          command: stack exec site rebuild
-      - *save_build_results
-      - store_artifacts:
-          path: _site
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./_site
 
   preview:
     docker:
