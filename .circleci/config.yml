@@ -53,18 +53,11 @@ jobs:
       - *display_stack_version
       - run:
           name: Install dependencies
-          command: |
-            stack setup
-            stack test --only-dependencies --no-run-tests
+          command: stack test --only-dependencies --no-terminal --no-run-tests
           no_output_timeout: 120m
       - run:
           name: Run stack test
           command: stack test --fast
-      - run:
-          name: Run stack test --pedantic
-          command: |
-            stack clean
-            stack test --pedantic --fast
       - run:
           name: Genereate site files
           command: stack exec site rebuild
@@ -75,6 +68,21 @@ jobs:
           root: .
           paths:
             - ./_site
+
+  pedantic:
+    docker:
+      - image: quay.io/haskell_works/stack-build-minimal
+    <<: *default_env
+    steps:
+      - checkout
+      - *create_cache_key_file
+      - *restore_build_results
+      - *display_stack_version
+      - run:
+          name: Run stack test --pedantic
+          command: |
+            stack clean
+            stack test --pedantic --fast --no-run-tests
 
   cehck:
     docker:
@@ -132,7 +140,11 @@ workflows:
   build_and_deploy:
     jobs:
       - build
+      - check
       - preview
+      - - pedantic:
+          requires:
+            - build
       - deploy:
           requires:
             - build
