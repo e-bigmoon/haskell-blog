@@ -1,6 +1,6 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-11.17
-import Data.Char
+import           Data.Char
 
 main :: IO ()
 main = do

@@ -6,11 +6,11 @@ stack script --resolver lts-11.3
   --package directory
 -}
 
-import System.Environment (getArgs)
-import System.Directory (listDirectory, doesFileExist, getFileSize)
-import System.FilePath ((</>))
-import Control.Monad.Extra (partitionM, ifM)
-import Control.Monad (when)
+import           Control.Monad       (when)
+import           Control.Monad.Extra (ifM, partitionM)
+import           System.Directory    (doesFileExist, getFileSize, listDirectory)
+import           System.Environment  (getArgs)
+import           System.FilePath     ((</>))
 
 main :: IO ()
 main = do

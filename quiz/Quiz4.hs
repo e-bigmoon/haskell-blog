@@ -1,6 +1,6 @@
 module Quiz4 where
 
-import Data.List (transpose)
+import           Data.List (transpose)
 
 dfs :: Eq a => a -> [[a]] -> Bool
 dfs x = elem x . concat

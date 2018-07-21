@@ -6,12 +6,12 @@ stack script --resolver lts-11.3
   --package directory
 -}
 
-import Conduit
+import           Conduit
 
-import System.Environment (getArgs)
-import System.Directory (doesFileExist, getFileSize)
-import Control.Monad.Extra (whenM)
-import Control.Monad (when)
+import           Control.Monad       (when)
+import           Control.Monad.Extra (whenM)
+import           System.Directory    (doesFileExist, getFileSize)
+import           System.Environment  (getArgs)
 
 main :: IO ()
 main = do
