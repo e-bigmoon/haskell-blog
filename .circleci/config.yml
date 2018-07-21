@@ -63,8 +63,6 @@ jobs:
           name: Genereate site files
           command: stack exec site rebuild
       - *save_build_results
-      - store_artifacts:
-          path: _site
       - persist_to_workspace:
           root: .
           paths:
@@ -111,6 +109,10 @@ jobs:
       - *create_cache_key_file
       - *restore_preview_results
       - *display_stack_version
+      - attach_workspace:
+          at: .
+      - store_artifacts:
+          path: _site
       - run:
           name: Send Artifacts URL to GitHub when PR
           command: ./.circleci/preview.hs
