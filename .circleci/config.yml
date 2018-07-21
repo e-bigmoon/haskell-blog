@@ -12,12 +12,24 @@ aliases:
   - &restore_build_results
     restore_cache:
       keys:
-        - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}-{{ checksum "./.circleci/preview.hs" }}
+        - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
         - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-
         - stack-{{ checksum "cache_key" }}-
   - &save_build_results
       save_cache:
-        key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}-{{ checksum "./.circleci/preview.hs" }}
+        key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+        paths:
+          - ~/.stack
+          - ~/.local/bin
+          - .stack-work
+  - &restore_preview_results
+    restore_cache:
+      keys:
+        - stack-{{ checksum "cache_key" }}-{{ checksum "./.circleci/preview.hs" }}
+        - stack-{{ checksum "cache_key" }}-
+  - &save_preview_results
+      save_cache:
+        key: stack-{{ checksum "cache_key" }}-{{ checksum "./.circleci/preview.hs" }}
         paths:
           - ~/.stack
           - ~/.local/bin
@@ -58,9 +70,21 @@ jobs:
             # TODO: https://github.com/jaspervdj/stylish-haskell/pull/218
             curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
             git --no-pager diff --exit-code
+      - *save_build_results
+
+  deploy:
+    docker:
+      - image: quay.io/haskell_works/stack-build-minimal
+    <<: *default_env
+    steps:
+      - checkout
+      - *create_cache_key_file
+      - *restore_preview_results
+      - *display_stack_version
       - run:
           name: Send Artifacts URL to GitHub when PR
           command: |
+            stack build
             stack exec site rebuild
             ./preview.hs
       - run:
@@ -78,4 +102,13 @@ jobs:
             fi
       - store_artifacts:
           path: _site
-      - *save_build_results
+      - *save_preview_results
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
