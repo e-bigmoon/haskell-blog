@@ -51,7 +51,7 @@ mkReq url message token =
 mkMessage :: String -> String -> String -> String
 mkMessage buildUrl homeDir _repoName = intercalate
   "/"
-  [buildUrl, "artifacts", "0", homeDir, "project/.circleci/code/_site/index.html"]
+  [buildUrl, "artifacts", "0", homeDir, "project/.circleci/_site/index.html"]
 
 mkUrl :: Text -> Text -> Text -> Url Https
 mkUrl userName repoName prNumber =

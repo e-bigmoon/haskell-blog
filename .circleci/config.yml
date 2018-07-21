@@ -9,90 +9,59 @@ aliases:
     run:
       name: Create cache control key file
       command: echo $CACHE_KEY > cache_key
-  - &build_docker_image
-    run:
-      name: Build docker image
-      command: |
-        rsync -ave --exclude='.circleci' ./ .circleci/code
-        docker-compose -f .circleci/docker-compose.yml build --build-arg stack_version=$STACK_VERSION app
   - &restore_build_results
     restore_cache:
       keys:
-        - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+        - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}-{{ checksum "./.circleci/preview.hs" }}
         - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-
         - stack-{{ checksum "cache_key" }}-
-  - &store_build_results
+  - &save_build_results
       save_cache:
-        key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+        key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}-{{ checksum "./.circleci/preview.hs" }}
         paths:
-          - .circleci/code/.stack-work
+          - ~/.stack
+          - ~/.local/bin
+          - .stack-work
   - &display_stack_version
     run:
       name: Display stack version
-      command: docker-compose -f .circleci/docker-compose.yml run app stack --version
+      command: |
+        stack upgrade --binary-version=$STACK_VERSION
+        stack --version
 
 jobs:
-  test:
-    machine:
-      docker_layer_caching: true
+  build:
+    docker:
+      - image: quay.io/haskell_works/stack-build-minimal
     <<: *default_env
     steps:
       - checkout
-      - *build_docker_image
-      - *create_cache_key_file
-      - *restore_build_results
-      - run:
-          name: Run stack test
-          command: docker-compose -f .circleci/docker-compose.yml run app stack test --fast --allow-different-user
-      - *store_build_results
-
-  pedantic:
-    machine:
-      docker_layer_caching: true
-    <<: *default_env
-    steps:
-      - checkout
-      - *build_docker_image
       - *create_cache_key_file
       - *restore_build_results
       - *display_stack_version
+      - run:
+          name: Run stack test
+          command: stack test --fast
       - run:
           name: Run stack test --pedantic
           command: |
-            docker-compose -f .circleci/docker-compose.yml run app stack clean --allow-different-user
-            docker-compose -f .circleci/docker-compose.yml run app stack test --pedantic --fast --allow-different-user
-
-  hlint:
-    docker:
-      - image: ubuntu:18.04
-    steps:
-      - checkout
+            stack clean
+            stack test --pedantic --fast
       - run:
           name: Run HLint
           command: |
-            apt update
-            apt install -y curl
             curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version
-            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
-
-  preview:
-    machine:
-      docker_layer_caching: true
-    <<: *default_env
-    steps:
-      - checkout
-      - *build_docker_image
-      - *create_cache_key_file
-      - restore_cache:
-          keys:
-            - stack-{{ checksum "cache_key" }}-{{ checksum "./.circleci/preview.hs" }}
-            - stack-{{ checksum "cache_key" }}-
-      - *display_stack_version
       - run:
-          name: Run stack exec site rebuild
+          name: Run stylish-haskell
           command: |
-            docker-compose -f .circleci/docker-compose.yml run app stack build --allow-different-user
-            docker-compose -f .circleci/docker-compose.yml run app stack exec site rebuild --allow-different-user
+            # TODO: https://github.com/jaspervdj/stylish-haskell/pull/218
+            curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
+            git --no-pager diff --exit-code
+      - run:
+          name: Send Artifacts URL to GitHub when PR
+          command: |
+            stack exec site rebuild
+            .circleci/preview.hs
       - run:
           name: deploy
           command: |
@@ -101,36 +70,11 @@ jobs:
               cd haskell-blog
               git config user.name "${GIT_NAME}"
               git config user.email "${GIT_EMAIL}"
-              cp -r ../.circleci/code/_site .
+              cp -r ../_site .
               git add -A
               git commit -m "by Circle CI (build: ${CIRCLE_BUILD_NUM})) : ${CIRCLE_BUILD_URL}"
               git push origin site
             fi
       - store_artifacts:
-          path: .circleci/code/_site
-      - run:
-          name: Send Artifacts URL to GitHub when PR
-          command: |
-            curl -sSL https://get.haskellstack.org/ | sh -s -- -d ~/.local/bin/
-            export PATH=~/.local/bin:$PATH
-            stack upgrade --binary-version ${STACK_VERSION}
-            .circleci/preview.hs
-      - save_cache:
-          key: stack-{{ checksum "cache_key" }}-{{ checksum "./.circleci/preview.hs" }}
-          paths:
-            - /home/circleci/.stack/
-
-workflows:
-  version: 2
-  test-hlint-pedantic:
-    jobs:
-      - test
-      - pedantic:
-          requires:
-            - test
-      - hlint:
-          requires:
-            - test
-      - preview:
-          requires:
-            - test
+          path: _site
+      - *save_build_results
