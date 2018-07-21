@@ -1,6 +1,6 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-11.16
-import Conduit
+import           Conduit
 
 main :: IO ()
 main = print $ runConduitPure $ do
