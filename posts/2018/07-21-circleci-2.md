@@ -295,8 +295,7 @@ Docker ファイルの内容については以下のリポジトリで確認が�
       - run:
           name: Run stylish-haskell
           command: |
-            # TODO: https://github.com/jaspervdj/stylish-haskell/pull/218
-            curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
+            curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
             git --no-pager diff --exit-code
 ```
 
@@ -392,8 +391,7 @@ jobs:
       - run:
           name: Run stylish-haskell
           command: |
-            # TODO: https://github.com/jaspervdj/stylish-haskell/pull/218
-            curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
+            curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
             git --no-pager diff --exit-code
 workflows:
   version: 2
