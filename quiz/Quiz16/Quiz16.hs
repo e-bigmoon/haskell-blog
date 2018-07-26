@@ -56,9 +56,9 @@ right (Leaf _)   = Nothing
 right (Node _ r) = Just r
 
 -- | 木の要素に対して関数を適用する
-mapTree :: (a -> b) -> Tree a -> Tree b
-mapTree f (Leaf x)   = Leaf (f x)
-mapTree f (Node l r) = Node (mapTree f l) (mapTree f r)
+treeMap :: (a -> b) -> Tree a -> Tree b
+treeMap f (Leaf x)   = Leaf (f x)
+treeMap f (Node l r) = Node (treeMap f l) (treeMap f r)
 
 -- | 木を畳み込む
 foldTree :: (a -> b) -> (b -> b -> b) -> Tree a -> b
@@ -75,7 +75,7 @@ main = do
   print $ left intTree
   print $ right intTree
 
-  print $ mapTree show intTree
+  print $ treeMap show intTree
 
   print $ foldTree id (+) intTree
   print $ foldTree id (*) intTree
