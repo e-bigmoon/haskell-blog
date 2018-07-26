@@ -21,7 +21,7 @@ intTree =
 -- | 部分木を左右反転させた木を返す
 mirror :: Tree a -> Tree a
 mirror (Leaf x)   = Leaf x
-mirror (Node l r) = Node r l
+mirror (Node l r) = Node (mirror r) (mirror l)
 
 -- | 葉の数を返す
 size :: Tree a -> Int
