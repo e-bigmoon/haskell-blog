@@ -45,16 +45,6 @@ leaves :: Tree a -> [a]
 leaves (Leaf x)   = [x]
 leaves (Node l r) = leaves l ++ leaves r
 
--- | 左の部分木を返す
-left :: Tree a -> Maybe (Tree a)
-left (Leaf _)   = Nothing
-left (Node l _) = Just l
-
--- | 右の部分木を返す
-right :: Tree a -> Maybe (Tree a)
-right (Leaf _)   = Nothing
-right (Node _ r) = Just r
-
 -- | 木の要素に対して関数を適用する
 treeMap :: (a -> b) -> Tree a -> Tree b
 treeMap f (Leaf x)   = Leaf (f x)
