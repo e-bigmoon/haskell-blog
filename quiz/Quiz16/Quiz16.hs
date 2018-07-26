@@ -61,9 +61,9 @@ treeMap f (Leaf x)   = Leaf (f x)
 treeMap f (Node l r) = Node (treeMap f l) (treeMap f r)
 
 -- | 木を畳み込む
-foldTree :: (a -> b) -> (b -> b -> b) -> Tree a -> b
-foldTree f _ (Leaf x)   = f x
-foldTree f g (Node l r) = g (foldTree f g l) (foldTree f g r)
+treeFold :: (a -> b) -> (b -> b -> b) -> Tree a -> b
+treeFold f _ (Leaf x)   = f x
+treeFold f g (Node l r) = g (treeFold f g l) (treeFold f g r)
 
 main :: IO ()
 main = do
@@ -77,9 +77,9 @@ main = do
 
   print $ treeMap show intTree
 
-  print $ foldTree id (+) intTree
-  print $ foldTree id (*) intTree
-  print $ foldTree (:[]) (++) intTree
+  print $ treeFold id (+) intTree
+  print $ treeFold id (*) intTree
+  print $ treeFold (:[]) (++) intTree
 
 {-
 $ ./Quiz16.hs
