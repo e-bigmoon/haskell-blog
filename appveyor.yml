@@ -7,6 +7,8 @@ init:
   - ps: Restart-Computer
 
 branches:
+  only:
+    - master
   # blacklist
   except:
     - site
@@ -22,6 +24,5 @@ cache:
 
 build_script:
   - cmd: stack build
-  - cmd: chcp 65001
-  - cmd: stack exec site build
   - cmd: sass -I sass --scss ./css/main.scss ./css/main.css
+  - cmd: stack exec site build
