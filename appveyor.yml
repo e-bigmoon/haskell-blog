@@ -1,0 +1,24 @@
+version: 1.0.{build}
+
+# 日本語環境
+init:
+  - ps: Set-WinSystemLocale ja-JP
+  - ps: Start-Sleep -s 5
+  - ps: Restart-Computer
+
+branches:
+  # blacklist
+  except:
+    - site
+
+install:
+  - cinst haskell-stack
+  - refreshenv            # 環境変数の再読込
+
+cache:
+  - '%LOCALAPPDATA%\Programs\stack\'
+  - "C:\\SR"
+
+build_script:
+  - cmd: stack build
+  - cmd: stack exec site build
