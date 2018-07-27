@@ -1,6 +1,5 @@
 # BIG MOON Haskeller's blog
 
-[![Build Status](https://travis-ci.org/e-bigmoon/haskell-blog.svg?branch=master)](https://travis-ci.org/e-bigmoon/haskell-blog)
 [![CircleCI](https://circleci.com/gh/e-bigmoon/haskell-blog.svg?style=svg)](https://circleci.com/gh/e-bigmoon/haskell-blog)
 
 ## ページ
