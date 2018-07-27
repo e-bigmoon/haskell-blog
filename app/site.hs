@@ -14,6 +14,7 @@ import           System.FilePath
 #if defined(mingw32_HOST_OS)
 import           GHC.IO.Encoding.CodePage (mkLocaleEncoding)
 import           GHC.IO.Encoding.Failure  (CodingFailureMode (TransliterateCodingFailure))
+import           System.IO
 #endif
 
 #if !(defined(mingw32_HOST_OS))
