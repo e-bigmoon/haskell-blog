@@ -23,6 +23,7 @@ import           Hakyll.Web.Sass
 
 main :: IO ()
 main = do
+  hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
   msiteConfig <- C.fromConfig "config.yml"
   either (error "Expected file 'config.yml' not found") main' msiteConfig
 
@@ -33,7 +34,6 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     compile copyFileCompiler
 
 #ifdef mingw32_HOST_OS
-  hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
   match "css/*.css" $ do
     route idRoute
     compile compressCssCompiler
