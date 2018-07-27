@@ -12,11 +12,9 @@ branches:
     - site
 
 install:
-  - cmd: chcp 65001
   - cinst haskell-stack
-  - cinst dart-sdk
-  - cinst sass
-  - refreshenv            # 環境変数の再読込
+  - cinst sass --version 1.9.2 --pre    # https://github.com/sass/dart-sass/issues/413
+  - refreshenv                          # 環境変数の再読込
 
 cache:
   - '%LOCALAPPDATA%\Programs\stack\'
@@ -24,5 +22,6 @@ cache:
 
 build_script:
   - cmd: stack build
+  - cmd: chcp 65001
   - cmd: stack exec site build
   - cmd: sass -I sass --scss ./css/main.scss ./css/main.css
