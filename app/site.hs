@@ -2,18 +2,17 @@
 {-# LANGUAGE OverloadedLabels  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import qualified Config          as C
-import           Control.Lens    ((^.))
-import           Control.Monad   (forM_)
-import           Data.List       (stripPrefix)
+import qualified Config                   as C
+import           Control.Lens             ((^.))
+import           Control.Monad            (forM_)
+import           Data.List                (stripPrefix)
 import           Data.Maybe
-import           Data.Monoid     ((<>))
-import           Hakyll          hiding (dateFieldWith)
+import           Hakyll                   hiding (dateFieldWith)
 import           Hakyll.Ext
-import           System.FilePath (takeBaseName, takeDirectory, takeFileName)
+import           System.FilePath
 
 #if !(defined(mingw32_HOST_OS))
-import           Hakyll.Web.Sass (sassCompiler)
+import           Hakyll.Web.Sass
 #endif
 
 main :: IO ()
