@@ -28,6 +28,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     compile copyFileCompiler
 
 #ifdef mingw32_HOST_OS
+  hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
   match "css/*.css" $ do
     route idRoute
     compile compressCssCompiler
