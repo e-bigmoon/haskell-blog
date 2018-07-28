@@ -9,7 +9,7 @@ Name | github | twitter
 -----|--------|-------
 Shinya Yamaguchi | [waddlaw](https://github.com/waddlaw) | [waddlaw](https://twitter.com/waddlaw)
 Hiroki Asano | [asanoH](https://github.com/asanoH) |
-Kotaro Ohsugi | [pythonissam](https://github.com/pythonissam) |
+pythonissam | [pythonissam](https://github.com/pythonissam) |
 Wataru Yamada | [wataru86](https://github.com/wataru86) |
 
 ---
