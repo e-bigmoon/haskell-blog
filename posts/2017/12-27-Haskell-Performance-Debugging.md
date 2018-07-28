@@ -1,7 +1,7 @@
 ---
 title: Haskell のパフォーマンスをデバッグする
 author: Matt Parsons
-translator: Kotaro Ohsugi
+translator: pythonissam
 github: pythonissam
 tags: To Overcome, 翻訳
 ---
