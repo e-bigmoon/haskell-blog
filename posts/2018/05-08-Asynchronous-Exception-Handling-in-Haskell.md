@@ -712,8 +712,8 @@ Haskell で適切な例外安全なコードを書くための、今まで出て
 # 例
 さて、これで Haskell での例外処理の全ての原則をカバーしたことになります。ベストプラクティスを紹介するためにも、これからいくつかの例をお見せしましょう。
 
-## 可能なときは非同期例外を避ける
-これは一般的なアドバイスなのですが、必要ないときにっは非同期例外を使わないでください。時に、非同期例外はメッセージの送信やフローのコントロールに使われたりします。そういうことをしたいのなら、多くの場合もっと良い方法があります! 以下のコードを考えてみましょう:
+## 可能な限り非同期例外を避ける
+これは一般的なアドバイスなのですが、必要ないときにっは非同期例外を使わないでください。時に、非同期例外はメッセージパッシングやフローのコントロールに使われたりします。そういうことをしたいのなら、多くの場合もっと良い方法があります! 以下のコードを考えてみましょう:
 
 ```haskell
 import Control.Concurrent
@@ -731,8 +731,6 @@ main = do
       threadDelay 100000)
 ```
 
-This will result in dropping messages on the floor, since the first thread will finish before the second thread can complete. Instead of using forever and relying on async exceptions to kill the worker, build it into the channel itself:
-
 これはメッセージを床にぶちまけるだけで終わります。なぜなら、最初のスレッドは2番目のスレッドが終了する前に終わるからです。`forever` を使って非同期例外に殺しを頼むのではなく、チャンネルそのものに組み込んでしまいましょう:
 
 ```haskell
@@ -747,8 +745,8 @@ main :: IO ()
 main = do
   messages <- newTBMQueueIO 5
   concurrently_
-    (mapM_ (atomically . writeTBMQueue messages) [1..10 :: Int] -- 最初にこれ
-     `finally` atomically (closeTBMQueue messages))             -- 最後にこれ (例外が来てもやる)
+    (mapM_ (atomically . writeTBMQueue messages) [1..10 :: Int]
+     `finally` atomically (closeTBMQueue messages))
     (fix $ \loop -> do
       mmsg <- atomically $ readTBMQueue messages
       case mmsg of
@@ -761,5 +759,3 @@ main = do
 ```
 
 ここから得られる教訓は、非同期例外は強力で、多くのコードを簡単に正しく書くことができるが、必要ではなかったり、役に立たないこともままある、ということですね。
-
-[FP Complete の高パフォーマンスコンピューティング性能を見る](https://cta-service-cms2.hubspot.com/ctas/v2/public/cs/c/?cta_guid=fa747373-4be8-4bb9-8031-47da8eb85e0b&placement_guid=0fcb83ad-8d92-4bec-90c5-c9e1712c0b42&portal_id=2814979&canon=https%3A%2F%2Fwww.fpcomplete.com%2Fblog%2F2018%2F04%2Fasync-exception-handling-haskell&redirect_url=APefjpEn3s2cw3XogAbBU7yOA2yr-JZnAJH1xvSEEZ7_5ENd46z8TWBbLLUJXyXgMKQD4Zftx8o-89IgNDciE4r0IlOLsmmFgdLRZ2dmeCpmlrlMuzl9kFuBEkydiGP0-ztqS_xj-S4cuGoW1Oo3lhJhdC1UUhum4bXOWiuSUytQAu8hNelterEu5eI5M0BdVM7rgAIjhOI-2gnNEYxKI6qvCjpvAgdaW-NFPk23gLG1CCIoavQl9T65xCx3ZiV1nsMjMRWFExRV&click=b0fec26f-89d8-4634-8f88-f6dbd85db7a5&hsutk=5c3c91c8713f2febc12a27c59b40f1ba&pageId=5705152340&__hstc=180777528.5c3c91c8713f2febc12a27c59b40f1ba.1532838218016.1532838218016.1532842251286.2&__hssc=180777528.1.1532842251286&__hsfp=4088539859)
