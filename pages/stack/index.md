@@ -4,7 +4,7 @@ date: 2018/07/30
 ---
 
 <div class="row">
-  <div class="col s6">
+  <div class="col s12 m6">
 
 ## Tips
 
@@ -44,7 +44,7 @@ date: 2018/07/30
 - [stack v1.6.3](/posts/2017/12-24-stack163.html)
 
   </div>
-  <div class="col s6">
+  <div class="col s12 m6">
 
 ## チュートリアル
 
@@ -67,6 +67,8 @@ date: 2018/07/30
   - [HSpec](test/hspec.html)
   - [QuickCheck](test/quickcheck.html)
   - [doctest](test/doctest.html)
+
+## プラクティス
 
 ## エディタ
 
