@@ -1,5 +1,5 @@
 ---
-title: Haskell のパフォーマンスをデバッグする
+title: Haskell のパフォーマンスをデバッグする (翻訳)
 author: Matt Parsons
 translator: pythonissam
 github: pythonissam
