@@ -21,8 +21,7 @@ date: 2018/07/30
 - [カスタムスナップショットの紹介](/posts/2017/12-23-stack161.html)
 - [namespaced templates](/posts/2018/06-27-namespaced-templates.html)
 - [プロファイルの取得方法](etc/profiling.html)
-- [Pattern Synonyms で DEPRECATED](/posts/2018/02-12-pattern-synonyms.html)
-- [Prelude を カスタムPrelude で置き換える](/posts/2018/05-23-extended-prelude.html)
+- [extra-deps に github の短縮形が指定できるようになります](/posts/2018/03-13-stack-extra-deps-shorthand.html)
 
 ### stack サブコマンド
 
@@ -42,6 +41,29 @@ date: 2018/07/30
 - [stack v1.7.1](/posts/2018/05-04-stack171.html)
 - [stack v1.6.5](/posts/2018/02-21-stack165.html)
 - [stack v1.6.3](/posts/2017/12-24-stack163.html)
+
+## HLint
+
+- [はじめに](hlint/)
+- [HLint の導入と実行](hlint/hlint-intro.html)
+- [HLint のヒント](hlint/hlint-hint.html)
+- [HLint のカスタムヒント](hlint/hlint-customhint.html)
+- [プロジェクトで禁止している関数の検出](hlint/forbidden-functions.html)
+- [HLint のヒントを無視する方法](hlint/hlint-ignore.html)
+- [CI を回す!](hlint/hlint-ci.html)
+
+## Tools
+
+- [stylish-haskell](etc/stylish-haskell.html)
+- [Travis CI](etc/travis-ci.html)
+- [Circle CI 2.0](/posts/2018/07-21-circleci-2.html)
+
+## その他
+
+- [HLint](etc/hlint.html)
+- [hoogle](etc/hoogle.html)
+- [Links](etc/links.html)
+
 
   </div>
   <div class="col s12 m6">
@@ -70,32 +92,21 @@ date: 2018/07/30
 
 ## プラクティス
 
+- [Haskell で暗号学的ハッシュを扱う (翻訳)](/posts/2017/09-18-cryptographic-hashing-haskell.html)
+- [将来も使えるテストスイート (翻訳)](/posts/2017/12-22-future-proofing-test-suites.html)
+- [Haskell のパフォーマンスをデバッグする (翻訳)](/posts/2017/12-27-Haskell-Performance-Debugging.html)
+- [travis-ci の初回ビルドで OUT OF MEMORY が出た時の対処法](/posts/2017/12-31-travis-out-of-memory.html)
+- [Pattern Synonyms で DEPRECATED](/posts/2018/02-12-pattern-synonyms.html)
+- [Prelude を カスタムPrelude で置き換える](/posts/2018/05-23-extended-prelude.html)
+- [wizard モノイド (翻訳)](/posts/2018/03-07-The-wizard-monoid.html)
+- [アプリケーションのバージョンに Git の情報を出してみよう！](/posts/2018/03-20-gitrev.html)
+- [正格性のすべて (翻訳)](/posts/2018/06-25-All-About-Strictness.html)
+- [ContT を使ってコードを綺麗にしよう！](/posts/2018/06-26-cont-param.html)
+
 ## エディタ
 
 - [VS Code で Ghcid を使う](/posts/2017/12-24-Ghcid-with-VS-Code.html)
 - [Haskell IDE Engine を Emacs で使う](/posts/2018/03-26-hie-emacs.html)
-
-## HLint
-
-- [はじめに](hlint/)
-- [HLint の導入と実行](hlint/hlint-intro.html)
-- [HLint のヒント](hlint/hlint-hint.html)
-- [HLint のカスタムヒント](hlint/hlint-customhint.html)
-- [プロジェクトで禁止している関数の検出](hlint/forbidden-functions.html)
-- [HLint のヒントを無視する方法](hlint/hlint-ignore.html)
-- [CI を回す!](hlint/hlint-ci.html)
-
-## Tools
-
-- [stylish-haskell](etc/stylish-haskell.html)
-- [Travis CI](etc/travis-ci.html)
-- [Circle CI 2.0](/posts/2018/07-21-circleci-2.html)
-
-## その他
-
-- [HLint](etc/hlint.html)
-- [hoogle](etc/hoogle.html)
-- [Links](etc/links.html)
 
   </div>
 </div>
