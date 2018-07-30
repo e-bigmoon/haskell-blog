@@ -77,7 +77,7 @@ main = warp 3000 App
 **URL** の形式を `http://localhost/?name=%27),alert(XSS)//` とするとインジェクションが発生します。
 
 ```html
-<img onload="init('%27),alert(1)//')" src="...">
+<img onload="init('%27),alert(XSS)//')" src="...">
 ```
 
 読みやすさのため、パーセントエンコーディングを元に戻します。
