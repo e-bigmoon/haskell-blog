@@ -1,16 +1,16 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-12.4
-{-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE QuasiQuotes           #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns      #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
+import qualified Data.Text              as T
+import           Data.Text.Lazy.Builder (Builder, fromLazyText, fromString,
+                                         fromText, singleton, toLazyText)
+import           Numeric                (showHex)
+import           Text.Julius
 import           Yesod
-import Text.Julius
-import Data.Text.Lazy.Builder (Builder, fromText, toLazyText, fromLazyText)
-import qualified Data.Text as T
-import Numeric (showHex)
-import Data.Text.Lazy.Builder (singleton, fromString)
 
 data App = App
 
@@ -53,7 +53,7 @@ string s = {-# SCC "string" #-} singleton '"' <> quote s <> singleton '"'
                  c == '<'  ||
                  c == '>'  ||
                  c == '&'  ||
-                 c == '\'' ||
+                 c == '\'' || -- 追記
                  c < '\x20'
     escape '\"' = "\\\""
     escape '\\' = "\\\\"
@@ -63,6 +63,7 @@ string s = {-# SCC "string" #-} singleton '"' <> quote s <> singleton '"'
     escape '<' = "\\u003c"
     escape '>' = "\\u003e"
     escape '&' = "\\u0026"
+    -- 追記
     escape '\'' = "\\\'"
 
     escape c
