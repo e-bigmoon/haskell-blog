@@ -2,51 +2,6 @@
 title: コマンドリファレンス
 ---
 
-##### stack build
-
-###### 並列ビルドについて
-
-`stack` では自動的にビルドが並列化される (現在のCPUのコア数を自動的に設定する) ため、明示的に `-j` オプションを渡す必要はありません。(むしろ、現状は間違ったコア数を渡してしまうとパフォーマスに悪影響を及ぼすバグがあるため、非推奨です。)
-
-並列化オプションとして `-jN` が提供されていますが、以下のようにコア数を抑制したい場合にのみ、利用した方が良いでしょう。(`-j` はエラーになります)
-
-```bash
-#### 自動的に並列化してビルド
-$ stack build
-
-#### コア数1でビルド
-$ stack build -j1
-```
-
-`stack.yaml` の書式。
-
-```yaml
-jobs: 1
-```
-
-##### stack hoogle
-
-```bash
-# グローバルデータベースの生成
-$ stack exec -- hoogle generate
-# プロジェクトデータベースの生成
-$ stack hoogle
-# 検索
-$ stack hoogle "<search_text>"
-```
-
-##### stack clean
-
-ビルド結果はキャッシュされてしまうので、警告とか見たい時の強制リビルトとかで良く使う。
-
-通常は `.stack-work/dist` 以下のパッケージディレクトリを削除します。パッケージを指定して個別に削除することも可能です。また、`--full` オプションをつけると `.stack-work` ディレクトリが丸ごと削除されます。
-
-```bash
-$ stack clean
-$ stack clean <package>
-$ stack clean --full
-```
-
 ##### stack exec
 
 `stack exec` は通常、ビルドしたバイナリを実行するために利用します。
@@ -95,7 +50,7 @@ $ stack unpack <package>
 
 ##### stack test
 
-##### stack test --test-arguments 
+##### stack test --test-arguments
 
 テスト時に引数を渡したい場合に使います。
 プロファイルのオプションを指定する際や、 `tasty-html` などで使う場合があります。
@@ -243,7 +198,7 @@ $ stack unpack <package>
 
 ##### stack test
 
-##### stack test --test-arguments 
+##### stack test --test-arguments
 
 テスト時に引数を渡したい場合に使います。
 プロファイルのオプションを指定する際や、 `tasty-html` などで使う場合があります。
