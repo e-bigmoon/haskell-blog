@@ -64,7 +64,7 @@ main = warp 3000 App
 
 ### 正常系
 
-期待する動作として、例えば `http://localhost/?name=bigmoon` いう形でパラメータを渡すと、以下のような URL が組み立てられます。
+期待する動作として、例えば `http://localhost/?name=bigmoon` いう形式の **URL** にアクセスすると、以下のような URL が組み立てられます。
 
 ```html
 <img onload="init('bigmoon')" src="...">
@@ -74,7 +74,7 @@ main = warp 3000 App
 
 ### 異常系
 
-パラメータを `http://localhost/?name=%27),alert(XSS)//` とするとインジェクションが発生します。
+**URL** の形式を `http://localhost/?name=%27),alert(XSS)//` とするとインジェクションが発生します。
 
 ```html
 <img onload="init('%27),alert(1)//')" src="...">
