@@ -8,8 +8,142 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-07-24T00:00:00Z</updated>
+    <updated>2018-07-31T00:00:00Z</updated>
     <entry>
+    <title>Yesod には脆弱性があるのかな？</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html</id>
+    <published>2018-07-31T00:00:00Z</published>
+    <updated>2018-07-31T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><a href="https://www.yesodweb.com/">Yesod</a> は Haskell で書かれた Web アプリケーションフレームワークです。</p>
+<p>WordPress や Drupal と違って、セキュリティはかなり万全です。(ユーザが気にしなければならない部分が非常に少ないです)</p>
+<p>最近、<a href="https://www.sbcr.jp/products/4797393163.html">体系的に学ぶ 安全なWebアプリケーションの作り方 第2版 (通称: 徳丸本)</a> が発売されました。</p>
+<p>勉強のため、本書の内容を Yesod で確認しているのですが、その中で面白い例を見つけました。</p>
+<p>今回はその内容について紹介したいと思います。(セキュリティの専門家ではないので間違いがあればご指摘ください)</p>
+<!--more-->
+<h2 id="脆弱性のあるコード">脆弱性のあるコード</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">/ HomeR GET</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">|]</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">getHomeR <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">  [whamlet|</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">    <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">      <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;#{name}&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">    <span class="kw">$nothing</span></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">      パラメータが設定されていません。</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">  |]</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">  toWidget [julius|</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">    <span class="kw">function</span> <span class="at">init</span>(text) <span class="op">{</span></a>
+<a class="sourceLine" id="cb1-30" data-line-number="30">      <span class="co">// 何かしらの処理</span></a>
+<a class="sourceLine" id="cb1-31" data-line-number="31">    <span class="op">}</span></a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">  |]</a>
+<a class="sourceLine" id="cb1-33" data-line-number="33"></a>
+<a class="sourceLine" id="cb1-34" data-line-number="34"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<p>このコードには脆弱性があります。</p>
+<p><strong>Yesod</strong> の変数展開 <code>#{..}</code> は、このような <strong>JavaScript</strong> の動的生成でも大丈夫だろうと思っていたのですが、そうではありませんでした。</p>
+<h3 id="正常系">正常系</h3>
+<p>期待する動作として、例えば <code>http://localhost/?name=bigmoon</code> いう形式の <strong>URL</strong> にアクセスすると、以下のような URL が組み立てられます。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;bigmoon&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
+<p>これは予定通りです。</p>
+<h3 id="異常系">異常系</h3>
+<p><strong>URL</strong> の形式を <code>http://localhost/?name=%27),alert(XSS)//</code> とするとインジェクションが発生します。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;%27),alert(XSS)//&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
+<p>読みやすさのため、パーセントエンコーディングを元に戻します。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;&#39;),alert(XSS)//&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
+<p><code>alert</code> が出てきてしまいましたね・・・。</p>
+<p>余談ですが <strong>Yesod</strong> ではパラメータ中に出現する <code>;</code> をパラメータの区切り文字として認識するようです。そのため <code>http://localhost/?name=%27);alert(XSS)//</code> ではインジェクションは発生しません。</p>
+<h2 id="原因">原因</h2>
+<p>問題はどこにあるのでしょうか？</p>
+<p>パラメータを取得しているコードはこの部分です。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></a></code></pre></div>
+<p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Handler.html#v:lookupGetParam">lookupGetParam</a> の型は以下の通りです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">lookupGetParam ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Maybe</span> <span class="dt">Text</span>)</a></code></pre></div>
+<p>つまり、<code>mname :: Maybe Text</code> 型となってしまいます。ここが問題の原因です。</p>
+<p>ただの <strong>Text</strong> 型なので変数展開時に <strong>HTMLのエスケープ処理</strong> が行われます。本来ならば <strong>JavaScript</strong> 用のエスケープ処理が必要なのです。</p>
+<h2 id="展開部分を改良してみる">展開部分を改良してみる</h2>
+<p>では <strong>Javascript</strong> 型に変換すれば問題は解決するのでしょうか？</p>
+<p>試しに以下のようにコードを変更してみました。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">&lt;</span>img onload<span class="fu">=</span><span class="st">&quot;init(&#39;#{renderJavascript $ toJavascript $ rawJS $ name}&#39;)&quot;</span> src<span class="fu">=</span><span class="st">&quot;...&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
+<p>ですが、やはり結果は同じです。</p>
+<h2 id="エスケープ処理">エスケープ処理</h2>
+<p>ソースコードを追いかけてみるとどうやら <strong>Value</strong> の値については <a href="https://www.stackage.org/haddock/lts-12.4/shakespeare-2.0.15/src/Text.Julius.html#string">string</a> というサニタイザーが適用されるようです。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">string ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">string s <span class="fu">=</span> <span class="ot">{-# SCC &quot;string&quot; #-}</span> singleton <span class="ch">&#39;&quot;&#39;</span> <span class="fu">&lt;&gt;</span> quote s <span class="fu">&lt;&gt;</span> singleton <span class="ch">&#39;&quot;&#39;</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">    quote q <span class="fu">=</span> <span class="kw">case</span> T.uncons t <span class="kw">of</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">                <span class="dt">Nothing</span>      <span class="ot">-&gt;</span> fromText h</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">                <span class="dt">Just</span> (<span class="fu">!</span>c,t&#39;) <span class="ot">-&gt;</span> fromText h <span class="fu">&lt;&gt;</span> escape c <span class="fu">&lt;&gt;</span> quote t&#39;</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">        <span class="kw">where</span> (h,t) <span class="fu">=</span> <span class="ot">{-# SCC &quot;break&quot; #-}</span> T.break isEscape q</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">    isEscape c <span class="fu">=</span> c <span class="fu">==</span> <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">||</span></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">                 c <span class="fu">==</span> <span class="ch">&#39;\\&#39;</span> <span class="fu">||</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10">                 c <span class="fu">==</span> <span class="ch">&#39;&lt;&#39;</span>  <span class="fu">||</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">                 c <span class="fu">==</span> <span class="ch">&#39;&gt;&#39;</span>  <span class="fu">||</span></a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">                 c <span class="fu">==</span> <span class="ch">&#39;&amp;&#39;</span>  <span class="fu">||</span></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13">                 c <span class="fu">&lt;</span> <span class="ch">&#39;\x20&#39;</span></a>
+<a class="sourceLine" id="cb8-14" data-line-number="14">    escape <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
+<a class="sourceLine" id="cb8-15" data-line-number="15">    escape <span class="ch">&#39;\\&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\\&quot;</span></a>
+<a class="sourceLine" id="cb8-16" data-line-number="16">    escape <span class="ch">&#39;\n&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\n&quot;</span></a>
+<a class="sourceLine" id="cb8-17" data-line-number="17">    escape <span class="ch">&#39;\r&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\r&quot;</span></a>
+<a class="sourceLine" id="cb8-18" data-line-number="18">    escape <span class="ch">&#39;\t&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\t&quot;</span></a>
+<a class="sourceLine" id="cb8-19" data-line-number="19">    escape <span class="ch">&#39;&lt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
+<a class="sourceLine" id="cb8-20" data-line-number="20">    escape <span class="ch">&#39;&gt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
+<a class="sourceLine" id="cb8-21" data-line-number="21">    escape <span class="ch">&#39;&amp;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
+<a class="sourceLine" id="cb8-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb8-23" data-line-number="23">    escape c</a>
+<a class="sourceLine" id="cb8-24" data-line-number="24">        <span class="fu">|</span> c <span class="fu">&lt;</span> <span class="ch">&#39;\x20&#39;</span> <span class="fu">=</span> fromString <span class="fu">$</span> <span class="st">&quot;\\u&quot;</span> <span class="fu">++</span> replicate (<span class="dv">4</span> <span class="fu">-</span> length h) <span class="ch">&#39;0&#39;</span> <span class="fu">++</span> h</a>
+<a class="sourceLine" id="cb8-25" data-line-number="25">        <span class="fu">|</span> otherwise  <span class="fu">=</span> singleton c</a>
+<a class="sourceLine" id="cb8-26" data-line-number="26">        <span class="kw">where</span> h <span class="fu">=</span> showHex (fromEnum c) <span class="st">&quot;&quot;</span></a></code></pre></div>
+<p>なので、先程のコードを少し修正してこの <code>string</code> を適用してみました。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">&lt;</span>img onload<span class="fu">=</span><span class="st">&quot;init(&#39;#{renderJavascript $ toJavascript $ rawJS $ string $ name}&#39;)&quot;</span> src<span class="fu">=</span><span class="st">&quot;...&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
+<p>しかし、これでもやっぱりだめです。なぜなら <code>'</code> に対してはサニタイズしていないからだと思います。</p>
+<h3 id="string-関数の修正">string 関数の修正</h3>
+<p>以下のように <code>'</code> のエスケープ処理を追加したところ、インジェクションが発生しなくなりました。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1">isEscape c <span class="fu">=</span> c <span class="fu">==</span> <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">||</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">             c <span class="fu">==</span> <span class="ch">&#39;\\&#39;</span> <span class="fu">||</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">             c <span class="fu">==</span> <span class="ch">&#39;&lt;&#39;</span>  <span class="fu">||</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">             c <span class="fu">==</span> <span class="ch">&#39;&gt;&#39;</span>  <span class="fu">||</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">             c <span class="fu">==</span> <span class="ch">&#39;&amp;&#39;</span>  <span class="fu">||</span></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">             c <span class="fu">==</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="fu">||</span> <span class="co">-- 追記</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">             c <span class="fu">&lt;</span> <span class="ch">&#39;\x20&#39;</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">escape <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
+<a class="sourceLine" id="cb10-10" data-line-number="10">escape <span class="ch">&#39;\\&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\\&quot;</span></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11">escape <span class="ch">&#39;\n&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\n&quot;</span></a>
+<a class="sourceLine" id="cb10-12" data-line-number="12">escape <span class="ch">&#39;\r&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\r&quot;</span></a>
+<a class="sourceLine" id="cb10-13" data-line-number="13">escape <span class="ch">&#39;\t&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\t&quot;</span></a>
+<a class="sourceLine" id="cb10-14" data-line-number="14">escape <span class="ch">&#39;&lt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
+<a class="sourceLine" id="cb10-15" data-line-number="15">escape <span class="ch">&#39;&gt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
+<a class="sourceLine" id="cb10-16" data-line-number="16">escape <span class="ch">&#39;&amp;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
+<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="co">-- 追記</span></a>
+<a class="sourceLine" id="cb10-18" data-line-number="18">escape <span class="ch">&#39;\&#39;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\&#39;&quot;</span></a></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><strong>JavaScript</strong> を動的に組み立てない</li>
+<li>ユーザが気をつけなけば <strong>Yesod</strong> でも脆弱性が発生する</li>
+<li>変数展開で全てがエスケープされると思っていたが、場所によってはそれだけでは不十分な場合がある</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>二分木 (Haskell Quiz No.15)</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/07-24-quiz-15.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/07-24-quiz-15.html</id>
@@ -1013,54 +1147,6 @@ category:            {{category}}{{^category}}Web{{/category}}</code></pre>
 <p>今までも自分で作ったプロジェクトテンプレートを使うことはできましたが、<strong>new-template</strong> を置き換えるか <strong>config.yml</strong> を設定する必要がありました。</p>
 <p>今回の機能追加により、<strong>stack new</strong> コマンドで直接プロジェクトテンプレートを簡単に指定できるため、自作テンプレート作りがはかどりそうです。</p>
 <p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>ContT を使ってコードを綺麗にしよう！</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/06-26-cont-param.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/06-26-cont-param.html</id>
-    <published>2018-06-26T00:00:00Z</published>
-    <updated>2018-06-26T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>Continuation (継続) について全く勉強したことが無いので <a href="https://www.stackage.org/haddock/lts-11.15/mtl-2.2.2/Control-Monad-Cont.html">Control.Monad.Cont</a> で定義されている ContT とかいつ使うんだろうなーと思っていましたが、ついに利用機会がありました！！！</p>
-<p>僕が考えたんじゃなくて fumieval さんに相談して、教えてもらったんですけどね。</p>
-<!--more-->
-<h2 id="問題のコード">問題のコード</h2>
-<p><strong>Yesod</strong> の <strong>Handler</strong> ではパラメータの取得するために <a href="https://www.stackage.org/haddock/lts-11.15/yesod-core-1.6.5/Yesod-Core-Handler.html#v:lookupGetParam">lookupGetParam</a> や <a href="https://www.stackage.org/haddock/lts-11.15/yesod-core-1.6.5/Yesod-Core-Handler.html#v:lookupPostParam">lookupPostParam</a> を利用すると思います。</p>
-<p>実際にはこんな感じでパラメータを取得していくつか処理を行います。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">deleteTestR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">deleteTestR <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  mParam <span class="ot">&lt;-</span> lookupPostParam <span class="st">&quot;key&quot;</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">  <span class="kw">case</span> mParam <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="fu">$</span> <span class="dt">String</span> <span class="st">&quot;パラメータが不正です。&quot;</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">    <span class="dt">Just</span> param <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">      <span class="kw">case</span> textToSqlKey param <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="fu">$</span> <span class="dt">String</span> <span class="st">&quot;キーが見つかりませんでした。&quot;</span></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">        <span class="dt">Just</span> key <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">          mRecord <span class="ot">&lt;-</span> runDB <span class="fu">$</span> get key</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">          <span class="kw">case</span> mRecord <span class="kw">of</span></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="fu">$</span> <span class="dt">String</span> <span class="st">&quot;削除対象のデータが見つかりませんでした。&quot;</span></a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">            <span class="dt">Just</span> _  <span class="ot">-&gt;</span> returnJson <span class="fu">$</span> <span class="dt">String</span> <span class="st">&quot;success&quot;</span></a></code></pre></div>
-<p>このコード、どう考えても嫌な感じですよね・・・。ネストやばいし。</p>
-<p><strong>do</strong> で書くと <strong>Maybe</strong> 型なので値を返せないし、ベースに <strong>Handler</strong> モナドがあるので <strong>Either</strong> で置き換えるのも良くわかんないな・・・。と思って、結構放置してました。</p>
-<h2 id="contt-を使ってリファクタリング">ContT を使ってリファクタリング！</h2>
-<p>先程のプログラムを <a href="https://www.stackage.org/haddock/lts-11.15/mtl-2.2.2/Control-Monad-Cont.html#t:ContT">ContT</a> で置き換えるとこうなります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">deleteTestR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">deleteTestR <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  mParam <span class="ot">&lt;-</span> lookupPostParam <span class="st">&quot;key&quot;</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  evalContT <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">    param <span class="ot">&lt;-</span> mParam <span class="fu">!?</span> <span class="st">&quot;パラメータが不正です。&quot;</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">    key <span class="ot">&lt;-</span> textToSqlKey param <span class="fu">!?</span> <span class="st">&quot;キーが見つかりませんでした。&quot;</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">    mRecord <span class="ot">&lt;-</span> lift <span class="fu">$</span> runDB <span class="fu">$</span> get key</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">    deletedBrand <span class="ot">&lt;-</span> mRecord <span class="fu">!?</span> <span class="st">&quot;削除対象のデータが見つかりませんでした。&quot;</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">    lift <span class="fu">$</span> returnJson <span class="fu">$</span> <span class="dt">String</span> <span class="st">&quot;success&quot;</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">    <span class="dt">Nothing</span> <span class="fu">!?</span> e <span class="fu">=</span> <span class="dt">ContT</span> <span class="fu">$</span> const <span class="fu">$</span> returnJson <span class="fu">$</span> <span class="dt">String</span> e</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">    <span class="dt">Just</span> a  <span class="fu">!?</span> _ <span class="fu">=</span> <span class="dt">ContT</span> (<span class="fu">$</span> a)</a></code></pre></div>
-<p>感動しましたね。継続すごいな！って。</p>
-<h2 id="まとめ">まとめ</h2>
-<p>継続勉強しよ。</p>]]></summary>
 </entry>
 
 </feed>
