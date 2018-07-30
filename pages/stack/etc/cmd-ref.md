@@ -2,30 +2,6 @@
 title: コマンドリファレンス
 ---
 
-##### stack exec
-
-`stack exec` は通常、ビルドしたバイナリを実行するために利用します。
-
-```bash
-$ stack build
-$ stack exec -- <binary>
-```
-
-また、あまり知られていませんが `stack exec` コマンドは `shell` で利用できるコマンドがそのまま使えます。
-
-```bash
-$ stack exec -- ls
-$ stack exec -- env
-```
-
-これを少し応用すると、ビルドしたバイナリのパスを簡単に取得することができます。
-
-```bash
-$ stack exec -- which <binary>
-```
-
-デプロイスクリプトなどで使うと便利です。
-
 ##### stack path
 
 基本的にはあまり使いません。
