@@ -2,18 +2,6 @@
 title: コマンドリファレンス
 ---
 
-##### stack unpack
-
-`Hackage` に登録されているパッケージをローカルに保存します。
-
-```bash
-$ stack unpack <package>
-```
-
-`git` にソースコードがあれば `git clone` で良いのですが、古いパッケージだと `Hackage` に登録されているソースコードしかない場合もあるため、そのような場合に使います。
-
-自分で `Hackage` からパッケージをダウンロードして `tar.gz` を展開することと同じですが、こっちの方が楽です。
-
 ##### stack test
 
 ##### stack test --test-arguments
