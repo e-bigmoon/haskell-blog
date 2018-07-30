@@ -759,3 +759,34 @@ main = do
 ```
 
 ここから得られる教訓は、非同期例外は強力で、多くのコードを簡単に正しく書くことができるが、必要ではなかったり、役に立たないこともままある、ということですね。
+
+## メールチャレンジ 1
+以下の例は、非同期例外処理的に良いのでしょうか? それとも悪いのでしょうか?
+
+```haskell
+bracket
+  openConnection closeConnection $ \conn ->
+    bracket
+      (sendHello conn)
+      (sendGoodbye conn)
+      (startConversation conn)
+```
+
+答えは悪い、です! コネクションを開いて閉じるのに `bracket` を使ったのは良いアイディアでした。しかし、さよならメッセージが送られることを保証するために `bracket` を使うのは、解放処理を著しく遅らせることになるでしょう。もしもコネクションを閉じる前に絶対にさよならメッセージを送らなければならないネットワークプロトコルがあれば... 普通にプロトコルとして欠陥品です。なぜなら、以下の状況に対処できないからです:
+
+* プロセスが SIGKILL を受け取ったら
+* パソコンが落ちたら
+* ネットワークが切断されたら
+
+代わりに、こうするのがよいでしょう:
+
+```haskell
+bracket
+  openConnection closeConnection $ \conn -> do
+    sendHello conn
+    res <- startConversation conn
+    sendGoodbye conn
+    return res
+```
+
+これには例外がありそうですが (別にかけたわけではありません)、その場合、そうするべき明確な理由づけをするべきでしょう。
