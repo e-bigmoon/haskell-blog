@@ -1,5 +1,5 @@
 ---
-title: Haskell で暗号学的ハッシュを扱う
+title: Haskell で暗号学的ハッシュを扱う (翻訳)
 author: Michael Snoyman
 translator: pythonissam
 tags: fpcomplete, 翻訳
