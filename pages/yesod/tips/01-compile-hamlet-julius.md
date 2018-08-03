@@ -1,6 +1,6 @@
 ---
 title: whamlet と julius
-date: 2018/03/18
+date: 2018/08/04
 ---
 
 ## whamlet の中で Text 型を展開する場合
