@@ -18,7 +18,7 @@ instance Yesod App where
     defaultYesodMiddleware handler
 
 getHomeR :: Handler Html
-getHomeR = defaultLayout $ do
+getHomeR = defaultLayout
   [whamlet|
     "test"
   |]

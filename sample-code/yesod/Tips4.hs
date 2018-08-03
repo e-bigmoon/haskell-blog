@@ -15,7 +15,7 @@ mkYesod "App" [parseRoutes|
 instance Yesod App
 
 getHomeR :: Handler Html
-getHomeR = defaultLayout $ do
+getHomeR = defaultLayout
   [whamlet|
     "test"
   |]
