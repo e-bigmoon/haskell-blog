@@ -4,8 +4,8 @@
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
+import           Text.Julius
 import           Yesod
-import Text.Julius
 
 data App = App
 
