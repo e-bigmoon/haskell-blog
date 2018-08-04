@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>XSS に対するセキュリティ</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/tips/06-xss.html">
+  <link rel="alternate" type="application/atom+xml" title="XSS に対するセキュリティ" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="XSS に対するセキュリティ" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/tips/06-xss.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="XSS に対するセキュリティ" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+        <a href="../../yesod/" class="white-text">
+          <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+          Yesod
+        </a>
+      </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">XSS に対するセキュリティ</h1>
+        
+        <span>最終更新日: 2018/08/04</span>
+        
+      </div>
+
+      <article class="page-content">
+        <h2 id="サンプルの基本形式">サンプルの基本形式</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">/check CheckR GET</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">|]</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="ot">getCheck1R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">getCheck1R <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">  [whamlet|</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">    ここに各種処理を書きます。</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">  |]</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<p>雛形は上記を使います。</p>
+<h2 id="html-のエスケープ">HTML のエスケープ</h2>
+<h3 id="テンプレート">テンプレート</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1">[whamlet|</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="kw">#{</span>maybe <span class="st">&quot;&quot;</span> id mParam<span class="kw">}</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">|]</a></code></pre></div>
+<h3 id="url">URL</h3>
+<p><a href="http://localhost:3000/check1?p=%3Cscript%3Ealert(document.cookie)%3C/script%3E"><code>http://localhost:3000/check1?p=&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></a></p>
+<h3 id="結果">結果</h3>
+<p>上記のURLでアクセスした場合は以下のように <code>&lt;</code> と <code>&gt;</code> がエスケープされる。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="dv">&amp;lt;</span>script<span class="dv">&amp;gt;</span>alert(document.cookie)<span class="dv">&amp;lt;</span>/script<span class="dv">&amp;gt;</span></a></code></pre></div>
+<p>そのため <strong>XSS</strong> は発生しない。(エスケープについての詳しい流れは<a href="./07-variable-interpolation.html">変数展開処理の流れ</a>を参照せよ。)</p>
+<h2 id="画面の書き換え">画面の書き換え</h2>
+<h3 id="テンプレート-1">テンプレート</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1">[whamlet|</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="kw">&lt;form</span><span class="ot"> action=</span><span class="st">&quot;&quot;</span><span class="ot"> method=</span><span class="st">&quot;POST&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    氏名<span class="kw">&lt;input</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span><span class="ot"> value=</span><span class="st">&quot;#{maybe &quot;</span><span class="er">&quot;</span><span class="ot"> id </span><span class="er">mParam}&quot;</span><span class="kw">&gt;&lt;br&gt;</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">|]</a></code></pre></div>
+<h3 id="url-1">URL</h3>
+<p><a href="http://localhost:3000/check2?p=%22%3E%3C/form%3EXSS%22"><code>http://localhost:3000/check2?p=&quot;&gt;&lt;/form&gt;XSS&quot;</code></a></p>
+<h3 id="結果-1">結果</h3>
+<p>以下のようにエスケープ処理 (<code>&quot;</code>, <code>&lt;</code>, <code>&gt;</code>) が行われるため、安全</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">value<span class="fu">=</span><span class="st">&quot;&amp;quot;&amp;gt;&amp;lt;/form&amp;gt;XSS&amp;quot;&quot;</span></a></code></pre></div>
+<h2 id="引用符で囲まれない属性値のxss">引用符で囲まれない属性値のXSS</h2>
+<h3 id="テンプレート-2">テンプレート</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1">[whamlet|</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">text</span><span class="ot"> name=</span><span class="st">mail</span><span class="ot"> value=</span><span class="kw">#{</span>maybe <span class="st">&quot;&quot;</span> id mParam<span class="kw">}&gt;</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">|]</a></code></pre></div>
+<h3 id="url-2">URL</h3>
+<p><a href="http://localhost:3000/check3?p=1+onmouseover%3dalert(document.cookie)"><code>http://localhost:3000/check3?p=1+onmouseover%3dalert(document.cookie)</code></a></p>
+<h3 id="結果-2">結果</h3>
+<p>以下のように <code>&quot;</code> が無い場合は自動的に追加するため、安全</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">&lt;</span>input <span class="kw">type</span><span class="fu">=</span><span class="st">&quot;text&quot;</span> name<span class="fu">=</span><span class="st">&quot;mail&quot;</span> value<span class="fu">=</span><span class="st">&quot;1 onmouseover=alert(document.cookie)&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
+<h2 id="href属性やsrc属性のxss">href属性やsrc属性のXSS</h2>
+<h3 id="テンプレート-3">テンプレート</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1">[whamlet|</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">  <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">#{</span>maybe <span class="st">&quot;&quot;</span> id mParam<span class="kw">}&gt;</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">    ブックマーク</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">|]</a></code></pre></div>
+<h3 id="url-3">URL</h3>
+<p><a href="http://localhost:3000/check4?p=javascript:alert(document.cookie)"><code>http://localhost:3000/check4?p=javascript:alert(document.cookie)</code></a></p>
+<h3 id="結果-3">結果</h3>
+<p>以下のように JavaScript のエスケープは何も行われないため、XSS が発生する。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">&lt;</span>a href<span class="fu">=</span><span class="st">&quot;javascript:alert(document.cookie)&quot;</span><span class="fu">&gt;</span>ブックマーク<span class="fu">&lt;/</span>a<span class="fu">&gt;</span></a></code></pre></div>
+<h2 id="javascript-の動的生成">JavaScript の動的生成</h2>
+<h3 id="テンプレート-4">テンプレート</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1">[whamlet|</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="kw">&lt;body</span><span class="ot"> onload=</span><span class="st">&quot;init('#{maybe &quot;</span><span class="er">&quot;</span><span class="ot"> id </span><span class="er">mParam}')&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">|]</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">toWidget [julius|</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">  <span class="kw">function</span> <span class="at">init</span>(text) <span class="op">{</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">    <span class="co">// 適当な処理</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">  <span class="op">}</span></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">|]</a></code></pre></div>
+<h3 id="url-4">URL</h3>
+<p><a href="http://localhost:3000/check5?p='"><code>http://localhost:3000/check5?p='),alert(document.cookie)//</code></a>,alert(document.cookie)//)</p>
+<h3 id="結果-4">結果</h3>
+<p>XSS が発生する。JavaScript のエスケープ処理が行われないため。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="fu">&lt;</span>body onload<span class="fu">=</span><span class="st">&quot;init('&amp;#39;),alert(document.cookie)//')&quot;</span><span class="fu">&gt;&lt;/</span>body<span class="fu">&gt;</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="fu">&lt;</span>script<span class="fu">&gt;</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  function init(text) {</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">    <span class="fu">//</span> 適当な処理</a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">  }</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="fu">&lt;/</span>script<span class="fu">&gt;</span></a></code></pre></div>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=XSS に対するセキュリティ&url=https://haskell.e-bigmoon.com/yesod/tips/06-xss.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/tips/06-xss.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/yesod/tips/06-xss.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
