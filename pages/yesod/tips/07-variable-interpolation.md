@@ -351,7 +351,7 @@ fromChoiceString EmptyChoiceString = id
 
 今回関係するのは `fromChoiceString (String s) = escapeMarkupEntities s` なので [escapeMarkupEntities](https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Renderer.String.html#escapeMarkupEntities) を確認しよう。
 
-### 【ステップ2】escapeMarkupEntities
+### 【ステップ3】escapeMarkupEntities
 
 escapeMarkupEntities 関数はエクスポートされていないが、実装は以下のようになっている。
 
