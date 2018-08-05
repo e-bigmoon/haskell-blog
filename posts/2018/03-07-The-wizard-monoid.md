@@ -1,5 +1,5 @@
 ---
-title: wizard モノイド
+title: wizard モノイド (翻訳)
 author: Gabriel Gonzalez
 translator: pythonissam
 tags: Haskell for all, 翻訳

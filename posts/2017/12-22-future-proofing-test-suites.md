@@ -1,5 +1,5 @@
 ---
-title: 将来も使えるテストスイート
+title: 将来も使えるテストスイート (翻訳)
 author: Michael Snoyman
 translator: pythonissam
 tags: Michael Snoyman's blog, 翻訳

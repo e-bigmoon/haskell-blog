@@ -1,7 +1,7 @@
 ---
 title: Yesod の破壊的変更予定
 author: Michael Snoyman
-translator: Kotaro Ohsugi
+translator: pythonissam
 tags: Yesod Web Framework, 翻訳
 ---
 

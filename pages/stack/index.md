@@ -1,23 +1,46 @@
 ---
-title: Haskell Stack
-date: 2018/05/05
+title: Haskell Development
+date: 2018/07/30
 ---
 
 <div class="row">
-  <div class="col s6">
+  <div class="col s12 m6">
 
 ## Tips
 
 - [Stack の更新](tips/stack-upgrade.html)
+- [Stack の削除](tips/stack-uninstall.html)
 - [完全なリビルド](tips/full-rebuild.html)
 - [おすすめの開発方法](tips/recommend-dev.html)
 - [script interpreter + stack script でスクリプティング！](tips/script-interpreter.html)
-- [カスタムスナップショットの紹介](/posts/2017/12-23-stack161.html)
 - [config.yaml のよくある設定](tips/config-yaml.html)
 - [ghc-options の推奨設定](tips/recommended-ghc-options.html)
 - [HDD の容量が少なくなってきた時](tips/hdd-space.html)
 - [最小のプロジェクト](tips/minimal-stack-proj.html)
 - [ファイル単位で ghc-options を指定する方法](tips/enable-ghc-options-by-file.html)
+- [カスタムスナップショットの紹介](/posts/2017/12-23-stack161.html)
+- [namespaced templates](/posts/2018/06-27-namespaced-templates.html)
+- [プロファイルの取得方法](etc/profiling.html)
+- [extra-deps に github の短縮形が指定できるようになります](/posts/2018/03-13-stack-extra-deps-shorthand.html)
+
+### stack サブコマンド
+
+- [stack build](command/build.html)
+- [stack test](command/test.html)
+- [stack run](/posts/2018/06-25-stack-run.html)
+- [stack exec](command/exec.html)
+- [stack clean](command/clean.html)
+- [stack ls](/posts/2017/12-20-stack-ls-command.html)
+- [stack hoogle](command/hoogle.html)
+- [stack path](command/path.html)
+- [stack unpack](command/unpack.html)
+- [stack templates](command/templates.html)
+
+### stack リリース解説
+
+- [stack v1.7.1](/posts/2018/05-04-stack171.html)
+- [stack v1.6.5](/posts/2018/02-21-stack165.html)
+- [stack v1.6.3](/posts/2017/12-24-stack163.html)
 
 ## HLint
 
@@ -31,23 +54,19 @@ date: 2018/05/05
 
 ## Tools
 
-ソースコード整形
-
 - [stylish-haskell](etc/stylish-haskell.html)
-- brittany
-- hindent
+- [Travis CI](etc/travis-ci.html)
+- [Circle CI 2.0](/posts/2018/07-21-circleci-2.html)
 
 ## その他
 
 - [HLint](etc/hlint.html)
 - [hoogle](etc/hoogle.html)
-- [プロファイリング](etc/profiling.html)
-- [コマンドリファレンス](etc/cmd-ref.html)
-- [Travis CI](etc/travis-ci.html)
 - [Links](etc/links.html)
 
+
   </div>
-  <div class="col s6">
+  <div class="col s12 m6">
 
 ## チュートリアル
 
@@ -70,6 +89,24 @@ date: 2018/05/05
   - [HSpec](test/hspec.html)
   - [QuickCheck](test/quickcheck.html)
   - [doctest](test/doctest.html)
+
+## プラクティス
+
+- [Haskell で暗号学的ハッシュを扱う (翻訳)](/posts/2017/09-18-cryptographic-hashing-haskell.html)
+- [将来も使えるテストスイート (翻訳)](/posts/2017/12-22-future-proofing-test-suites.html)
+- [Haskell のパフォーマンスをデバッグする (翻訳)](/posts/2017/12-27-Haskell-Performance-Debugging.html)
+- [travis-ci の初回ビルドで OUT OF MEMORY が出た時の対処法](/posts/2017/12-31-travis-out-of-memory.html)
+- [Pattern Synonyms で DEPRECATED](/posts/2018/02-12-pattern-synonyms.html)
+- [Prelude を カスタムPrelude で置き換える](/posts/2018/05-23-extended-prelude.html)
+- [wizard モノイド (翻訳)](/posts/2018/03-07-The-wizard-monoid.html)
+- [アプリケーションのバージョンに Git の情報を出してみよう！](/posts/2018/03-20-gitrev.html)
+- [正格性のすべて (翻訳)](/posts/2018/06-25-All-About-Strictness.html)
+- [ContT を使ってコードを綺麗にしよう！](/posts/2018/06-26-cont-param.html)
+
+## エディタ
+
+- [VS Code で Ghcid を使う](/posts/2017/12-24-Ghcid-with-VS-Code.html)
+- [Haskell IDE Engine を Emacs で使う](/posts/2018/03-26-hie-emacs.html)
 
   </div>
 </div>
