@@ -11,20 +11,20 @@ import           Hakyll                   hiding (dateFieldWith)
 import           Hakyll.Ext
 import           System.FilePath
 
-#if defined(mingw32_HOST_OS)
+#ifdef mingw32_HOST_OS
 import           GHC.IO.Encoding.CodePage (mkLocaleEncoding)
 import           GHC.IO.Encoding.Failure  (CodingFailureMode (TransliterateCodingFailure))
 import           System.IO
 #endif
 
-#if !(defined(mingw32_HOST_OS))
+#ifdef !mingw32_HOST_OS
 import           Hakyll.Web.Sass
 #endif
 
 
 main :: IO ()
 main = do
-#if defined(mingw32_HOST_OS)
+#ifdef mingw32_HOST_OS
   hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
 #endif
   msiteConfig <- C.fromConfig "config.yml"
