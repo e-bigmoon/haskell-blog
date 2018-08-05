@@ -17,10 +17,9 @@ import           GHC.IO.Encoding.Failure  (CodingFailureMode (TransliterateCodin
 import           System.IO
 #endif
 
-#ifdef !mingw32_HOST_OS
+#ifndef mingw32_HOST_OS
 import           Hakyll.Web.Sass
 #endif
-
 
 main :: IO ()
 main = do
