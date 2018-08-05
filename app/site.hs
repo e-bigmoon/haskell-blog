@@ -21,11 +21,18 @@ import           System.IO
 import           Hakyll.Web.Sass
 #endif
 
+#ifdef mingw32_HOST_OS
 main :: IO ()
 main = do
   hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
   msiteConfig <- C.fromConfig "config.yml"
   either (error "Expected file 'config.yml' not found") main' msiteConfig
+#else
+main :: IO ()
+main = do
+  msiteConfig <- C.fromConfig "config.yml"
+  either (error "Expected file 'config.yml' not found") main' msiteConfig
+#endif
 
 main' :: C.Site -> IO ()
 main' siteConfig = hakyllWith hakyllConfig $ do
