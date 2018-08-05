@@ -1,5 +1,5 @@
 ---
-title: whamlet とインライン Javascript
+title: hamlet とインライン Javascript
 date: 2018/08/04
 ---
 
@@ -58,7 +58,7 @@ main = warp 3000 App
 
 潜在的にではあるが、脆弱性は存在しているので、推奨はしない。(実装者によっては知らずに書いてしまうかもしれない)
 
-### 方法2 Contest Security Policy の設定
+### 方法2 Content Security Policy の設定
 
 Content Security Policy を設定してインラインの JavaScript を禁止する。
 
