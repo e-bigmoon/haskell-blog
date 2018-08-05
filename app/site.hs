@@ -15,17 +15,12 @@ import           System.FilePath
 import           GHC.IO.Encoding.CodePage (mkLocaleEncoding)
 import           GHC.IO.Encoding.Failure  (CodingFailureMode (TransliterateCodingFailure))
 import           System.IO
-#endif
-
-#ifndef mingw32_HOST_OS
+#else
 import           Hakyll.Web.Sass
 #endif
 
 main :: IO ()
 main = do
-#ifdef mingw32_HOST_OS
-  hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
-#endif
   msiteConfig <- C.fromConfig "config.yml"
   either (error "Expected file 'config.yml' not found") main' msiteConfig
 
@@ -45,7 +40,6 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     compile (fmap compressCss <$> sassCompiler)
 #endif
 
--- TODO:watchで反映されない件byやまだ
   match (fromGlob "pages/**.md") $ do
     route
       $               customRoute
@@ -59,6 +53,10 @@ main' siteConfig = hakyllWith hakyllConfig $ do
       >>= loadAndApplyTemplate "templates/page.html"    siteCtx
       >>= loadAndApplyTemplate "templates/default.html" siteCtx
       >>= relativizeUrls
+      
+#ifdef mingw32_HOST_OS
+  hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
+#endif
 
   tags <- buildTags "posts/**" (fromCapture "tags/*.html")
   createTagsRules tags (\xs -> "Posts tagged \"" ++ xs ++ "\"")
