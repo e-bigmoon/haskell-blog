@@ -12,7 +12,6 @@ import           Hakyll.Ext
 import           System.FilePath
 
 #ifdef mingw32_HOST_OS
-import           Control.Monad.IO.Class
 import           GHC.IO.Encoding.CodePage (mkLocaleEncoding)
 import           GHC.IO.Encoding.Failure  (CodingFailureMode (TransliterateCodingFailure))
 import           System.IO
@@ -49,15 +48,14 @@ main' siteConfig = hakyllWith hakyllConfig $ do
                         . toFilePath
                         )
       `composeRoutes` setExtension "html"
-    compile
-      $   pandocCompiler
+    compile $ do
+#ifdef mingw32_HOST_OS
+      unsafeCompiler $ hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
+#endif
+      pandocCompiler
       >>= loadAndApplyTemplate "templates/page.html"    siteCtx
       >>= loadAndApplyTemplate "templates/default.html" siteCtx
       >>= relativizeUrls
-      
-#ifdef mingw32_HOST_OS
-  liftIO $ hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
-#endif
 
   tags <- buildTags "posts/**" (fromCapture "tags/*.html")
   createTagsRules tags (\xs -> "Posts tagged \"" ++ xs ++ "\"")
