@@ -55,7 +55,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
       >>= relativizeUrls
       
 #ifdef mingw32_HOST_OS
-  hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
+  liftIO $ hSetEncoding stdout $ mkLocaleEncoding TransliterateCodingFailure
 #endif
 
   tags <- buildTags "posts/**" (fromCapture "tags/*.html")
