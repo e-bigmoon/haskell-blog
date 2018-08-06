@@ -12,6 +12,7 @@ import           Hakyll.Ext
 import           System.FilePath
 
 #ifdef mingw32_HOST_OS
+import           Control.Monad.IO.Class
 import           GHC.IO.Encoding.CodePage (mkLocaleEncoding)
 import           GHC.IO.Encoding.Failure  (CodingFailureMode (TransliterateCodingFailure))
 import           System.IO
