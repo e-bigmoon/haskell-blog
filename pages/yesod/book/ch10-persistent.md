@@ -25,7 +25,7 @@ Persistent は型安全、正確さ、宣言的構文をガイドライン原理
 
 - データベースに依存しません。PostgreSQL、 SQLite、 MySQL、 MongoDB と実験的に Redis をサポートしています
 - 柔軟なデータモデリング。Persistent はモデル関係を定義し、それらを型安全な方法で利用できる。デフォルトの型安全 persistent API は join 操作をサポートしないことで、より広範な数のストレージレイヤを使えるようにしています。Join や他の SQL 特有の機能は、生の SQL レイヤを利用することで達成できます (かなり型安全性に乏しいが)。 付加的なライブラリである [Esqueleto](http://hackage.haskell.org/package/esqueleto) は Persistent データモデルの最上層に構築され、型安全な join や SQL の機能を追加しています。
-- データベースマイグレーションの自動実行
+- 開発環境のデータベースマイグレーションが自動化できるので、開発スピードがアップします。
 
 Persistent は Yesod と上手く機能しますが、単独でもスタンドアローンなライブラリとしてかなり役立ちます。
 この章の大部分は単体の Persistent について説明しています。
@@ -405,6 +405,8 @@ main = runSqlite ":memory:" $ do
 
 先ほどのコードの1箇所をほんの少しだけ変更すれば Persistent は自動的に `Person` テーブルを作成します。
 `runMigration` と `migrate` を分割することで複数のテーブルを同時マイグレーションが可能になります。
+
+> 注意: 自動データベースマイグレーション機能は開発環境にだけ利用することをおすすめします。プロダクション環境のデータベーススキーマが自動的に変更されてしまうのはめちゃめちゃヤバイと思います。自動化されたマイグレーションは開発スピードを速めるためにあります。そのため、プロダクション環境にデプロイする前に行う人手によるレビューやテストの代わりになるものではありません。
 
 これは、少しのエンティティであれば気になりませんが、多くのエンティティを扱うようになるとすぐに退屈なものになります。
 この退屈な作業を自分で行う代わりに Persistent には `mkMigrate` という補助関数があります。
@@ -951,9 +953,7 @@ Person sql=the-person-table id=numeric_id
 ```
 
 エンティティ定義構文には様々な多くの機能があります。
-最新のリストは [Yesod wiki](https://github.com/yesodweb/yesod/wiki/Persistent-entity-syntax) を参照してください。
-
-エンティティの定義構文には様々な多くの機能があります。最新のリストは[Yesod wiki](https://github.com/yesodweb/yesod/wiki/Persistent-entity-syntax)にある.
+最新のリストは [Persistent documentation](https://github.com/yesodweb/persistent/blob/master/docs/Persistent-entity-syntax.md) を参照してください。
 
 ## Relations
 
@@ -1435,3 +1435,5 @@ Persistent は Haskell の型安全性をデータアクセスレイヤに適用
 
 Persistent は一般的な Yesod のワークフローに直接的に統合します。
 `yesod-persistent` のような補助パッケージだけが素晴らしいレイヤを提供するだけでなく、`yesod-form` や `yesod-auth` のようなパッケージもまた Persistent の機能を向上させてくれます。
+
+エンティティの構文やデータベースコネクション等に関するより詳しい情報は https://github.com/yesodweb/persistent/tree/master/docs を参照してください。
