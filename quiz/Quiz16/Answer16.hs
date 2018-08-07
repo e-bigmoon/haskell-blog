@@ -75,16 +75,11 @@ main = do
   print $ foldr (*) 1 intTree
 
 {-
-$ ./Quiz16.hs
-Node (Node (Leaf 4) (Leaf 5)) (Node (Leaf 1) (Node (Leaf 2) (Leaf 3)))
-5
+$ ./Answer16.hs
+Node (Node (Leaf 5) (Leaf 4)) (Node (Node (Leaf 3) (Leaf 2)) (Leaf 1))
 3
 True
-[1,2,3,4,5]
-Just (Node (Leaf 1) (Node (Leaf 2) (Leaf 3)))
-Just (Node (Leaf 4) (Leaf 5))
 Node (Node (Leaf "1") (Node (Leaf "2") (Leaf "3"))) (Node (Leaf "4") (Leaf "5"))
 15
 120
-[1,2,3,4,5]
 -}
