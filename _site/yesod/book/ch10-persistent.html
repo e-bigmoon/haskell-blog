@@ -156,7 +156,7 @@
       <div class="post-heading">
         <h1 class="post-title">Persistent</h1>
         
-        <span>最終更新日: 2018/04/07</span>
+        <span>最終更新日: 2018/08/07</span>
         
       </div>
 
@@ -170,7 +170,7 @@
 <ul>
 <li>データベースに依存しません。PostgreSQL、 SQLite、 MySQL、 MongoDB と実験的に Redis をサポートしています</li>
 <li>柔軟なデータモデリング。Persistent はモデル関係を定義し、それらを型安全な方法で利用できる。デフォルトの型安全 persistent API は join 操作をサポートしないことで、より広範な数のストレージレイヤを使えるようにしています。Join や他の SQL 特有の機能は、生の SQL レイヤを利用することで達成できます (かなり型安全性に乏しいが)。 付加的なライブラリである <a href="http://hackage.haskell.org/package/esqueleto">Esqueleto</a> は Persistent データモデルの最上層に構築され、型安全な join や SQL の機能を追加しています。</li>
-<li>データベースマイグレーションの自動実行</li>
+<li>開発環境のデータベースマイグレーションが自動化できるので、開発スピードがアップします。</li>
 </ul>
 <p>Persistent は Yesod と上手く機能しますが、単独でもスタンドアローンなライブラリとしてかなり役立ちます。 この章の大部分は単体の Persistent について説明しています。</p>
 <h2 id="synopsis">Synopsis</h2>
@@ -201,7 +201,7 @@
 <a class="sourceLine" id="cb1-25" data-line-number="25"></a>
 <a class="sourceLine" id="cb1-26" data-line-number="26"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb1-27" data-line-number="27">main <span class="fu">=</span> runSqlite <span class="st">&quot;:memory:&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-28" data-line-number="28">      runMigration<span class="ot"> migrateAll ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">    runMigration migrateAll</a>
 <a class="sourceLine" id="cb1-29" data-line-number="29"></a>
 <a class="sourceLine" id="cb1-30" data-line-number="30">    johnId <span class="ot">&lt;-</span> insert <span class="fu">$</span> <span class="dt">Person</span> <span class="st">&quot;John Doe&quot;</span> <span class="fu">$</span> <span class="dt">Just</span> <span class="dv">35</span></a>
 <a class="sourceLine" id="cb1-31" data-line-number="31">    janeId <span class="ot">&lt;-</span> insert <span class="fu">$</span> <span class="dt">Person</span> <span class="st">&quot;Jane Doe&quot;</span> <span class="dt">Nothing</span></a>
@@ -379,23 +379,32 @@
 <a class="sourceLine" id="cb7-7" data-line-number="7"><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></a>
 <a class="sourceLine" id="cb7-8" data-line-number="8"><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></a>
 <a class="sourceLine" id="cb7-9" data-line-number="9"><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></a>
-<a class="sourceLine" id="cb7-10" data-line-number="10"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span>  (liftIO)</a>
-<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="kw">import</span>           <span class="dt">Database.Persist</span></a>
-<a class="sourceLine" id="cb7-12" data-line-number="12"><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></a>
-<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="kw">import</span>           <span class="dt">Database.Persist.TH</span></a>
-<a class="sourceLine" id="cb7-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb7-15" data-line-number="15">share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</a>
-<a class="sourceLine" id="cb7-16" data-line-number="16">Person</a>
-<a class="sourceLine" id="cb7-17" data-line-number="17">    name String</a>
-<a class="sourceLine" id="cb7-18" data-line-number="18">    age Int Maybe</a>
-<a class="sourceLine" id="cb7-19" data-line-number="19">    deriving Show</a>
-<a class="sourceLine" id="cb7-20" data-line-number="20">|]</a>
-<a class="sourceLine" id="cb7-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb7-22" data-line-number="22"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb7-23" data-line-number="23">main <span class="fu">=</span> runSqlite <span class="st">&quot;:memory:&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb7-24" data-line-number="24">    michaelId <span class="ot">&lt;-</span> insert <span class="fu">$</span> <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="fu">$</span> <span class="dt">Just</span> <span class="dv">26</span></a>
-<a class="sourceLine" id="cb7-25" data-line-number="25">    michael <span class="ot">&lt;-</span> get michaelId</a>
-<a class="sourceLine" id="cb7-26" data-line-number="26">    liftIO <span class="fu">$</span> print michael</a></code></pre></div>
+<a class="sourceLine" id="cb7-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span>  (liftIO)</a>
+<a class="sourceLine" id="cb7-12" data-line-number="12"><span class="kw">import</span>           <span class="dt">Database.Persist</span></a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="kw">import</span>           <span class="dt">Database.Persist.TH</span></a>
+<a class="sourceLine" id="cb7-15" data-line-number="15"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Unlift</span></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16"><span class="kw">import</span>           <span class="dt">Data.Text</span></a>
+<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="kw">import</span>           <span class="dt">Control.Monad.Reader</span></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18"><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19"><span class="kw">import</span>           <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">share [mkPersist sqlSettings, mkSave <span class="st">&quot;entityDefs&quot;</span>] [persistLowerCase|</a>
+<a class="sourceLine" id="cb7-22" data-line-number="22">Person</a>
+<a class="sourceLine" id="cb7-23" data-line-number="23">    name String</a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">    age Int Maybe</a>
+<a class="sourceLine" id="cb7-25" data-line-number="25">    deriving Show</a>
+<a class="sourceLine" id="cb7-26" data-line-number="26">|]</a>
+<a class="sourceLine" id="cb7-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb7-28" data-line-number="28"><span class="ot">runSqlite' ::</span> (<span class="dt">MonadUnliftIO</span> m) <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">ReaderT</span> <span class="dt">SqlBackend</span> (<span class="dt">NoLoggingT</span> (<span class="dt">ResourceT</span> m)) a <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">runSqlite' <span class="fu">=</span> runSqlite</a>
+<a class="sourceLine" id="cb7-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb7-31" data-line-number="31"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-32" data-line-number="32">main <span class="fu">=</span> runSqlite' <span class="st">&quot;:memory:&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-33" data-line-number="33">    michaelId <span class="ot">&lt;-</span> insert <span class="fu">$</span> <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="fu">$</span> <span class="dt">Just</span> <span class="dv">26</span></a>
+<a class="sourceLine" id="cb7-34" data-line-number="34">    michael <span class="ot">&lt;-</span> get michaelId</a>
+<a class="sourceLine" id="cb7-35" data-line-number="35">    liftIO <span class="fu">$</span> print michael</a></code></pre></div>
 <blockquote>
 <p>このコードはコンパイルできますが、テーブルが存在しないため実行時エラーとなります。以下でその問題についての対処法を説明します。</p>
 </blockquote>
@@ -433,26 +442,34 @@
 <a class="sourceLine" id="cb8-7" data-line-number="7"><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></a>
 <a class="sourceLine" id="cb8-8" data-line-number="8"><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></a>
 <a class="sourceLine" id="cb8-9" data-line-number="9"><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="kw">import</span> <span class="dt">Database.Persist</span></a>
-<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="kw">import</span> <span class="dt">Database.Persist.TH</span></a>
-<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="kw">import</span> <span class="dt">Database.Persist.Sqlite</span></a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Control.Monad.IO.Class</span> (liftIO)</a>
-<a class="sourceLine" id="cb8-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb8-15" data-line-number="15">share [mkPersist sqlSettings, mkSave <span class="st">&quot;entityDefs&quot;</span>] [persistLowerCase|</a>
-<a class="sourceLine" id="cb8-16" data-line-number="16">Person</a>
-<a class="sourceLine" id="cb8-17" data-line-number="17">    name String</a>
-<a class="sourceLine" id="cb8-18" data-line-number="18">    age Int</a>
-<a class="sourceLine" id="cb8-19" data-line-number="19">    deriving Show</a>
-<a class="sourceLine" id="cb8-20" data-line-number="20">|]</a>
-<a class="sourceLine" id="cb8-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb8-22" data-line-number="22"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb8-23" data-line-number="23">main <span class="fu">=</span> runSqlite <span class="st">&quot;:memory:&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-24" data-line-number="24">    <span class="co">-- this line added: that's it!</span></a>
-<a class="sourceLine" id="cb8-25" data-line-number="25">    runMigration <span class="fu">$</span> migrate entityDefs <span class="fu">$</span> entityDef (<span class="dt">Nothing</span><span class="ot"> ::</span> <span class="dt">Maybe</span> <span class="dt">Person</span>)</a>
-<a class="sourceLine" id="cb8-26" data-line-number="26">    michaelId <span class="ot">&lt;-</span> insert <span class="fu">$</span> <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="dv">26</span></a>
-<a class="sourceLine" id="cb8-27" data-line-number="27">    michael <span class="ot">&lt;-</span> get michaelId</a>
-<a class="sourceLine" id="cb8-28" data-line-number="28">    liftIO <span class="fu">$</span> print michael</a></code></pre></div>
+<a class="sourceLine" id="cb8-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span>  (liftIO)</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="kw">import</span>           <span class="dt">Database.Persist</span></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></a>
+<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="kw">import</span>           <span class="dt">Database.Persist.TH</span></a>
+<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Unlift</span></a>
+<a class="sourceLine" id="cb8-16" data-line-number="16"><span class="kw">import</span>           <span class="dt">Data.Text</span></a>
+<a class="sourceLine" id="cb8-17" data-line-number="17"><span class="kw">import</span>           <span class="dt">Control.Monad.Reader</span></a>
+<a class="sourceLine" id="cb8-18" data-line-number="18"><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span></a>
+<a class="sourceLine" id="cb8-19" data-line-number="19"><span class="kw">import</span>           <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb8-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb8-21" data-line-number="21">share [mkPersist sqlSettings, mkSave <span class="st">&quot;entityDefs&quot;</span>] [persistLowerCase|</a>
+<a class="sourceLine" id="cb8-22" data-line-number="22">Person</a>
+<a class="sourceLine" id="cb8-23" data-line-number="23">    name String</a>
+<a class="sourceLine" id="cb8-24" data-line-number="24">    age Int Maybe</a>
+<a class="sourceLine" id="cb8-25" data-line-number="25">    deriving Show</a>
+<a class="sourceLine" id="cb8-26" data-line-number="26">|]</a>
+<a class="sourceLine" id="cb8-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb8-28" data-line-number="28"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb8-29" data-line-number="29">main <span class="fu">=</span> runSqlite <span class="st">&quot;:memory:&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb8-30" data-line-number="30">    runMigration <span class="fu">$</span> migrate entityDefs <span class="fu">$</span> entityDef (<span class="dt">Nothing</span><span class="ot"> ::</span> <span class="dt">Maybe</span> <span class="dt">Person</span>)</a>
+<a class="sourceLine" id="cb8-31" data-line-number="31">    michaelId <span class="ot">&lt;-</span> insert <span class="fu">$</span> <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="fu">$</span> <span class="dt">Just</span> <span class="dv">26</span></a>
+<a class="sourceLine" id="cb8-32" data-line-number="32">    michael <span class="ot">&lt;-</span> get michaelId</a>
+<a class="sourceLine" id="cb8-33" data-line-number="33">    liftIO <span class="fu">$</span> print michael</a></code></pre></div>
 <p>先ほどのコードの1箇所をほんの少しだけ変更すれば Persistent は自動的に <code>Person</code> テーブルを作成します。 <code>runMigration</code> と <code>migrate</code> を分割することで複数のテーブルを同時マイグレーションが可能になります。</p>
+<blockquote>
+<p>注意: 自動データベースマイグレーション機能は開発環境にだけ利用することをおすすめします。プロダクション環境のデータベーススキーマが自動的に変更されてしまうのはめちゃめちゃヤバイと思います。自動化されたマイグレーションは開発スピードを速めるためにあります。そのため、プロダクション環境にデプロイする前に行う人手によるレビューやテストの代わりになるものではありません。</p>
+</blockquote>
 <p>これは、少しのエンティティであれば気になりませんが、多くのエンティティを扱うようになるとすぐに退屈なものになります。 この退屈な作業を自分で行う代わりに Persistent には <code>mkMigrate</code> という補助関数があります。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">{-# LANGUAGE EmptyDataDecls             #-}</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></a>
@@ -791,8 +808,7 @@
 <a class="sourceLine" id="cb31-6" data-line-number="6">    PersonName firstName lastName</a>
 <a class="sourceLine" id="cb31-7" data-line-number="7">    deriving Show</a>
 <a class="sourceLine" id="cb31-8" data-line-number="8">|]</a></code></pre></div>
-<p>エンティティ定義構文には様々な多くの機能があります。 最新のリストは <a href="https://github.com/yesodweb/yesod/wiki/Persistent-entity-syntax">Yesod wiki</a> を参照してください。</p>
-<p>エンティティの定義構文には様々な多くの機能があります。最新のリストは<a href="https://github.com/yesodweb/yesod/wiki/Persistent-entity-syntax">Yesod wiki</a>にある.</p>
+<p>エンティティ定義構文には様々な多くの機能があります。 最新のリストは <a href="https://github.com/yesodweb/persistent/blob/master/docs/Persistent-entity-syntax.md">Persistent documentation</a> を参照してください。</p>
 <h2 id="relations">Relations</h2>
 <p>Persistent はサポートしている非 SQL データベースと一貫する方法でデータ型の間における参照が可能になります。 今回は ID を関連するエンティティに埋め込んでみましょう。 つまり、1人の人が多くの車を持っているという関係です。</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="ot">{-# LANGUAGE EmptyDataDecls             #-}</span></a>
@@ -1138,6 +1154,7 @@
 <p>Persistent は Haskell の型安全性をデータアクセスレイヤに適用します。 間違いやすい型のないデータアクセスのためのボイラプレートコードを手動で書く代わりに、Persistent はその作業を自動化してくれます。</p>
 <p>ゴールは、ほとんどの場合に必要な全てのものを提供することです。 より強力なものが必要な時は Persistent が表面下のデータストアへの直接的なアクセスを提供し、書きたければ5通りの join を書くことができます。</p>
 <p>Persistent は一般的な Yesod のワークフローに直接的に統合します。 <code>yesod-persistent</code> のような補助パッケージだけが素晴らしいレイヤを提供するだけでなく、<code>yesod-form</code> や <code>yesod-auth</code> のようなパッケージもまた Persistent の機能を向上させてくれます。</p>
+<p>エンティティの構文やデータベースコネクション等に関するより詳しい情報は https://github.com/yesodweb/persistent/tree/master/docs を参照してください。</p>
       </article>
 
       <div class="pager">
