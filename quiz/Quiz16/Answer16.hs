@@ -1,6 +1,8 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-12.2
 
+{-# LANGUAGE InstanceSigs #-}
+
 data Tree a
   = Leaf a
   | Node (Tree a) (Tree a)
@@ -23,53 +25,54 @@ mirror :: Tree a -> Tree a
 mirror (Leaf x)   = Leaf x
 mirror (Node l r) = Node (mirror r) (mirror l)
 
--- | 葉の数を返す
-size :: Tree a -> Int
-size (Leaf _)   = 1
-size (Node l r) = size l + size r
-
 -- | 木の高さを返す
 depth :: Tree a -> Int
 depth (Leaf _)   = 0
 depth (Node l r) = 1 + max (depth l) (depth r)
 
 -- | 木が平衡かどうか
+-- isBalanced :: Tree a -> Bool
+-- isBalanced (Leaf _) = True
+-- isBalanced (Node l r) = diff <= 1 && isBalanced l && isBalanced r
+--   where
+--     diff = abs (size l - size r)
 isBalanced :: Tree a -> Bool
-isBalanced (Leaf _) = True
-isBalanced (Node l r) = diff <= 1 && isBalanced l && isBalanced r
+isBalanced = check . until (and . fmap isLeaf) dig . pure
   where
-    diff = abs (size l - size r)
+    dig :: [Tree a] -> [Tree a]
+    dig = concatMap step
 
--- | 葉の値を集めてリストにして返す
-leaves :: Tree a -> [a]
-leaves (Leaf x)   = [x]
-leaves (Node l r) = leaves l ++ leaves r
+    isLeaf :: Tree a -> Bool
+    isLeaf (Leaf _) = True
+    isLeaf _ = False
 
--- | 木の要素に対して関数を適用する
-treeMap :: (a -> b) -> Tree a -> Tree b
-treeMap f (Leaf x)   = Leaf (f x)
-treeMap f (Node l r) = Node (treeMap f l) (treeMap f r)
+    check :: [Tree a] -> Bool
+    check = null . dig . dig
 
--- | 木を畳み込む
-treeFold :: (a -> b) -> (b -> b -> b) -> Tree a -> b
-treeFold f _ (Leaf x)   = f x
-treeFold f g (Node l r) = g (treeFold f g l) (treeFold f g r)
+    step :: Tree a -> [Tree a]
+    step (Leaf _) = []
+    step (Node l r) = [l, r]
+
+instance Functor Tree where
+  fmap :: (a -> b) -> Tree a -> Tree b
+  fmap f (Leaf x)   = Leaf (f x)
+  fmap f (Node l r) = Node (fmap f l) (fmap f r)
+
+instance Foldable Tree where
+  foldr :: (a -> b -> b) -> b -> Tree a -> b
+  foldr f e (Leaf x)   = f x e
+  foldr f e (Node l r) = foldr f (foldr f e r) l
 
 main :: IO ()
 main = do
   print $ mirror intTree
-  print $ size intTree
   print $ depth intTree
   print $ isBalanced intTree
-  print $ leaves intTree
-  print $ left intTree
-  print $ right intTree
 
-  print $ treeMap show intTree
+  print $ fmap show intTree
 
-  print $ treeFold id (+) intTree
-  print $ treeFold id (*) intTree
-  print $ treeFold (:[]) (++) intTree
+  print $ foldr (+) 0 intTree
+  print $ foldr (*) 1 intTree
 
 {-
 $ ./Quiz16.hs
