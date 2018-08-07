@@ -1,7 +1,7 @@
-import Data.Char (toUpper)
-import Data.Text (Text)
-import qualified Data.Text as T
-import Control.Arrow
+import           Control.Arrow
+import           Data.Char     (toUpper)
+import           Data.Text     (Text)
+import qualified Data.Text     as T
 
 toAllUpper :: String -> String
 toAllUpper = map toUpper
