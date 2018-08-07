@@ -8,8 +8,76 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-07-31T00:00:00Z</updated>
+    <updated>2018-08-07T00:00:00Z</updated>
     <entry>
+    <title>(^>>) と (>>^)</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/08-07-arrow-operators.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/08-07-arrow-operators.html</id>
+    <published>2018-08-07T00:00:00Z</published>
+    <updated>2018-08-07T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Control-Arrow.html#">Control.Arrow</a> モジュールに <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Control-Arrow.html#v:-94--62--62-">(^&gt;&gt;)</a> と <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Control-Arrow.html#v:-62--62--94-">(&gt;&gt;^)</a> という演算子が定義されています。</p>
+<p>ちょっとだけ面白かったので紹介しようと思います。</p>
+<!--more-->
+<h2 id="準備">準備</h2>
+<p>例として、文字列を全て<strong>大文字</strong>に変換する関数を考えてみましょう。</p>
+<p>素朴に書けばこんな感じでしょうか。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Char</span> (toUpper)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">toAllUpper <span class="fu">=</span> map toUpper</a></code></pre></div>
+<p>この関数は以下のように期待通りに動きます。</p>
+<pre class="shell"><code>*Main&gt; toAllUpper &quot;B|g0on&quot;
+&quot;B|G0ON&quot;</code></pre>
+<p>ではここで、同じように <code>Text</code> バージョンを作りたいと思います。何も考えずに pack と unpack を使えばすぐ定義できますね。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">import</span>           <span class="dt">Data.Char</span> (toUpper)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">import</span>           <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span> <span class="kw">as</span> <span class="dt">T</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">toAllUpper <span class="fu">=</span> map toUpper</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="ot">toAllUpperText ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">toAllUpperText <span class="fu">=</span> T.pack <span class="fu">.</span> toAllUpper <span class="fu">.</span> T.unpack</a></code></pre></div>
+<p>この関数も同様にちゃんと動きます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> toAllUpperText <span class="fu">$</span> T.pack <span class="st">&quot;B|g0on&quot;</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">&quot;B|G0ON&quot;</span></a></code></pre></div>
+<h2 id="と-を無理矢理使ってみる">(^&gt;&gt;) と (&gt;&gt;^) を無理矢理使ってみる</h2>
+<p>先程定義した <code>toAllUpperText</code> 関数は <code>(^&gt;&gt;)</code> と <code>(&gt;&gt;^)</code> を使って、以下のように書き直すことができます。(<code>Control.Arrow</code> をインポートする必要があります。)</p>
+<p>左から右バージョン</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">toAllUpperText&#39; ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">toAllUpperText&#39; <span class="fu">=</span> T.unpack <span class="fu">^&gt;&gt;</span> toAllUpper <span class="fu">&gt;&gt;^</span> T.pack</a></code></pre></div>
+<p>右から左バージョン</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">toAllUpperText&#39;&#39; ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">toAllUpperText&#39;&#39; <span class="fu">=</span> T.pack <span class="fu">&lt;&lt;^</span> toAllUpper <span class="fu">^&lt;&lt;</span> T.unpack</a></code></pre></div>
+<p>関数合成 (<code>.</code>) を単純に置き換えただけです・・・。</p>
+<h3 id="型">型</h3>
+<p>この演算子の何が面白いかと言うと、<strong>入力</strong>と<strong>出力</strong>をそれぞれ変換できるんですね！</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ot">(&gt;&gt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a b c <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b d</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">(&lt;&lt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a c d <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a b d</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ot">(^&lt;&lt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b c <span class="ot">-&gt;</span> a b d</a></code></pre></div>
+<p>先程の例は <code>Arrow a</code> の <code>a</code> を関数型 <code>(-&gt;)</code> として具体化したものになります。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">  <span class="co">-- a = (-&gt;) として具体化した</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">    (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) c d <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) b d</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">  <span class="fu">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a></code></pre></div>
+<p>引数の順番を逆にすれば関数合成の型と同じですね。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1">  <span class="fu">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="co">-- 引数を逆にした</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">  (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">  <span class="co">-- 変数名の変更</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">  <span class="fu">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>現実世界で Arrow をバリバリ使っているコードをみかけることは (僕は) 全く無いです。(Hakyll は過去に Arrow ベースで定義されていたようですが、Monad ベースに切り替わりました)</li>
+</ul>
+<p>たぶん使うことは無いですが、パズルみたいで楽しい。</p>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>Yesod には脆弱性があるのかな？</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html</id>
@@ -1024,128 +1092,6 @@ False</code></pre>
 <li>値を1つだけ上流に返す場合は特に気にすることは無い</li>
 <li>一度にまとめて複数の値を返そうとすると、処理の順番が変わってしまうことがあるので注意が必要</li>
 </ul>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>namespaced templates</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html</id>
-    <published>2018-06-27T00:00:00Z</published>
-    <updated>2018-06-27T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>つい先日 <a href="https://github.com/commercialhaskell/stack/pull/4103">namespaced templates</a> という、PRが <strong>master</strong> にマージされました。(<a href="https://github.com/commercialhaskell/stack/issues/4039">Namespaced templates #4039</a> が該当する isssue です)</p>
-<p>通常、<strong>stack new</strong> コマンドを実行すると、ローカルに保存されている <a href="https://github.com/commercialhaskell/stack-templates/blob/master/new-template.hsfiles">new-template</a> の内容に基づいてプロジェクトの雛形が作成されます。</p>
-<p>もし、ローカルに保存されているテンプレートの内容を確認したい場合は以下のようなコマンドを実行すれば良いでしょう。</p>
-<pre class="shell"><code>$ cat $(stack path --stack-root)/templates/new-template.hsfiles</code></pre>
-<p><strong>config.yaml</strong> を変更すれば、このデフォルトテンプレートを変更することもできます。(詳しくは <a href="https://haskell.e-bigmoon.com/stack/tips/config-yaml.html">config.yaml のよくある設定</a> をご確認ください)</p>
-<p>今回新たに実装された namespaced templates 機能は、これらのテンプレート機能をより強化するものとなっています。</p>
-<p>具体的には <strong>username/foo</strong> という形式でリモートリポジトリから自分のプロジェクトテンプレートをダウンロードし、それをもとにプロジェクトを作成できるようになります。</p>
-<p>それでは使い方を見ていきたいと思います。</p>
-<pre class="shell"><code>$ stack --version
-Version 1.8.0, Git revision 466da22ce21cddc20323fc2611cd2a2d3cc56ec6 (dirty) (5998 commits) x86_64 hpack-0.28.2</code></pre>
-<!--more-->
-<h2 id="リポジトリを用意しよう">リポジトリを用意しよう！</h2>
-<p>namespaced templates 機能は以下のサービスで利用可能です。</p>
-<ul>
-<li>github</li>
-<li>gitlab</li>
-<li>bitbucket</li>
-</ul>
-<p>まずは、<strong>stack-templates</strong> という名前でリポジトリを作っておいてください。(今のところは任意の名前に変更する方法はありません。)</p>
-<p>この名前のリポジトリに存在するテンプレートファイルを参照することができます。</p>
-<h2 id="テンプレートファイルを作ってみよう">テンプレートファイルを作ってみよう！</h2>
-<ul>
-<li>テンプレートの参考になるのは <a href="https://github.com/commercialhaskell/stack-templates/blob/master/simple.hsfiles">commercialhaskell/simple.hsfiles</a> です。</li>
-<li>テンプレートエンジンは <a href="https://mustache.github.io/mustache.1.html">mustache</a> を使っているそうです。</li>
-<li>今から作るテンプレートファイルは <a href="https://github.com/e-bigmoon/stack-templates/blob/master/sample.hsfiles">e-bigmoon/sample.hsfiles</a> にあります。</li>
-</ul>
-<h3 id="最小のプロジェクトテンプレート">最小のプロジェクトテンプレート</h3>
-<p>とりあえず <strong>Readme.md</strong> ぐらいは欲しいですよね。</p>
-<pre class="mastache"><code>{-# START_FILE README.md #-}
-# {{name}}</code></pre>
-<ul>
-<li><code>{-# START_FILE README.md #-}</code> はそれ以降に続く内容で <strong>README.md</strong> というファイルを作ります ｰ <code>{{name}}</code> には、<strong>stack new</strong> の引数で与えたプロジェクト名が挿入されます。</li>
-</ul>
-<p>ここまでで実際に動かして確認してみます。</p>
-<pre class="shell"><code>$ cd /tmp
-$ stack new test-proj e-bigmoon/sample
-Downloading template &quot;e-bigmoon/sample&quot; to create project &quot;test-proj&quot; in test-proj/ ...
-The template &quot;e-bigmoon/sample&quot; is invalid and could not be used. The error was: Template does not contain a .cabal or package.yaml file</code></pre>
-<p>怒られました。どうやら <strong>cabal</strong> ファイルか <strong>package.yaml</strong> が含まれている必要があるみたいです。</p>
-<p><strong>package.yaml</strong> ファイルも追加して作成するために、少し編集しましょう。</p>
-<pre class="mastache"><code>{-# START_FILE README.md #-}
-# {{name}}
-
-{-# START_FILE package.yaml #-}
-name: {{name}}
-dependencies:
-  - base
-library: {}</code></pre>
-<p>もう一度実行してみます。</p>
-<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample
-...
-All done.
-
-$ tree test-proj/
-test-proj/
-├── package.yaml
-├── README.md
-├── stack.yaml
-└── test-proj.cabal</code></pre>
-<p>今度は成功しました。簡単でいいですね。</p>
-<p>ダウンロードしたテンプレートファイルは <code>~/.stack/templates/&lt;username&gt;/&lt;template&gt;</code> というパスで保存されています。</p>
-<h2 id="stack-new-コマンド">stack new コマンド</h2>
-<p>先程は github リポジトリ上のテンプレートファイルを取得したので以下のコマンドを実行しました。</p>
-<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample</code></pre>
-<p>このコマンドは次のコマンドの省略形です。</p>
-<pre class="shell"><code>$ stack new test-proj github:e-bigmoon/sample.hsfiles</code></pre>
-<p>そのため gitlab や bitbucket にあるテンプレートファイルをダウンロードする場合は以下のようになります。</p>
-<pre class="shell"><code># gitlab
-$ stack new test-proj gitlab:e-bigmoon/sample.hsfiles
-
-# bitbucket
-$ stack new test-proj bitbucket:e-bigmoon/sample.hsfiles</code></pre>
-<p>また、テンプレート名を省略した場合は公式のテンプレートが利用されるため、次のコマンドを実行していることと同じです。</p>
-<pre class="shell"><code>$ stack new test-proj commercialhaskell/new-template</code></pre>
-<p>完全なURLで別のサーバーにあるテンプレートファイルを指定することも可能です。</p>
-<pre class="shell"><code>$ stack new test-proj https://my-site.com/content/template9.hsfiles</code></pre>
-<p>github のテンプレートファイルを完全なURLで指定する際、上記のURLは invalid なので注意。ちゃんと raw の URL を指定しましょう。</p>
-<pre class="shell"><code># NG
-$ stack new test-proj https://github.com/commercialhaskell/stack-templates/blob/master/hspec.hsfiles
-
-# OK
-$ stack new test-proj https://raw.githubusercontent.com/commercialhaskell/stack-templates/master/new-template.hsfiles</code></pre>
-<h2 id="stack.yaml-が含まれる場合">stack.yaml が含まれる場合</h2>
-<p>プロジェクトテンプレートに <strong>stack.yaml</strong> が含まれる場合は初期化処理がスキップされます。(<a href="https://haskell.e-bigmoon.com/posts/2018/05-04-stack171.html">v1.7.1</a> で導入された修正ですね)</p>
-<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample
-Downloading template &quot;e-bigmoon/sample&quot; to create project &quot;test-proj&quot; in test-proj/ ...
-Initialized empty Git repository in /tmp/test-proj/.git/</code></pre>
-<h2 id="もっと複雑なテンプレート">もっと複雑なテンプレート</h2>
-<p><code>~/.stack/config.yaml</code> に変数を定義しておき、プロジェクトテンプレートから参照することもできます。</p>
-<p><strong>config.yaml</strong> ファイルの内容が以下のようになっているとしましょう。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="fu">templates:</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">  <span class="fu">params:</span></a>
-<a class="sourceLine" id="cb14-3" data-line-number="3">    <span class="fu">author-email:</span><span class="at"> chrisdone@gmail.com</span></a>
-<a class="sourceLine" id="cb14-4" data-line-number="4">    <span class="fu">author-name:</span><span class="at"> Chris Done</span></a>
-<a class="sourceLine" id="cb14-5" data-line-number="5">    <span class="fu">copyright:</span><span class="at"> 2018 Chris Done</span></a>
-<a class="sourceLine" id="cb14-6" data-line-number="6">    <span class="fu">github-username:</span><span class="at"> chrisdone</span></a>
-<a class="sourceLine" id="cb14-7" data-line-number="7">    <span class="fu">category:</span><span class="at"> Development</span></a></code></pre></div>
-<p>テンプレートファイル内から単純に <code>{{author-email}}</code> の形式で変数を展開できます。</p>
-<pre><code>{-# START_FILE {{name}}.cabal #-}
-name:                {{name}}
-version:             0.1.0.0
--- synopsis:
--- description:
-homepage:            https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}#readme
-license:             BSD3
-license-file:        LICENSE
-author:              {{author-name}}{{^author-name}}Author name here{{/author-name}}
-maintainer:          {{author-email}}{{^author-email}}example@example.com{{/author-email}}
-copyright:           {{copyright}}{{^copyright}}{{year}}{{^year}}2018{{/year}} {{author-name}}{{^author-name}}Author name here{{/author-name}}{{/copyright}}
-category:            {{category}}{{^category}}Web{{/category}}</code></pre>
-<h2 id="まとめ">まとめ</h2>
-<p>今までも自分で作ったプロジェクトテンプレートを使うことはできましたが、<strong>new-template</strong> を置き換えるか <strong>config.yml</strong> を設定する必要がありました。</p>
-<p>今回の機能追加により、<strong>stack new</strong> コマンドで直接プロジェクトテンプレートを簡単に指定できるため、自作テンプレート作りがはかどりそうです。</p>
 <p>以上です。</p>]]></summary>
 </entry>
 
