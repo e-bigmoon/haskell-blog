@@ -1,6 +1,6 @@
 ---
 title: Persistent
-date: 2018/04/07
+date: 2018/08/07
 ---
 
 ## Persistent
@@ -60,7 +60,7 @@ BlogPost
 
 main :: IO ()
 main = runSqlite ":memory:" $ do
-      runMigration migrateAll :: IO ()
+    runMigration migrateAll
 
     johnId <- insert $ Person "John Doe" $ Just 35
     janeId <- insert $ Person "Jane Doe" Nothing
@@ -76,7 +76,6 @@ main = runSqlite ":memory:" $ do
 
     delete janeId
     deleteWhere [BlogPostAuthorId ==. johnId]
-
 ```
 
 上のスニペットの型注釈はコードのコンパイルには不要ですが、それぞれの値の型がわかるように明示的に追加しました。
@@ -287,20 +286,29 @@ Haskell の型と同様に生成された `Person` データ型を利用する�
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
+
 import           Control.Monad.IO.Class  (liftIO)
 import           Database.Persist
 import           Database.Persist.Sqlite
 import           Database.Persist.TH
+import           Control.Monad.IO.Unlift
+import           Data.Text
+import           Control.Monad.Reader
+import           Control.Monad.Logger
+import           Conduit
 
-share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+share [mkPersist sqlSettings, mkSave "entityDefs"] [persistLowerCase|
 Person
     name String
     age Int Maybe
     deriving Show
 |]
 
+runSqlite' :: (MonadUnliftIO m) => Text -> ReaderT SqlBackend (NoLoggingT (ResourceT m)) a -> m a
+runSqlite' = runSqlite
+
 main :: IO ()
-main = runSqlite ":memory:" $ do
+main = runSqlite' ":memory:" $ do
     michaelId <- insert $ Person "Michael" $ Just 26
     michael <- get michaelId
     liftIO $ print michael
@@ -369,23 +377,28 @@ SQL データベースの苦痛の1つにスキーマの変更管理がありま
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
-import Database.Persist
-import Database.Persist.TH
-import Database.Persist.Sqlite
-import Control.Monad.IO.Class (liftIO)
+
+import           Control.Monad.IO.Class  (liftIO)
+import           Database.Persist
+import           Database.Persist.Sqlite
+import           Database.Persist.TH
+import           Control.Monad.IO.Unlift
+import           Data.Text
+import           Control.Monad.Reader
+import           Control.Monad.Logger
+import           Conduit
 
 share [mkPersist sqlSettings, mkSave "entityDefs"] [persistLowerCase|
 Person
     name String
-    age Int
+    age Int Maybe
     deriving Show
 |]
 
 main :: IO ()
 main = runSqlite ":memory:" $ do
-    -- this line added: that's it!
     runMigration $ migrate entityDefs $ entityDef (Nothing :: Maybe Person)
-    michaelId <- insert $ Person "Michael" 26
+    michaelId <- insert $ Person "Michael" $ Just 26
     michael <- get michaelId
     liftIO $ print michael
 ```
