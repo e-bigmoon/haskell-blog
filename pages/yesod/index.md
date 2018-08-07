@@ -3,7 +3,7 @@ title: Haskell Yesod
 date: 2018/03/18
 ---
 
-## Yesod Book
+## Yesod Book (@[003fe8caa318fc3ee42461bb07b5d3093ee30d3d](https://github.com/yesodweb/yesodweb.com-content/commit/003fe8caa318fc3ee42461bb07b5d3093ee30d3d))
 
 - [Yesod Web Framework Book- Version 1.4](http://www.yesodweb.com/book)
 - [yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
