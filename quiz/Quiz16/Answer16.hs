@@ -3,10 +3,10 @@
 {-# ANN module "HLint: ignore" #-}
 {-# LANGUAGE InstanceSigs #-}
 
-import Test.QuickCheck
-import Test.QuickCheck.Gen
-import Control.Monad
-import Data.Maybe
+import           Control.Monad
+import           Data.Maybe
+import           Test.QuickCheck
+import           Test.QuickCheck.Gen
 
 instance Arbitrary a => Arbitrary (Tree a) where
   arbitrary = do
@@ -60,13 +60,13 @@ isBalanced' = check . until (or . fmap isLeaf) dig . pure
 
     isLeaf :: Tree a -> Bool
     isLeaf (Leaf _) = True
-    isLeaf _ = False
+    isLeaf _        = False
 
     check :: [Tree a] -> Bool
     check = null . dig . dig
 
     step :: Tree a -> [Tree a]
-    step (Leaf _) = []
+    step (Leaf _)   = []
     step (Node l r) = [l, r]
 
 instance Functor Tree where
@@ -76,7 +76,7 @@ instance Functor Tree where
 
 instance Foldable Tree where
   foldMap :: Monoid m => (a -> m) -> Tree a -> m
-  foldMap f (Leaf x) = f x
+  foldMap f (Leaf x)   = f x
   foldMap f (Node l r) = foldMap f l `mappend` foldMap f r
 
   foldr :: (a -> b -> b) -> b -> Tree a -> b
