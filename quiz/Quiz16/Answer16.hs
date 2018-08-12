@@ -1,6 +1,6 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-12.2
-
+{-# ANN module "HLint: ignore" #-}
 {-# LANGUAGE InstanceSigs #-}
 
 import Test.QuickCheck
