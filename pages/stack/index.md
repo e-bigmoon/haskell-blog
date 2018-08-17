@@ -106,7 +106,7 @@ date: 2018/07/30
 ## エディタ
 
 - [VS Code で Ghcid を使う](/posts/2017/12-24-Ghcid-with-VS-Code.html)
-- [Haskell IDE Engine を Emacs で使う](/posts/2018/03-26-hie-emacs.html)
+- [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
 
   </div>
 </div>
