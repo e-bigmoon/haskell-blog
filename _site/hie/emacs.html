@@ -254,7 +254,7 @@ CabalHelper/Licenses.hs:56:8: error:
 56 |     :: CPackageIndex Distribution.ModuleName.ModuleName
    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ghc-mod: GMEProcess &quot;readProcessStderrChan&quot; &quot;/home/yamada/.stack/snapshots/x86_64-linux/lts-9.18/8.0.2/libexec/x86_64-linux-ghc-8.0.2/cabal-helper-0.7.3.0/cabal-helper-wrapper&quot; [&quot;--with-ghc=/home/yamada/.stack/programs/x86_64-linux/ghc-8.4.3/bin/ghc&quot;,&quot;--with-ghc-pkg=/home/yamada/.stack/programs/x86_64-linux/ghc-8.4.3/bin/ghc-pkg&quot;,&quot;--with-cabal=cabal&quot;,&quot;/home/yamada/market-scratch&quot;,&quot;/home/yamada/market-scratch/.stack-work/dist/x86_64-linux/Cabal-2.2.0.1&quot;,&quot;package-db-stack&quot;,&quot;entrypoints&quot;,&quot;source-dirs&quot;,&quot;ghc-options&quot;,&quot;ghc-src-options&quot;,&quot;ghc-pkg-options&quot;,&quot;ghc-merged-pkg-options&quot;,&quot;ghc-lang-options&quot;,&quot;licenses&quot;,&quot;flags&quot;,&quot;config-flags&quot;,&quot;non-default-config-flags&quot;,&quot;compiler-version&quot;] (Left 1)</code></pre>
-<p>おそらく、原因は古いバージョンの<code>ghc-mod</code>なので、次のように一度削除してからもう一度ビルドしたらなおりました。</p>
+<p>おそらく、原因は古いバージョンの <code>ghc-mod</code> のバイナリがインストールされていたためだと思います。次のように一度削除してからもう一度ビルドしたらなおりました。(<code>hie</code> では <code>ghc-mod</code> の実行ファイルでは無く、<a href="https://www.stackage.org/package/ghc-mod">API</a>を利用しています。そのため、<code>ghc-mod</code> のバイナリファイルを削除しても問題無く動きます)</p>
 <pre><code>$ rm -rf ~/.local/bin/ghc-mod
 $ rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
 $ stack clean --full
