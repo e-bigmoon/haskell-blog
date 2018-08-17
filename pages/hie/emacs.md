@@ -114,7 +114,7 @@ CabalHelper/Licenses.hs:56:8: error:
 ghc-mod: GMEProcess "readProcessStderrChan" "/home/yamada/.stack/snapshots/x86_64-linux/lts-9.18/8.0.2/libexec/x86_64-linux-ghc-8.0.2/cabal-helper-0.7.3.0/cabal-helper-wrapper" ["--with-ghc=/home/yamada/.stack/programs/x86_64-linux/ghc-8.4.3/bin/ghc","--with-ghc-pkg=/home/yamada/.stack/programs/x86_64-linux/ghc-8.4.3/bin/ghc-pkg","--with-cabal=cabal","/home/yamada/market-scratch","/home/yamada/market-scratch/.stack-work/dist/x86_64-linux/Cabal-2.2.0.1","package-db-stack","entrypoints","source-dirs","ghc-options","ghc-src-options","ghc-pkg-options","ghc-merged-pkg-options","ghc-lang-options","licenses","flags","config-flags","non-default-config-flags","compiler-version"] (Left 1)
 ```
 
-おそらく、原因は古いバージョンの`ghc-mod`なので、次のように一度削除してからもう一度ビルドしたらなおりました。
+おそらく、原因は古いバージョンの `ghc-mod` のバイナリがインストールされていたためだと思います。次のように一度削除してからもう一度ビルドしたらなおりました。(`hie` では `ghc-mod` の実行ファイルでは無く、[API](https://www.stackage.org/package/ghc-mod)を利用しています。そのため、`ghc-mod` のバイナリファイルを削除しても問題無く動きます)
 
 ```
 $ rm -rf ~/.local/bin/ghc-mod
