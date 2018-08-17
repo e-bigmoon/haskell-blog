@@ -18,8 +18,8 @@ date: 2018/08/17
 
 インストールには以下のものが必要です。
 
-- `stack`(バージョン1.7.1以上)
-- `cabal-install`
+- `stack` (バージョン1.7.1以上)
+- `cabal-install` (cabalでのビルドにも対応したい場合)
 - `icu` のライブラリなど
 
 必要に応じてインストールしておきましょう。
@@ -117,10 +117,10 @@ ghc-mod: GMEProcess "readProcessStderrChan" "/home/yamada/.stack/snapshots/x86_6
 おそらく、原因は古いバージョンの`ghc-mod`なので、次のように一度削除してからもう一度ビルドしたらなおりました。
 
 ```
-rm -rf ~/.local/bin/ghc-mod
-rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
-stack clean --full
-make build-all
+$ rm -rf ~/.local/bin/ghc-mod
+$ rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
+$ stack clean --full
+$ make build-all
 ```
 
 ### 参考
