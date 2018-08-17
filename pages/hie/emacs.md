@@ -19,7 +19,7 @@ date: 2018/08/17
 インストールには以下のものが必要です。
 
 - `stack` (バージョン1.7.1以上)
-- `cabal-install` (cabalでのビルドにも対応したい場合)
+- `cabal-install` (cabal で管理されたプロジェクトにも対応させたい場合)
 - `icu` のライブラリなど
 
 必要に応じてインストールしておきましょう。
@@ -81,7 +81,7 @@ HIEがドキュメントなどを表示とする時、現在編集している�
 
 ```sh
 $ sudo add-apt-repository ppa:kelleyk/emacs
-$ sudo apt-get update
+$ sudo apt update
 $ sudo apt install emacs26
 ```
 
@@ -89,7 +89,6 @@ $ sudo apt install emacs26
 
 ```sh
 $ sudo update-alternatives --config emacs
-
 ```
 
 ![きれいに表示されたHIEの画像](/images/hie-emacs.png)
@@ -98,7 +97,7 @@ $ sudo update-alternatives --config emacs
 
 HIEのビルドや必要なパッケージのインストールなどを正しく行ったにもかかわらず、次のようにEmacsにエラーが表示されてフリーズしてしまう、ということがありました。
 
-```
+```shell
 [1 of 5] Compiling CabalHelper.Common ( CabalHelper/Common.hs, /home/yamada/.ghc-mod/cabal-helper/CabalHelper/Common.o )
 [2 of 5] Compiling CabalHelper.Licenses ( CabalHelper/Licenses.hs, /home/yamada/.ghc-mod/cabal-helper/CabalHelper/Licenses.o )
 
@@ -116,7 +115,7 @@ ghc-mod: GMEProcess "readProcessStderrChan" "/home/yamada/.stack/snapshots/x86_6
 
 おそらく、原因は古いバージョンの `ghc-mod` のバイナリがインストールされていたためだと思います。次のように一度削除してからもう一度ビルドしたらなおりました。(`hie` では `ghc-mod` の実行ファイルでは無く、[API](https://www.stackage.org/package/ghc-mod)を利用しています。そのため、`ghc-mod` のバイナリファイルを削除しても問題無く動きます)
 
-```
+```shell
 $ rm -rf ~/.local/bin/ghc-mod
 $ rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
 $ stack clean --full
