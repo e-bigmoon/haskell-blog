@@ -1,12 +1,12 @@
 ---
-title: Emacs で Haskell IDE Engine
-date: 2018/08/05
+title: Emacs で Haskell IDE Engine を使う
+date: 2018/08/17
 ---
 
 ## 実行環境
 
 | 環境  | バージョン   |
-|:-----:|-------------:|
+|:-----:|:-------------|
 | OS    | Ubuntu 17.10 |
 | Stack |        1.7.1 |
 | HIE   |      0.2.2.0 |
@@ -117,8 +117,14 @@ ghc-mod: GMEProcess "readProcessStderrChan" "/home/yamada/.stack/snapshots/x86_6
 おそらく、原因は古いバージョンの`ghc-mod`なので、次のように一度削除してからもう一度ビルドしたらなおりました。
 
 ```
-rm -rf `~/.local/bin/ghc-mod
+rm -rf ~/.local/bin/ghc-mod
 rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
 stack clean --full
 make build-all
 ```
+
+### 参考
+
+- [haskell-ide-engine](https://github.com/haskell/haskell-ide-engine)
+- [Emacs gets stuck on loading file with HIE](https://github.com/haskell/haskell-ide-engine/issues/750)
+- [Haskell IDE Engine を Emacs で使う](https://haskell.e-bigmoon.com/posts/2018/03-26-hie-emacs.html) (古い記事)
