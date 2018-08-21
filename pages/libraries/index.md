@@ -12,3 +12,4 @@ date: 2018/07/30
 - [debug パッケージのアナウンス (翻訳)](/posts/2018/02-26-Announcing-the-debug-package.html)
 - [prettyprinter パッケージ](/posts/2018/03-30-prettyprinter.html)
 - [extensible-0.4.9 がリリースされました。](/posts/2018/05-14-release-extensible-049.html)
+- [path & path-io パッケージ](/posts/2018/08-21-path-and-path-io.html)
