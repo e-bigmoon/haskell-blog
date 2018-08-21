@@ -2,11 +2,11 @@
 -- stack script --resolver lts-12.7
 {-# LANGUAGE TemplateHaskell #-}
 
-import Path
-import Path.IO
+import           Path
+import           Path.IO
 
-import Control.Monad (when)
-import System.Environment (getArgs)
+import           Control.Monad      (when)
+import           System.Environment (getArgs)
 
 main :: IO ()
 main = do
