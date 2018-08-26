@@ -91,7 +91,7 @@ wado: access (2018-08-26 14:04:07.133389916 JST)
 
 ## missing-fields 警告
 
-```hs
+```haskell
 {-# LANGUAGE RecordWildCards #-}
 
 data Person = Person
@@ -105,11 +105,11 @@ f = Person { .. }
     personName = "bigmoon"
 ```
 
-上記のようにフィールドが全て初期化されていないコードはコンパイル時に `missing-fields` 警告が出ます。これは、実行時エラーになるかもしれないということを示唆しています。
+上記のようにフィールドが全て初期化されていないコードはコンパイル時に `missing-fields` 警告が出ます。
 
-無視せずにしっかり修正しましょう。
+この警告を無視すると実行時エラーになる可能性があります。無視せずにしっかり修正しましょう。
 
-```hs
+```haskell
 warning: [-Wmissing-fields]
     • Fields of ‘Person’ not initialised: personAge
     • In the expression: Person {..}
