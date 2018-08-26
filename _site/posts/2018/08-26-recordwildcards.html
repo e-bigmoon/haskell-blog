@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>RecordWildCards と Reader モナド</title>
+  <meta name="description" content="はじめに
+Twitter で RecordWildCards の話が流れて来たので Reader モナドと組み合わせた例を1つご紹介します。
+この書き方は @fumieval さんが使っていてカッコイイ書き方だなぁと思った記憶があります。
+{-# LANGUAGE RecordWildCards #-}
+
+data P">
+  <link rel="canonical" href="../../posts/2018/08-26-recordwildcards.html">
+  <link rel="alternate" type="application/atom+xml" title="RecordWildCards と Reader モナド" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="RecordWildCards と Reader モナド" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/08-26-recordwildcards.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="RecordWildCards と Reader モナド" />
+  <meta property="og:description" content="はじめに
+Twitter で RecordWildCards の話が流れて来たので Reader モナドと組み合わせた例を1つご紹介します。
+この書き方は @fumieval さんが使っていてカッコイイ書き方だなぁと思った記憶があります。
+{-# LANGUAGE RecordWildCards #-}
+
+data P" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+        <a href="../../yesod/" class="white-text">
+          <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+          Yesod
+        </a>
+      </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on August 26, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">RecordWildCards と Reader モナド</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=RecordWildCards と Reader モナド&url=https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p><code>Twitter</code> で <code>RecordWildCards</code> の話が流れて来たので <code>Reader</code> モナドと組み合わせた例を1つご紹介します。</p>
+<p>この書き方は <span class="citation" data-cites="fumieval">@fumieval</span> さんが使っていてカッコイイ書き方だなぁと思った記憶があります。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  }</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="ot">func ::</span> <span class="dt">Reader</span> <span class="dt">Person</span> ()</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">func <span class="fu">=</span> ask <span class="fu">&gt;&gt;=</span> \<span class="dt">Person</span> {<span class="fu">..</span>} <span class="ot">-&gt;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="fu">...</span> <span class="co">-- personName, personAge という名前でそのまま値を利用できる</span></a></code></pre></div>
+<p><code>RecordWildCards</code> に関しては既に色んな方が記事にしてくれているので、そちらをご参照ください。</p>
+<ul>
+<li><a href="https://haskell.jp/blog/posts/2018/about-ghc-exts-1.html">GHC拡張ノック(Part 1)</a></li>
+<li><a href="http://rf0444.hatenablog.jp/entry/20120617/1339910411">Haskellの言語拡張たち 2</a></li>
+<li><a href="http://fumieval.hatenablog.com/entry/2016/12/18/181540">波打たせるものの正体(エクステンシブル・タングル)</a></li>
+<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#record-wildcards">GHC user guide 10.5.5. Record wildcards</a></li>
+</ul>
+<!--more-->
+<h2 id="具体例">具体例</h2>
+<p>あまり良い例が思いつかなかったのですが、 <code>Env</code> に必要な情報を持たせておけば任意のタイミングで利用できて便利です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-12.7</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw">import</span>           <span class="dt">Control.Monad.Trans.Reader</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">import</span>           <span class="dt">Data.IORef</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="kw">import</span>           <span class="dt">Data.Time.LocalTime</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">import</span>           <span class="dt">Path</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw">data</span> <span class="dt">Env</span> <span class="fu">=</span> <span class="dt">Env</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  {<span class="ot"> envCounter  ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  ,<span class="ot"> envLogPath  ::</span> <span class="dt">Path</span> <span class="dt">Rel</span> <span class="dt">File</span></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">  ,<span class="ot"> envUserName ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">  }</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">  counter <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21">  <span class="kw">let</span> env <span class="fu">=</span> <span class="dt">Env</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">        { envCounter  <span class="fu">=</span> counter</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">        , envLogPath  <span class="fu">=</span> <span class="fu">$</span>(mkRelFile <span class="st">&quot;./output.log&quot;</span>)</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">        , envUserName <span class="fu">=</span> <span class="st">&quot;wado&quot;</span></a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">        }</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">  runReaderT (access <span class="fu">&gt;&gt;</span> access <span class="fu">&gt;&gt;</span> access) env</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29">  n <span class="ot">&lt;-</span> readIORef counter</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">  putStrLn <span class="fu">$</span> mconcat [<span class="st">&quot;counter = &quot;</span>, show n]</a>
+<a class="sourceLine" id="cb2-31" data-line-number="31"></a>
+<a class="sourceLine" id="cb2-32" data-line-number="32"><span class="ot">access ::</span> <span class="dt">ReaderT</span> <span class="dt">Env</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33">access <span class="fu">=</span> ask <span class="fu">&gt;&gt;=</span> \<span class="dt">Env</span> {<span class="fu">..</span>} <span class="ot">-&gt;</span> liftIO <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">  modifyIORef envCounter (<span class="fu">+</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">  now <span class="ot">&lt;-</span> getZonedTime</a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">  appendFile (toFilePath envLogPath)</a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">    <span class="fu">$</span> mconcat [envUserName, <span class="st">&quot;: &quot;</span>, <span class="st">&quot;access&quot;</span>, <span class="st">&quot; (&quot;</span>, show now, <span class="st">&quot;)&quot;</span>, <span class="st">&quot;\n&quot;</span>]</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38">  return ()</a></code></pre></div>
+<h3 id="実行結果">実行結果</h3>
+<pre class="shell"><code>$ ./Sample.hs
+counter = 3
+
+$ cat ./output.log
+wado: access (2018-08-26 14:04:07.132813451 JST)
+wado: access (2018-08-26 14:04:07.133330363 JST)
+wado: access (2018-08-26 14:04:07.133389916 JST)</code></pre>
+<h2 id="注意点">注意点</h2>
+<p><code>RecordWildCards</code> を使うと実行時エラーが起きる可能性があるのでご注意下さい。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  } <span class="kw">deriving</span> <span class="dt">Show</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="ot">f ::</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">    personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span></a></code></pre></div>
+<p>上記のようにフィールドが全て初期化されていないコードはコンパイル時に <code>missing-fields</code> 警告が出ます。</p>
+<p>無視せずにしっかり修正しましょう。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">warning<span class="fu">:</span> [<span class="fu">-</span><span class="dt">Wmissing</span><span class="fu">-</span>fields]</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">    • <span class="dt">Fields</span> <span class="kw">of</span> ‘<span class="dt">Person</span>’ not initialised<span class="fu">:</span> personAge</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">    • <span class="dt">In</span> the expression<span class="fu">:</span> <span class="dt">Person</span> {<span class="fu">..</span>}</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">      <span class="dt">In</span> an equation for ‘f’<span class="fu">:</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">          f <span class="fu">=</span> <span class="dt">Person</span> {<span class="fu">..</span>}</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">            <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">                personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">   <span class="fu">|</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="dv">46</span> <span class="fu">|</span> f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">   <span class="fu">|</span></a></code></pre></div>
+<ul>
+<li><a href="https://ghc.haskell.org/trac/ghc/ticket/5334">record wildcards: field not initialised reported as type error</a></li>
+</ul>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>RecordWildCards 言語拡張は現実世界ではとても便利 (レコードのフィールドがかなり沢山あったりするので)</li>
+<li>Reader とかと組み合わせるとオシャレ</li>
+<li>GHC の <code>missing-fields</code> 警告は絶対に無視しない (実行時エラーが発生する可能性がある)</li>
+</ul>
+<p>以上です。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/08-21-path-and-path-io.html"><i class="material-icons left">navigate_before</i>path ＆ path-io パッケージ</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=RecordWildCards と Reader モナド&url=https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

@@ -8,8 +8,119 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-08-21T00:00:00Z</updated>
+    <updated>2018-08-26T00:00:00Z</updated>
     <entry>
+    <title>RecordWildCards と Reader モナド</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html</id>
+    <published>2018-08-26T00:00:00Z</published>
+    <updated>2018-08-26T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><code>Twitter</code> で <code>RecordWildCards</code> の話が流れて来たので <code>Reader</code> モナドと組み合わせた例を1つご紹介します。</p>
+<p>この書き方は <span class="citation" data-cites="fumieval">@fumieval</span> さんが使っていてカッコイイ書き方だなぁと思った記憶があります。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  }</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="ot">func ::</span> <span class="dt">Reader</span> <span class="dt">Person</span> ()</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">func <span class="fu">=</span> ask <span class="fu">&gt;&gt;=</span> \<span class="dt">Person</span> {<span class="fu">..</span>} <span class="ot">-&gt;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="fu">...</span> <span class="co">-- personName, personAge という名前でそのまま値を利用できる</span></a></code></pre></div>
+<p><code>RecordWildCards</code> に関しては既に色んな方が記事にしてくれているので、そちらをご参照ください。</p>
+<ul>
+<li><a href="https://haskell.jp/blog/posts/2018/about-ghc-exts-1.html">GHC拡張ノック(Part 1)</a></li>
+<li><a href="http://rf0444.hatenablog.jp/entry/20120617/1339910411">Haskellの言語拡張たち 2</a></li>
+<li><a href="http://fumieval.hatenablog.com/entry/2016/12/18/181540">波打たせるものの正体(エクステンシブル・タングル)</a></li>
+<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#record-wildcards">GHC user guide 10.5.5. Record wildcards</a></li>
+</ul>
+<!--more-->
+<h2 id="具体例">具体例</h2>
+<p>あまり良い例が思いつかなかったのですが、 <code>Env</code> に必要な情報を持たせておけば任意のタイミングで利用できて便利です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-12.7</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw">import</span>           <span class="dt">Control.Monad.Trans.Reader</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">import</span>           <span class="dt">Data.IORef</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="kw">import</span>           <span class="dt">Data.Time.LocalTime</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">import</span>           <span class="dt">Path</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw">data</span> <span class="dt">Env</span> <span class="fu">=</span> <span class="dt">Env</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  {<span class="ot"> envCounter  ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  ,<span class="ot"> envLogPath  ::</span> <span class="dt">Path</span> <span class="dt">Rel</span> <span class="dt">File</span></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">  ,<span class="ot"> envUserName ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">  }</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">  counter <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21">  <span class="kw">let</span> env <span class="fu">=</span> <span class="dt">Env</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">        { envCounter  <span class="fu">=</span> counter</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">        , envLogPath  <span class="fu">=</span> <span class="fu">$</span>(mkRelFile <span class="st">&quot;./output.log&quot;</span>)</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">        , envUserName <span class="fu">=</span> <span class="st">&quot;wado&quot;</span></a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">        }</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">  runReaderT (access <span class="fu">&gt;&gt;</span> access <span class="fu">&gt;&gt;</span> access) env</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29">  n <span class="ot">&lt;-</span> readIORef counter</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">  putStrLn <span class="fu">$</span> mconcat [<span class="st">&quot;counter = &quot;</span>, show n]</a>
+<a class="sourceLine" id="cb2-31" data-line-number="31"></a>
+<a class="sourceLine" id="cb2-32" data-line-number="32"><span class="ot">access ::</span> <span class="dt">ReaderT</span> <span class="dt">Env</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33">access <span class="fu">=</span> ask <span class="fu">&gt;&gt;=</span> \<span class="dt">Env</span> {<span class="fu">..</span>} <span class="ot">-&gt;</span> liftIO <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">  modifyIORef envCounter (<span class="fu">+</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">  now <span class="ot">&lt;-</span> getZonedTime</a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">  appendFile (toFilePath envLogPath)</a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">    <span class="fu">$</span> mconcat [envUserName, <span class="st">&quot;: &quot;</span>, <span class="st">&quot;access&quot;</span>, <span class="st">&quot; (&quot;</span>, show now, <span class="st">&quot;)&quot;</span>, <span class="st">&quot;\n&quot;</span>]</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38">  return ()</a></code></pre></div>
+<h3 id="実行結果">実行結果</h3>
+<pre class="shell"><code>$ ./Sample.hs
+counter = 3
+
+$ cat ./output.log
+wado: access (2018-08-26 14:04:07.132813451 JST)
+wado: access (2018-08-26 14:04:07.133330363 JST)
+wado: access (2018-08-26 14:04:07.133389916 JST)</code></pre>
+<h2 id="注意点">注意点</h2>
+<p><code>RecordWildCards</code> を使うと実行時エラーが起きる可能性があるのでご注意下さい。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  } <span class="kw">deriving</span> <span class="dt">Show</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="ot">f ::</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">    personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span></a></code></pre></div>
+<p>上記のようにフィールドが全て初期化されていないコードはコンパイル時に <code>missing-fields</code> 警告が出ます。</p>
+<p>無視せずにしっかり修正しましょう。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">warning<span class="fu">:</span> [<span class="fu">-</span><span class="dt">Wmissing</span><span class="fu">-</span>fields]</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">    • <span class="dt">Fields</span> <span class="kw">of</span> ‘<span class="dt">Person</span>’ not initialised<span class="fu">:</span> personAge</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">    • <span class="dt">In</span> the expression<span class="fu">:</span> <span class="dt">Person</span> {<span class="fu">..</span>}</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">      <span class="dt">In</span> an equation for ‘f’<span class="fu">:</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">          f <span class="fu">=</span> <span class="dt">Person</span> {<span class="fu">..</span>}</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">            <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">                personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">   <span class="fu">|</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="dv">46</span> <span class="fu">|</span> f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">   <span class="fu">|</span></a></code></pre></div>
+<ul>
+<li><a href="https://ghc.haskell.org/trac/ghc/ticket/5334">record wildcards: field not initialised reported as type error</a></li>
+</ul>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>RecordWildCards 言語拡張は現実世界ではとても便利 (レコードのフィールドがかなり沢山あったりするので)</li>
+<li>Reader とかと組み合わせるとオシャレ</li>
+<li>GHC の <code>missing-fields</code> 警告は絶対に無視しない (実行時エラーが発生する可能性がある)</li>
+</ul>
+<p>以上です。</p>]]></summary>
+</entry>
+<entry>
     <title>path ＆ path-io パッケージ</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/08-21-path-and-path-io.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/08-21-path-and-path-io.html</id>
@@ -1187,48 +1298,6 @@ False</code></pre>
 <ul>
 <li>半角アルファベットだけバリデーションしたい場合は <code>isAsciiUpper</code> 等の関数を使う</li>
 <li><code>kanji</code> パッケージが便利</li>
-</ul>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>Haskell Quiz No.11 isUpper と isAsciiUpper</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/07-09-quiz-11.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/07-09-quiz-11.html</id>
-    <published>2018-07-09T00:00:00Z</published>
-    <updated>2018-07-09T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.11">Haskell Quiz No.11</h2>
-<p>難易度: λ</p>
-<p>以下のプログラムの実行結果はどうなるでしょうか？</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.17</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Data.Char</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  print <span class="fu">$</span> isUpper <span class="ch">&#39;あ&#39;</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  print <span class="fu">$</span> isAsciiUpper <span class="ch">&#39;あ&#39;</span></a></code></pre></div>
-<p>答えは<a href="./07-10-quiz-12.html">次回</a>。</p>
-<!--more-->
-<h2 id="はじめに">はじめに</h2>
-<p><a href="./07-08-quiz-10.html">前回</a>の問題と答えは以下の通りです。</p>
-<h3 id="問題">問題</h3>
-<p>難易度: λ</p>
-<p>以下の実行結果はどうなるでしょう！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.17</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> iterMC print <span class="fu">.|</span> return ()</a></code></pre></div>
-<h3 id="こたえ">こたえ</h3>
-<p>何も表示されない。</p>
-<pre class="shell"><code>$ ./Quiz10.hs</code></pre>
-<h3 id="解説">解説</h3>
-<p><code>yieldMany</code> 関数があるので <code>iterMC print</code> によって <code>1 〜 10</code> が表示されるように思うかもしれません。</p>
-<p>しかし、最後のパイプが <code>return ()</code> となっているため、何も起きません。</p>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li>Conduit は値が上流から自然に流れてくるのではなく、必要な時に下流から引っ張っているイメージで考えると良い。</li>
 </ul>
 <p>以上です。</p>]]></summary>
 </entry>
