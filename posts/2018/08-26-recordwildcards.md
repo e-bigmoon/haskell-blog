@@ -89,9 +89,7 @@ wado: access (2018-08-26 14:04:07.133330363 JST)
 wado: access (2018-08-26 14:04:07.133389916 JST)
 ```
 
-## 注意点
-
-`RecordWildCards` を使うと実行時エラーが起きる可能性があるのでご注意下さい。
+## missing-fields 警告
 
 ```hs
 {-# LANGUAGE RecordWildCards #-}
@@ -107,7 +105,7 @@ f = Person { .. }
     personName = "bigmoon"
 ```
 
-上記のようにフィールドが全て初期化されていないコードはコンパイル時に `missing-fields` 警告が出ます。
+上記のようにフィールドが全て初期化されていないコードはコンパイル時に `missing-fields` 警告が出ます。これは、実行時エラーになるかもしれないということを示唆しています。
 
 無視せずにしっかり修正しましょう。
 
@@ -122,6 +120,18 @@ warning: [-Wmissing-fields]
    |
 46 | f = Person { .. }
    |
+```
+
+ちなみに、通常のレコード構文でもフィールドが部分的にしか初期化されていない場合は、同様の警告がでます。(@fumieval さん、ご指摘ありがとうございます)
+
+```haskell
+data Person = Person
+  { personName :: String
+  , personAge  :: Int
+  } deriving Show
+
+f :: Person
+f = Person { personName = "bigmoon" }
 ```
 
 - [record wildcards: field not initialised reported as type error](https://ghc.haskell.org/trac/ghc/ticket/5334)
