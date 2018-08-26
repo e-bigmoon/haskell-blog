@@ -19,7 +19,7 @@ data Person = Person
   }
 
 func :: Reader Person ()
-func = ask >>= \Person {..} -> $
+func = ask >>= \Person {..} -> $ do
   ... -- personName, personAge という名前でそのまま値を利用できる
 ```
 
