@@ -84,8 +84,7 @@ $ cat ./output.log
 wado: access (2018-08-26 14:04:07.132813451 JST)
 wado: access (2018-08-26 14:04:07.133330363 JST)
 wado: access (2018-08-26 14:04:07.133389916 JST)</code></pre>
-<h2 id="注意点">注意点</h2>
-<p><code>RecordWildCards</code> を使うと実行時エラーが起きる可能性があるのでご注意下さい。</p>
+<h2 id="missing-fields-警告">missing-fields 警告</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
@@ -97,7 +96,7 @@ wado: access (2018-08-26 14:04:07.133389916 JST)</code></pre>
 <a class="sourceLine" id="cb4-9" data-line-number="9">f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
 <a class="sourceLine" id="cb4-10" data-line-number="10">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb4-11" data-line-number="11">    personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span></a></code></pre></div>
-<p>上記のようにフィールドが全て初期化されていないコードはコンパイル時に <code>missing-fields</code> 警告が出ます。</p>
+<p>上記のようにフィールドが全て初期化されていないコードはコンパイル時に <code>missing-fields</code> 警告が出ます。これは、実行時エラーになるかもしれないということを示唆しています。</p>
 <p>無視せずにしっかり修正しましょう。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1">warning<span class="fu">:</span> [<span class="fu">-</span><span class="dt">Wmissing</span><span class="fu">-</span>fields]</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">    • <span class="dt">Fields</span> <span class="kw">of</span> ‘<span class="dt">Person</span>’ not initialised<span class="fu">:</span> personAge</a>
@@ -109,6 +108,14 @@ wado: access (2018-08-26 14:04:07.133389916 JST)</code></pre>
 <a class="sourceLine" id="cb5-8" data-line-number="8">   <span class="fu">|</span></a>
 <a class="sourceLine" id="cb5-9" data-line-number="9"><span class="dv">46</span> <span class="fu">|</span> f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
 <a class="sourceLine" id="cb5-10" data-line-number="10">   <span class="fu">|</span></a></code></pre></div>
+<p>ちなみに、通常のレコード構文でもフィールドが部分的にしか初期化されていない場合は、同様の警告がでます。(<span class="citation" data-cites="fumieval">@fumieval</span> さん、ご指摘ありがとうございます)</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">  } <span class="kw">deriving</span> <span class="dt">Show</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="ot">f ::</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">f <span class="fu">=</span> <span class="dt">Person</span> { personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span> }</a></code></pre></div>
 <ul>
 <li><a href="https://ghc.haskell.org/trac/ghc/ticket/5334">record wildcards: field not initialised reported as type error</a></li>
 </ul>
