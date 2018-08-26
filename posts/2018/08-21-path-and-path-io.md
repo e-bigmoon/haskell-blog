@@ -1,5 +1,5 @@
 ---
-title: path & path-io パッケージ
+title: path ＆ path-io パッケージ
 author: Shinya Yamaguchi
 tags: bigmoon, package
 ---
