@@ -1,6 +1,6 @@
 ---
 title: Persistent
-date: 2018/08/07
+date: 2018/08/29
 ---
 
 ## Persistent
@@ -24,7 +24,7 @@ Persistent は型安全、正確さ、宣言的構文をガイドライン原理
 ほかの素晴らしい特徴を以下に挙げます。
 
 - データベースに依存しません。PostgreSQL、 SQLite、 MySQL、 MongoDB と実験的に Redis をサポートしています
-- 柔軟なデータモデリング。Persistent はモデル関係を定義し、それらを型安全な方法で利用できる。デフォルトの型安全 persistent API は join 操作をサポートしないことで、より広範な数のストレージレイヤを使えるようにしています。Join や他の SQL 特有の機能は、生の SQL レイヤを利用することで達成できます (かなり型安全性に乏しいが)。 付加的なライブラリである [Esqueleto](http://hackage.haskell.org/package/esqueleto) は Persistent データモデルの最上層に構築され、型安全な join や SQL の機能を追加しています。
+- 柔軟なデータモデリング。Persistent はモデル関係を定義し、それらを型安全な方法で利用できる。デフォルトの型安全 persistent API は join 操作をサポートしないことで、より広範な数のストレージレイヤを使えるようにしています。Join や他の SQL 特有の機能は、生の SQL レイヤを利用することで達成できます (かなり型安全性に乏しいが)。 付加的なライブラリである [Esqueleto](https://github.com/bitemyapp/esqueleto) は Persistent データモデルの最上層に構築され、型安全な join や SQL の機能を追加しています。
 - 開発環境のデータベースマイグレーションが自動化できるので、開発スピードがアップします。
 
 Persistent は Yesod と上手く機能しますが、単独でもスタンドアローンなライブラリとしてかなり役立ちます。
@@ -1363,8 +1363,8 @@ Persistent はバックエンドに依存しません。
 デメリットはバックエンド特有の機能を見失うことです。
 最も大きなものは SQL の join サポートです。
 
-幸運にも Felipe Lessa のおかげで、この問題は解決できる。
-[Esqueleto](http://hackage.haskell.org/package/esqueleto) ライブラリは既存の Persistent 基盤を使って、型安全な SQL クエリの記述をサポートしてくれます。
+幸運にも Felipe Lessa と Chris Allen のおかげで、この問題は解決できる。
+[Esqueleto](https://github.com/bitemyapp/esqueleto) ライブラリは既存の Persistent 基盤を使って、型安全な SQL クエリの記述をサポートしてくれます。
 Esqueleto の Haddock は利用方法の良い導入となるでしょう。
 また Persistent の概念を多く使っているため Persistent の知識の大部分が Esqueleto でも利用できるでしょう。
 
