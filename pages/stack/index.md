@@ -22,7 +22,7 @@ date: 2018/08/31
 - [namespaced templates](/posts/2018/06-27-namespaced-templates.html)
 - [プロファイルの取得方法](etc/profiling.html)
 - [extra-deps に github の短縮形が指定できるようになります](/posts/2018/03-13-stack-extra-deps-shorthand.html)
-- [stack-1.11 から location に extra-dep を指定できなくなります](/posts/2018/08-31-stack-extradep-legacy-cyntax.html))
+- [stack-1.11 から location に extra-dep を指定できなくなります](/posts/2018/08-31-stack-extradep-legacy-syntax.html)
 
 ### stack サブコマンド
 
