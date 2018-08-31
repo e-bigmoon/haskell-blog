@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/07/30
+date: 2018/08/31
 ---
 
 <div class="row">
@@ -22,6 +22,7 @@ date: 2018/07/30
 - [namespaced templates](/posts/2018/06-27-namespaced-templates.html)
 - [プロファイルの取得方法](etc/profiling.html)
 - [extra-deps に github の短縮形が指定できるようになります](/posts/2018/03-13-stack-extra-deps-shorthand.html)
+- [stack-1.11 から location に extra-dep を指定できなくなります](/posts/2018/08-31-stack-extradep-legacy-syntax.html)
 
 ### stack サブコマンド
 
@@ -102,6 +103,7 @@ date: 2018/07/30
 - [アプリケーションのバージョンに Git の情報を出してみよう！](/posts/2018/03-20-gitrev.html)
 - [正格性のすべて (翻訳)](/posts/2018/06-25-All-About-Strictness.html)
 - [ContT を使ってコードを綺麗にしよう！](/posts/2018/06-26-cont-param.html)
+- [RecordWildCards と Reader モナド](/posts/2018/08-26-recordwildcards.html)
 
 ## エディタ
 
