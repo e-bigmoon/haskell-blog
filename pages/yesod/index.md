@@ -1,21 +1,63 @@
 ---
 title: Haskell Yesod
-date: 2018/03/18
+date: 2018/09/11
 ---
 
-## Yesod Book (@[003fe8caa318fc3ee42461bb07b5d3093ee30d3d](https://github.com/yesodweb/yesodweb.com-content/commit/003fe8caa318fc3ee42461bb07b5d3093ee30d3d))
+## Yesod クイックスタートガイド
 
-- [Yesod Web Framework Book- Version 1.4](http://www.yesodweb.com/book)
-- [yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
+- [Yesod quick start guide](https://www.yesodweb.com/page/quickstart)
 
-`補足資料` と `練習問題` は BIGMOON オリジナルコンテンツです。
+### 1. Stack をインストールしましょう
+
+[haskell-lang get started guide](https://haskell-lang.org/get-started) を参考に、ビルドツール `Stack` をインストールしましょう。
+
+POSIX システムでは以下のコマンドでインストールが完了します。
+
+```shell
+$ curl -sSL https://get.haskellstack.org/ | sh
+```
+
+### 2. プロジェクトの雛形を用意しましょう
+
+```shell
+$ stack new my-project yesod-sqlite
+$ cd my-project
+```
+
+### 3. yesod コマンドをインストールしましょう
+
+```shell
+$ stack install yesod-bin
+```
+
+### 4. ライブラリをビルドしましょう
+
+```shell
+$ stack build
+```
+
+### 5. 開発用サーバーを起動しましょう
+
+```shell
+$ stack exec -- yesod devel
+```
+
+### 6. Yesod サーバーへアクセスしてみましょう
+
+[http://localhost:3000/](http://localhost:3000/) にアクセスすれば Yesod アプリケーションを体験できます。
+
+## Yesod ブック (@[01cd443fe824c4ad029dd3c8c49444ce6e7c24c3](https://github.com/yesodweb/yesodweb.com-content/commit/01cd443fe824c4ad029dd3c8c49444ce6e7c24c3))
+
+- [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
+- [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
+- [yesodweb/yesod-cookbook](https://github.com/yesodweb/yesod-cookbook)
 
 ### Basics
 
 原文 | 日本語訳 | 補足資料 | 練習問題
------|----------|----------|----------
-[Introduction](https://www.yesodweb.com/book/introduction) | Introduction
-[Haskell](https://www.yesodweb.com/book/haskell) | Haskell
+-----|----------|:----------:|:----------:
+[Introduction](https://www.yesodweb.com/book/introduction) | [イントロダクション](book/ch01-introduction.html) | - | -
+[Haskell](https://www.yesodweb.com/book/haskell) | [Haskell](book/ch02-haskell.html) | - | -
 [Basics](https://www.yesodweb.com/book/basics) | [Basics](book/ch03-basics.html) | [スライド](https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing) | [練習問題](exercise/ch03/)
 [Shakespearean Templates](https://www.yesodweb.com/book/shakespearean-templates) | [Shakespearean Templates](book/ch04-shakespearen-templates.html) | [スライド](https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing) | [練習問題](exercise/ch04/)
 [Widgets](https://www.yesodweb.com/book/widgets) | [Widgets](book/ch05-widgets.html) | [スライド](https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing) | [練習問題](exercise/ch05/)
@@ -63,3 +105,20 @@ date: 2018/03/18
 [Settings Types](https://www.yesodweb.com/book/settings-types) | Settings Types
 [http-conduit](https://www.yesodweb.com/book/http-conduit) | http-conduit
 [xml-conduit](https://www.yesodweb.com/book/xml) | xml-conduit
+
+## Yesod Tips
+
+記事 | 検証に利用したコード
+------|-------
+[whamlet と julius](tips/01-compile-hamlet-julius.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips1.hs)
+[hamlet とインライン Javascript](tips/02-inline-js.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips2.hs)
+[X-XSS-Protection レスポンスヘッダ](tips/03-x-xss-protection.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips3.hs)
+[TRACE メソッド](tips/04-trace-method.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips4.hs)
+[Cookie のセキュリティ](tips/05-cookie.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips5.hs)
+[XSS に対するセキュリティ](tips/06-xss.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips6.hs)
+[変数展開処理の流れ](tips/07-variable-interpolation.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips7.hs)
+[TH で生成されるコードの確認方法](tips/08-TH.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips8.hs)
+
+## Yesod で作られているアプリケーション
+
+- [fpco/stackage-server](https://github.com/fpco/stackage-server)
