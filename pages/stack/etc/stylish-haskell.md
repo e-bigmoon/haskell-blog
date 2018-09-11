@@ -1,6 +1,6 @@
 ---
 title: stylish-haskell
-date: 2018/05/05
+date: 2018/09/11
 ---
 
 ## 何をするためのツールか？
