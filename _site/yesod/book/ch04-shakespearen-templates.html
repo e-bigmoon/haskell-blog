@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Shakespearen Templates</title>
+  <title>シェイクスピア テンプレート</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../yesod/book/ch04-shakespearen-templates.html">
-  <link rel="alternate" type="application/atom+xml" title="Shakespearen Templates" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="シェイクスピア テンプレート" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Shakespearen Templates" />
+  <meta property="og:title" content="シェイクスピア テンプレート" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/yesod/book/ch04-shakespearen-templates.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Shakespearen Templates" />
+  <meta property="og:site_name" content="シェイクスピア テンプレート" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -154,25 +154,26 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">Shakespearen Templates</h1>
+        <h1 class="post-title">シェイクスピア テンプレート</h1>
         
-        <span>最終更新日: 2018/03/18</span>
+        <span>最終更新日: 2018/09/11</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="shakespearen-templates">Shakespearen Templates</h2>
-<p>Yesod では一般的にテンプレート言語のシェイクスピアファミリーを利用して HTML、CSS、Javascript を生成します。 このテンプレート言語は以下のような包括的原則とともに共通の構文を持ちます。</p>
+        <p>Yesod では HTML, CSS, Javascript を生成するための標準的な方法として、テンプレート言語のシェイクスピアファミリーを採用しています。シェイクスピアでは以下の原則と共通の構文を持ちます。</p>
 <ul>
-<li>ベースの言語 (Html, Css, Javascript) に対する干渉をできる限り少なくし、控えめに便利機能を提供します</li>
-<li>妥当なコンテンツ (well-formed content) であることをコンパイル時に保証します</li>
-<li>静的型安全性は <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">XSS攻撃(cross-site scripting)</a> の防止に非常に役立ちます</li>
-<li>型安全URLによって。可能な場合は常に展開されたリンクを自動的に検証します</li>
+<li>ベース言語 (Html, Css, Javascript) に対する干渉をできる限り少なくし、さりげなく便利な機能を提供します。</li>
+<li>妥当なコンテンツ (well-formed content) であることをコンパイル時に保証します。</li>
+<li>静的型安全性は <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">XSS攻撃(cross-site scripting)</a> の防止に非常に役立ちます。</li>
+<li>型安全URLを利用することで、可能な場合は常に展開されたリンクに対して自動的にバリデーションを行います。</li>
 </ul>
-<p>Yesod とこれらのテンプレート言語の間には本質的な繋がりやその他の制限は何もありません。 そのため、それぞれは互いに独立して用いることができます。 本章の前半で、これらテンプレート言語自体について説明し、後半ではそれらを Yesod アプリケーション開発のために利用する方法を述べる。</p>
-<h2 id="synopsis">Synopsis</h2>
-<p>シェイクスピアには4つの主要な言語があり、Hamlet は HTML、Julius は Javascript、Cassius と Lucius は両者とも CSS のためのテンプレート言語です。 Hamlet と Cassius は空白によって識別される形式であり、インデントを用いてネストを表現します。 それに対して Lucius は CSS のスーパーセットなので、通常の CSS で用いられる波括弧の形式でネストを表します。 Julius は Javascript を作り出すための単なる透過型言語であり、唯一追加された機能は変数展開 (variable interpolation) だけです。</p>
-<p>Cassius は単に Lucius の代替構文です。 内部では両者とも同じ処理エンジンを用いていますが、 Cassius のファイルは前処理の段階ででインデントを括弧に変換しています。 どちらを利用するかは純粋に構文の好みとなります。</p>
+<p>Yesod とこれらのテンプレート言語の間には本質的な繋がりやその他の制限は何もありません。そのため、それぞれは互いに独立して利用することができます。本章の前半で、テンプレート言語の構文等について説明し、後半では Yesod アプリケーション開発でテンプレート言語の利用方法を述べます。</p>
+<h2 id="概要">概要</h2>
+<p>シェイクスピアには4つの主要な言語があります。Hamlet は HTML、Julius は Javascript、Cassius と Lucius は両方とも CSS のためのテンプレート言語です。Hamlet と Cassius は空白によって識別される形式となっているため、インデントを用いてネストを表現します。それに対して Lucius は CSS のスーパーセットなので、通常の CSS で使われる波括弧の形式でネストを表します。Julius は Javascript を作り出すための単なるパススルー言語です。唯一追加される機能は変数展開 (variable interpolation) だけです。</p>
+<div class="yesod-book-notice">
+<p>Cassius は単に Lucius の代替構文です。内部では両者とも同じ処理エンジンを利用していますが、 Cassius のファイルは前処理の段階でインデントを波括弧に変換します。そのため、どちらを利用するかは純粋に構文の好みになります。</p>
+</div>
 <h3 id="hamlet-html">Hamlet (HTML)</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">&lt;html&gt;</span></a>
@@ -213,53 +214,60 @@
 <a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="op">^{</span>addBling<span class="op">}</span></a>
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <h2 id="型">型</h2>
-<p>構文に入る前に関連する型をいろいろ見てみましょう。 導入部において型は XSS 攻撃の防止になると述べました。 例えば、誰かの名前を表示する次のような HTML テンプレートがあったとしましょう。</p>
+<p>構文に入る前に色々な型を見てみましょう。最初に「型は XSS 攻撃の防止に役立つ」と述べました。例えば、誰かの名前を表示する次のような HTML テンプレートがあったとしましょう。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">&lt;p&gt;</span>Hello, my name is <span class="kw">#{</span>name<span class="kw">}</span></a></code></pre></div>
-<p><code>#{...}</code> はシェイクスピアでは、変数展開となります。</p>
-<p><code>name</code> では何が起こり、さらにそのデータ型は何であるべきでしょう？ よくある方法として <code>Text</code> の値をそのまま挿入することです。 しかし、そのようにすると <code>name</code> が次のような場合に非常に問題となります。</p>
+<div class="yesod-book-notice">
+<p><code>#{...}</code> はシェイクスピアでは、変数展開を意味します。</p>
+</div>
+<p>さて、<code>name</code> 変数の値を挿入するためにはどうすれば良いと思いますか？さらにそのデータ型は何であるべきでしょうか？よくある方法は <code>Text</code> の値をそのまま挿入することです。しかし、そうすると <code>name</code> の値が次のような場合に問題が起こります。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">'http://nefarious.com/evil.js'</span><span class="kw">&gt;&lt;/script&gt;</span></a></code></pre></div>
-<p>このとき <code>&lt;</code> が <code>&amp;lt;</code> になるように <code>name</code> をエンティティエンコードしたいのですが、どうすれば良いでしょうか。</p>
-<p>その場合のよくある方法は単に埋め込まれる全てのテキストをエンティティエンコードすることです。 もし、別の処理によって既に HTML が生成されていたとしたら何が起こるでしょうか？ 例えば、この Yesod のウェブサイトではすべての Hakell コードスニペットは適切な <code>span</code> タグで覆われることで色付けされています。 仮に全てをエンティティエスケープしたとすれば、コードスニペットはほとんど読めない状態となるでしょう。</p>
-<p>そうならないように <code>Html</code> データ型を使います。2種類のAPIによって <code>Html</code> 型の値を生成する. <code>ToMarkup</code> 型クラスは <code>toHtml</code> 関数によって <code>String</code> と <code>Text</code> の値を <code>Html</code> の値に変換する方法を提供し、自動的に途中でエンティティエスケープを行います。</p>
-<p>これは先ほどの <code>name</code> で利用したい方法です。 また、コードスニペットの例においては <code>preEscapedToMarkup</code> を利用するでしょう。</p>
-<p>Hamlet (HTML シェイクスピア言語) の変数展開では、値に対し自動的に <code>toHtml</code> が適用されます。 したがって <code>String</code> を展開する場合はエンティティエスケープされますが、 <code>Html</code> の場合は何もしません。 コードスニペットの例においては <code>#{preEscapedToMarkup myHaskellHtml}</code> のようにして展開を行うでしょう。</p>
-<p><code>Html</code> データ型は上に述べられた関数と共に blaze-html パッケージにより提供されます。 これによって Hamlet が他の blaze-html パッケージと相互作用することが可能になり、 blaze-html 値を生成するための一般的解決策ともなります。 さらには blaze-html の素晴らしいパフォーマンスの恩恵を得ることもできます。</p>
-<p>同様に <code>CSS型 と ToCSS クラス</code>, <code>Javascript型 と ToJavascript クラス</code> が存在します。 これらは CSS で偶然 HTML を落とさないようにするためにコンパイル時におけるサニティーチェックを行います。</p>
-<p>CSS 側における他の利点としては、色や単位に関するデータ型があることです。</p>
+<p>このとき <code>&lt;</code> が <code>&amp;lt;</code> になるように <code>name</code> の値をエンティティエンコードしたいのですが、どうすれば良いでしょうか。</p>
+<p>すぐに思い浮かぶのは、単に埋め込まれる全てのテキストをエンティティエンコードするという方法です。しかし、もし、別の処理によって既に HTML が生成されていたとしたら何が起こるでしょうか？例えば、 Yesod のウェブサイトのすべての Haskell コードスニペットは適切な <code>span</code> タグで囲むことで色付けされています。仮に、全てをエンティティエスケープしたとすれば、コードスニペットはほとんど読めない状態になってしまうでしょう。</p>
+<p>そういった事態を避けるために <code>Html</code> データ型を使います。<code>Html</code> 型の値を生成するために2種類のAPIがあります。<code>ToMarkup</code> 型クラスは <code>String</code> と <code>Text</code> の値を <code>Html</code> の値に変換する <code>toHtml</code> 関数を提供します。 <code>toHtml</code> 関数は自動的にエンティティエスケープを行います。これは先ほどの <code>name</code> の例で求めていた処理です。また、コードスニペットのような例では <code>preEscapedToMarkup</code> 関数を利用すると良いでしょう。</p>
+<p>Hamlet (HTML シェイクスピア言語) の変数展開では、値に対して自動的に <code>toHtml</code> が適用されます。そのため <code>String</code> を展開する場合はエンティティエスケープされますが、 <code>Html</code> の場合は何も変更されません。そのため、コードスニペットの例では <code>#{preEscapedToMarkup myHaskellHtml}</code> のようにして展開すれば期待通りの結果が得られます。</p>
+<div class="yesod-book-notice">
+<p><code>Html</code> データ型は <code>toHtml</code> や <code>preEscapedToMarkup</code> と一緒に blaze-html パッケージで提供されています。そのため Hamlet は他の全ての blaze-html パッケージと相互作用することが可能になり、 blaze-html の値を生成するための一般的解決策にもなります。さらには blaze-html の素晴らしいパフォーマンスの恩恵を得ることもできます。</p>
+</div>
+<p>同様に <code>CSS型 と ToCSS クラス</code>, <code>Javascript型 と ToJavascript クラス</code> があります。これらは意図せず HTML を壊してしまうようなコードの混入を防ぐため、コンパイル時にサニティーチェックを行います。</p>
+<div class="yesod-book-notice">
+<p>CSS にテンプレート言語を採用するその他の利点としては、色や単位についての補助的なデータ型があることです。例えば、以下のような例です。</p>
 <pre class="lucius"><code>.red { color: #{colorRed} }</code></pre>
-<p>さらなる詳細については Haddock文書を参照してください。</p>
-<h2 id="type-safe-urls">Type-safe URLs</h2>
-<p>おそらく Yesod における最も独特な機能は型安全URLであり、シェイクスピアにおいて扱うことができます。 使用法は変数展開とほとんど同じ、ハッシュ (#) の代わりにアットマーク (@) にするだけです。 構文は後で確認することにして、まずは直感的に理解しましょう。</p>
-<p>まず、次のような2つのルートを持つアプリケーションがあるとしましょう。 <code>http://example.com/profile/home</code> はトップページで <code>http://example.com/display/time</code> は現在の時間を表示します。 ここで、トップページから time ページにリンクしたいとき、 URL を構築するためには3つの異なる方法が考えられます。</p>
+<p>さらなる詳細については Haddock ドキュメントを参照してください。</p>
+</div>
+<h2 id="型安全url">型安全URL</h2>
+<p>おそらく Yesod における最も面白い機能は型安全URLです。この機能はシェイクスピアから直接扱うことができます。使い方は変数展開とほとんど同じで、ハッシュ (#) の代わりにアットマーク (@) を利用するだけです。構文は後で確認することにして、まずは直感的に理解しましょう。</p>
+<p>まず、次のような2つのルートを持つアプリケーションがあるとします。<code>http://example.com/profile/home</code> はトップページで <code>http://example.com/display/time</code> は現在の時間を表示します。ここで、トップページから time ページにリンクしたいとき、 URL を構築するためには3つの異なる方法が考えられます。</p>
 <ol type="1">
 <li>相対リンク: <strong><em>../display/time</em></strong></li>
 <li>ドメイン無しの絶対リンク: <strong><em>/display/time</em></strong></li>
-<li>ドメイン有りの絶対リンク: <code>http://example.com/display/time</code></li>
+<li>ドメイン有りの絶対リンク: <strong><em>http://example.com/display/time</em></strong></li>
 </ol>
-<p>それぞれの方法において問題があります。 1つ目の方法はどちらかのURLが変化することでリンク切れになってしまいますし、全ての状況に適しているというわけではありません。 例えば RSS や Atom フィードには絶対URLが必要となります。 2つ目は1つ目の方法よりも変化に対し柔軟ではありますが、 RSS や Atom の問題は依然として存在する。 3つ目は全ての場合に有効ですが、ドメイン名が変わるごとに全ての URL を更新する必要が生じます。 そのようなことはそう頻繁には起こらないだろうと思うかもしれませんが、開発からステージングそして最終の本番サーバへの移行を考えてみてください。</p>
-<p>しかしより重要なことはそれぞれの方法において、ひとつ非常に大きな問題があるということです。 それは、仮にルートを変更したとしてもコンパイラは壊れたリンクに対して警告をしないという点です。 誤植が大混乱を招くように、これは最悪な状況だということは言うまでもありません。</p>
-<p>型安全URLの目的は人間の代わりにコンパイラにできる限り多くのチェックを行わせることです。 これを可能にするための最初のステップとしては、コンパイラが理解できない単純な文字列から離れ、正しく定義されたデータ型に変更することです。 今回の単純なアプリケーションではルートを直和型で表現します。</p>
+<p>どの方法もそれぞれ問題があります。1つ目の方法はどちらかのURLが変化することでリンク切れになってしまいますし、全ての状況に適しているというわけではありません。例えば RSS や Atom フィードには絶対URLが必要です。2つ目は1つ目の方法よりも変化に対し柔軟ですが、 RSS や Atom の問題は残ったままです。3つ目は今言った問題の全てを解決できますが、ドメイン名が変わるごとに全ての URL を更新する必要が生じます。そんなこと、そう頻繁には起こらないだろうと思うかもしれませんが、開発からステージングそして最終の本番サーバへの移行を考えてみてください。</p>
+<p>しかしより重要なことはそれぞれの方法において、ひとつ非常に大きな問題があるということです。それは、仮にルートを変更したとしてもコンパイラは壊れたリンクに対して警告をしないという点です。誤植が大混乱を招くように、これは最悪な状況だということは言うまでもありません。</p>
+<p>型安全URLの目的は人間の代わりにコンパイラにできる限り多くのチェックを行わせることです。これを可能にするための最初のステップとしては、コンパイラが理解できない単純な文字列から離れ、正しく定義されたデータ型に変更することです。今回の単純なアプリケーションではルートを直和型で表現します。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span></a></code></pre></div>
-<p>テンプレートに /display/time のようなリンクを記述する代わりに <code>Time</code> コンストラクタを利用します。 しかし、そうすると HTML はデータ型ではなくテキストでできているため、これらの値をテキストに変換する方法が必要となります。 その変換を行う関数を URLレンダリング関数 (URL rendering function) と呼び、簡単な例を以下に示します。</p>
+<p>テンプレートに /display/time のようなリンクを記述する代わりに <code>Time</code> コンストラクタを利用します。しかし、そうすると HTML はデータ型ではなくテキストでできているため、これらの値をテキストに変換する方法が必要となります。その変換を行う関数をURLレンダリング関数 (URL rendering function) と呼ぶことにしましょう。簡単な例を以下に示します。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">renderMyRoute ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2">renderMyRoute <span class="dt">Home</span> <span class="fu">=</span> <span class="st">&quot;http://example.com/profile/home&quot;</span></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3">renderMyRoute <span class="dt">Time</span> <span class="fu">=</span> <span class="st">&quot;http://example.com/display/time&quot;</span></a></code></pre></div>
-<p>URLレンダリング関数は実際にはこれより少しだけ複雑です。 それらはクエリ文字列パラメータを追加し、コンストラクタのレコードを扱い、より高度にドメイン名を処理する必要があります。しかし、 Yesod は自動的にレンダ関数を生成するため実際にはこれらについて考える必要はありません。 唯一指摘すべきこととしてはクエリ文字列を扱うために、型シグネチャが実際にはもう少し複雑であることです。</p>
+<div class="yesod-book-notice">
+<p>URLレンダリング関数は実際にはこれより少しだけ複雑です。なぜなら、クエリ文字列パラメータを追加し、コンストラクタのレコードを扱い、より賢くドメイン名を処理する必要があるためです。しかし、実際にはそんな事を考えなくても大丈夫です。Yesod はレンダリング関数を自動生成してくれます。唯一指摘すべきこととしてはクエリ文字列を扱うために、型注釈が実際にはもうちょっとだけ複雑になるということです。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">type</span> <span class="dt">Query</span> <span class="fu">=</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)]</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw">type</span> <span class="dt">Render</span> url <span class="fu">=</span> url <span class="ot">-&gt;</span> <span class="dt">Query</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="ot">renderMyRoute ::</span> <span class="dt">Render</span> <span class="dt">MyRoute</span></a>
 <a class="sourceLine" id="cb10-4" data-line-number="4">renderMyRoute <span class="dt">Home</span> _ <span class="fu">=</span> <span class="fu">...</span></a>
 <a class="sourceLine" id="cb10-5" data-line-number="5">renderMyRoute <span class="dt">Time</span> _ <span class="fu">=</span> <span class="fu">...</span></a></code></pre></div>
-<p>こうしてレンダ関数が定義され、テンプレートに埋め込まれた型安全URLを使えるようになりました。 これは正確にはどのようにして上手く動作するのでしょうか？ <code>Html</code> (<code>CSS</code> や <code>Javascript</code>) 値を直接生成する代わりにテンプレート言語は関数を生成し、その関数はレンダ関数を取り HTML を生成します。 このことをより詳細に見るために Hamlet が表面下においてどのように動くかを軽く覗いてみましょう。 以下のテンプレートがあると仮定します。</p>
+</div>
+<p>これで、レンダリング関数とテンプレートに埋め込まれた型安全URLについて、なんとなくわかったと思います。しかし、正確にはこれらはどうやって上手く動作するのでしょうか？テンプレート言語は <code>Html</code> (<code>CSS</code> や <code>Javascript</code>) の値を直接生成するのではなく、レンダリング関数を引数に取り HTML を作り上げる関数を生成します。このことをより詳細に確認するために Hamlet が背後でどのような処理を行っているか軽く覗いてみましょう。以下のテンプレートを考えます。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Time</span><span class="kw">}&gt;</span>The time</a></code></pre></div>
 <p>これは、だいたい次のような Haskell コードに翻訳されます。</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1">\render <span class="ot">-&gt;</span> mconcat [<span class="st">&quot;&lt;a href='&quot;</span>, render <span class="dt">Time</span>, <span class="st">&quot;'&gt;The time&lt;/a&gt;&quot;</span>]</a></code></pre></div>
-<h2 id="syntax">Syntax</h2>
-<p>あらゆるシェイクスピアのテンプレート言語は同じ展開構文を備えているため、型安全URLを用いることができます。 それらは対象となる言語 (HTML、CSS、Javascript) 特有の構文とは異なります。 それぞれの言語を順番に見てみましょう。</p>
-<h2 id="hamlet-syntax">Hamlet Syntax</h2>
-<p>Hamlet はシェイクスピアの中でも最も洗練されたものです。 それは HTML 生成のための構文を提供するだけでなく、条件、ループ、maybe などの基本的な制御構造を備えます。</p>
-<h3 id="tags">Tags</h3>
-<p>タグがあらゆる HTML テンプレート言語において重要な役割を担うことは明らかです。 Hamlet においては、テンプレート言語を使いやすくするためにできる限り既存の HTML 構文に似せているが、ネスとの表現は閉じタグの代わりにインデントを利用する。 したがって、次のようなHTMLコードは</p>
+<h2 id="構文">構文</h2>
+<p>シェイクスピア テンプレート言語はどれも同じ展開構文となっているため、同じ方法で型安全URLを利用できます。各テンプレート言語の構文は対象となる言語 (HTML、CSS、Javascript) によって少しずつ違います。それぞれの言語を順番に見てみましょう。</p>
+<h2 id="hamlet-構文">Hamlet 構文</h2>
+<p>Hamlet はシェイクスピアの中でも最も洗練されたものです。HTML を生成のための構文を提供するだけでなく、条件、ループ、maybe などの基本的な制御構造を備えます。</p>
+<h3 id="タグ">タグ</h3>
+<p>どんな HTML テンプレート言語でも明らかにタグは重要です。Hamlet では、テンプレート言語を使いやすくするためにできる限り既存の HTML 構文に似せています。一番大きな違いはネストの表現に、閉じタグではなくインデントを採用している点です。そのため、次のような HTML は</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">&lt;body&gt;</span></a>
 <a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">&lt;p&gt;</span>Some paragraph.<span class="kw">&lt;/p&gt;</span></a>
 <a class="sourceLine" id="cb13-3" data-line-number="3"><span class="kw">&lt;ul&gt;</span></a>
@@ -267,38 +275,38 @@
 <a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw">&lt;li&gt;</span>Item 2<span class="kw">&lt;/li&gt;</span></a>
 <a class="sourceLine" id="cb13-6" data-line-number="6"><span class="kw">&lt;/ul&gt;</span></a>
 <a class="sourceLine" id="cb13-7" data-line-number="7"><span class="kw">&lt;/body&gt;</span></a></code></pre></div>
-<p>このような Hamlet コードに変換されます。 このような Hamlet コードに変換される.</p>
+<p>このような Hamlet コードに変換されます。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">&lt;body&gt;</span></a>
 <a class="sourceLine" id="cb14-2" data-line-number="2">    <span class="kw">&lt;p&gt;</span>Some paragraph.</a>
 <a class="sourceLine" id="cb14-3" data-line-number="3">    <span class="kw">&lt;ul&gt;</span></a>
 <a class="sourceLine" id="cb14-4" data-line-number="4">        <span class="kw">&lt;li&gt;</span>Item 1</a>
 <a class="sourceLine" id="cb14-5" data-line-number="5">        <span class="kw">&lt;li&gt;</span>Item 2</a></code></pre></div>
-<p>一般的に、この表記に一度慣れてしまえば通常のHTMLより解読がしやすくなると思います。 唯一の技巧的な部分はタグ前後の空白の扱いです。 例えば、次のようなHTMLを生成したいとしましょう。</p>
+<p>一般的に、この表記に一度慣れてしまえば通常の HTML よりわかりやすいのではないでしょうか。ただし、タグ前後の空白の扱いについては注意が必要です。例えば、次のような HTML を生成したいとしましょう。</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">&lt;p&gt;</span>Paragraph <span class="kw">&lt;i&gt;</span>italic<span class="kw">&lt;/i&gt;</span> end.<span class="kw">&lt;/p&gt;</span></a></code></pre></div>
-<p>空白は “Paragraph” の後の部分や “end” の前の部分で保持されていて欲しいです。 そのために2つの単純なエスケープ文字を用います。</p>
+<p>空白は “Paragraph” の後の部分や “end” の前の部分で保存されていて欲しいです。そのためには、2種類のエスケープ文字を用います。</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">&lt;p&gt;</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2">    Paragraph #</a>
 <a class="sourceLine" id="cb16-3" data-line-number="3">    <span class="kw">&lt;i&gt;</span>italic</a>
 <a class="sourceLine" id="cb16-4" data-line-number="4">    \ end.</a></code></pre></div>
 <p>空白のエスケープ規則は実にシンプルです。</p>
 <ol type="1">
-<li>もし、行頭の文字が空白でなく、バックスラッシュであれば、そのバックスラッシュは無視される。(注意: これは、その行における全てのタグが単純なテキストとして処理されてしまう。)</li>
-<li>もし、行末の文字がハッシュの場合それは無視されます</li>
+<li>もし、行頭の文字が空白でなく、バックスラッシュであれば、そのバックスラッシュは無視されます。(注意: これは、その行における全てのタグが単なるテキストとして処理されてしまうということです)</li>
+<li>もし、行末の文字がハッシュの場合それは無視されます。</li>
 </ol>
-<p>もう一つ別のこととして Hamlet はコンテンツ内のエンティティをエスケープしません。 これによって既存の HTML のコピーが容易になります。 したがって。上の例は次のように書くこともできます。</p>
+<p>あと、 Hamlet はコンテンツ内のエンティティをエスケープしません。そのため、既存の HTML のコピーがしやすくなります。したがって、上の例は次のように書くこともできます。</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">&lt;p&gt;</span>Paragraph <span class="kw">&lt;i&gt;</span>italic&lt;/i&gt; end.</a></code></pre></div>
-<p>Hamlet では開始タグは自動的に閉じられることに注意してください。 一方で内側の “i” タグはそうではありません。 どちらの方法もペナルティ無く自由に使うことができるため、好きな方を選択できます。 しかし Hamlet において閉じタグを用いる唯一の場面は、このようなインラインタグに限ることに注意してください。 インラインタグ以外で閉じタグを用いることはありません。</p>
-<p>これによる他の結果としては、最初のタグより後に出現するタグはIDやクラスに関する特別な処理を行わないということです。 例えば、次の Hamlet スニペットは次のような HTML コードを生成します。</p>
+<p>Hamlet では最初のタグは自動的に閉じられることに注意してください。それに対して内側の “i” タグはそうではありません。どちらの方法もペナルティ無く自由に使うことができるため、好きな方を選択できます。しかし Hamlet において閉じタグを使う唯一の場面は、このようなインラインタグに限られるということを忘れないでください。通常のタグを閉じることはありません。</p>
+<p>この表記で他に注意する点としては、最初のタグより後に出現するタグは ID やクラスについて、特別な処理を行わないということです。例えば、次の Hamlet スニペットは</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">&lt;p </span><span class="er">#firstid</span><span class="kw">&gt;</span>Paragraph <span class="kw">&lt;i </span><span class="er">#secondid</span><span class="kw">&gt;</span>italic&lt;/i&gt; end.</a></code></pre></div>
-<p>生成された HTML コード。</p>
+<p>以下の HTML を生成します。</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">&lt;p</span><span class="ot"> id=</span><span class="st">&quot;firstid&quot;</span><span class="kw">&gt;</span>Paragraph <span class="kw">&lt;i</span><span class="ot"> #secondid</span><span class="kw">&gt;</span>italic<span class="kw">&lt;/i&gt;</span> end.<span class="kw">&lt;/p&gt;</span></a></code></pre></div>
-<p><code>i</code> タグが単純なテキストとして処理される一方で <code>p</code>タグが自動的に閉じられ、その属性が特別扱いを受ける点に注意してください。</p>
-<h3 id="interpolation">Interpolation</h3>
-<p>ここまで出てきたものは簡潔な HTML であるため何の問題も起こっていませんが、まだ Haskell コードと相互作用することはできていません。 どのようにして変数を受け渡すのでしょうか？ それは単純に展開を利用します。</p>
+<p><code>i</code> タグが単純なテキストとして処理される一方で <code>p</code>タグは自動的に閉じられ、その属性が特別扱いを受ける点に注意してください。</p>
+<h3 id="展開">展開</h3>
+<p>これまでに紹介したものは簡潔な HTML なので何の問題も起こっていませんが、まだ Haskell コードと相互作用できていません。どのようにして変数を受け渡せば良いのでしょうか？それは単純に展開を利用します。</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">&lt;head&gt;</span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2">    <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></a></code></pre></div>
-<p>ハッシュの後ろに波括弧のペアが続く場合は変数展開 (variable interpolation) です。 上の例においてはテンプレートが呼ばれたスコープで <code>title</code> 変数が用いられます。 そのことを次のように言い直せます。 Hamlet は変数が呼ばれた際に自動的にスコープ内の変数へアクセスし、特に変数を受け渡す必要はありません。</p>
-<p>展開の中では関数適用、文字列、数値リテラル、修飾付きモジュールを利用することができます。 また、処理をまとめるために丸括弧やドルマークを用いることができます。 展開の処理の最後に <code>toHtml</code> 関数が適用されます。 これは <code>ToHtml</code> クラスの全てのインスタンスが展開可能だということを意味します。 例えば、次のコードを考えてみましょう。</p>
+<p>ハッシュの後ろに波括弧のペアが続く表記は変数展開 (<strong><em>variable interpolation</em></strong>) です。上の例では、テンプレートが呼ばれたスコープで <code>title</code> 変数が利用できます。そのことは次のように言い直せます。Hamlet は変数が呼ばれた際に自動的にスコープ内の変数へアクセスします。そのため、特に変数を受け渡す必要はありません。</p>
+<p>展開の中では関数適用、文字列、数値リテラル、修飾付きモジュールを利用することができます。また、処理をまとめるために丸括弧やドルマークを使うこともできます。展開の処理の最後に <code>toHtml</code> 関数が適用されます。これは <code>ToHtml</code> クラスの全てのインスタンスが展開可能だということを意味します。例えば、次のコードを考えてみましょう。</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co">-- Just ignore the quasiquote stuff for now, and that shamlet thing.</span></a>
 <a class="sourceLine" id="cb21-2" data-line-number="2"><span class="co">-- It will be explained later.</span></a>
 <a class="sourceLine" id="cb21-3" data-line-number="3"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
@@ -322,7 +330,7 @@
 <a class="sourceLine" id="cb21-21" data-line-number="21">|]</a>
 <a class="sourceLine" id="cb21-22" data-line-number="22">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb21-23" data-line-number="23">    person <span class="fu">=</span> <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="dv">26</span></a></code></pre></div>
-<p>目玉機能の型安全URLについてはどうでしょうか？ それらはシャープの代わりにアットマーク (@) で始まる点を除いて、あらゆる面で変数展開と同一です。 さらにキャレット (^) によって同じ型の他のテンプレートを埋め込むことが可能になります。 次のコード例で確認しましょう。</p>
+<p>目玉機能の型安全URLについてはどうでしょうか？それらはシャープの代わりにアットマーク (@) で始まる点を除けば、あらゆる面で変数展開と同じです。さらにキャレット (^) によって同じ型の別のテンプレートを埋め込むことが可能になります。次のコード例で確認しましょう。</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
 <a class="sourceLine" id="cb22-2" data-line-number="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb22-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
@@ -348,7 +356,7 @@
 <a class="sourceLine" id="cb22-23" data-line-number="23">    <span class="kw">&lt;p&gt;</span>This is my page.</a>
 <a class="sourceLine" id="cb22-24" data-line-number="24">    <span class="kw">^{</span>footer<span class="kw">}</span></a>
 <a class="sourceLine" id="cb22-25" data-line-number="25">|] render</a></code></pre></div>
-<p>さらに、クエリ文字列パラメータを受け入れるような URL 展開の変種があり、これは例えばページ番号をつけるようなレスポンスに適しています。 <code>@{...}</code> を用いる代わりにクエスチョンマークを加え <code>@?{...}</code> とすることで、クエリ文字列の存在を示します。 与える値は2要素のタプルである必要があり、第1要素が型安全URL、第2要素はクエリ文字列パラメータのリストのペアとなります。 例えば、次のコードスニペットの例を見てみましょう。</p>
+<p>さらに、クエリ文字列パラメータを受け入れるような URL 展開の変種があます。これは例えばページ番号をつけるようなレスポンスに適しています。<code>@{...}</code> を用いる代わりにクエスチョンマークを加え <code>@?{...}</code> とすることで、クエリ文字列があることを表します。与える値は2要素のタプルでなければなりません。第1要素が型安全URL、第2要素はクエリ文字列パラメータのリストのペアとなります。例えば、次のコードスニペットの例を見てみましょう。</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
 <a class="sourceLine" id="cb23-2" data-line-number="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb23-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
@@ -379,18 +387,18 @@
 <a class="sourceLine" id="cb24-2" data-line-number="2"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/home?page=1&quot;</span><span class="kw">&gt;</span>Previous<span class="kw">&lt;/a&gt;</span></a>
 <a class="sourceLine" id="cb24-3" data-line-number="3"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/home?page=3&quot;</span><span class="kw">&gt;</span>Next<span class="kw">&lt;/a&gt;</span></a>
 <a class="sourceLine" id="cb24-4" data-line-number="4"><span class="kw">&lt;/p&gt;</span></a></code></pre></div>
-<h3 id="attributes">Attributes</h3>
-<p>前の最後の例では “a” タグに href 属性を付加しました。 構文について詳細に見てみましょう。</p>
+<h3 id="属性">属性</h3>
+<p>前の最後の例では “a” タグに href 属性を追加しました。構文について詳しく見てみましょう。</p>
 <ul>
-<li>属性の値にも変数展開記法が利用できます</li>
-<li>HTML と同様に属性のイコール記号と値はオプションです。したがって <code>&lt;input type=checkbox checked&gt;</code> は完全に妥当です</li>
-<li>id と class 属性についてはそれぞれハッシュ (#) と ピリオド (.) を用います。つまり <code>&lt;p #paragraphid .class1 .class2&gt;</code> という感じです</li>
-<li>属性値の前後のクォートは任意ですが、途中でスペースを用いる場合は必要です</li>
-<li>コロンを利用することでオプションの属性を追加できます。isChecked の値が True の場合のみチェックボックスをチェックした状態にしたい場合 <code>&lt;input type=checkbox :isChecked:checked&gt;</code> とします。また、ある段落の文字色を赤色にしたい場合は <code>&lt;p :isRed:style=&quot;color:red&quot;&gt;</code> とします。(これはクラス名を用いても良いです。例えば、 <code>&lt;p :isCurrent:.current&gt;</code> は isCurrent が <code>True</code> の場合, <code>current</code> クラスをセットします)</li>
+<li>属性の値にも変数展開が利用できます。</li>
+<li>HTML と同様に属性のイコール記号と値はオプションです。したがって <code>&lt;input type=checkbox checked&gt;</code> は完全に正しい書き方です。</li>
+<li>id と class 属性についてはそれぞれハッシュ (#) と ピリオド (.) を使います。つまり <code>&lt;p #paragraphid .class1 .class2&gt;</code> という感じです。</li>
+<li>属性値を囲うための前後のクォートは省略可能ですが、途中でスペースを用いる場合は必要です。</li>
+<li>コロンを利用することでオプションの属性を追加できます。isChecked 変数の値が True の場合のみチェックボックスをチェックした状態にしたい場合 <code>&lt;input type=checkbox :isChecked:checked&gt;</code> とします。また、ある段落の文字色を赤色にしたい場合は <code>&lt;p :isRed:style=&quot;color:red&quot;&gt;</code> とします。(これはクラス名を使っても良いです。例えば、 <code>&lt;p :isCurrent:.current&gt;</code> は isCurrent が <code>True</code> の場合, <code>current</code> クラスをセットします)</li>
 <li>任意のキーと値のペアもまた <code>*{...}</code> 構文を用いて展開が可能です。属性の場合の変数展開は値が String または Text のタプルか, タプルのリストである必要があります。例えば <code>attrs = [(&quot;foo&quot;, &quot;bar&quot;)]</code> という値であれば展開可能です。</li>
 </ul>
-<h3 id="conditionals">Conditionals</h3>
-<p>いつかはページ内に何らかのロジックを組み込みたいと思うでしょう。 Hamlet の目的はロジックを可能な限り最小にすることで Haskell に大部分を任せることです。 そのようなものとして <code>if</code>、 <code>ifelse</code>、 <code>else</code> は非常に基本的な論理文 (logical statements) です。</p>
+<h3 id="条件文">条件文</h3>
+<p>いつかはページ内に何らかのロジックを組み込みたいと思うでしょう。Hamlet の目的はロジックを可能な限り最小にすることで Haskell に大部分を任せることです。そのようなものとして <code>if</code>、 <code>elseif</code>、 <code>else</code> は非常に基本的な論理文です。</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">$if</span> isAdmin</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">    <span class="kw">&lt;p&gt;</span>Welcome to the admin section.</a>
 <a class="sourceLine" id="cb25-3" data-line-number="3"><span class="kw">$elseif</span> isLoggedIn</a>
@@ -399,17 +407,17 @@
 <a class="sourceLine" id="cb25-6" data-line-number="6">    <span class="kw">&lt;p&gt;</span>I don't know who you are. Please log in so I can decide if you get access.</a></code></pre></div>
 <p>通常の展開と同じ規則が条件文にも当てはまります。</p>
 <h3 id="maybe">Maybe</h3>
-<p>同様に Maybe 値を扱うための特別な記法があります。 技術的には <code>if</code>、 <code>isJust</code>、 <code>fromJust</code> を用いることで処理されますが、部分関数は避けることができるため、よく使われます。</p>
+<p>同様に Maybe 値を扱うための特別な記法があります。技術的には <code>if</code>、 <code>isJust</code>、 <code>fromJust</code> を使えば同じ処理を行えます。しかし、<code>maybe</code> を使うと、部分関数を避けることができるので、こちらの方が便利です。</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">$maybe</span> name <span class="ot">&lt;-</span> maybeName</a>
 <a class="sourceLine" id="cb26-2" data-line-number="2">    <span class="kw">&lt;p&gt;</span>Your name is <span class="kw">#{</span>name<span class="kw">}</span></a>
 <a class="sourceLine" id="cb26-3" data-line-number="3"><span class="kw">$nothing</span></a>
 <a class="sourceLine" id="cb26-4" data-line-number="4">    <span class="kw">&lt;p&gt;</span>I don't know your name.</a></code></pre></div>
-<p>単純な識別子に加え、コンストラクタやタプルなど、より複雑な値を左辺に用いることができます。</p>
+<p>単純な識別子に加え、コンストラクタやタプルなど、より複雑な値を左辺に使うことができます。</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">$maybe</span> <span class="dt">Person</span> firstName lastName <span class="ot">&lt;-</span> maybePerson</a>
 <a class="sourceLine" id="cb27-2" data-line-number="2">    <span class="kw">&lt;p&gt;</span>Your name is <span class="kw">#{</span>firstName<span class="kw">}</span> <span class="kw">#{</span>lastName<span class="kw">}</span></a></code></pre></div>
 <p>右辺は展開と同じ規則に従い、変数や関数適用などが使えます。</p>
 <h3 id="forall">Forall</h3>
-<p>リストのループについてはどうでしょうか？ 以下のようにするだけです。</p>
+<p>リストのループについてはどうでしょうか？こんな感じです。</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw">$if</span> null people</a>
 <a class="sourceLine" id="cb28-2" data-line-number="2">    <span class="kw">&lt;p&gt;</span>No people.</a>
 <a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw">$else</span></a>
@@ -417,50 +425,52 @@
 <a class="sourceLine" id="cb28-5" data-line-number="5">        <span class="kw">$forall</span> person <span class="ot">&lt;-</span> people</a>
 <a class="sourceLine" id="cb28-6" data-line-number="6">            <span class="kw">&lt;li&gt;#{</span>person<span class="kw">}</span></a></code></pre></div>
 <h3 id="case">Case</h3>
-<p>パターンマッチは Haskell の重要な強みの1つです。 直和型は多くの実務的な型をきれいにモデル化することができ <code>case</code> 文を利用すると安全にマッチさせることができます。 つまりどのケースにも当てはまらない場合にコンパイルは警告を出します。 Hamlet の case 文も同じように働きます。</p>
+<p>パターンマッチは Haskell の重要な強みの1つです。直和型は多くの現実的な型をきれいにモデル化することができます。また、 <code>case</code> 文を利用すると安全にマッチさせることができます。どれにもマッチしない場合には、コンパイラが警告を出してくれます。Hamlet の case 文も、それと同様の力を持ちます。</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">$</span><span class="er">case</span> <span class="er">foo</span></a>
 <a class="sourceLine" id="cb29-2" data-line-number="2">    <span class="kw">$</span><span class="er">of</span> <span class="er">Left</span> <span class="er">bar</span></a>
 <a class="sourceLine" id="cb29-3" data-line-number="3">        <span class="kw">&lt;p&gt;</span>It was left: <span class="kw">#{</span>bar<span class="kw">}</span></a>
 <a class="sourceLine" id="cb29-4" data-line-number="4">    <span class="kw">$</span><span class="er">of</span> <span class="er">Right</span> <span class="er">baz</span></a>
 <a class="sourceLine" id="cb29-5" data-line-number="5">        <span class="kw">&lt;p&gt;</span>It was right: <span class="kw">#{</span>baz<span class="kw">}</span></a></code></pre></div>
 <h3 id="with">With</h3>
-<p>文を短くするために <code>with</code> を利用します。 基本的には長い式に対して、単なる利便性のためのエイリアス宣言となります。</p>
+<p>文を短くするために <code>with</code> を利用します。基本的には長い式に対して、エイリアスを定義するために利用します。</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">$</span><span class="er">with</span> <span class="er">foo</span> <span class="er">&lt;-</span> <span class="er">some</span> <span class="er">very</span> <span class="er">(long</span> <span class="er">ugly)</span> <span class="er">expression</span> <span class="er">that</span> <span class="er">$</span> <span class="er">should</span> <span class="er">only</span> <span class="er">$</span> <span class="er">happen</span> <span class="er">once</span></a>
 <a class="sourceLine" id="cb30-2" data-line-number="2">    <span class="kw">&lt;p&gt;</span>But I'm going to use <span class="kw">#{</span>foo<span class="kw">}</span> multiple times. <span class="kw">#{</span>foo<span class="kw">}</span></a></code></pre></div>
 <h3 id="doctype">Doctype</h3>
-<p>最後はちょっとした糖衣構文の doctype 文です。 <code>dectype</code> は複数の異なるバージョンがサポートされていますが、現代のウェブアプリケーションにおいては <code>$doctype 5</code> が推奨され、これは <code>&lt;!DOCTYPE html&gt;</code> を生成します。</p>
+<p>最後はちょっとした糖衣構文の doctype 文です。 <code>dectype</code> は複数の異なるバージョンがサポートされていますが、モダンな Web アプリケーションでは <code>$doctype 5</code> を推奨しています。これは <code>&lt;!DOCTYPE html&gt;</code> を生成します。</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
 <a class="sourceLine" id="cb31-2" data-line-number="2"><span class="kw">&lt;html&gt;</span></a>
 <a class="sourceLine" id="cb31-3" data-line-number="3">    <span class="kw">&lt;head&gt;</span></a>
 <a class="sourceLine" id="cb31-4" data-line-number="4">        <span class="kw">&lt;title&gt;</span>Hamlet is Awesome</a>
 <a class="sourceLine" id="cb31-5" data-line-number="5">    <span class="kw">&lt;body&gt;</span></a>
 <a class="sourceLine" id="cb31-6" data-line-number="6">        <span class="kw">&lt;p&gt;</span>All done.</a></code></pre></div>
-<p>まだサポートされているこれよりも古い構文として3つのエクスクラメーション (!!!) があり、時にはこのようなコードを見かけるかもしれません。 この形式を削除する予定はありませんが、一般的に <code>doctype</code> による方法がより読みやすいと思います。</p>
-<h2 id="lucius-syntax">Lucius Syntax</h2>
-<p>Lucius はシェイクスピアに2種類存在する CSS テンプレート言語のうちの一つです。 これは CSS のスーパーセットであることを意図しているため、既存の構文よりも機能が豊富です。</p>
+<div class="yesod-book-notice">
+<p>これよりも古い構文として3つのエクスクラメーション (!!!) が今もサポートされています。時にはこのようなコードを見かけるかもしれません。この形式を削除する予定はありませんが、一般的に <code>doctype</code> による方法がより読みやすいと思います。</p>
+</div>
+<h2 id="lucius-構文">Lucius 構文</h2>
+<p>Lucius はシェイクスピアに2種類存在する CSS テンプレート言語のうちの一つです。これは CSS のスーパーセットであることを意図しているため、既存の構文よりも機能が豊富です。</p>
 <ul>
-<li>Hamlet のように変数と URL の展開が可能です</li>
-<li>CSS のブロックはネストが可能です</li>
-<li>テンプレートで変数宣言が可能です</li>
-<li>複合的な CSS プロパティはミックスイン (mixin) として作り、複数の宣言で再利用することが可能です</li>
+<li>Hamlet のように変数と URL の展開が可能です。</li>
+<li>CSS のブロックはネストが可能です。</li>
+<li>テンプレートで変数宣言が可能です。</li>
+<li>複合的な CSS プロパティはミックスイン (mixin) として作り、複数の宣言で再利用することが可能です。</li>
 </ul>
-<p>CSS ブロックのネストから説明を始めましょう。 <code>article</code> 内部の複数のタグで特別なスタイルを適用させたいとします。 普通の CSS では次のように書くでしょう。</p>
+<p>CSS ブロックのネストから説明を始めましょう。<code>article</code> 内部の複数のタグで特別なスタイルを適用させたいとします。普通の CSS では次のように書くでしょう。</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode css"><code class="sourceCode css"><a class="sourceLine" id="cb32-1" data-line-number="1">article code { <span class="kw">background-color</span>: grey; }</a>
 <a class="sourceLine" id="cb32-2" data-line-number="2">article p { <span class="kw">text-indent</span>: <span class="dv">2em</span>; }</a>
 <a class="sourceLine" id="cb32-3" data-line-number="3">article a { <span class="kw">text-decoration</span>: <span class="dv">none</span>; }</a>
 <a class="sourceLine" id="cb32-4" data-line-number="4">article a &gt; h1 { <span class="kw">color</span>: <span class="dv">green</span>; }</a></code></pre></div>
-<p>上記のコードは記述量は少ないですが article を何度も打たなければならないため多少不快ですし、もしそれが何十個もあったらどうでしょうか。 世界一悪い事ではないにしても少し嫌です。 Lucius はこのような場面で役立ちます。</p>
+<p>上記のコードは記述量は少ないですが article を何度も打たなければならないため多少不快ですし、もしそれが何十個もあったらどうでしょうか。世界一悪い事ではないにしても少し嫌です。Lucius はこのような場面で役立ちます。</p>
 <pre class="lucius"><code>article {
     code { background-color: grey; }
     p { text-indent: 2em; }
     a { text-decoration: none; }
     &gt; h1 { color: green; }
 }</code></pre>
-<p>Lucius 変数を使えば繰り返しを避けることができます。 単純な例として共通の文字色を定義してみましょう。</p>
+<p>Lucius 変数を使えば繰り返しを避けることができます。単純な例として共通して使う文字色を定義してみましょう。</p>
 <pre class="lucius"><code>@textcolor: #ccc; /* just because we hate our users */
 body { color: #{textcolor} }
 a:link, a:visited { color: #{textcolor} }</code></pre>
-<p>ミックスインは Lucius において比較的新しく追加されたものです。 アイデアとしてはプロパティの集合を与える mixin を宣言して、キャレット展開(^)を用いることで、そのミックスインをテンプレートに埋め込みます。 次の例はミックスインを利用してベンダープレフィックスを扱う方法を示すコードです。</p>
+<p>ミックスインは Lucius に比較的最近追加されたものです。アイデアとしてはプロパティの集合を与えるミックスインを宣言して、キャレット展開 (^) を使うことで、そのミックスインをテンプレートに埋め込みます。次の例はミックスインを利用してベンダープレフィックスを扱う方法を示すコードです。</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
 <a class="sourceLine" id="cb35-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Text.Lucius</span></a>
 <a class="sourceLine" id="cb35-3" data-line-number="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
@@ -487,30 +497,34 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 <a class="sourceLine" id="cb35-24" data-line-number="24">    |]</a>
 <a class="sourceLine" id="cb35-25" data-line-number="25"></a>
 <a class="sourceLine" id="cb35-26" data-line-number="26">main <span class="fu">=</span> TLIO.putStrLn <span class="fu">$</span> renderCss <span class="fu">$</span> myCSS render</a></code></pre></div>
-<h2 id="cassius-syntax">Cassius Syntax</h2>
-<p>Cassius と Lucius の違いは空白の扱いだけです。 概要の部分で述べたように、これは Lucius と同じ処理エンジンを用いていますが、サブブロックを閉じるための波括弧や行末を表すセミコロンを挿入するための前処理を行います。 これは Cassius を実行する際に Lucius のすべての機能を用いることができることを意味します。 以下は素朴な例です。</p>
+<h2 id="cassius-構文">Cassius 構文</h2>
+<p>Cassius と Lucius の違いは空白の扱いだけです。概要の部分で述べたように、処理エンジンは Lucius と同じですが、サブブロックを閉じるための波括弧や行末を表すセミコロンを挿入するための前処理を行います。これは Cassius を書く時に Lucius のすべての機能を使えるということを意味します。以下は簡単な例です。</p>
 <pre class="cassius"><code>#banner
     border: 1px solid #{bannerColor}
     background-image: url(@{BannerImageR})</code></pre>
-<h2 id="julius-syntax">Julius Syntax</h2>
-<p>Julius は本章で論じられた言語の中で最も単純です。 実際に単なる Javascript であるという人もいるかもしれません。 Julius ではこれまで述べた3種類の展開方法が利用可能ですが、それ以外については中身に何の変化も与えません。</p>
-<p>Julius を scaffolded Yesod サイトで用いる場合 Javascript が自動的に圧縮されていることに気づくでしょう。 これは Julius の機能ではなく Yesod が Julius の出力ファイルを圧縮するために hjsmin パッケージを用いているためです。</p>
-<h2 id="calling-shakespeare">Calling Shakespeare</h2>
-<p>もちろんある点において疑問が生じるでしょう。 実際にどのようにしてこれらのものを動かすのでしょうか？ Haskell コードからシェイクスピアを呼び出す3つの異なる方法が存在します。</p>
-<h3 id="quasiquotes">Quasiquotes</h3>
+<h2 id="julius-構文">Julius 構文</h2>
+<p>Julius は本章で論じられた言語の中で最も単純です。実際に単なる Javascript だという人もいるかもしれません。Julius ではこれまで述べた3種類の展開方法が利用できますが、それ以外については中身に何の変化も与えません。</p>
+<div class="yesod-book-notice">
+<p>Julius を scaffolded Yesod サイトで利用する場合 Javascript が自動的に圧縮されていることに気づくでしょう。これは Julius の機能ではなく Yesod が Julius の出力ファイルを圧縮するために hjsmin パッケージを利用しているためです。</p>
+</div>
+<h2 id="シェイクスピアの呼び出し方法">シェイクスピアの呼び出し方法</h2>
+<p>もちろんある点において疑問が生じるでしょう。実際にどのようにしてこれらのものを動かすのでしょうか？Haskell コードからシェイクスピアを呼び出すための方法は3種類あります。</p>
+<h4 id="準クォート">準クォート</h4>
 <p>準クォートを用いることで任意のコンテンツを Haskell コードに埋め込み、コンパイル時に Haskell コードへ変換することが可能となります。</p>
-<h3 id="external-file">External file</h3>
+<h4 id="外部ファイル">外部ファイル</h4>
 <p>外部ファイルの場合、テンプレートコードは別のファイルにあり Template Haskell を通して参照されます。</p>
-<h3 id="reload-mode">Reload mode</h3>
-<p>上の両者は何か変更を加えると完全な再コンパイルが必要となります。 リロードモードにおいてはテンプレートは別のファイルにあり Template Haskell を用いて参照します。 しかし、実行時に外部ファイルは毎回最初から再パーズされます。</p>
-<p>リロードモードは Hamlet では用いることができず Cassius、 Lucius、 Julius のみ利用可能です。 Hamlet には Haskell コンパイラに直接依存し、実行時にうまく再実装できないようなあまりにも多くの洗練された側面があるからです。</p>
-<p>本番環境では、はじめの2つの方法の内どちらかを用いることが可能です。 両者共に、テンプレート全体を最終的な実行ファイルに埋め込み、デプロイメントを簡易にすることでパフォーマンスを向上させます。 準クォートの利点は全てが単一ファイルに存在するという簡潔さにあります。そのため、短いテンプレートであれば準クォートが適しています。 しかし、一般的には次のような理由で外部ファイルによる方法が推薦されます。</p>
+<h4 id="リロードモード">リロードモード</h4>
+<p>準クォートや外部ファイルを使った方法では、何か変更を加えると完全な再コンパイルが必要となります。リロードモードでは、テンプレートは別のファイルに保存されるため Template Haskell で参照します。しかし、実行時に外部ファイルは毎回最初から再パーズされます。</p>
+<div class="yesod-book-notice">
+<p>リロードモードは Hamlet では利用できません Cassius、 Lucius、 Julius でのみ利用可能です。Hamlet には Haskell コンパイラに直接依存し、実行時にうまく再実装できないようなあまりにも多くの洗練された側面があるからです。</p>
+</div>
+<p>プロダクション環境では、はじめの2つの方法の内どちらかを利用することになります。どちらともテンプレート全体を最終的な実行ファイルに埋め込むため、デプロイメントを簡潔にするとともにパフォーマンスを向上させます。準クォートの利点は全てが単一ファイルに存在するという簡潔さにあります。そのため、短いテンプレートであれば準クォートが適しています。しかし、一般的には次のような理由で外部ファイルによる方法が推薦されます。</p>
 <ul>
-<li>ロジックとデザインの分離という伝統にとても従っている</li>
-<li>簡単なCPPマクロを用いて外部ファイルとデバッグモードを容易に変更可能です。これにより、迅速な開発と本番環境における高いパフォーマンスが達成可能になる。</li>
+<li>ロジックとデザインの分離という伝統にとても従っている。</li>
+<li>簡単な CPP マクロを使うことで外部ファイルとデバッグモードを簡単に切り替えることができます。これにより、迅速な開発とプロダクション環境における高いパフォーマンスが達成可能になります。</li>
 </ul>
-<p>これらは特別な準クォートと Template Haskell 関数であるため、適切な言語拡張を有効にし正しい構文を用いる必要があります。 次のコードスニペットにおいてそれぞれの簡単な例を見て見ましょう。</p>
-<h2 id="quasiquoter">Quasiquoter</h2>
+<p>これらは特別な準クォートと Template Haskell 関数であるため、適切な言語拡張を有効にして、正しい構文を使う必要があります。次のコードスニペットでそれぞれの簡単な例を見てみましょう。</p>
+<h3 id="準クォート-1">準クォート</h3>
 <div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span> <span class="co">-- we're using Text below</span></a>
 <a class="sourceLine" id="cb37-2" data-line-number="2"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
 <a class="sourceLine" id="cb37-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
@@ -537,7 +551,7 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 <a class="sourceLine" id="cb37-24" data-line-number="24"></a>
 <a class="sourceLine" id="cb37-25" data-line-number="25"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb37-26" data-line-number="26">main <span class="fu">=</span> putStrLn <span class="fu">$</span> renderHtml <span class="fu">$</span> template <span class="st">&quot;My Title&quot;</span> render</a></code></pre></div>
-<h2 id="external-file-1">External file</h2>
+<h3 id="external-file">External file</h3>
 <div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span> <span class="co">-- we're using Text below</span></a>
 <a class="sourceLine" id="cb38-2" data-line-number="2"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
 <a class="sourceLine" id="cb38-3" data-line-number="3"><span class="ot">{-# LANGUAGE CPP #-}</span> <span class="co">-- to control production versus debug</span></a>
@@ -595,22 +609,22 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 <tr class="even">
 <td>Julius</td>
 <td><code>julius</code></td>
-<td><code>JuliusFile</code></td>
-<td><code>JuliusFileReload</code></td>
+<td><code>juliusFile</code></td>
+<td><code>juliusFileReload</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="alternate-hamlet-types">Alternate Hamlet Types</h2>
-<p>これまでのところ型安全URLが埋め込まれた HTML の断片のような Hamlet から <code>HtmlUrl</code> の値を生成する方法を見てきました。 その他にも Halmet を用いて生成できる値が3つあります。 単純な HTML、 URLと国際化されたメッセージを持ったHTML、 そしてウィジェットです。 ウィジェットについてはウィジェットの章において詳細を説明します。</p>
-<p>URLの埋め込まれていない単純な HTML を生成するために “純粋なHamlet” (simplified Hamlet) を用います。 ここにはいくつかの変更点があります。</p>
+<h2 id="その他の-hamlet-型">その他の Hamlet 型</h2>
+<p>これまでのところ型安全URLが埋め込まれた HTML の断片のような Hamlet から <code>HtmlUrl</code> の値を生成する方法を見てきました。 その他にも Halmet が生成できる値は3つあります。単純な HTML、 URLと国際化されたメッセージを持った HTML、そしてウィジェットです。ウィジェットについてはウィジェットの章で詳しく説明します。</p>
+<p>URL が埋め込まれていない単純な HTML を生成するために “シンプルな Hamlet” を使います。普通の Hamlet との違いがいくつかあります。</p>
 <ul>
-<li>接頭辞に “s” が付く異なる種類の関数を利用します。したがって準クォートは <code>shamlet</code>、外部ファイルは <code>shamletFile</code> となります。これらをどのように発音するかについてはいまだ論争中です</li>
-<li>URL 展開は許可されないため、コンパイル時エラーとなります</li>
-<li>埋め込み (キャレット展開) はもはや <code>HtmlUrl</code> 値を許可しません。ルールとして埋め込み値はテンプレートそれ自体と同じ型を持つ必要があるため, この場合は <code>Html</code> でなければなりません。このことは <code>shamlet</code> において埋め込みは (ハッシュを用いた) 通常の変数展開で完全に置き換え可能であることを意味します。</li>
+<li>接頭辞に “s” が付く異なる種類の関数を利用します。したがって準クォートは <code>shamlet</code>、外部ファイルは <code>shamletFile</code> となります。これらをどのように発音するかについてはいまだ論争中です。</li>
+<li>URL 展開は許可されないため、コンパイル時エラーになります。</li>
+<li>埋め込み (キャレット展開) は <code>HtmlUrl</code> の値を許可しなくなります。ルールとして埋め込み値はテンプレートそれ自体と同じ型を持つ必要があるので、この場合は <code>Html</code> 型でなければなりません。このことは <code>shamlet</code> において埋め込みは (ハッシュを用いた) 通常の変数展開で完全に置き換え可能であることを意味します。</li>
 </ul>
-<p>Hamlet の国際化 (i18) に対処することは多少複雑です。 Hamlet はメッセージデータ型により i18n をサポートします。 それは概念・実装面において型安全URLとかなり類似しています。 動機付けのための例として hello と言った後にいくつのりんごを食べたかを述べるアプリケーションを作りたいとしましょう。 これらのメッセージをデータ型を用いて以下のように表現します。</p>
+<p>Hamlet の国際化 (i18) への対応は少々複雑です。Hamlet はメッセージデータ型で i18n をサポートします。それは概念・実装面において型安全URLとかなり類似しています。例として hello と言った後にいくつのりんごを食べたかを述べるアプリケーションを作りたいとしましょう。これらのメッセージをデータ型を使って以下のように表現します。</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Msg</span> <span class="fu">=</span> <span class="dt">Hello</span> <span class="fu">|</span> <span class="dt">Apples</span> <span class="dt">Int</span></a></code></pre></div>
-<p>次に、それを人間が読める形式に変換したいので、レンダ関数をいくつか定義します。</p>
+<p>次に、これを人間が読める形式に変換したいので、レンダリング関数をいくつか定義します。</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="ot">renderEnglish ::</span> <span class="dt">Msg</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb41-2" data-line-number="2">renderEnglish <span class="dt">Hello</span> <span class="fu">=</span> <span class="st">&quot;Hello&quot;</span></a>
 <a class="sourceLine" id="cb41-3" data-line-number="3">renderEnglish (<span class="dt">Apples</span> <span class="dv">0</span>) <span class="fu">=</span> <span class="st">&quot;You did not buy any apples.&quot;</span></a>
@@ -624,12 +638,12 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 <a class="sourceLine" id="cb42-5" data-line-number="5">    <span class="kw">&lt;body&gt;</span></a>
 <a class="sourceLine" id="cb42-6" data-line-number="6">        <span class="kw">&lt;h1&gt;_{</span><span class="dt">Hello</span><span class="kw">}</span></a>
 <a class="sourceLine" id="cb42-7" data-line-number="7">        <span class="kw">&lt;p&gt;_{</span><span class="dt">Apples</span> count<span class="kw">}</span></a></code></pre></div>
-<p>この種のテンプレートは、型安全URLをレンダー関数を渡した時のように、これらの値を HTML に変換する何らかの方法を必要とします。</p>
+<p>この種のテンプレートは、型安全URLをレンダリング関数に渡した時のように、これらの値を HTML に変換する何らかの方法を必要とします。</p>
 <p>これを表現するために、新しい型シノニムを定義します。</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw">type</span> <span class="dt">Render</span> url <span class="fu">=</span> url <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb43-2" data-line-number="2"><span class="kw">type</span> <span class="dt">Translate</span> msg <span class="fu">=</span> msg <span class="ot">-&gt;</span> <span class="dt">Html</span></a>
 <a class="sourceLine" id="cb43-3" data-line-number="3"><span class="kw">type</span> <span class="dt">HtmlUrlI18n</span> msg url <span class="fu">=</span> <span class="dt">Translate</span> msg <span class="ot">-&gt;</span> <span class="dt">Render</span> url <span class="ot">-&gt;</span> <span class="dt">Html</span></a></code></pre></div>
-<p>これによって <code>renderEnglish</code>、 <code>renderSpanish</code>、 <code>renderKlingon</code> をテンプレートに渡すことができ、それはうまく翻訳された出力を生成します (もちろん翻訳機の性質に依存します・・・)。 完全なプログラムは以下のようになります。</p>
+<p>これによって <code>renderEnglish</code>、 <code>renderSpanish</code>、 <code>renderKlingon</code> をテンプレートに渡すことができ、それはうまく翻訳された出力を生成します (もちろん翻訳機の性能に依存します・・・)。 完全なプログラムは以下のようになります。</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb44-1" data-line-number="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
 <a class="sourceLine" id="cb44-2" data-line-number="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb44-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
@@ -667,8 +681,8 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 <a class="sourceLine" id="cb44-35" data-line-number="35"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb44-36" data-line-number="36">main <span class="fu">=</span> putStrLn <span class="fu">$</span> renderHtml</a>
 <a class="sourceLine" id="cb44-37" data-line-number="37">     <span class="fu">$</span> (template <span class="dv">5</span>) (toHtml <span class="fu">.</span> renderEnglish) renderUrl</a></code></pre></div>
-<h2 id="other-shakespeare">Other Shakespeare</h2>
-<p>HTML、 CSS、 Javascript の補助だけでなく、より一般的な利用用途がシェイクスピアには存在します。 シェイクスピアのテキストは Ruby や Python のようにスクリプト言語で慣れているような展開された文字列を作るための簡単な方法を提供します。 そのため、明らかにこのパッケージの利用用途は Yesod に限定されません。</p>
+<h2 id="その他のシェイクスピア">その他のシェイクスピア</h2>
+<p>HTML、CSS、Javascript の補助だけでなく、より一般的な利用用途がシェイクスピアには存在します。シェイクスピアのテキストは Ruby や Python のようにスクリプト言語で慣れているような展開された文字列を作るための簡単な方法を提供します。そのため、明らかにこのパッケージの利用用途は Yesod に限定されません。</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb45-1" data-line-number="1"><span class="ot">{-# LANGUAGE QuasiQuotes, OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb45-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Text.Shakespeare.Text</span></a>
 <a class="sourceLine" id="cb45-3" data-line-number="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
@@ -691,16 +705,27 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 <a class="sourceLine" id="cb45-20" data-line-number="20">    [lt|You have #{show $ itemQty item} #{itemName item}.|]</a></code></pre></div>
 <p>この単純な例におけるポイントを以下に挙げます。</p>
 <ul>
-<li>文字列を表すデータ型には <code>String</code>, 正格 <code>Text</code>, 遅延 <code>Text</code> があることに注意してください。それらは共に全てうまく機能します</li>
-<li>遅延テキストを生成したい場合は <code>lt</code> という名称の準クォートを使います。 <code>st</code> の場合も同様です</li>
-<li>これらの準クォートには長い名称も存在します (<code>ltext</code> と <code>stext</code>)</li>
+<li>文字列を表すデータ型には <code>String</code>, 正格 <code>Text</code>, 遅延 <code>Text</code> があることに注意してください。それらは共に全てうまく機能します。</li>
+<li>遅延テキストを生成したい場合は <code>lt</code> という名称の準クォートを使います。同様に <code>st</code> は正格テキストを生成します。</li>
+<li>これらの準クォートには長い名称も存在します。 (<code>ltext</code> と <code>stext</code>)</li>
 </ul>
-<h2 id="general-recommendations">General Recommendations</h2>
+<h2 id="一般的推奨事項">一般的推奨事項</h2>
 <p>これは Yesod コミュニティからシェイクスピアを最大限に利用するための一般的なヒントです。</p>
 <ul>
-<li>実際のサイトにおいては外部ファイルを利用してください。ライブラリにおいては長くなり過ぎない限り、準クォートを利用しても良いです</li>
-<li>Patrick Briston 氏が非常に有益な <a href="https://github.com/pbrisbin/html-template-syntax">Vim code hilighter</a> をまとめあげました</li>
-<li>Hamlet タグは既存のタグの後に開始・終了タグを埋め込むのではなく、常に新たな行から始める必要があります。これに関する唯一の例外はまれに大きなテキストブロックにおいて出現する <code>&lt;i&gt;</code>、 <code>&lt;b&gt;</code> タグだけです</li>
+<li>実際のサイトにおいては外部ファイルを利用してください。ライブラリにおいては長くなり過ぎない限り、準クォートを利用しても良いです。</li>
+<li>Patrick Briston 氏が非常に有益な <a href="https://github.com/pbrisbin/html-template-syntax">Vim code hilighter</a> をまとめあげました。</li>
+<li>Hamlet タグは既存のタグの後に開始・終了タグを埋め込むのではなく、常に新たな行から始める必要があります。これに関する唯一の例外はまれに大きなテキストブロックにおいて出現する <code>&lt;i&gt;</code>、 <code>&lt;b&gt;</code> タグだけです。</li>
+</ul>
+<h2 id="本書のコード">本書のコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example01.hs">Example01.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example02.hs">Example02.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example03.hs">Example03.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example04.hs">Example04.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example05.hs">Example05.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example06.hs">Example06.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example07.hs">Example07.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch04/Example08.hs">Example08.hs</a></li>
 </ul>
       </article>
 
@@ -717,7 +742,7 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Shakespearen Templates&url=https://haskell.e-bigmoon.com/yesod/book/ch04-shakespearen-templates.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=シェイクスピア テンプレート&url=https://haskell.e-bigmoon.com/yesod/book/ch04-shakespearen-templates.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/ch04-shakespearen-templates.html"><i class="mdi mdi-facebook white-text"></i></a>
