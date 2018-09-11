@@ -36,4 +36,4 @@ $doctype 5
 
 main :: IO ()
 main = putStrLn $ renderHtml
-     $ (template 5) (toHtml . renderEnglish) renderUrl
+     $ template 5 (toHtml . renderEnglish) renderUrl
