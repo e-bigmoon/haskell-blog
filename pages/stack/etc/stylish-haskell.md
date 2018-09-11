@@ -101,3 +101,11 @@ language_extensions:
 - OverloadedStrings
 - TypeApplications
 ```
+
+## ワンライナー
+
+指定したディレクトリ以下に対して再帰的に適用する。
+
+```shell
+$ stylish-haskell -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
+```
