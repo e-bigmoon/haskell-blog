@@ -122,3 +122,4 @@ $ stack exec -- yesod devel
 ## Yesod で作られているアプリケーション
 
 - [fpco/stackage-server](https://github.com/fpco/stackage-server)
+- [ersocon](https://ersocon.net/)
