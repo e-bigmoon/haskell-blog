@@ -5,7 +5,7 @@
 {-# LANGUAGE QuasiQuotes          #-}
 {-# LANGUAGE TemplateHaskell      #-}
 {-# LANGUAGE TypeFamilies         #-}
-import Yesod
+import           Yesod
 
 data App = App
 
