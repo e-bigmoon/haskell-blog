@@ -156,7 +156,7 @@
       <div class="post-heading">
         <h1 class="post-title">stack build</h1>
         
-        <span>最終更新日: 2018/07/30</span>
+        <span>最終更新日: 2018/09/14</span>
         
       </div>
 
@@ -203,6 +203,37 @@
 <h3 id="stack.yaml-に設定する方法">stack.yaml に設定する方法</h3>
 <div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># stack.yaml</span></a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="fu">jobs:</span><span class="at"> 1</span></a></code></pre></div>
+<h2 id="docker-オプション">–docker オプション</h2>
+<p>自分のプロジェクトを <code>Docker</code> 環境内でビルドするためには <code>--docker</code> オプションを追加します。</p>
+<pre class="shell"><code>$ stack build --docker
+Error: No such object: fpco/stack-build:lts-12.0
+Received ExitFailure 1 when running
+Raw command: /usr/bin/docker inspect fpco/stack-build:lts-12.0
+Standard output:
+
+[]</code></pre>
+<p>エラーになってしまいました。これはベースイメージに <code>fpco/stack-build:lts-12.0</code> を指定したけど、イメージが見つからなかったのでビルドできなかったよ。というエラーです。</p>
+<p>この場合 <code>stack docker pull</code> コマンドでイメージを <code>pull</code> します。今回は <code>lts-12.0</code> のタグがついていますが、利用している <code>resolver</code> によって変わります。</p>
+<pre class="shell"><code>$ stack docker pull
+Pulling image from registry: 'fpco/stack-build:lts-12.0'
+lts-12.0: Pulling from fpco/stack-build
+b234f539f7a1: Pull complete
+55172d420b43: Pull complete
+5ba5bbeb6b91: Pull complete
+43ae2841ad7a: Pull complete
+f6c9c6de4190: Pull complete
+52b26204f9af: Pull complete
+916b6abf261c: Pull complete
+048ddb5a0825: Pull complete
+db66cbec7a84: Pull complete
+7b52cdfbea02: Pull complete
+Digest: sha256:fdbabc6df1135ab640041c966a2f8ced3bdaff7226de4a41f52d8c08fc9d64c7
+Status: Downloaded newer image for fpco/stack-build:lts-12.0</code></pre>
+<p>では、もう一度ビルドを試してみましょう。</p>
+<pre class="shell"><code>$ stack build --docker
+...</code></pre>
+<p>今度は成功しました！しかし、Docker 環境内でビルドできて何が嬉しいの？と思うかもしれません。</p>
+<p><a href="./image-container.html">stack image container</a> コマンドと組み合わせることにによって、手軽に素早く Docker イメージを作ることができます。</p>
       </article>
 
       <div class="pager">
