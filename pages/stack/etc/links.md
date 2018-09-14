@@ -1,9 +1,9 @@
 ---
 title: Links
-date: 2018/05/05
+date: 2018/09/14
 ---
 
-## Tools
+## ビルドツール
 
 ### stack
 
@@ -75,18 +75,5 @@ date: 2018/05/05
 
 ## Web サービス
 
-- [Hayoo!](http://hayoo.fh-wedel.de/)
-- [Hoogle](https://www.haskell.org/hoogle/)
 - [CodeWorld Haskell](https://code.world/haskell)
 - [CodeWorld Blocks](https://code.world/blocks)
-
-## GHC
-
-- [Glasgow Haskell Compiler User's Guide](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/)
-- [GHC Developer Wiki](https://ghc.haskell.org/trac/ghc/)
-- [ghc-proposals/ghc-proposals](https://github.com/ghc-proposals/ghc-proposals)
-- [Mirror of the Glasgow Haskell Compiler](https://github.com/ghc/ghc)
-
-## スタイルガイド
-
-- [Haskell Style Guide - tweag/guides](https://github.com/tweag/guides/blob/master/style/Haskell.md)
