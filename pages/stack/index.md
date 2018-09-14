@@ -53,6 +53,7 @@ date: 2018/09/14
 - [プロジェクトで禁止している関数の検出](hlint/forbidden-functions.html)
 - [HLint のヒントを無視する方法](hlint/hlint-ignore.html)
 - [CI を回す!](hlint/hlint-ci.html)
+- [チートシート](hlint/cheatsheet.html)
 
 ## Tools
 
