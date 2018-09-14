@@ -37,6 +37,7 @@ date: 2018/09/14
 - [stack path](command/path.html)
 - [stack unpack](command/unpack.html)
 - [stack templates](command/templates.html)
+- [stack image container](command/image-container.html)
 
 ### stack リリース解説
 
