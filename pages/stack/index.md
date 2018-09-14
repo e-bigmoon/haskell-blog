@@ -63,7 +63,6 @@ date: 2018/09/14
 
 ## その他
 
-- [HLint](etc/hlint.html)
 - [hoogle](etc/hoogle.html)
 - [Links](etc/links.html)
 
@@ -111,6 +110,8 @@ date: 2018/09/14
 - [VS Code で Ghcid を使う](/posts/2017/12-24-Ghcid-with-VS-Code.html)
 - [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
 - [VS Code と haskell-ide-engine で Haskell 開発環境を構築する](https://qiita.com/waddlaw/items/b83cd10311200095fe87)
+
+## リンク
 
   </div>
 </div>
