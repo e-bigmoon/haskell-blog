@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-11.7
+-- stack script --resolver lts-12.9
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
