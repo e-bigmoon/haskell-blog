@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2018/09/11
+date: 2018/09/15
 ---
 
 ## Yesod クイックスタートガイド
@@ -61,7 +61,7 @@ $ stack exec -- yesod devel
 [Basics](https://www.yesodweb.com/book/basics) | [Basics](book/ch03-basics.html) | [スライド](https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing) | [練習問題](exercise/ch03/)
 [Shakespearean Templates](https://www.yesodweb.com/book/shakespearean-templates) | [シェイクスピア テンプレート](book/ch04-shakespearen-templates.html) | [スライド](https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing) | [練習問題](exercise/ch04/)
 [Widgets](https://www.yesodweb.com/book/widgets) | [ウィジェット](book/ch05-widgets.html) | [スライド](https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing) | [練習問題](exercise/ch05/)
-[Yesod Typeclass](https://www.yesodweb.com/book/yesod-typeclass) | [Yesod Typeclass](book/ch06-yesod-typeclass.html) | [スライド](https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing)
+[Yesod Typeclass](https://www.yesodweb.com/book/yesod-typeclass) | [Yesod 型クラス](book/ch06-yesod-typeclass.html) | [スライド](https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing)
 [Routing and Handlers](https://www.yesodweb.com/book/routing-and-handlers) | [Routing and Handlers](book/ch07-routing-and-handlers.html) | [スライド](https://docs.google.com/presentation/d/1asqcwxIfDoligvqMWD3aKW7Q0oFRH9KqfXKyvNxk52U/edit?usp=sharing) | [練習問題](exercise/ch07/)
 [Forms](https://www.yesodweb.com/book/forms) | [Forms](book/ch08-forms.html) | [スライド](https://docs.google.com/presentation/d/1S8kPog8pK0iyx7DpjRQGO_6hgn3vDoCyI_WYz2IzaJo/edit?usp=sharing) | [練習問題](exercise/ch08/) |  |
 [Sessions](https://www.yesodweb.com/book/sessions) | [Sessions](book/ch09-sessions.html) | | |  |
