@@ -1,11 +1,11 @@
 #!/usr/bin/env stack
 -- stack script --resolver lts-12.9
-{-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE QuasiQuotes           #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
+import           Data.Time (getCurrentTime)
 import           Yesod
-import Data.Time (getCurrentTime)
 
 data App = App
 

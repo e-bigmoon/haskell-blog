@@ -26,7 +26,7 @@ instance Yesod Slash where
       where
         qs = map (TE.encodeUtf8 *** go) qs'
         go "" = Nothing
-        go x = Just $ TE.encodeUtf8 x
+        go x  = Just $ TE.encodeUtf8 x
         pieces = pieces' ++ [""]
 
     -- We want to keep canonical URLs. Therefore, if the URL is missing a
