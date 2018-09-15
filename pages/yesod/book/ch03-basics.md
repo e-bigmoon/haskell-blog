@@ -1,6 +1,6 @@
 ---
 title: Basics
-date: 2018/09/11
+date: 2018/09/15
 ---
 
 どんな新しい技術でも、まずはとりあえず動かしてみましょう。
@@ -55,7 +55,7 @@ mkYesod "HelloWorld" [parseRoutes|
 ```
 
 <div class="yesod-book-notice">
-`mkYesod` は Template Haskell 関数、 `parseRoutes` は準クォート (QuasiQuorter) です。
+`mkYesod` は Template Haskell 関数、 `parseRoutes` は準クォート (QuasiQuoter) です。
 </div>
 
 これを日本語で説明すれば、「Hello World アプリケーションはルートを1つ作成します。 `HomeR` は `/` (アプリケーションのルート (root)) へのリクエストを待機し、そのうちの `GET` リクエストに答えます。」という意味になります。`HomeR` をリソースと呼び、そのため接尾辞 **"R"** はリソースのRです。
