@@ -354,3 +354,9 @@ Yesod 型クラスの全てのメソッドが複雑というわけではあり�
 Yesod 型クラスは、アプリケーションの設定するための多くの上書き可能なメソッドを持ちます。適切なデフォルト実装が全てのメソッドに用意されているので、上書きするかどうかはアプリケーション毎に好きに決めることができます。`defaultLayout` や `getMessage` といった Yesod 型クラスが提供する構築方法を利用することで、エラーページや認証ページのような Yesod で自動生成されるページを含めて、サイト全体を通し一貫した見た目にすることができます。
 
 本章で紹介したメソッドは Yesod 型クラスの一部です。そのため、利用可能なメソッドの全リストについては Haddock ドキュメントを参照してください。
+
+## 本書のコード
+
+- [Example01.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch06/Example01.hs)
+- [Example02.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch06/Example02.hs)
+- [Example03.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch06/Example03.hs)
