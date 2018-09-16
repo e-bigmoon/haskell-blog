@@ -1,16 +1,13 @@
 ---
-title: Environment variables for configuration
-date: 2018/03/18
+title: 環境変数で設定しよう
+date: 2018/09/16
 ---
 
-## コンフィグレーションのための環境変数
+近頃の流行りとして [the twelve-factor app](https://12factor.net/config) が提唱するように、アプリケーションの全ての設定を、設定ファイルや (やってないとは思いますが) アプリケーションのソースコードにハードコーディングする代わりに、環境変数に保存しようという動きがあります。
 
-最近, [the twelve-factor app](https://12factor.net/config) は, アプリケーションの全て
-の設定について, 設定ファイルやアプリケーションのソースコードへのハードコーディングを避け, 環境変数に保存することを強く推奨している(そんなことはしていませんよね!).
+Yesod の scaffolding は、どのアプリケーションでも必要だと思われる設定については、組み込みでサポートしています。よく使われる環境変数は、URLの生成方法に関する `APPROOT` 環境変数、リクエストを待ち受けるポート番号に関する `PORT` 環境変数、データベースの接続設定に関するものなどがあります。 (偶然にも、これは [the Keter deployment manager](https://github.com/snoyberg/keter) と相性が良いです)
 
-Yesod の scaffolding は, これに対するサポート機能を組み込んでおり, よく使われるものでは, URLの生成方法に関する `APPROOT` 環境変数, リクエストを待ち受けるポート番号に関する `PORT` 環境変数, データベースの接続設定に関するものなどがある. (偶然にも, これは [the Keter deployment manager](https://github.com/snoyberg/keter) によく合致する.)
-
-これを実施するためのテクニックは, かなり容易である: 単に `main` 関数において環境変数の探索を行うだけでよい. 以下の例では, アプリケーションルートを設定するために必要な少々の処理とともに, このテクニックを示す.
+実際のところ、このテクニックはとても簡単に実装できます。単に `main` 関数で環境変数を読み込むだけです。以下のコード例は、アプリケーションルートの設定に必要なちょっとした処理を含む具体例です。
 
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
@@ -51,7 +48,11 @@ main = do
     warp 3000 App {..}
 ```
 
-この例において, 唯一の巧妙な部分は以下にある.
+この例でトリッキーな部分は以下の2点です。
 
-1. `getEnv`によって返された `String` 値を, `pack` を用いて `Text` に変換する必要がある.
-1. `aproot` のために `ApprootMaster` コンストラクタを用いており, これは "この関数をファウンデーションデータ型に適用し, 実際のアプリケーションルートを得る" ことを意味している.
+1. `getEnv` の戻り値は `String` 型の値なので、`pack` 関数を使って `Text` 型に変換する必要があります。
+1. `aproot` の定義で `ApprootMaster` コンストラクタを利用していますが、これは "この関数をファウンデーション型に適用し、実際のアプリケーションルートを取得する" という意味になります。
+
+## 本書のコード
+
+- [Example01.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex08/Example01.hs)
