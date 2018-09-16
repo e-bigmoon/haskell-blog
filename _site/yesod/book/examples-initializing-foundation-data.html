@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Initializing data in the foundation datatype</title>
+  <title>ファウンデーション型の初期化</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../yesod/book/examples-initializing-foundation-data.html">
-  <link rel="alternate" type="application/atom+xml" title="Initializing data in the foundation datatype" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="ファウンデーション型の初期化" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Initializing data in the foundation datatype" />
+  <meta property="og:title" content="ファウンデーション型の初期化" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/yesod/book/examples-initializing-foundation-data.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Initializing data in the foundation datatype" />
+  <meta property="og:site_name" content="ファウンデーション型の初期化" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -154,37 +154,43 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">Initializing data in the foundation datatype</h1>
+        <h1 class="post-title">ファウンデーション型の初期化</h1>
         
-        <span>最終更新日: 2018/03/18</span>
+        <span>最終更新日: 2018/09/16</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="ファウンデーションデータ型のデータを初期化">ファウンデーションデータ型のデータを初期化</h2>
-<p>この例は, 比較的簡単な概念の例証を意図している: それは, ファウンデーションデータ型に保存されているデータの初期化を行うことである. これは様々な理由により行われるが, そのうちの2つは最も重要である:</p>
+        <p>この例では、ファウンデーション型の初期化という、比較的わかりやすい概念を解説します。データを初期化したい理由は様々ですが、以下の2つは特に重要です。</p>
 <ul>
-<li>効率性 : データをスタートアッププロセスにおいて一度に初期化することで, 各リクエスト毎に同じ値を再計算する必要がなくなる.</li>
-<li>永続性 : ある情報を, 各リクエスト間で永続的なミュータブル位置に保存したい. これはしばしば外部データベースを用いて行われるが, メモリ内のミュータブル変数によっても行われる.</li>
+<li>効率性: 起動時にデータを初期化することで、リクエスト毎に同じ値するというような無駄な再計算を避けることができます。</li>
+<li>永続性: 何らかの情報を各リクエスト間で共有できるようにミュータブルな場所に保存したいと思うことがあります。こういった場合、外部データベースが良く利用されますが、メモリ内のミュータブル変数を使うこともあります。</li>
 </ul>
-<blockquote>
-<p>ミュータブル変数は便利な, 保存のための仕組みであるが, 短所が存在することも覚えておくべきである. もし, プロセスが止まったら, データも失ってしまうことになる. また, 1つ以上のプロセスに水平スケールする場合, プロセス間でデータを同期するための方法が必要となる. この例においては, これら両者の問題は扱わないが, 問題は現実的である. これは, Yesodが永続性のために, 外部データベースの使用を強く推奨する理由の1つである.</p>
-</blockquote>
-<p>実証のために, 非常に簡単なウェブサイトを実装する. それは単一のルートを含み, Markdownファイルに保存されたコンテンツを与える. また, そのコンテンツを表示するだけでなく, 何人の訪問者がサイトを訪れたかを表す, 古流の訪問者数も表示する.</p>
-<h3 id="step1-ファウンデーションの定義">Step1: ファウンデーションの定義</h3>
-<p>先ほど, 初期化されるべき2つの情報について確認した: それは, ホームページに表示するMarkdownコンテンツと, 訪問者数を保持するミュータブル変数である. 目的は, 初期化フェーズにおいてできるだけ多くのことを行い, ハンドラにおいて同一作業の繰り返しを避けること, であることを念頭に置くべきである. 従って, まずMarkdownコンテンツをHTMLに, 前もって処理する. ビジタカウンタについては, 簡単な<code>IORef</code>で十分である. すると, ファウンデーションデータ型は次のようになる.</p>
+<div class="yesod-book-notice">
+<p>ミュータブル変数はストレージとして便利な仕組みですが、デメリットについても理解しておくべきです。もし、プロセスが止まってしまったらデータを失ってしまいます。また、2つ以上のプロセスに水平スケールする場合、プロセス間でデータを同期するための方法が必要になります。今回の例ではこれらの問題を取り扱いませんが、現実的な問題です。この問題は Yesod が永続性のために外部データベースの使用を強く推奨する理由の1つです。</p>
+</div>
+<p>説明のためにとてもシンプルな Web サイトを実装したいと思います。どのぐらいシンプルかと言うと、</p>
+<ul>
+<li>ルートは1つだけです。</li>
+<li>Markdown ファイルに保存されたコンテンツを使います。</li>
+<li>コンテンツを表示します。</li>
+<li>昔流行ったと思いますが、サイトにどのぐらいの人数が来ているかわかるように訪問者数を表示します。</li>
+</ul>
+<p>という程度にシンプルです。</p>
+<h2 id="step1-アプリケーションのファウンデーションを定義しよう">Step1: アプリケーションのファウンデーションを定義しよう</h2>
+<p>最初の説明を良く読めば、今回のアプリケーションで初期化しておくべきものは、Web サイトに表示する Markdown コンテンツと訪問者数を保存するためのミュータブル変数だとわかるでしょう。これから私達がやりたいことは、初期化処理で可能な限り多くのことを行い、ハンドラ内で同じ作業の繰り返しを避けることです。そのため、前処理で Markdown コンテンツを HTML 変換します。訪問者カウンタは単に <code>IORef</code> で十分です。まとめると、ファウンデーション型は以下のようになります。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">    {<span class="ot"> homepageContent ::</span> <span class="dt">Html</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">    ,<span class="ot"> visitorCount    ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4">    }</a></code></pre></div>
-<h3 id="step2-ファウンデーションを用いる">Step2: ファウンデーションを用いる</h3>
-<p>この単純な例のために, 1つのルートのみ持つことにする: それは, homepageである. なすべきこととしては:</p>
+<h2 id="step2-ファウンデーションの使い方">Step2: ファウンデーションの使い方</h2>
+<p>例を非常に単純にするためにルートはトップページしか考えません。やりたいことは以下の通りです。</p>
 <ol type="1">
-<li>訪問者数をインクリメントする.</li>
-<li>新しい訪問者数をゲットする.</li>
-<li>訪問者数と共にMarkdownコンテンツを表示する.</li>
+<li>訪問者数をインクリメントする。</li>
+<li>新しい訪問者数を取得する。</li>
+<li>訪問者数と共に Markdown コンテンツを表示する。</li>
 </ol>
-<p>コードを多少短くするために用いる1つのトリックとしては, レコードワイルドカード構文を用いることである: <code>App{..}</code>. これは, データ型において, いくつもの異なるフィールドを扱う場合に便利である.</p>
+<p>コードを多少短くするためのテクニックとしてレコードワイルドカード構文 <code>App{..}</code> を採用します。この言語拡張はデータ型にいくつもの異なるフィールドがある場合に便利です。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">    <span class="dt">App</span> {<span class="fu">..</span>} <span class="ot">&lt;-</span> getYesod</a>
@@ -196,14 +202,14 @@
 <a class="sourceLine" id="cb2-9" data-line-number="9">            <span class="kw">&lt;article&gt;#{</span>homepageContent<span class="kw">}</span></a>
 <a class="sourceLine" id="cb2-10" data-line-number="10">            <span class="kw">&lt;p&gt;</span>You are visitor number: <span class="kw">#{</span>currentCount<span class="kw">}</span>.</a>
 <a class="sourceLine" id="cb2-11" data-line-number="11">        |]</a></code></pre></div>
-<h3 id="step3-ファウンデーション型を作る">Step3: ファウンデーション型を作る</h3>
-<p>アプリケーションを初期化する際, 上で挙げた2つのフィールドに値を与える必要がある. これは通常の<code>IO</code>コードであり, 任意の必要なアクションを実行できる. 今回は, 次が必要となる:</p>
+<h2 id="step3-ファウンデーション型の値を作る">Step3: ファウンデーション型の値を作る</h2>
+<p>アプリケーションを初期化するときに、Step1 で定義した <code>App</code> 型の2つのフィールドに値を与える必要があります。この処理はただの <code>IO</code> なので必要に応じて任意のアクションを実行できます。今回は以下のアクションを実行します。</p>
 <ol type="1">
-<li>Markdownをファイルから読み込む.</li>
-<li>MarkdownをHTMLに変換する.</li>
-<li>ビジタカウンタ変数を作る.</li>
+<li>Markdown をファイルから読み込む。</li>
+<li>Markdown を HTML に変換する。</li>
+<li>訪問者数をカウントするための変数を作る。</li>
 </ol>
-<p>コードはこれらのステップが示すように, 非常に単純なものである.</p>
+<p>コードは上記のステップを Haskell に落とし込むだけです。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">go ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">go <span class="fu">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3">    rawMarkdown <span class="ot">&lt;-</span> TLIO.readFile <span class="st">&quot;homepage.md&quot;</span></a>
@@ -212,8 +218,9 @@
 <a class="sourceLine" id="cb3-6" data-line-number="6">        { homepageContent <span class="fu">=</span> markdown def rawMarkdown</a>
 <a class="sourceLine" id="cb3-7" data-line-number="7">        , visitorCount    <span class="fu">=</span> countRef</a>
 <a class="sourceLine" id="cb3-8" data-line-number="8">        }</a></code></pre></div>
-<h3 id="結論">結論</h3>
-<p>この例においてはロケットサイエンスは存在せず, 非常に単純なプログラミングである. この章の目的は, ここで出てきたようなしばしば必要となる実例を達成するために, 一般的に採られる最良の方法を実証することである. 実際のアプリケーションにおいては, 初期化ステップはもっと複雑であろう: データベースのコネクションプールをセットアップしたり, 巨大データをバッチ処理するためのバックグラウンドジョブを行ったりする. この章を読めば, アプリケーション特有の初期化コードをどこに置くべきかがわかるだろう. 以下は, 上の例に関するフルソースコードである.</p>
+<h2 id="まとめ">まとめ</h2>
+<p>今回の例に関して言えば、特に難しい概念や用語は登場していません。ただのプログラミングです。この章の目的は、アプリケーションに必要なものを揃えるための、一般的に利用されているベストプラクティスを紹介することです。実際のアプリケーションに関して言えば、初期化ステップはもっと複雑になるでしょう。例えば、データベースのコネクションプールをセットアップしたり、ビッグデータをバッチ処理するためにバックグラウンドジョブを起動したりします。この章を読み終わった読者は、アプリケーション毎に必要となる初期化処理を記述できるようになります。</p>
+<p>以下は、今回の例の完全なソースコードです。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="ot">{-# LANGUAGE RecordWildCards   #-}</span></a>
@@ -254,6 +261,10 @@
 <a class="sourceLine" id="cb4-38" data-line-number="38">        { homepageContent <span class="fu">=</span> markdown def rawMarkdown</a>
 <a class="sourceLine" id="cb4-39" data-line-number="39">        , visitorCount    <span class="fu">=</span> countRef</a>
 <a class="sourceLine" id="cb4-40" data-line-number="40">        }</a></code></pre></div>
+<h2 id="本書のコード">本書のコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex01/Example01.hs">Example01.hs</a></li>
+</ul>
       </article>
 
       <div class="pager">
@@ -269,7 +280,7 @@
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Initializing data in the foundation datatype&url=https://haskell.e-bigmoon.com/yesod/book/examples-initializing-foundation-data.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=ファウンデーション型の初期化&url=https://haskell.e-bigmoon.com/yesod/book/examples-initializing-foundation-data.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/examples-initializing-foundation-data.html"><i class="mdi mdi-facebook white-text"></i></a>
