@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Environment variables for configuration</title>
+  <title>環境変数で設定しよう</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../yesod/book/examples-environment-variables.html">
-  <link rel="alternate" type="application/atom+xml" title="Environment variables for configuration" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="環境変数で設定しよう" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Environment variables for configuration" />
+  <meta property="og:title" content="環境変数で設定しよう" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/yesod/book/examples-environment-variables.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Environment variables for configuration" />
+  <meta property="og:site_name" content="環境変数で設定しよう" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -154,17 +154,16 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">Environment variables for configuration</h1>
+        <h1 class="post-title">環境変数で設定しよう</h1>
         
-        <span>最終更新日: 2018/03/18</span>
+        <span>最終更新日: 2018/09/16</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="コンフィグレーションのための環境変数">コンフィグレーションのための環境変数</h2>
-<p>最近, <a href="https://12factor.net/config">the twelve-factor app</a> は, アプリケーションの全て の設定について, 設定ファイルやアプリケーションのソースコードへのハードコーディングを避け, 環境変数に保存することを強く推奨している(そんなことはしていませんよね!).</p>
-<p>Yesod の scaffolding は, これに対するサポート機能を組み込んでおり, よく使われるものでは, URLの生成方法に関する <code>APPROOT</code> 環境変数, リクエストを待ち受けるポート番号に関する <code>PORT</code> 環境変数, データベースの接続設定に関するものなどがある. (偶然にも, これは <a href="https://github.com/snoyberg/keter">the Keter deployment manager</a> によく合致する.)</p>
-<p>これを実施するためのテクニックは, かなり容易である: 単に <code>main</code> 関数において環境変数の探索を行うだけでよい. 以下の例では, アプリケーションルートを設定するために必要な少々の処理とともに, このテクニックを示す.</p>
+        <p>近頃の流行りとして <a href="https://12factor.net/config">the twelve-factor app</a> が提唱するように、アプリケーションの全ての設定を、設定ファイルや (やってないとは思いますが) アプリケーションのソースコードにハードコーディングする代わりに、環境変数に保存しようという動きがあります。</p>
+<p>Yesod の scaffolding は、どのアプリケーションでも必要だと思われる設定については、組み込みでサポートしています。よく使われる環境変数は、URLの生成方法に関する <code>APPROOT</code> 環境変数、リクエストを待ち受けるポート番号に関する <code>PORT</code> 環境変数、データベースの接続設定に関するものなどがあります。 (偶然にも、これは <a href="https://github.com/snoyberg/keter">the Keter deployment manager</a> と相性が良いです)</p>
+<p>実際のところ、このテクニックはとても簡単に実装できます。単に <code>main</code> 関数で環境変数を読み込むだけです。以下のコード例は、アプリケーションルートの設定に必要なちょっとした処理を含む具体例です。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">{-# LANGUAGE RecordWildCards   #-}</span></a>
@@ -201,11 +200,15 @@
 <a class="sourceLine" id="cb1-34" data-line-number="34">    myApproot <span class="ot">&lt;-</span> fmap pack <span class="fu">$</span> getEnv <span class="st">&quot;APPROOT&quot;</span></a>
 <a class="sourceLine" id="cb1-35" data-line-number="35">    welcomeMessage <span class="ot">&lt;-</span> fmap pack <span class="fu">$</span> getEnv <span class="st">&quot;WELCOME_MESSAGE&quot;</span></a>
 <a class="sourceLine" id="cb1-36" data-line-number="36">    warp <span class="dv">3000</span> <span class="dt">App</span> {<span class="fu">..</span>}</a></code></pre></div>
-<p>この例において, 唯一の巧妙な部分は以下にある.</p>
+<p>この例でトリッキーな部分は以下の2点です。</p>
 <ol type="1">
-<li><code>getEnv</code>によって返された <code>String</code> 値を, <code>pack</code> を用いて <code>Text</code> に変換する必要がある.</li>
-<li><code>aproot</code> のために <code>ApprootMaster</code> コンストラクタを用いており, これは “この関数をファウンデーションデータ型に適用し, 実際のアプリケーションルートを得る” ことを意味している.</li>
+<li><code>getEnv</code> の戻り値は <code>String</code> 型の値なので、<code>pack</code> 関数を使って <code>Text</code> 型に変換する必要があります。</li>
+<li><code>aproot</code> の定義で <code>ApprootMaster</code> コンストラクタを利用していますが、これは “この関数をファウンデーション型に適用し、実際のアプリケーションルートを取得する” という意味になります。</li>
 </ol>
+<h2 id="本書のコード">本書のコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex08/Example01.hs">Example01.hs</a></li>
+</ul>
       </article>
 
       <div class="pager">
@@ -221,7 +224,7 @@
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Environment variables for configuration&url=https://haskell.e-bigmoon.com/yesod/book/examples-environment-variables.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=環境変数で設定しよう&url=https://haskell.e-bigmoon.com/yesod/book/examples-environment-variables.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/examples-environment-variables.html"><i class="mdi mdi-facebook white-text"></i></a>
