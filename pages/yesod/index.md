@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2018/09/15
+date: 2018/09/16
 ---
 
 ## Yesod クイックスタートガイド
@@ -86,7 +86,7 @@ $ stack exec -- yesod devel
 
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
-[Initializing data in the foundation datatype](https://www.yesodweb.com/book/initializing-foundation-data) | [Initializing data in the foundation datatype](book/examples-initializing-foundation-data.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_0)
+[Initializing data in the foundation datatype](https://www.yesodweb.com/book/initializing-foundation-data) | [ファウンデーション型の初期化](book/examples-initializing-foundation-data.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_0)
 [Blog: i18n, authentication, authorization, and database](https://www.yesodweb.com/book/blog-example-advanced) | Blog: i18n, authentication, authorization, and database
 [Wiki: markdown, chat subsite, event source](https://www.yesodweb.com/book/wiki-chat-example) | Wiki: markdown, chat subsite, event source
 [JSON Web Service](https://www.yesodweb.com/book/json-web-service) | JSON Web Service
