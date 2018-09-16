@@ -52,4 +52,4 @@ main = do
 
 ## 本書のコード
 
-- [Example01.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex02/Example01.hs)
+- [Example01.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex06/Example01.hs)
