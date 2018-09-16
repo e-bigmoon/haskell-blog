@@ -91,7 +91,7 @@ $ stack exec -- yesod devel
 [Wiki: markdown, chat subsite, event source](https://www.yesodweb.com/book/wiki-chat-example) | Wiki: markdown, chat subsite, event source
 [JSON Web Service](https://www.yesodweb.com/book/json-web-service) | JSON Web Service
 [Case Study: Sphinx-based Search](https://www.yesodweb.com/book/case-study-sphinx) | Case Study: Sphinx-based Search
-[Visitor counter](https://www.yesodweb.com/book/visitor-counter) | [Visitor counter](book/examples-visitor-counter.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_11)
+[Visitor counter](https://www.yesodweb.com/book/visitor-counter) | [訪問者数カウンタ](book/examples-visitor-counter.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_11)
 [Single process pub-sub](https://www.yesodweb.com/book/single-process-pubsub) | Single process pub-sub
 [Environment variables for configuration](https://www.yesodweb.com/book/environment-variables) | [Environment variables for configuration](book/examples-environment-variables.html)
 [Route attributes](https://www.yesodweb.com/book/route-attributes) | [Route attributes](book/examples-route-attributes.html)
