@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Visitor counter</title>
+  <title>訪問者数カウンタ</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../yesod/book/examples-visitor-counter.html">
-  <link rel="alternate" type="application/atom+xml" title="Visitor counter" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="訪問者数カウンタ" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Visitor counter" />
+  <meta property="og:title" content="訪問者数カウンタ" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/yesod/book/examples-visitor-counter.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Visitor counter" />
+  <meta property="og:site_name" content="訪問者数カウンタ" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -154,18 +154,17 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">Visitor counter</h1>
+        <h1 class="post-title">訪問者数カウンタ</h1>
         
-        <span>最終更新日: 2018/03/18</span>
+        <span>最終更新日: 2018/09/16</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="訪問者のカウント">訪問者のカウント</h2>
-<p>“あなたは32番目の訪問者です”のようなものなしでは完璧でなかったような, インターネットの古き良き時代を思い出してみよう. その頃は良い時代だった! Yesodを用いて, その素晴らしい経験を再構築してみよう!</p>
-<p>さあ, これを正しく行う場合, 情報が多数の水平スケール化したWebサーバで共有され, かつ, アプリケーション再起動時に情報が残るよう, データベースのような永続的なストレージレイヤに保存しなければならない.</p>
-<p>しかし, ここでの目的はよい練習素材を実演することではない(結局のところ, もしよい練習素材のためのものであれば, ビジタカウンタを実演しないであろう). 代わりに, これは複数のハンドラ間で, 何らかのステートを共有するための, 簡単な例を与えることを意図した. 現実世界での使用例としては, 同じリクエスト情報をキャッシュすることである. 今示す技術を使う場合, 複数のアプリケーションサーバと, アプリケーション再起動に注意する必要があることを, 念頭に置かねばならない.</p>
-<p>その技術は簡単である: まず, ファウンデーションデータ型の中にミュータブル参照データのためのフィールドを作る. そして, 各ハンドラにおいて, それにアクセスする. 方法は簡単なため, コードを掘り下げる価値はある:</p>
+        <p>遠い昔のインターネットを思い返してみてください。あの頃の Web サイトは、“あなたは32番目の訪問者です” というような、ちょっとしたものが無ければ完璧な web サイトとして認められませんでしたよね？あぁ、その頃は本当に良い時代でした！あの頃のインターネットを Yesod を使ってもう一度体験してみましょう！</p>
+<p>さて、訪問者数を適切にカウントするためには、カウント数を水平にスケールする Web サーバ間で共有し、アプリケーションの再起動時に情報が残るようしなければなりません。そのため、データベースのような何らかの永続的なストレージレイヤに情報を保存する必要があります。</p>
+<p>しかし、ここではそこまで複雑な問題は考えません (だって、もしそういうことなら訪問者カウンタを題材に選びませんよね？)。その代わり、今回の例では複数のハンドラ間で何らかの状態を共有する方法について解説しようと思います。実際のアプリケーションでは、リクエストをまたいで情報をキャッシュする時などに利用できます。ここで紹介するテクニックを使う場合は、複数のアプリケーションサーバやアプリケーションの再起動について、各自で適切な処理を追加で考慮する必要があります。</p>
+<p>やり方としては、まずはファウンデーション型にミュータブルにデータを参照する新しいフィールドを作ります。そして、それぞれのハンドラでそのフィールドにアクセスします。このテクニックは簡単なのでコードを見てみましょう。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
@@ -200,7 +199,11 @@
 <a class="sourceLine" id="cb1-32" data-line-number="32">    warp <span class="dv">3000</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-33" data-line-number="33">        { visitors <span class="fu">=</span> visitorsRef</a>
 <a class="sourceLine" id="cb1-34" data-line-number="34">        }</a></code></pre></div>
-<p>ここで, <code>IORef</code>を用いた. それが提供してくれる以上のものは不要であるが, 同様に<code>MVars</code>や<code>TVars</code>も自由に使える. 実際に, 上のプログラムを変更して代わりに<code>TVar</code>にビジターカウントを保存できるようにすることは, 読者のよい練習問題になるだろう.</p>
+<p>上記のコードでは <code>IORef</code> を使っていますが、必要であれば <code>MVar</code> や <code>TVar</code> なども自由に利用可能です。実際に、このプログラムを <code>IORef</code> から <code>TVar</code> に変更することは、読者への良い練習問題になるでしょう。</p>
+<h2 id="本書のコード">本書のコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex02/Example01.hs">Example01.hs</a></li>
+</ul>
       </article>
 
       <div class="pager">
@@ -216,7 +219,7 @@
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Visitor counter&url=https://haskell.e-bigmoon.com/yesod/book/examples-visitor-counter.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=訪問者数カウンタ&url=https://haskell.e-bigmoon.com/yesod/book/examples-visitor-counter.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/examples-visitor-counter.html"><i class="mdi mdi-facebook white-text"></i></a>
