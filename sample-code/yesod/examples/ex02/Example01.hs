@@ -7,7 +7,7 @@
 import           Data.IORef
 import           Yesod
 
-data App = App
+newtype App = App
     { visitors :: IORef Int
     }
 
