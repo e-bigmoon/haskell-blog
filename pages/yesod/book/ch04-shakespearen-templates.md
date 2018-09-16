@@ -594,7 +594,7 @@ main :: IO ()
 main = putStrLn $ renderHtml $ template "My Title" render
 ```
 
-### External file
+### 外部ファイル
 
 ```haskell
 {-# LANGUAGE OverloadedStrings #-} -- we're using Text below
