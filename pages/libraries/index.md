@@ -13,3 +13,4 @@ date: 2018/07/30
 - [prettyprinter パッケージ](/posts/2018/03-30-prettyprinter.html)
 - [extensible-0.4.9 がリリースされました。](/posts/2018/05-14-release-extensible-049.html)
 - [path & path-io パッケージ](/posts/2018/08-21-path-and-path-io.html)
+- [time パッケージの使い方](/posts/2018/09-17-time-package.html)
