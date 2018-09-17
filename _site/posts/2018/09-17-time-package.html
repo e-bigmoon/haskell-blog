@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>time パッケージの使い方</title>
+  <meta name="description" content="はじめに
+Haskell で時間や日付を扱う際に良く利用されるのは time パッケージです。
+このパッケージが使いやすいかどうかは人それぞれですが、使い方を知っておくと便利なのでよく使いそうな関数を簡単に解説しようと思います。
+これからの例は以下のコマンドを実行していると仮定して話を進めます。
+$ stack rep">
+  <link rel="canonical" href="../../posts/2018/09-17-time-package.html">
+  <link rel="alternate" type="application/atom+xml" title="time パッケージの使い方" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="time パッケージの使い方" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/09-17-time-package.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="time パッケージの使い方" />
+  <meta property="og:description" content="はじめに
+Haskell で時間や日付を扱う際に良く利用されるのは time パッケージです。
+このパッケージが使いやすいかどうかは人それぞれですが、使い方を知っておくと便利なのでよく使いそうな関数を簡単に解説しようと思います。
+これからの例は以下のコマンドを実行していると仮定して話を進めます。
+$ stack rep" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+        <a href="../../yesod/" class="white-text">
+          <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+          Yesod
+        </a>
+      </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on September 17, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">time パッケージの使い方</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a>, <a href="../../tags/package.html">package</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=time パッケージの使い方&url=https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p>Haskell で時間や日付を扱う際に良く利用されるのは <a href="https://www.stackage.org/lts-12.9/package/time">time</a> パッケージです。</p>
+<p>このパッケージが使いやすいかどうかは人それぞれですが、使い方を知っておくと便利なのでよく使いそうな関数を簡単に解説しようと思います。</p>
+<p>これからの例は以下のコマンドを実行していると仮定して話を進めます。</p>
+<pre class="shell"><code>$ stack repl --package time --resolver lts-12.9
+$ import Data.Time</code></pre>
+<!--more-->
+<h2 id="time-パッケージのモジュール構造">Time パッケージのモジュール構造</h2>
+<p>基本的には <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time.html">Data.Time</a> を import して使います。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Time</span></a></code></pre></div>
+<p>Data.Time は以下のモジュールを再エクスポートしています。</p>
+<table>
+<thead>
+<tr class="header">
+<th>モジュール名</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html">Data.Time.Calendar</a></td>
+<td>日付</td>
+</tr>
+<tr class="even">
+<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html">Data.Time.Clock</a></td>
+<td>全然使わないので良くわからない</td>
+</tr>
+<tr class="odd">
+<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-LocalTime.html">Data.Time.LocalTime</a></td>
+<td>日本の現在時刻を取得など</td>
+</tr>
+<tr class="even">
+<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html">Data.Time.Format</a></td>
+<td>出力の整形</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rio-を利用している場合">rio を利用している場合</h3>
+<p><a href="https://www.stackage.org/lts-12.9/package/rio">rio</a> を利用している場合は <a href="https://www.stackage.org/haddock/lts-12.9/rio-0.1.5.0/RIO-Time.html">RIO.Time</a> を import します。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">import</span> <span class="dt">RIO.Time</span></a></code></pre></div>
+<h2 id="data.time.localtime">Data.Time.LocalTime</h2>
+<p>現在時刻を取得する場合にこのモジュールを使います。現在時刻を取得したいからと言って <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:getCurrentTime">getCurrentTime</a> を利用すると日本時間にならないので注意してください。</p>
+<h3 id="getzonedtime">getZonedTime</h3>
+<p>システムのタイムゾーンに応じた現在時刻を返します。</p>
+<pre class="shell"><code>&gt; :t getZonedTime
+getZonedTime :: IO ZonedTime
+
+&gt; getZonedTime
+2018-09-17 13:41:05.512522063 JST</code></pre>
+<h3 id="getcurrenttimezone">getCurrentTimeZone</h3>
+<p>システムのタイムゾーンを取得します。このタイムゾーンに基づいて <code>getZonedTime</code> が計算されます。</p>
+<pre class="shell"><code>&gt; :t getCurrentTimeZone
+getCurrentTimeZone :: IO TimeZone
+
+&gt; getCurrentTimeZone
+JST</code></pre>
+<h3 id="zonedtimetoutc">zonedTimeToUTC</h3>
+<p><code>ZonedTime</code> を <code>UTCTime</code> に変換するために使います。</p>
+<pre class="shell"><code>&gt; :t zonedTimeToUTC
+zonedTimeToUTC :: ZonedTime -&gt; UTCTime
+
+&gt; zonedTimeToUTC &lt;$&gt; getZonedTime
+2018-09-17 04:41:27.907476307 UTC</code></pre>
+<h3 id="utctozonedtime">utcToZonedTime</h3>
+<p><code>zonedTimeToUTC</code> の逆で <code>UTCTime</code> を <code>ZonedTime</code> に変換する関数です。タイムゾーンのための引数を余分に取ります。</p>
+<pre class="shell"><code>&gt; :t utcToZonedTime
+utcToZonedTime :: TimeZone -&gt; UTCTime -&gt; ZonedTime
+
+&gt; utcToZonedTime &lt;$&gt; getCurrentTimeZone &lt;*&gt; getCurrentTime
+2018-09-17 13:41:37.955641567 JST</code></pre>
+<h2 id="日後の時間を計算するには">1日後の時間を計算するには？</h2>
+<p>ここで、取得した時間の1日後を計算してみましょう。</p>
+<p>そのためには Data.Time.Clock で定義されている <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:addUTCTime">addUTCTime</a> を使います。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">addUTCTime ::</span> <span class="dt">NominalDiffTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span></a></code></pre></div>
+<p>第一引数に <code>NominalDiffTime</code> という謎の型を取りますが、<code>nominalDay</code> の実装を見れば <code>60 * 60 * 24</code> っぽいことがわかるので、そんな感じで値を作ります。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ot">nominalDay ::</span> <span class="dt">NominalDiffTime</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">nominalDay <span class="fu">=</span> <span class="dv">86400</span></a></code></pre></div>
+<p>ちなみに、上記の実装でなぜ <code>NominalDiffTime</code> の値になるかと言うと、<code>NominalDiffTime</code> は <code>Num</code> クラスのインスタンスになっているため、自動的に <code>fromInteger</code> が呼ばれて変換されるという仕組みです。</p>
+<p>実際に試してみましょう。1日後を計算してみます。</p>
+<pre class="shell"><code>&gt; t = addUTCTime nominalDay . zonedTimeToUTC &lt;$&gt; getZonedTime
+2018-09-17 10:32:56.880362453 UTC
+
+&gt; getZonedTime
+2018-09-17 13:49:09.279378323 JST
+
+&gt; utcToZonedTime &lt;$&gt; getCurrentTimeZone &lt;*&gt; t
+2018-09-18 13:49:16.211737218 JST</code></pre>
+<p>同様に1時間後も計算してみましょう。</p>
+<pre class="shell"><code>&gt; t = addUTCTime (60 * 60) . zonedTimeToUTC &lt;$&gt; getZonedTime
+
+&gt; getZonedTime
+2018-09-17 13:49:33.169797528 JST
+
+&gt; t
+2018-09-17 05:49:36.757498845 UTC
+
+&gt; utcToZonedTime &lt;$&gt; getCurrentTimeZone &lt;*&gt; t
+2018-09-17 14:49:40.930944714 JST</code></pre>
+<p>上手くいってますね！</p>
+<h2 id="data.time.localtime-1">Data.Time.LocalTime</h2>
+<p>時刻の取得・計算ができたら、あとは整形して出力するだけです！</p>
+<p>Data.Time.LocalTime モジュールの関数を使って出力を整形してみましょう！</p>
+<h3 id="formattime">formatTime</h3>
+<p><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:formatTime">formatTime</a> 関数の使い方がわかれば、任意の形式で出力できるようになります。</p>
+<pre class="shell"><code>&gt; :t formatTime
+formatTime :: FormatTime t =&gt; TimeLocale -&gt; String -&gt; t -&gt; String</code></pre>
+<p>ここで <code>FormatTime t</code> の <code>t</code> は <code>UTCTime</code> や <code>ZonedTime</code>、<code>Day</code> などの型が使えます。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">ZonedTime</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span>   <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Day</span>       <span class="ot">-&gt;</span> <span class="dt">String</span></a></code></pre></div>
+<p>型に応じて第三引数が変わるということです。</p>
+<p>実際に使えばすぐに慣れます。(第一引数の値は <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:defaultTimeLocale">defaultTimeLocale</a> を指定しておけば良いのですが、自分でカスタマイズしたものを使うこともあります)</p>
+<p>第二引数がフォーマット文字列なので、空文字列を与えれば当然結果も空になります。</p>
+<pre class="shell"><code>&gt; formatTime defaultTimeLocale &quot;&quot; &lt;$&gt; getZonedTime
+&quot;&quot;</code></pre>
+<p>フォーマットの指定方法については <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:formatTime">haddock</a> を参照してください。</p>
+<pre class="shell"><code>&gt; formatTime defaultTimeLocale &quot;%D&quot; &lt;$&gt; getZonedTime
+&quot;09/17/18&quot;
+
+&gt; formatTime defaultTimeLocale &quot;%F&quot; &lt;$&gt; getZonedTime
+&quot;2018-09-17&quot;
+
+&gt; formatTime defaultTimeLocale &quot;%x&quot; &lt;$&gt; getZonedTime
+&quot;09/17/18&quot;
+
+&gt; formatTime defaultTimeLocale &quot;%Y/%m/%d-%T&quot; &lt;$&gt; getZonedTime
+&quot;2018/09/17-13:52:21&quot;
+
+&gt; formatTime defaultTimeLocale rfc822DateFormat &lt;$&gt; getZonedTime
+&quot;Sun, 16 Sep 2018 19:53:10 JST&quot;
+
+&gt; formatTime defaultTimeLocale (iso8601DateFormat Nothing) &lt;$&gt; getZonedTime
+&quot;2018-09-16&quot;</code></pre>
+<h2 id="文字列をパーズして-zonedtime-や-day-の値を作る">文字列をパーズして ZonedTime や Day の値を作る</h2>
+<p>ここまでは現在時刻を元に時刻の計算や出力結果の整形を行いました。</p>
+<p>しかし、実際のプログラムでは文字列をパーズして <code>ZonedTime</code> や <code>Day</code> の値に変換したいこともあるでしょう。そのような場合は <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:parseTimeM">parseTimeM</a> を使うと便利です。</p>
+<pre class="shell"><code>&gt; :t parseTimeM
+parseTimeM
+  :: (Monad m, ParseTime t) =&gt;
+     Bool -&gt; TimeLocale -&gt; String -&gt; String -&gt; m t</code></pre>
+<p>型がわかりづらいですが、具体的にはこんな型で利用することができます。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Day</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">ZonedTime</span></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Day</span></a>
+<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">ZonedTime</span></a></code></pre></div>
+<ul>
+<li>第一引数は <strong>空白</strong> を許容するかどうかのフラグです (True だと空白OK)</li>
+<li>第二引数は気にせず <strong>defaultTimeLocale</strong> を指定しておきましょう</li>
+<li>第三引数は <strong>パーズで利用するフォーマット</strong> を指定します</li>
+<li>第四引数は <strong>入力の文字列</strong> です</li>
+</ul>
+<h3 id="具体例">具体例</h3>
+<p>実際にいくつか使ってみましょう。以下の通り <code>%F</code> は <code>YYYY-MM-DD</code> の書式になります。</p>
+<pre class="shell"><code>&gt; formatTime defaultTimeLocale &quot;%F&quot; &lt;$&gt; getZonedTime
+&quot;2018-09-17&quot;</code></pre>
+<p>モナドを <code>IO</code> や <code>Maybe</code> などに変化させた基本的な例。</p>
+<pre class="shell"><code>&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: IO ZonedTime
+2018-09-17 00:00:00 +0000
+
+&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: Maybe ZonedTime
+Just 2018-09-17 00:00:00 +0000</code></pre>
+<p>第一引数を変化させて、入力文字列の空白の有無について確認する例。</p>
+<pre class="shell"><code>&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot; 2018-09-17 &quot; :: IO ZonedTime
+2018-09-17 00:00:00 +0000
+
+&gt; parseTimeM False defaultTimeLocale &quot;%F&quot; &quot; 2018-09-17 &quot; :: IO ZonedTime
+*** Exception: user error (parseTimeM: no parse of &quot;2018-09-17 &quot;)</code></pre>
+<p>入力文字列とパーズの書式がマッチしない例</p>
+<pre class="shell"><code>&gt; parseTimeM False defaultTimeLocale &quot;%x&quot; &quot; 2018-09-17 &quot; :: IO ZonedTime
+*** Exception: user error (parseTimeM: no parse of &quot; 2018-09-17 &quot;)</code></pre>
+<p>Day 型の値をとしてパーズする例</p>
+<pre class="shell"><code>&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: IO Day
+2018-09-17</code></pre>
+<p>このようにして日付を取得できれば、今回は説明していませんが <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html">Data.Time.Calendar</a> の <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html#v:addDays">addDays</a> 関数などを使って日付の計算を行うこともできるようになります。</p>
+<pre class="shell"><code>&gt; d = parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: IO Day
+
+&gt; addDays 1 &lt;$&gt; d
+2018-09-18
+
+&gt; addDays 35 &lt;$&gt; d
+2018-10-22</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>time パッケージを使うと時刻や日付の計算ができる</li>
+<li>現在の<strong>日本</strong>時間を取得した場合は <strong>getCurrentTime</strong> ではなく、<strong>getZonedTime</strong> を使う</li>
+<li>整形には <strong>formatTime</strong> を使う</li>
+<li>文字列から <strong>ZonedTime</strong> や <strong>Day</strong> に変換する際は <strong>parseTimeM</strong> を使う</li>
+</ul>
+<p>Haskell入門の <strong>7.7 日付・時刻を扱う</strong> にも3ページほど <strong>time</strong> パッケージの解説があるので、気になる人はそちらも確認してみると良いかもしれません。</p>
+<p>以上です。</p>
+<h2 id="おまけ">おまけ</h2>
+<p><code>getZonedTime</code> に対して <code>formatTime defaultTimeLocale &lt;フォーマット文字&gt;</code> の対応表です。</p>
+<pre class="shell"><code>&gt; getZonedTime
+2018-09-17 14:44:52.052040178 JST</code></pre>
+<div class="narrow-table">
+<table>
+<thead>
+<tr class="header">
+<th>文字</th>
+<th>出力結果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>%-z</code></td>
+<td><code>+900</code></td>
+</tr>
+<tr class="even">
+<td><code>%_z</code></td>
+<td><code>+ 900</code></td>
+</tr>
+<tr class="odd">
+<td><code>%0z</code></td>
+<td><code>+0900</code></td>
+</tr>
+<tr class="even">
+<td><code>%^z</code></td>
+<td><code>+0900</code></td>
+</tr>
+<tr class="odd">
+<td><code>%#z</code></td>
+<td><code>+0900</code></td>
+</tr>
+<tr class="even">
+<td><code>%8z</code></td>
+<td><code>+00000900</code></td>
+</tr>
+<tr class="odd">
+<td><code>%_12z</code></td>
+<td><code>+         900</code></td>
+</tr>
+<tr class="even">
+<td><code>%%</code></td>
+<td><code>%</code></td>
+</tr>
+<tr class="odd">
+<td><code>%t</code></td>
+<td><code>\t</code></td>
+</tr>
+<tr class="even">
+<td><code>%n</code></td>
+<td><code>\n</code></td>
+</tr>
+<tr class="odd">
+<td><code>%z</code></td>
+<td><code>+0900</code></td>
+</tr>
+<tr class="even">
+<td><code>%Z</code></td>
+<td><code>JST</code></td>
+</tr>
+<tr class="odd">
+<td><code>%c</code></td>
+<td><code>Mon Sep 17 14:39:34 JST 2018</code></td>
+</tr>
+<tr class="even">
+<td><code>%R</code></td>
+<td><code>14:39</code></td>
+</tr>
+<tr class="odd">
+<td><code>%T</code></td>
+<td><code>14:40:12</code></td>
+</tr>
+<tr class="even">
+<td><code>%X</code></td>
+<td><code>14:40:31</code></td>
+</tr>
+<tr class="odd">
+<td><code>%r</code></td>
+<td><code>02:40:55 PM</code></td>
+</tr>
+<tr class="even">
+<td><code>%P</code></td>
+<td><code>pm</code></td>
+</tr>
+<tr class="odd">
+<td><code>%p</code></td>
+<td><code>PM</code></td>
+</tr>
+<tr class="even">
+<td><code>%H</code></td>
+<td><code>14</code></td>
+</tr>
+<tr class="odd">
+<td><code>%k</code></td>
+<td><code>14</code></td>
+</tr>
+<tr class="even">
+<td><code>%I</code></td>
+<td><code>02</code></td>
+</tr>
+<tr class="odd">
+<td><code>%l</code></td>
+<td><code>2</code></td>
+</tr>
+<tr class="even">
+<td><code>%M</code></td>
+<td><code>43</code></td>
+</tr>
+<tr class="odd">
+<td><code>%S</code></td>
+<td><code>49</code></td>
+</tr>
+<tr class="even">
+<td><code>%q</code></td>
+<td><code>903244678000</code></td>
+</tr>
+<tr class="odd">
+<td><code>%Q</code></td>
+<td><code>.28084722</code></td>
+</tr>
+<tr class="even">
+<td><code>%s</code></td>
+<td><code>1537163079</code></td>
+</tr>
+<tr class="odd">
+<td><code>%D</code></td>
+<td><code>09/17/18</code></td>
+</tr>
+<tr class="even">
+<td><code>%F</code></td>
+<td><code>2018-09-17</code></td>
+</tr>
+<tr class="odd">
+<td><code>%x</code></td>
+<td><code>09/17/18</code></td>
+</tr>
+<tr class="even">
+<td><code>%Y</code></td>
+<td><code>2018</code></td>
+</tr>
+<tr class="odd">
+<td><code>%y</code></td>
+<td><code>18</code></td>
+</tr>
+<tr class="even">
+<td><code>%C</code></td>
+<td><code>20</code></td>
+</tr>
+<tr class="odd">
+<td><code>%B</code></td>
+<td><code>September</code></td>
+</tr>
+<tr class="even">
+<td><code>%b</code></td>
+<td><code>Sep</code></td>
+</tr>
+<tr class="odd">
+<td><code>%h</code></td>
+<td><code>Sep</code></td>
+</tr>
+<tr class="even">
+<td><code>%m</code></td>
+<td><code>09</code></td>
+</tr>
+<tr class="odd">
+<td><code>%d</code></td>
+<td><code>17</code></td>
+</tr>
+<tr class="even">
+<td><code>%e</code></td>
+<td><code>17</code></td>
+</tr>
+<tr class="odd">
+<td><code>%j</code></td>
+<td><code>260</code></td>
+</tr>
+<tr class="even">
+<td><code>%f</code></td>
+<td><code>20</code></td>
+</tr>
+<tr class="odd">
+<td><code>%V</code></td>
+<td><code>38</code></td>
+</tr>
+<tr class="even">
+<td><code>%u</code></td>
+<td><code>1</code></td>
+</tr>
+<tr class="odd">
+<td><code>%a</code></td>
+<td><code>Mon</code></td>
+</tr>
+<tr class="even">
+<td><code>%A</code></td>
+<td><code>Monday</code></td>
+</tr>
+<tr class="odd">
+<td><code>%U</code></td>
+<td><code>37</code></td>
+</tr>
+<tr class="even">
+<td><code>%w</code></td>
+<td><code>1</code></td>
+</tr>
+<tr class="odd">
+<td><code>%W</code></td>
+<td><code>38</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/09-01-stack-profile-build.html"><i class="material-icons left">navigate_before</i>stack でアプリケーションのバックトレースを取得する (デバッグ)</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=time パッケージの使い方&url=https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
