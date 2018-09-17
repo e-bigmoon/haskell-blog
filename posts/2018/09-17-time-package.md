@@ -164,8 +164,8 @@ formatTime :: FormatTime t => TimeLocale -> String -> t -> String
 
 ```haskell
 formatTime :: TimeLocale -> String -> ZonedTime -> String
-formatTime :: TimeLocale -> String -> UTCTime -> String
-formatTime :: TimeLocale -> String -> Day -> String
+formatTime :: TimeLocale -> String -> UTCTime   -> String
+formatTime :: TimeLocale -> String -> Day       -> String
 ```
 
 型に応じて第三引数が変わるということです。
@@ -205,7 +205,7 @@ formatTime :: TimeLocale -> String -> Day -> String
 
 ここまでは現在時刻を元に時刻の計算や出力結果の整形を行いました。
 
-しかし、実際のプログラムでは文字列をパースして `ZonedTime` や `Day` の値に変換したいこともあるでしょう。そのような場合は [parseTimeM](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:parseTimeM) を使うと便利です。
+しかし、実際のプログラムでは文字列をパーズして `ZonedTime` や `Day` の値に変換したいこともあるでしょう。そのような場合は [parseTimeM](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:parseTimeM) を使うと便利です。
 
 ```shell
 > :t parseTimeM
