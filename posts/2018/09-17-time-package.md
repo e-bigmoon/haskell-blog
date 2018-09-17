@@ -17,7 +17,6 @@ $ stack repl --package time --resolver lts-12.9
 $ import Data.Time
 ```
 
-
 <!--more-->
 
 ## Time パッケージのモジュール構造
