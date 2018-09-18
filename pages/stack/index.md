@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/08/31
+date: 2018/09/14
 ---
 
 <div class="row">
@@ -37,6 +37,7 @@ date: 2018/08/31
 - [stack path](command/path.html)
 - [stack unpack](command/unpack.html)
 - [stack templates](command/templates.html)
+- [stack image container](command/image-container.html)
 
 ### stack リリース解説
 
@@ -53,6 +54,7 @@ date: 2018/08/31
 - [プロジェクトで禁止している関数の検出](hlint/forbidden-functions.html)
 - [HLint のヒントを無視する方法](hlint/hlint-ignore.html)
 - [CI を回す!](hlint/hlint-ci.html)
+- [チートシート](hlint/cheatsheet.html)
 
 ## Tools
 
@@ -62,9 +64,7 @@ date: 2018/08/31
 
 ## その他
 
-- [HLint](etc/hlint.html)
 - [hoogle](etc/hoogle.html)
-- [Links](etc/links.html)
 
   </div>
   <div class="col s12 m6">
@@ -109,6 +109,39 @@ date: 2018/08/31
 
 - [VS Code で Ghcid を使う](/posts/2017/12-24-Ghcid-with-VS-Code.html)
 - [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
+- [VS Code と haskell-ide-engine で Haskell 開発環境を構築する](https://qiita.com/waddlaw/items/b83cd10311200095fe87)
+
+## リンク
+
+- Haskell
+  - [haskell.org](https://www.haskell.org/)
+  - [haskell wiki](https://wiki.haskell.org/Haskell)
+  - [Try Haskell](http://tryhaskell.org/)
+- GHC (Glasgow Haskell Compiler)
+  - [Glasgow Haskell Compiler User's Guide](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/)
+  - [GHC Developer Wiki](https://ghc.haskell.org/trac/ghc/)
+  - [ghc-proposals/ghc-proposals](https://github.com/ghc-proposals/ghc-proposals)
+  - [Mirror of the Glasgow Haskell Compiler](https://github.com/ghc/ghc)
+- パッケージ
+  - [Hackage](https://hackage.haskell.org/)
+  - [Stackage](https://www.stackage.org/)
+  - [Hackage Dependency Monitor](http://packdeps.haskellers.com/)
+  - [Hackage Matrix Builder 3rd](https://matrix.hackage.haskell.org/)
+  - [hdiff](http://hdiff.luite.com/)
+- 型検索
+  - [Hayoo!](http://hayoo.fh-wedel.de/)
+  - [Hoogle](https://www.haskell.org/hoogle/)
+- スタイルガイド
+  - [tweag/guides](https://github.com/tweag/guides)
+  - [input-output-hk/cardano-sl](https://github.com/input-output-hk/cardano-sl/blob/develop/docs/style-guide.md)
+  - [serokell/serokell-util](https://github.com/serokell/serokell-util/blob/master/serokell-style.md)
+- Haskell 情報
+  - [Haskell News](http://haskellnews.org/)
+  - [Haskell Weekly](https://haskellweekly.news/)
+  - [planet haskell](https://planet.haskell.org/)
+- コミュニティ
+  - [Haskell-jp](https://haskell.jp/)
+- [その他](etc/links.html)
 
   </div>
 </div>

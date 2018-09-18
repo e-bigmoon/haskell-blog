@@ -1,6 +1,6 @@
 ---
 title: Basics
-date: 2018/09/11
+date: 2018/09/15
 ---
 
 どんな新しい技術でも、まずはとりあえず動かしてみましょう。
@@ -55,7 +55,7 @@ mkYesod "HelloWorld" [parseRoutes|
 ```
 
 <div class="yesod-book-notice">
-`mkYesod` は Template Haskell 関数、 `parseRoutes` は準クォート (QuasiQuorter) です。
+`mkYesod` は Template Haskell 関数、 `parseRoutes` は準クォート (QuasiQuoter) です。
 </div>
 
 これを日本語で説明すれば、「Hello World アプリケーションはルートを1つ作成します。 `HomeR` は `/` (アプリケーションのルート (root)) へのリクエストを待機し、そのうちの `GET` リクエストに答えます。」という意味になります。`HomeR` をリソースと呼び、そのため接尾辞 **"R"** はリソースのRです。
@@ -232,7 +232,7 @@ JSON レスポンスに関しては `Accept` リクエストヘッダーによ�
 
 ## The scaffolded site
 
-Yesod をインストールすれば Yesod ライブラリと `yesod` の実行ファイルが得られます。この実行ファイルにはいくつかのコマンドが存在しますが、はじめに慣れておくべきコマンドは `yesod init` です。これは、いくつかの質問に答えることでデフォルトの設定で scaffolded site を生成するものです。そのフォルダの中で、追加の依存関係 (バックエンドデータベースなど) を構築するために `cabal install --only-dependencies` を実行し、さらに `yesod devel` コマンドでサイトを動かすことができます。
+Yesod をインストールすれば Yesod ライブラリと `yesod` の実行ファイルが得られます。この実行ファイルにはいくつかのコマンドが存在しますが、はじめに慣れておくべきコマンドは `yesod init` です。これは、いくつかの質問に答えることでデフォルトの設定で scaffolded site を生成するものです。そのフォルダの中で、追加の依存関係 (バックエンドデータベースなど) を構築するために `stack install --only-dependencies` を実行し、さらに `yesod devel` コマンドでサイトを動かすことができます。
 
 <div class="yesod-book-notice">
 パッケージ環境のセットアップは [quick start guide](http://www.yesodweb.com/page/quickstart) を参照してください。

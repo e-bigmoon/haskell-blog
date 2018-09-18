@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2018/09/11
+date: 2018/09/16
 ---
 
 ## Yesod クイックスタートガイド
@@ -46,7 +46,7 @@ $ stack exec -- yesod devel
 
 [http://localhost:3000/](http://localhost:3000/) にアクセスすれば Yesod アプリケーションを体験できます。
 
-## Yesod ブック (@[01cd443fe824c4ad029dd3c8c49444ce6e7c24c3](https://github.com/yesodweb/yesodweb.com-content/commit/01cd443fe824c4ad029dd3c8c49444ce6e7c24c3))
+## Yesod ブック (@[66a965ef3de27b3c746e61680c323a7d8b4e67bd](https://github.com/yesodweb/yesodweb.com-content/commit/66a965ef3de27b3c746e61680c323a7d8b4e67bd))
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
@@ -59,9 +59,9 @@ $ stack exec -- yesod devel
 [Introduction](https://www.yesodweb.com/book/introduction) | [イントロダクション](book/ch01-introduction.html) | - | -
 [Haskell](https://www.yesodweb.com/book/haskell) | [Haskell](book/ch02-haskell.html) | - | -
 [Basics](https://www.yesodweb.com/book/basics) | [Basics](book/ch03-basics.html) | [スライド](https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing) | [練習問題](exercise/ch03/)
-[Shakespearean Templates](https://www.yesodweb.com/book/shakespearean-templates) | [Shakespearean Templates](book/ch04-shakespearen-templates.html) | [スライド](https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing) | [練習問題](exercise/ch04/)
-[Widgets](https://www.yesodweb.com/book/widgets) | [Widgets](book/ch05-widgets.html) | [スライド](https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing) | [練習問題](exercise/ch05/)
-[Yesod Typeclass](https://www.yesodweb.com/book/yesod-typeclass) | [Yesod Typeclass](book/ch06-yesod-typeclass.html) | [スライド](https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing)
+[Shakespearean Templates](https://www.yesodweb.com/book/shakespearean-templates) | [シェイクスピア テンプレート](book/ch04-shakespearen-templates.html) | [スライド](https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing) | [練習問題](exercise/ch04/)
+[Widgets](https://www.yesodweb.com/book/widgets) | [ウィジェット](book/ch05-widgets.html) | [スライド](https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing) | [練習問題](exercise/ch05/)
+[Yesod Typeclass](https://www.yesodweb.com/book/yesod-typeclass) | [Yesod 型クラス](book/ch06-yesod-typeclass.html) | [スライド](https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing)
 [Routing and Handlers](https://www.yesodweb.com/book/routing-and-handlers) | [Routing and Handlers](book/ch07-routing-and-handlers.html) | [スライド](https://docs.google.com/presentation/d/1asqcwxIfDoligvqMWD3aKW7Q0oFRH9KqfXKyvNxk52U/edit?usp=sharing) | [練習問題](exercise/ch07/)
 [Forms](https://www.yesodweb.com/book/forms) | [Forms](book/ch08-forms.html) | [スライド](https://docs.google.com/presentation/d/1S8kPog8pK0iyx7DpjRQGO_6hgn3vDoCyI_WYz2IzaJo/edit?usp=sharing) | [練習問題](exercise/ch08/) |  |
 [Sessions](https://www.yesodweb.com/book/sessions) | [Sessions](book/ch09-sessions.html) | | |  |
@@ -86,15 +86,15 @@ $ stack exec -- yesod devel
 
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
-[Initializing data in the foundation datatype](https://www.yesodweb.com/book/initializing-foundation-data) | [Initializing data in the foundation datatype](book/examples-initializing-foundation-data.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_0)
+[Initializing data in the foundation datatype](https://www.yesodweb.com/book/initializing-foundation-data) | [ファウンデーション型の初期化](book/examples-initializing-foundation-data.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_0)
 [Blog: i18n, authentication, authorization, and database](https://www.yesodweb.com/book/blog-example-advanced) | Blog: i18n, authentication, authorization, and database
 [Wiki: markdown, chat subsite, event source](https://www.yesodweb.com/book/wiki-chat-example) | Wiki: markdown, chat subsite, event source
 [JSON Web Service](https://www.yesodweb.com/book/json-web-service) | JSON Web Service
 [Case Study: Sphinx-based Search](https://www.yesodweb.com/book/case-study-sphinx) | Case Study: Sphinx-based Search
-[Visitor counter](https://www.yesodweb.com/book/visitor-counter) | [Visitor counter](book/examples-visitor-counter.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_11)
+[Visitor counter](https://www.yesodweb.com/book/visitor-counter) | [訪問者数カウンタ](book/examples-visitor-counter.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_11)
 [Single process pub-sub](https://www.yesodweb.com/book/single-process-pubsub) | Single process pub-sub
-[Environment variables for configuration](https://www.yesodweb.com/book/environment-variables) | [Environment variables for configuration](book/examples-environment-variables.html)
-[Route attributes](https://www.yesodweb.com/book/route-attributes) | [Route attributes](book/examples-route-attributes.html)
+[Environment variables for configuration](https://www.yesodweb.com/book/environment-variables) | [環境変数で設定しよう](book/examples-environment-variables.html)
+[Route attributes](https://www.yesodweb.com/book/route-attributes) | [ルート属性](book/examples-route-attributes.html)
 
 ### Appendices
 
@@ -122,3 +122,4 @@ $ stack exec -- yesod devel
 ## Yesod で作られているアプリケーション
 
 - [fpco/stackage-server](https://github.com/fpco/stackage-server)
+- [ersocon](https://ersocon.net/)
