@@ -911,3 +911,181 @@ main = do
 Nothing
 1
 ```
+
+## フォークされたスレッド
+スレッドをフォークしたいのなら、可能なときは常に async ライブラリを使ってください。特に `concurrently` と `race` 関数、 `Concurrently` 型と関連するヘルパー関数は、最高に使いやすいです。もっと複雑にコントロールする必要があるのなら、`Async` 型に関連する関数群を使いましょう。`forkIO` を使うのは最後の手段です。
+
+とは言いますが、`forkIO` を使ったときのことも一応考えておきましょう。ここに、親スレッドのリソースを必要とするプログラムがあります。リソースの獲得後は、子スレッドでそれを解放する必要があります。`threadDelay` を追加して、少し長いアクションをシミュレートしてみましょう。
+
+```haskell
+import Control.Concurrent
+import Control.Exception
+
+main :: IO ()
+main = do
+  putStrLn "Acquire in main thread"
+  tid <- forkIO $
+    (putStrLn "use in child thread" >> threadDelay maxBound)
+      `finally` putStrLn "cleanup in child thread"
+  killThread tid -- built on top of throwTo
+  putStrLn "Exiting the program"
+```
+
+これは良い感じに動いてくれそうですが、私のマシンでは (この動作はタイミングによって変化します!) 結果は以下のようになりました:
+
+```plain
+Acquire in main thread
+Exiting the program
+```
+
+これは、フォークされたスレッドが `finally` を実行する前に、メインスレッドが `killThread` で非同期例外を送ってしまったのが原因です。これはマスキングを使うことで回避できると思うかもしれませんが:
+
+```haskell
+import Control.Concurrent
+import Control.Exception
+
+main :: IO ()
+main = do
+  putStrLn "Acquire in main thread"
+  tid <- forkIO $ uninterruptibleMask_ $
+    (putStrLn "use in child thread" >> threadDelay maxBound)
+      `finally` putStrLn "cleanup in child thread"
+  killThread tid -- built on top of throwTo
+  putStrLn "Exiting the program"
+```
+
+まだ同じ問題を抱えています。`uninterruptibleMask_` を `killThread` の前に実行することができないのです。よって、フォークする前にメインスレッドでマスクして、子スレッドでもマスクの状態が引き継がれるようにする必要があります:
+
+```haskell
+import Control.Concurrent
+import Control.Exception
+
+main :: IO ()
+main = do
+  putStrLn "Acquire in main thread"
+  tid <- uninterruptibleMask_ $ forkIO $
+    (putStrLn "use in child thread" >> threadDelay maxBound)
+      `finally` putStrLn "cleanup in child thread"
+  killThread tid -- built on top of throwTo
+  putStrLn "Exiting the program"
+```
+
+結果はこうなります:
+
+```plain
+Acquire in main thread
+use in child thread
+```
+
+(訳者の環境では以下のようになりました ???)
+
+```plain
+Acquire in main thread
+use in child thread
+cleanup in child thread
+Exiting the program
+```
+
+`threadDelay maxBound` のせいで、プログラムが少しハングします。マスクされた状態なので、スレッドを殺すことができないのです。これは非同期例外処理のルールに違反しています! 解決策の1つはコードをこんな感じに書き換えることです:
+
+```haskell
+import Control.Concurrent
+import Control.Exception
+import System.IO
+
+main :: IO ()
+main = do
+  hSetBuffering stdout LineBuffering
+  putStrLn "Acquire in main thread"
+  tid <- uninterruptibleMask $ \restore -> forkIO $
+    restore (putStrLn "use in child thread" >> threadDelay maxBound)
+      `finally` putStrLn "cleanup in child thread"
+  killThread tid -- built on top of throwTo
+  putStrLn "Exiting the program"
+```
+
+正しい出力と動作をするようになりました:
+
+```plain
+Acquire in main thread
+cleanup in child thread
+Exiting the program
+```
+
+しかし、親スレッドの `uninterruptibleMask` の `restore` を使うのは少し問題があります。実は、例外をアンマスクすることが保証されていないのです! 正しい解決策を示しておくので、どのように違う動きをするのか確かめてみてください (???)。`uninterruptibleMask` の `restore` を使うのではなく、`forkIOWithUnmask` を使っています:
+
+```plain
+import Control.Concurrent
+import Control.Exception
+import System.IO
+
+main :: IO ()
+main = do
+  hSetBuffering stdout LineBuffering
+  putStrLn "Acquire in main thread"
+  tid <- uninterruptibleMask_ $ forkIOUnmask $ \unmask ->
+    unmask (putStrLn "use in child thread" >> threadDelay maxBound)
+      `finally` putStrLn "cleanup in child thread"
+  killThread tid -- built on top of throwTo
+  putStrLn "Exiting the program"
+```
+
+少しだけコードが変わりましたね。この違いは以下のコードを使えばよくわかるでしょう:
+
+```haskell
+import Control.Concurrent
+import Control.Exception
+
+foo :: IO ()
+foo = mask $ \restore -> restore getMaskingState >>= print
+
+bar :: IO ()
+bar = mask $ \restore -> do
+  forkIO $ restore getMaskingState >>= print
+  threadDelay 10000
+
+baz :: IO ()
+baz = mask_ $ do
+  forkIOWithUnmask $ \unmask -> unmask getMaskingState >>= print
+  threadDelay 10000
+
+main :: IO ()
+main = do
+  putStrLn "foo"
+  foo
+  mask_ foo
+  uninterruptibleMask_ foo
+
+  putStrLn "\nbar"
+  bar
+  mask_ bar
+  uninterruptibleMask_ bar
+
+  putStrLn "\nbaz"
+  baz
+  mask_ baz
+  uninterruptibleMask_ baz
+```
+
+`getMaskingState` アクションを使って、現在のマスキングの状態を判別しています。プログラムの出力です:
+
+```plain
+foo
+Unmasked
+MaskedInterruptible
+MaskedUninterruptible
+
+bar
+Unmasked
+MaskedInterruptible
+MaskedUninterruptible
+
+baz
+Unmasked
+Unmasked
+Unmasked
+```
+
+思い出してほしいのですが、`mask` が提供している `restore` 関数は、以前のマスキングの状態を復元します。なので、例えば `mask_ foo` を呼ぶと、`foo` の `restore` は `MaskedInterruptible` を返します。これは`mask_` を使ったからです。`bar` でも同じ結果になります。
+
+しかし、`baz` では `forkIOWithUnmask` が使われています。この `unmask` アクションは、以前のマスキングの状態を復元するわけではありません。その代わりに、全てのマスキングが切られていることを保証するのです。これはフォークされたスレッドでは大体望ましい振る舞いです。親スレッドがマスクされた状態でも、送信した非同期例外に反応してほしいからです。
