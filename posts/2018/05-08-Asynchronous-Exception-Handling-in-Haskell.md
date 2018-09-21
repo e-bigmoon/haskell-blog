@@ -1089,3 +1089,95 @@ Unmasked
 思い出してほしいのですが、`mask` が提供している `restore` 関数は、以前のマスキングの状態を復元します。なので、例えば `mask_ foo` を呼ぶと、`foo` の `restore` は `MaskedInterruptible` を返します。これは`mask_` を使ったからです。`bar` でも同じ結果になります。
 
 しかし、`baz` では `forkIOWithUnmask` が使われています。この `unmask` アクションは、以前のマスキングの状態を復元するわけではありません。その代わりに、全てのマスキングが切られていることを保証するのです。これはフォークされたスレッドでは大体望ましい振る舞いです。親スレッドがマスクされた状態でも、送信した非同期例外に反応してほしいからです。
+
+## forkIO と race
+`async` パッケージの `race` 関数を独自に実装してみましょう。以下の実装は本当にまずいものになるでしょう。理由はいくつもありますが、ここではその中の1つに焦点を当てることにします (他にも見つけてみましょう!)。
+
+```haskell
+import Control.Concurrent
+import Control.Exception
+
+badRace :: IO a -> IO b -> IO (Either a b)
+badRace ioa iob = do
+  mvar <- newEmptyMVar
+  tida <- forkIO $ ioa >>= putMVar mvar . Left
+  tidb <- forkIO $ iob >>= putMVar mvar . Right
+  res <- takeMVar mvar
+  killThread tida
+  killThread tidb
+  return res
+```
+
+これを何も考えずに使ってみます:
+
+```haskell
+main :: IO ()
+main = badRace (return ()) (threadDelay maxBound) >>= print
+```
+
+これは大丈夫ですね:
+
+```haskell
+Left ()
+```
+
+ではこれは?
+
+```haskell
+main :: IO ()
+main = mask_ $ badRace (return ()) (threadDelay maxBound) >>= print
+```
+
+同じ結果になりました。いいでしょう、もう1つ試してみましょう:
+
+```haskell
+main :: IO ()
+main = uninterruptibleMask_
+     $ badRace (return ()) (threadDelay maxBound) >>= print
+```
+
+これはデッドロックします (???)。なぜなら、`badRace` 中の `forkIO` 呼び出しはは親スレッドのマスキング状態を引き継ぐので、`killThread` が効かなくなってしまいます。このバグの直し方は分かりますか?
+
+```
+badRace :: IO a -> IO b -> IO (Either a b)
+badRace ioa iob = do
+  mvar <- newEmptyMVar
+  tida <- forkIOWithUnmask $ \u -> u ioa >>= putMVar mvar . Left
+  tidb <- forkIOWithUnmask $ \u -> u iob >>= putMVar mvar . Right
+  res <- takeMVar mvar
+  killThread tida
+  killThread tidb
+  return res
+```
+
+**ボーナス問題** これを実行した結果はどうなるでしょう?
+
+```haskell
+main :: IO ()
+main = uninterruptibleMask_
+     $ badRace (error "foo" :: IO ()) (threadDelay maxBound) >>= print
+```
+
+直し方のヒントを置いておきます:
+
+```haskell
+tida <- forkIOWithUnmask $ \u -> try (u ioa) >>= putMVar mvar . fmap Left
+```
+
+# unssafePerformIO vs unsafeDupablePerformIO
+実は `unsafeDupablePerformIO` を使って解放処理が実行されなくなる様子をデモしたかったのですが、私のマシンで使うことができずに諦めました。この問題は、以下の GHC のチケット (c/o Chris Allen) の問題と関連しています:
+
+https://ghc.haskell.org/trac/ghc/ticket/8502
+
+簡潔に説明をすると、GHC のランタイムは、あるスレッドがサンクを評価しているとき、別のスレッドがそのスレッドの評価を終了すると、最初のスレッドを単純に終了させてしまいます。そのため、解放処理を行うアクションが実行されることはありません。これは外部スレッドの終了 (???) と 正しいリソース処理を両立させたいとき、非同期例外が必要になることを示す上で、いいデモになります。
+
+# 参考文献
+* 元のブログ記事 [Haskell で非同期例外処理をする](https://www.fpcomplete.com/blog/how-to-handle-asynchronous-exceptions-in-haskell)
+* [Haskell の学習シラバス](https://www.fpcomplete.com/haskell-syllabus)
+* `unliftio` ライブラリ: https://www.stackage.org/package/unliftio
+  * 例外処理モジュール: https://www.stackage.org/haddock/lts-11.1/unliftio-0.2.5.0/UnliftIO-Exception.html
+* safe-exceptions のドキュメント: https://haskell-lang.org/library/safe-exceptions
+* [例外のベストプラクティス](https://www.fpcomplete.com/blog/2016/11/exceptions-best-practices-haskell)
+* モナドトランスフォーマのお話
+  * スライド: https://www.snoyman.com/reveal/monad-transformer-state
+  * ビデオ: https://www.youtube.com/watch?v=KZIN9f9rI34
