@@ -790,3 +790,124 @@ bracket
 ```
 
 これには例外がありそうですが (別にダジャレじゃないですよ)、その場合、そうするべき明確な理由づけをするべきでしょう。
+
+## メールチャレンジ 2
+この `bracket` の定義は良いでしょうか? 悪いでしょうか?
+
+```haskell
+bracket before after inner = mask $ \restore -> do
+  resource <- before
+  eresult <- try $ restore $ inner resource
+  after resource
+  case eresult of
+    Left e -> throwIO (e :: SomeException)
+    Right result -> return result
+```
+
+まず、ライブラリで利用可能な既存の、すでにテストされている `bracket` を使うのが常に好ましいです。では見ていきましょうか:
+
+We rethrow the exception, meaning that it was safe for us to catch asynchronous exceptions. Good!
+
+* 全てのブロックを正しくマスクしています。いいね!
+* `before` というアクションは例外がマスクされている状態で実行されています。いいね! `before` のあたりで `restore` してしまったら、非同期例外は `before` が終了して、resource の値をバインドした直後に入り込むことができます。(???)
+* `try` の中で `inner` を呼ぶ前に `restore` しています。これは正しいやり方で、`bracket` の例外安全を阻害しません
+* `after` をすぐに呼び、解放処理をしています。いいね!
+* おそらくまずいのは、`after` が割り込み不可能なマスキングを使うことなく呼ばれていることです。これは、`after` の中の割り込み可能なアクションが、リソースの解放処理を阻害することができてしまうということです。一方、この挙動が十分にドキュメント化されていれば、`bracket` を使うときに、`after` の中で `uninterruptibleMask_` を使ったりすることができるでしょう (???)
+* 例外を投げ直していますが、これは非同期例外を捉えることが安全だということを意味しています。いいね!
+
+全体としては、とても良いコードになっています。が、`after` の中では `uninterruptibleMask_` を使うのがいいかもしれません。これは、`safe-exceptions` と `unliftio` がどちらもやっていることです。もう一度言いますが、[GitHub 上の議論を見てみてください](https://github.com/fpco/safe-exceptions/issues/3)
+
+## 読み込みの競争
+このプログラムの出力はどうなるでしょう?
+
+```haskell
+import Control.Concurrent
+import Control.Concurrent.Async
+
+main :: IO ()
+main = do
+  chan <- newChan
+  mapM_ (writeChan chan) [1..10 :: Int]
+  race (readChan chan) (readChan chan) >>= print
+  race (readChan chan) (readChan chan) >>= print
+  race (readChan chan) (readChan chan) >>= print
+  race (readChan chan) (readChan chan) >>= print
+  race (readChan chan) (readChan chan) >>= print
+```
+
+答えですが、私のマシンではこうなりました:
+
+```haskell
+Left 1
+Left 3
+Left 5
+Left 7
+Left 9
+```
+
+しかし、`Right` を許可するのは簡単です。`Left` の奇数だけを許可して偶数を飛ばすのではなく、数字を落とさずに表示することが可能です (スレッドのスケジュール方法によっては)。(???)
+
+これだけだとこじつけっぽいので、もっと簡単にしてみましょう: (???)
+
+```haskell
+timeout 1000000 $ readChan chan
+```
+
+ある時間だけチャンネルを読むのを禁止したいというのは、まぁありうる要望です。しかし、スレッドのタイミングによっては値がぶちまけられるだけで終わります。これは `threadDelay` を使って、普通ではないスレッドスケジューリングをシミュレートしてみることで示すことができます:
+
+```haskell
+import Control.Concurrent
+import System.Timeout
+
+main :: IO ()
+main = do
+  chan <- newChan
+  mapM_ (writeChan chan) [1..10 :: Int]
+  mx <- timeout 1000000 $ do
+    x <- readChan chan
+    threadDelay 2000000
+    return x
+  print mx
+  readChan chan >>= print
+```
+
+結果はこうなります: (???)
+
+```plain
+Nothing
+2
+```
+
+このようなタイムアウトの処理がほしいのなら、もっと創造的になる必要があります。くどいようですが、非同期例外を使うのは避けてください:
+
+```haskell
+import Control.Applicative ((<|>))
+import Control.Concurrent (threadDelay)
+import Control.Concurrent.STM
+import GHC.Conc (registerDelay, unsafeIOToSTM)
+
+main :: IO ()
+main = do
+  tchan <- newTChanIO
+  atomically $ mapM_ (writeTChan tchan) [1..10 :: Int]
+
+  delayDone <- registerDelay 1000000
+  let stm1 = do
+        isDone <- readTVar delayDone
+        check isDone
+        return Nothing
+      stm2 = do
+        x <- readTChan tchan
+        unsafeIOToSTM $ threadDelay 2000000
+        return $ Just x
+  mx <- atomically $ stm1 <|> stm2
+  print mx
+  atomically (readTChan tchan) >>= print
+```
+
+こうすれば期待通りの出力になります:
+
+```plain
+Nothing
+1
+```
