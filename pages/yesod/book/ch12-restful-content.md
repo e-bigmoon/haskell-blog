@@ -1,52 +1,54 @@
-# RESTful Content
+---
+title: RESTful Content
+date: 2018/09/22
+---
 
-Webの初期における話の一つに, どのようにサーチエンジンがウェブサイト全体を見渡していたかというものがある. まだ動的なウェブサイトが新しい概念であった頃は, 開発者は`GET`と`POST`リクエストの違いを認識していなかった.
-その結果, `GET`メソッドでアクセスされ, ページを消すようなページが作られた. サーチエンジンがこのようなサイトをスクリーニングするようになると, そのようなサイトは消去されてしまうようになった.
+Web の初期からの話の1つに、検索エンジンがどのようにして Web サイトを消去してしまったかという話があります。まだ動的な Web サイトが新しい概念だった頃、開発者は `GET` と `POST` リクエストの違いについて、よく理解していませんでした。その結果、`GET` メソッドでアクセスするとページが削除されてしまうようなページが作られました。検索エンジンがこのようなサイトをクローリングすれば、全てのコンテンツが消去されてしまいます。
 
-もしこれらの開発者がHTTP仕様に適切にしたがっていれば, このようなことは起こらなかったであろう. `GET`リクエストは, 副作用を起こさないことになっている(ご存知のように, それはサイトを消去することなどである). 最近, Web開発において, RESTとしても知られている, Representational State Transferを適切に採用する動きがある. この章では, YesodにおけるRESTfulな側面と, それらを用いてどのようにして, より堅牢なウェブアプリケーションを作ることができるか, について説明する.
+もし、Web 開発者が HTTP の仕様に適切にしたがっていれば、このようなことは起こらなかったでしょう。なぜなら `GET` リクエストは副作用を引き起こさないことになっているからです (ご存知のように、それはサイトを消去することなどです)。最近の Web 開発では Representational State Transfer (REST) を適切に取り入れようという動きがあります。この章では、Yesod の RESTful な側面や、より堅牢な Web アプリケーションを作るために、それらをどのように利用すれば良いかについて説明します。
 
 ## リクエストメソッド
 
-多くのウェブフレームワークにおいては, 1つのリソースにつき, 1つのハンドラ関数を作る. Yesodにおいては, 異なるリクエストメソッドについて, 異なるハンドラ関数を作ることがデフォルトとなっている. ウェブサイトを構築するにあたり扱われる, もっとも一般的な2つのリクエストメソッドは, `GET`と`POST`である. これらは, HTMLにおいて, もっともよくサポートされているメソッドである. 何故ならば, ウェブフォームがサポートしている唯一のメソッドであるためである. しかし, RESTfulなAPIを作るにあたり, 他のメソッドも有益である. 
+多くの Web フレームワークでは、リソースごとにハンドラ関数を作ります。Yesod のデフォルトでは、リクエストメソッドごとにハンドラ関数を作ります。Web サイトを構築する際のもっとも一般的なリクエストメソッドは `GET` と `POST` の2つです。この2つのリクエストメソッドは Web フォームがサポートしている唯一のメソッドなので、HTML で最も多くサポートされています。しかし、RESTful API を作るのであれば、その他のメソッドもとても便利です。
 
-技術的に言うと, どんな好きなメソッドでも用いることは可能である. しかし, HTTP仕様を遵守することが, 強く勧められる. これらの中で, もっとも一般的なものは次のようである:
+技術的な話で言えば、どのメソッドでも好きに使うことができます。しかし、HTTP の仕様を遵守することが強く推奨されます。よく使われるメソッドは次のとおりです。
 
-### `GET`
+### GET
 
-Read-onlyリクエスト. サーバ側に全く変化が起こらないことを想定しており, `GET`リクエストを何回呼び出しても同じ結果になるはずで, 現在時刻や任意に割り振られた結果は除かれる.
+読み取り専用のリクエスト。サーバ側に全く変化が起こらないことを想定しているため、"現在時刻" やランダムな結果などを除けば、`GET` リクエストを何回呼び出しても同じレスポンスが返ってきます。
 
 ### POST
 
-一般的に変化を起こすリクエストである. `POST`リクエストはユーザによって2度提出されるべきではない. 一般的な例としては, ある銀行口座から別のところへ基金を送金することが挙げられる.
+一般的に変化のあるリクエストです。`POST` リクエストはユーザによって2度提出されるべきではありません。よくある例として、ある銀行口座から別のところへ資金を送金する例などがあります。
 
 ### PUT
 
-サーバに新しいリソースを割り当てるか, 既存のものを交換する. このメソッドは何度呼ばれても安全である. 
+サーバに新しいリソースを作成する、または、既存のものを置き換えます。このメソッドは何度呼ばれても安全です。
 
 ### PATCH
 
-サーバ上のリソースを部分的に更新する. リソースの1つまはたそれ以上のリソースをアップデートしたい場合, このメソッドが好まれる. 
+サーバ上のリソースを部分的に更新します。リソースの1つ以上のフィールドを更新したいときに、このメソッドを使うべきでしょう。
 
 ### DELETE
 
-文字通りである: サーバ上のリソースを削除する. 何度呼び出しても問題ない.
+文字通り、サーバ上のリソースを削除します。何度呼び出しても問題が起こらないようにするべきです。
 
-ある程度, これはHaskellの哲学に非常によく適合する: `GET`リクエストは純粋関数に類似しており, 副作用を持たない. 実践的には, `GET`関数はおそらく`IO`を行なっており, データベースから情報を取り出したり, ユーザの操作を記録したりしている. 
+ある程度までは、Haskell の哲学に非常によくフィットします。`GET` リクエストは副作用を持たない点などで純粋関数に似ています。実際には `GET` 関数はおそらく、データベースからの情報の読み出し、ユーザ操作の記録などの `IO` を行っているでしょう。
 
-各リクエストメソッドに対しハンドラ関数を定義する構文についての詳細は, ルーティングとハンドラの章を参照しなさい. 
+リクエストメソッドごとにハンドラ関数を定義する構文については、ルーティングとハンドラの章を参照してください。
 
 ## 表現
 
-次のようなHaskellデータ型と値があったとしよう.
+次のような Haskell の型と値があったとしましょう。
 
-``` haskell
+```haskell
 data Person = Person { name :: String, age :: Int }
 michael = Person "Michael" 25
 ```
 
-このデータはHTMLでは次のように表せる:
+このデータを HTML で表現することもできます。
 
-``` html
+```html
 <table>
     <tr>
         <th>Name</th>
@@ -59,26 +61,26 @@ michael = Person "Michael" 25
 </table>
 ```
 
-または, JSONを用いて次のように表せる:
+また、JSON で表現すれば以下のようになります。
 
-```
+```json
 {"name":"Michael","age":25}
 ```
 
-さらに, XMLを用いると, 
+さらに XML ではこうなります。
 
-```
+```xml
 <person>
     <name>Michael</name>
     <age>25</age>
 </person>
 ```
 
-しばしば, ウェブアプリケーションは異なるURLを用いて, これらの表現を獲得する; おそらく, `/person/michael.html`, `/person/michael.json`などであろう. Yesodは各リソースにつき1つのURLというRESTful原則に従う. よって, Yesodにおいては, これら全ては`/person/michael`でアクセス可能である. 
+たまにですが、Web アプリケーションは上記のそれぞれの表現を提供するために、それぞれ別のURLを利用する場合があります。たいていは `/person/michael.html` や `/person/michael.json` などになるでしょう。Yesod は RESTful 原則に従って、すべてのリソースを1つのURLで提供します。そのため、Yesod では `/person/michael` にアクセスすれば全ての表現を取得できます。
 
-そこで疑問となるのは, どの表現を用いるかを決定する方法である. 答えとなるのは, HTTP`ACccept`ヘッダである: それは, クライアントが期待しているコンテンツタイプの優先リストを与える. Yesodは関数のペアを持つことで, 直接ヘッダをパーズする詳細を取り除き, 代わりに, より高レベルの表現で扱えるようにする. 最後の文をコードでより具体化しよう.
+ここで気になるのは、**どの**表現かの決定方法をどうするかということです。答えは、HTTP `ACccept` ヘッダです。このヘッダに、クライアントが期待するコンテンツタイプの優先度付きリストを指定します。Yesod は関数のペアを持つことで、直接ヘッダーをパーズせず、より高レベルの表現で扱うことができます。最後の文章をコードでより具体化してみましょう。
 
-``` haskell
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
@@ -110,29 +112,29 @@ getHomeR = selectRep $ do
 
 main :: IO ()
 main = warp 3000 App
-``` 
+```
 
-`selectRep`関数は, "今まさに可能な表現を与えます"と言っている. 各`provideRep`の呼び出しは, 代わりの表現を与える. YesodはHaskellの型を用いて, 各表現におけるMIMEタイプを決定している. `shamlet`(すなわち, simple Hamlet)は`Html`値を作り, Yesodは関連するMIMEタイプは`text/html`であると決定できる. 同様に, `object`はJSON値を生成し, MIMEタイプは`application/json`であることを示唆する. `TypedContent`はYesodにより与えられたデータ型であり, 付属MIMEタイプを持つ生コンテンツのためにある. 
+`selectRep` 関数は "これらの表現が選択可能ですよ" という意味です。それぞれの `provideRep` の呼び出しは、代わりの表現を提供します。Yesod は Haskell の型によって各表現の MIME タイプを決定します。`shamlet` (simple Hamlet) は `Html` 型の値を生成し、Yesod は関連する MIME タイプが `text/html` だとわかります。同様に `object` は JSON 型の値を生成し、MIME タイプが `application/json` だとわかります。`TypedContent` は Yesod が提供している型で、MIME タイプ付きの生コンテンツのためにあります。
 
-これを試すために, 次の異なる`curl`コマンドを走らせてみなさい.
+これを試すために、次の異なる `curl` コマンドを実行してみましょう。
 
-``` bash
+```shell
 curl http://localhost:3000 --header "accept: application/json"
 curl http://localhost:3000 --header "accept: text/html"
 curl http://localhost:3000
 ```
 
-Acceptヘッダ値に基づいてどのようにレスポンスが変化しただとうか. また, ヘッダを省略すると, HTMLレスポンスがデフォルトで表示される. ここでの規則は, もしAcceptヘッダが存在しなければ, 最初の表現が用いられることである. もし, Acceptヘッダが存在するが, 当てはまるものがなければ, "406アクセス不可能"レスポンスが返される.
+accept ヘッダ値によってどのようにレスポンスが変化するでしょうか。また、ヘッダを省略すると、HTML レスポンスがデフォルトで表示されます。ルールとして、accept ヘッダが無ければ一番初めの表現 (この場合では html) が表示されます。また、accept ヘッダはあるけれども、当てはまるものがなければ 406 "アクセスできません" レスポンスが返されます。
 
-デフォルトでは, Yesodは便利なミドルウェアを提供し, それは, クエリ文字列パラメータを用いてAcceptヘッダを設定する. これは, ブラウザからテストを行うことを容易にする. これを試すために, [http://localhost:3000/?`_`accept=application/json](http://localhost:3000/?_accept=application/json)を訪問せよ.
+esod はデフォルトでクエリ文字列パラメータで accept ヘッダを設定するための便利なミドルウェアを提供しています。これを使うことで、ブラウザから簡単にテストを実施できます。この機能を試すためには [http://localhost:3000/?_accept=application/json](http://localhost:3000/?_accept=application/json) にアクセスしてください。
 
-## JSONの利便性
+## JSON の利便性
 
-今日においてJSONはウェブアプリケーションにおいて, 非常に一般的に用いられるフォーマットであるため, JSON表現を与えるような組込のヘルパ関数が存在する. これらは, 素晴らしい`aeson`ライブラリで構成されるため, そのライブラリの機能についての簡単な説明から始めよう. 
+JSON は Web アプリケーションのデータフォーマットとして一般的に利用されているため、Yesod には JSON 表現を提供するためのヘルパー関数が組み込まれています。これらは、素晴らしい `aeson` ライブラリで構成されています。そのため、まずはライブラリの機能についての簡単な説明から始めましょう。
 
-`aeson`は, コアのデータ型である`Value`を持っており, それは, あらゆる有効なJSON値を表す. それはまた, `ToJSON`と`FromJSON`の2つの型クラスを与え, それぞれJSON値へ, JSON値から, のマーシャリングを自動化する. 目的としては, 現在`ToJson`に興味がある. これまでに繰り返し出てきた`Person`データ型を用いて`ToJSON`インスタンスを作る簡単な例を見てみよう.
+`aeson` の核となる型は、あらゆる有効な JSON の値を表現するための `Value` 型です。また、`ToJSON` と `FromJSON` の2つの型クラスが JSON 値の相互変換を自動的に行います。目的を達成するためには、今の所 `ToJSON` に興味があります。これまでに繰り返し出てきた `Person` 型を使って `ToJSON` インスタンスを作る簡単な例を見てみましょう。
 
-``` haskell
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 import           Data.Aeson
@@ -154,11 +156,11 @@ main :: IO ()
 main = L.putStrLn $ encode $ Person "Michael" 28
 ```
 
-`aeson`については, これ以上深入りしないようにしよう. なぜなら, [Haddock文書](https://www.fpcomplete.com/haskell)がすでにライブラリを上手く紹介しているためである. これまでに示したことは, 便利関数を理解するためには十分である.
+`aeson` については、これ以上深入りしないようにしましょう。なぜなら、[Haddock ドキュメント](https://www.fpcomplete.com/haskell) にライブラリに良いイントロダクションがあるためです。Yesod の便利な関数を理解するためであれば、このぐらいで十分でしょう。
 
-`Person`データ型と, 対応する値があり, 現在のページを表示するためにそれを用いたいとしよう. そのために, `returnJson`関数を用いる. 
+`Person` 型と、その型に対応する値があり、現在のページにその表現を利用したいとしましょう。そのためには `returnJson` 関数を利用します。
 
-``` haskell
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RecordWildCards   #-}
@@ -193,9 +195,9 @@ main :: IO ()
 main = warp 3000 App
 ```
 
-`returnJson`は実際には, 自明な関数である; それは`return . toJSON`として実装される. しかし, それにより物事が少し便利になる. 同様に, JSON値を`selectRep`内部での表現として与えたい場合, `provideJson`を用いることができる. 
+`returnJson` は非常に単純な関数で、`return . toJSON` として実装されています。しかし、この関数を使えばちょっとだけ便利になります。同じように、JSON 値を `selectRep` の内部で表現として与えたい場合は `provideJson` 関数を利用します。
 
-``` haskell
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RecordWildCards   #-}
@@ -237,13 +239,13 @@ main :: IO ()
 main = warp 3000 App
 ```
 
-`provideJson`は同様に自明であり, この場合`provideRep . returnJson`で実装される. 
+`provideJson` は `provideRep . return . toEncoding` として実装されています。
 
 ## 新しいデータ型
 
-Haskellの`Show`インスタンスを用いて新しいデータフォーマットを思いついたとしよう. それを"Haskell Show"と呼び, `text/haskell-show`のMIMEタイプを与えよう. そして, この表現をウェブアプリケーションに含めたいとしよう. それはどのように行えばいいのか? 最初の試みとして, `TypedContent`データ型を直接用いよう. 
+Haskell の `Show` インスタンスに基づく新しいデータ形式を思い付いたとします。それを "Haskell Show" と呼び、MIME タイプに `text/haskell-show` を与えます。そして、この表現を自分の Web アプリケーションに含めることに決めました。Yesod でこれをどのように行えば良いのでしょうか？まずは、ためしに `TypedContent` 型を直接使ってみましょう。
 
-``` haskell
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
@@ -278,17 +280,14 @@ main :: IO ()
 main = warp 3000 App
 ```
 
-ここでは, 多少注意すべき重要な点がある.
+この例には、いくつか重要な点があります。
 
-- `toContent`関数を用いた. これは, いくつものデータ型を通信上に送信される準備ができた生データに変換するための, 型クラス関数である. 
-この場合, `String`のインスタンスを用い, それはUTF8のエンコーディングを持つ. インスタンスを持つ一般的なデータ型としては, 他に`Text`, `ByteString`, `Html`, やaesonの`Value`などがある.
+- `toContent` 関数を利用しました。`toContent` は型クラスのメソッドとなっているため、いくつものデータ型を送信可能な生データに変換できます。今回の例では、`String` のインスタンスを利用しました。その場合は UTF8 エンコーディングが行われます。インスタンスとなっている型には他に `Text`、`ByteString`、`Html` や aeson の `Value` などがあります。
+- `TypedContent` コンストラクタを直接利用しています。このコンストラクタは MIME タイプと生コンテンツの2つの引数を取ります。また、`ContentType` は正格な `ByteString` のエイリアスとして定義されています。
 
-- `TypedContent`コンストラクタを直接用いている. これは, 2つの引数を取る: MIMEタイプと, 生コンテンツである. また, `ContentType`は, 単にstrict `ByteString`の型エイリアスである. 
+この例でも良いかもしれませんが、`getHomeR` の型注釈の情報量が少なすぎることは悩ましいことです。また、`getHomeR` の実装はかなりボイラーブレートのように見えます。この方法ではなく、"Haskell Show" データを表現するデータ型と、その値を作るための簡単な方法を提供したいです。試してみましょう。
 
-これまではいいでしょうか, しかし, `getHomeR`の型注釈の情報量が少なすぎることは悩ましいことである. また, `getHomeR`の実装は, かなりボイラブレートに見える. これよりも, "Haskell Show"データ型
-を表現するデータ型を持ち, このような値を作るための簡単な方法を与えたい. これを試してみよう.
-
-``` haskell
+```haskell
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE OverloadedStrings         #-}
 {-# LANGUAGE QuasiQuotes               #-}
@@ -331,13 +330,13 @@ main :: IO ()
 main = warp 3000 App
 ```
 
-ここでのトリックは, 2つの型クラスにある. 以前述べたように, `ToContent`はどのように値を生レスポンスに変換するかについて言っている. 今回の場合, もとの値を`show`することで, `String`を得, `String`を生コンテントに変換したい. しばしば, `ToContent`のインスタンスはこのように相互依存している. 
+ここでのトリックは、2つの型クラスにあります。少し前に説明したように、`ToContent` は値を生レスポンスに変換する方法について言っています。今回の場合、もとの値を `show` することで `String` 型に変換し、`String` を生コンテンツに変換したいです。今回の例のように `ToContent` のインスタンスは相互依存することが多いです。
 
-`ToTypedContent`は内部的にYesodが用いており, ハンドラ関数の結果に基づき呼び出される. ご覧の通り実装はかなりシンプルであり, 単にMIMEタイプを述べ, `toContent`を呼び出してるだけである. 
+`ToTypedContent` は Yesod の内部で利用されているため、全てのハンドラ関数の結果で呼び出されます。見ての通り実装はかなりシンプルです。単に MIMEタイプを定義し、`toContent` を呼び出してるだけです。
 
-最後に, これをもう少し複雑にし, `selectRep`と上手く連携させてみよう.
+最後に、もう少し複雑な例として `selectRep` と上手く連携させてみましょう。
 
-``` haskell
+```haskell
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE OverloadedStrings         #-}
 {-# LANGUAGE QuasiQuotes               #-}
@@ -390,30 +389,35 @@ main :: IO ()
 main = warp 3000 App
 ```
 
-ここで追加した重要な点は, `HasContentType`インスタンスである. これは, 冗長に見えるかもしれないが, 重要な役割を担う. 表現を作る前に, 起こりうる表現のMIME型を決定できる必要があるのである. `ToTypedContent`は具体的な値にのみ機能するため, 値を作る前には用いることができない. `getContentType`は代わりにプロキシー値を取り, 具体的なものを与えずとも型を示すことができる. 
+ここで例に追加された重要な点は `HasContentType` インスタンスです。これは、冗長に見えるかもしれませんが、重要な役割を担います。***表現を作る前***に、起こりうる表現の MIME タイプを決定できなければなりません。`ToTypedContent` は具体的な値にのみ機能するため、値を作る前には利用できないのです。`getContentType` は代わりにプロキシー値を取るので、具体的な値が何も無くても MIME タイプを示すことができます。
 
 <div class=yesod-book-notice>
-もし, `HasContentType`インスタンスを持たない値に対し表現を与えたい場合, `provideRepType`を用いることができ, それは, MIME型が存在していることを明確に宣言することを必要とする.
-<div>
+`HasContentType` のインスタンスではない値に対して表現を与えたい場合は `provideRepType` 関数が利用できます。この関数は明示的に MIME タイプを提供する必要があります。
+</div>
 
 ## 他のリクエストヘッダ
 
-利用可能なリクエストヘッダは数多く存在する. その内のいくつかは, サーバとクライアント間でのデータの移動にのみ関与し, アプリケーションには全く影響を与えない. 例えば, `Accept-Encoding`はサーバにどの圧縮スキームをクライアントが理解できるかを示し, `Host`はどの仮想ホストを用いるかについて示す.
+利用可能なリクエストヘッダは他にも数多く存在します。その内のいくつかは、サーバとクライアント間でのデータの移動にのみ影響し、アプリケーションには全く影響を与えません。例えば、`Accept-Encoding` はサーバにどの圧縮方法をクライアントが理解できるかを伝え、`Host` はサーバーが待ち受けている仮想ホストを伝えます。
 
-他のヘッダはアプリケーションに関与するが, Yesodによって自動的に読まれる. 例えば, `Accept-Language`ヘッダは, どの人間の言語(英語, スペイン語, ドイツ語, スイス系ドイツ語)をクライアントが求めるかを特定する. このヘッダをどのように用いるかについては, i18nの章を見なさい.
+他のヘッダはアプリケーションに影響を与えますが、Yesod によって自動的に読み込まれます。例えば `Accept-Language` ヘッダは、どの言語 (英語、スペイン語、ドイツ語、スイス系ドイツ語) をクライアントが求めるかを指定します。このヘッダの使い方については i18n の章を参照してください。
 
 ## まとめ
 
-YesodはRESTの次の原則に従う:
+Yesod は次の REST 原則に従います。
 
-- 適切なリクエストメソッドを用いる.
+- 適切にリクエストメソッド使います。
+- 各リソースは確実に1つのURLを持ちます。
+- 同じURLでデータを複数の表現で提供できます。
+- リクエストヘッダを調べることで、クライアントが何を望んでいるかに関する追加情報を判断します。
 
-- 各リソースは確実に1つのURLを持つ.
+これらは Yesod を使って Web サイトを構築するだけでなく、API を作ることも簡単になります。実際に、`selectRep/provideRep` のようなテクニックを利用することで、ユーザフレンドリーな HTML ページと、マシンフレンドリーな JSON ページを同じURLで提供できるようになります。
 
-- 同じURLでデータを複数の方法で表現することを許容する.
+## 本章のコード
 
-- リクエストヘッダを調べ, クライアントが求めることについてのさらなる情報を得る.
-
-これらは, Yesodを用いてウェブサイトを構築するだけでなく, APIを作ることも容易にする. 実際に, `selectRep`/`provideRep`のような技術を用いることで, ユーザフレンドリなHTMLページと, マシンフレンドリなJSONページを同じURLで用いることが可能になる.
-
-
+- [Representations.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch12/Representations.hs)
+- [JSON_conveniences1.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch12/JSON_conveniences1.hs)
+- [JSON_conveniences2.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch12/JSON_conveniences2.hs)
+- [JSON_conveniences3.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch12/JSON_conveniences3.hs)
+- [New_datatypes1.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch12/New_datatypes1.hs)
+- [New_datatypes2.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch12/New_datatypes2.hs)
+- [New_datatypes3.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch12/New_datatypes3.hs)
