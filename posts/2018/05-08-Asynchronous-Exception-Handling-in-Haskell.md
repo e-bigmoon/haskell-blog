@@ -806,10 +806,8 @@ bracket before after inner = mask $ \restore -> do
 
 まず、ライブラリで利用可能な既存の、すでにテストされている `bracket` を使うのが常に好ましいです。では見ていきましょうか:
 
-We rethrow the exception, meaning that it was safe for us to catch asynchronous exceptions. Good!
-
 * 全てのブロックを正しくマスクしています。いいね!
-* `before` というアクションは例外がマスクされている状態で実行されています。いいね! `before` のあたりで `restore` してしまったら、非同期例外は `before` が終了して、resource の値をバインドした直後に入り込むことができます。(???)
+* `before` というアクションは例外がマスクされている状態で実行されています。いいね! `before` 前で `restore` してしまったら、非同期例外は `before` が終了して、resource の値に干渉してしまうかもしれません。
 * `try` の中で `inner` を呼ぶ前に `restore` しています。これは正しいやり方で、`bracket` の例外安全を阻害しません
 * `after` をすぐに呼び、解放処理をしています。いいね!
 * おそらくまずいのは、`after` が割り込み不可能なマスキングを使うことなく呼ばれていることです。これは、`after` の中の割り込み可能なアクションが、リソースの解放処理を阻害することができてしまうということです。一方、この挙動が十分にドキュメント化されていれば、`bracket` を使うときに、`after` の中で `uninterruptibleMask_` を使ったりすることができるでしょう (???)
@@ -817,7 +815,7 @@ We rethrow the exception, meaning that it was safe for us to catch asynchronous 
 
 全体としては、とても良いコードになっています。が、`after` の中では `uninterruptibleMask_` を使うのがいいかもしれません。これは、`safe-exceptions` と `unliftio` がどちらもやっていることです。もう一度言いますが、[GitHub 上の議論を見てみてください](https://github.com/fpco/safe-exceptions/issues/3)
 
-## 読み込みの競争
+## 読み込みの競合
 このプログラムの出力はどうなるでしょう?
 
 ```haskell
@@ -845,9 +843,9 @@ Left 7
 Left 9
 ```
 
-しかし、`Right` を許可するのは簡単です。`Left` の奇数だけを許可して偶数を飛ばすのではなく、数字を落とさずに表示することが可能です (スレッドのスケジュール方法によっては)。(???)
+しかし、値を `Right` にするのは簡単です。逆に、`Left` の中身を偶数にすることもできます。数字を飛ばすのではなく、落とさずに表示することも可能です (スレッドのスケジュール方法を変えれば)。
 
-これだけだとこじつけっぽいので、もっと簡単にしてみましょう: (???)
+これだけだと現実味に欠けるので、もっと簡単にしてみましょう: (???)
 
 ```haskell
 timeout 1000000 $ readChan chan
