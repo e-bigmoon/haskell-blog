@@ -149,9 +149,328 @@ main = do
 
 下の写真は, ログインプロセスがユーザ視点からどのよに見えるかを示している.
 
+### 最初にロードされるページ
 
+![Initial page load](https://www.yesodweb.com/book/image/initial-screen)
+
+### ブラウザIDログイン画面
+
+![BrowserID login screen](https://www.yesodweb.com/book/image/login-with-browserid)
+
+### ログインした後のホームページ
+
+![Homepage after logging in](https://www.yesodweb.com/book/image/after-login)
 
 ## Email
+
+多くの使用例において, 第3者によるemailの認証で十分である. 時々, ユーザがサイト上でパスワードを作れるようにしたいと思うだろう. scaffoldedサイトは以下の理由で, この設定を含まない:
+
+- 安全にパスワードを受容するためには, SSL上で実行する必要がある. 多くのユーザあSSL上でサイトを実行していない. 
+
+- emailバックエンドは適切にパスワードにソルトとハッシュ行うが, 欠陥のあるデータベースは依然として問題がある. また, Yesodユーザが安全なデプロイメント慣習に則っていることを想定していないのである.
+
+- emailを送るためのワークシステムが必要である. 最近, 多くのウェブサーバはメールサーバによって用いられているような, あらゆるスパム防御処置を行う準備ができていないのである. 
+
+<div class=yesod-book-notice>
+下の例では, システム組込のsendmail処理を用いる. もし自分のemailサーバを用いる面倒さを避けたいならば, Amazon SESを用いることができる. [mime-mail-ses](https://www.stackage.org/package/mime-mail-ses)と呼ばれるパッケージが存在し, それは下のemailを送るコードで用いられているように, ちょっとした代わりの方法を与える. これはたいてい私が推奨する方法であり, FP Haskell CenterやHaskellers.comのような私の大部分のサイトでも用いられている.
+<div>
+
+しかし, これらの要望を叶え, 独自のサイトに特化したログインオアスワードを持ちたいと想定した時, Yesodは組込のバックエンドを提供する. それは, データベースにパスワードを安全に保管する必要があり, 多くの異なるemailをユーザに送信する必要があるため(アカウントの検証や, パスワード修復など), 設定にかなり多くのコードを要する. 
+
+email認証を与えるサイトを作り, パスワードをPersistent SQLiteデータベースに保存してみよう. 
+
+<div class=yesod-book-notice>
+emailサーバを持っていなくても, デバック目的のために, リンクがコンソールに表示される. 
+<div>
+
+
+``` haskell
+{-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
+import           Control.Monad            (join)
+import           Control.Monad.Logger (runNoLoggingT)
+import           Data.Maybe               (isJust)
+import           Data.Text                (Text, unpack)
+import qualified Data.Text.Lazy.Encoding
+import           Data.Typeable            (Typeable)
+import           Database.Persist.Sqlite
+import           Database.Persist.TH
+import           Network.Mail.Mime
+import           Text.Blaze.Html.Renderer.Utf8 (renderHtml)
+import           Text.Hamlet              (shamlet)
+import           Text.Shakespeare.Text    (stext)
+import           Yesod
+import           Yesod.Auth
+import           Yesod.Auth.Email
+
+share [mkPersist sqlSettings { mpsGeneric = False }, mkMigrate "migrateAll"] [persistLowerCase|
+User
+    email Text
+    password Text Maybe -- Password may not be set yet
+    verkey Text Maybe -- Used for resetting passwords
+    verified Bool
+    UniqueUser email
+    deriving Typeable
+|]
+
+data App = App SqlBackend
+
+mkYesod "App" [parseRoutes|
+/ HomeR GET
+/auth AuthR Auth getAuth
+|]
+
+instance Yesod App where
+    -- Emails will include links, so be sure to include an approot so that
+    -- the links are valid!
+    approot = ApprootStatic "http://localhost:3000"
+    yesodMiddleware = defaultCsrfMiddleware . defaultYesodMiddleware
+
+instance RenderMessage App FormMessage where
+    renderMessage _ _ = defaultFormMessage
+
+-- Set up Persistent
+instance YesodPersist App where
+    type YesodPersistBackend App = SqlBackend
+    runDB f = do
+        App conn <- getYesod
+        runSqlConn f conn
+
+instance YesodAuth App where
+    type AuthId App = UserId
+
+    loginDest _ = HomeR
+    logoutDest _ = HomeR
+    authPlugins _ = [authEmail]
+
+    -- Need to find the UserId for the given email address.
+    getAuthId creds = runDB $ do
+        x <- insertBy $ User (credsIdent creds) Nothing Nothing False
+        return $ Just $
+            case x of
+                Left (Entity userid _) -> userid -- newly added user
+                Right userid -> userid -- existing user
+
+instance YesodAuthPersist App
+
+-- Here's all of the email-specific code
+instance YesodAuthEmail App where
+    type AuthEmailId App = UserId
+
+    afterPasswordRoute _ = HomeR
+
+    addUnverified email verkey =
+        runDB $ insert $ User email Nothing (Just verkey) False
+
+    sendVerifyEmail email _ verurl = do
+        -- Print out to the console the verification email, for easier
+        -- debugging.
+        liftIO $ putStrLn $ "Copy/ Paste this URL in your browser:" ++ unpack verurl
+
+        -- Send email.
+        liftIO $ renderSendMail (emptyMail $ Address Nothing "noreply")
+            { mailTo = [Address Nothing email]
+            , mailHeaders =
+                [ ("Subject", "Verify your email address")
+                ]
+            , mailParts = [[textPart, htmlPart]]
+            }
+      where
+        textPart = Part
+            { partType = "text/plain; charset=utf-8"
+            , partEncoding = None
+            , partFilename = Nothing
+            , partContent = Data.Text.Lazy.Encoding.encodeUtf8
+                [stext|
+                    Please confirm your email address by clicking on the link below.
+
+                    #{verurl}
+
+                    Thank you
+                |]
+            , partHeaders = []
+            }
+        htmlPart = Part
+            { partType = "text/html; charset=utf-8"
+            , partEncoding = None
+            , partFilename = Nothing
+            , partContent = renderHtml
+                [shamlet|
+                    <p>Please confirm your email address by clicking on the link below.
+                    <p>
+                        <a href=#{verurl}>#{verurl}
+                    <p>Thank you
+                |]
+            , partHeaders = []
+            }
+    getVerifyKey = runDB . fmap (join . fmap userVerkey) . get
+    setVerifyKey uid key = runDB $ update uid [UserVerkey =. Just key]
+    verifyAccount uid = runDB $ do
+        mu <- get uid
+        case mu of
+            Nothing -> return Nothing
+            Just u -> do
+                update uid [UserVerified =. True]
+                return $ Just uid
+    getPassword = runDB . fmap (join . fmap userPassword) . get
+    setPassword uid pass = runDB $ update uid [UserPassword =. Just pass]
+    getEmailCreds email = runDB $ do
+        mu <- getBy $ UniqueUser email
+        case mu of
+            Nothing -> return Nothing
+            Just (Entity uid u) -> return $ Just EmailCreds
+                { emailCredsId = uid
+                , emailCredsAuthId = Just uid
+                , emailCredsStatus = isJust $ userPassword u
+                , emailCredsVerkey = userVerkey u
+                , emailCredsEmail = email
+                }
+    getEmail = runDB . fmap (fmap userEmail) . get
+
+getHomeR :: Handler Html
+getHomeR = do
+    maid <- maybeAuthId
+    defaultLayout
+        [whamlet|
+            <p>Your current auth ID: #{show maid}
+            $maybe _ <- maid
+                <p>
+                    <a href=@{AuthR LogoutR}>Logout
+            $nothing
+                <p>
+                    <a href=@{AuthR LoginR}>Go to the login page
+        |]
+
+main :: IO ()
+main = runNoLoggingT $ withSqliteConn "email.db3" $ \conn -> liftIO $ do
+    runSqlConn (runMigration migrateAll) conn
+    warp 3000 $ App conn
+```
+
+## 承認
+
+一旦ユーザを認証すれば, その認証情報を用いて, リクエストを承認できる. Yesodにおける承認は単純であり, 宣言的である: 多くの場合, `authRoute`と`isAuthorized`メソッドをYesod型クラスのインスタンスに追加しればよいだけである. 例を見てみよう.
+
+``` haskell
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TypeFamilies          #-}
+import           Data.Default         (def)
+import           Data.Text            (Text)
+import           Network.HTTP.Conduit (Manager, newManager, tlsManagerSettings)
+import           Yesod
+import           Yesod.Auth
+import           Yesod.Auth.Dummy -- just for testing, don't use in real life!!!
+
+data App = App
+    { httpManager :: Manager
+    }
+
+mkYesod "App" [parseRoutes|
+/      HomeR  GET POST
+/admin AdminR GET
+/auth  AuthR  Auth getAuth
+|]
+
+instance Yesod App where
+    authRoute _ = Just $ AuthR LoginR
+
+    -- route name, then a boolean indicating if it's a write request
+    isAuthorized HomeR True = isAdmin
+    isAuthorized AdminR _ = isAdmin
+
+    -- anyone can access other pages
+    isAuthorized _ _ = return Authorized
+
+isAdmin = do
+    mu <- maybeAuthId
+    return $ case mu of
+        Nothing -> AuthenticationRequired
+        Just "admin" -> Authorized
+        Just _ -> Unauthorized "You must be an admin"
+
+instance YesodAuth App where
+    type AuthId App = Text
+    getAuthId = return . Just . credsIdent
+
+    loginDest _ = HomeR
+    logoutDest _ = HomeR
+
+    authPlugins _ = [authDummy]
+
+    maybeAuthId = lookupSession "_ID"
+
+instance RenderMessage App FormMessage where
+    renderMessage _ _ = defaultFormMessage
+
+getHomeR :: Handler Html
+getHomeR = do
+    maid <- maybeAuthId
+    defaultLayout
+        [whamlet|
+            <p>Note: Log in as "admin" to be an administrator.
+            <p>Your current auth ID: #{show maid}
+            $maybe _ <- maid
+                <p>
+                    <a href=@{AuthR LogoutR}>Logout
+            <p>
+                <a href=@{AdminR}>Go to admin page
+            <form method=post>
+                Make a change (admins only)
+                \ #
+                <input type=submit>
+        |]
+
+postHomeR :: Handler ()
+postHomeR = do
+    setMessage "You made some change to the page"
+    redirect HomeR
+
+getAdminR :: Handler Html
+getAdminR = defaultLayout
+    [whamlet|
+        <p>I guess you're an admin!
+        <p>
+            <a href=@{HomeR}>Return to homepage
+    |]
+
+main :: IO ()
+main = do
+    manager <- newManager tlsManagerSettings
+    warp 3000 $ App manager
+```
+
+`authRoute`はログインページであるべきである. ほとんど常に, `AuthR`, `LoginR`, `isAuthorized`は2つのパラメータを取る: リクエストされたルートと, リクエストがホワイトなリクエストであるかどうか, である. 実際に, `isWriteRequest`を用いることで, writeリクエストが何であるかを変更できるが, 創造的な方法では, RESTful原則に従う: `GET`, `HEAD`, `OPTIONS`, あるいは`TRACE`リクエストはwriteリクエストである. 
+
+`isAuthorized`の中身に関し便利な点は, 望む`Handler`コードを何でも実行できることである. これは以下を意味する:
+
+- ファイルシステムにアクセスする(通常のIO)
+
+- データベースから値を探す
+
+- 欲しいセッションやリクエスト値を取ってくる
+
+これらの技術を用い, 望むような洗練された承認システムを開発したり, 組織によって用いられてる既存システムに連動させることができる.
+
+## 結論
+
+この章においては, ユーザの認証を行う設定の基礎と, どのように組込の承認関数が, ユーザにとって簡易で, 宣言的な方法を与えるか, について説明した. これらは複雑な概念であるが, Yesodは独自のカスタム化された承認方法を作るための, 根幹を与えるはずである. 
+
+
+
+
+
+
+
 
 
 
