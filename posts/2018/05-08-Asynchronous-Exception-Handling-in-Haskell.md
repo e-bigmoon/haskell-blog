@@ -845,7 +845,7 @@ Left 9
 
 しかし、値を `Right` にするのは簡単です。逆に、`Left` の中身を偶数にすることもできます。数字を飛ばすのではなく、落とさずに表示することも可能です (スレッドのスケジュール方法を変えれば)。
 
-これだけだと現実味に欠けるので、もっと簡単にしてみましょう: (???)
+これだけだと現実味に欠けるので、もっと簡単にしてみましょう:
 
 ```haskell
 timeout 1000000 $ readChan chan
@@ -869,7 +869,7 @@ main = do
   readChan chan >>= print
 ```
 
-結果はこうなります: (???)
+結果はこうなります:
 
 ```plain
 Nothing
@@ -975,7 +975,7 @@ Acquire in main thread
 use in child thread
 ```
 
-(訳者の環境では以下のようになりました ???)
+**注: 訳者の環境では以下のようになりました**
 
 ```plain
 Acquire in main thread
@@ -1010,7 +1010,7 @@ cleanup in child thread
 Exiting the program
 ```
 
-しかし、親スレッドの `uninterruptibleMask` の `restore` を使うのは少し問題があります。実は、例外をアンマスクすることが保証されていないのです! 正しい解決策を示しておくので、どのように違う動きをするのか確かめてみてください (???)。`uninterruptibleMask` の `restore` を使うのではなく、`forkIOWithUnmask` を使っています:
+しかし、親スレッドの `uninterruptibleMask` の `restore` を使うのは少し問題があります。実は、例外をアンマスクすることが保証されていないのです! 正しい解決策を示しておくので、どのような動作になるのか確かめてみてください。`uninterruptibleMask` の `restore` を使うのではなく、`forkIOWithUnmask` を使っています:
 
 ```plain
 import Control.Concurrent
@@ -1086,7 +1086,7 @@ Unmasked
 
 思い出してほしいのですが、`mask` が提供している `restore` 関数は、以前のマスキングの状態を復元します。なので、例えば `mask_ foo` を呼ぶと、`foo` の `restore` は `MaskedInterruptible` を返します。これは`mask_` を使ったからです。`bar` でも同じ結果になります。
 
-しかし、`baz` では `forkIOWithUnmask` が使われています。この `unmask` アクションは、以前のマスキングの状態を復元するわけではありません。その代わりに、全てのマスキングが切られていることを保証するのです。これはフォークされたスレッドでは大体望ましい振る舞いです。親スレッドがマスクされた状態でも、送信した非同期例外に反応してほしいからです。
+しかし、`baz` では `forkIOWithUnmask` が使われています。この `unmask` アクションは、以前のマスキングの状態を復元するわけではありません。その代わりに、全てのマスキングが切られていることを保証するのです。これはフォークされたスレッドでは、ほとんどの場合において望ましい振る舞いで、親スレッドがマスクされた状態でも、送信した非同期例外に反応してほしいからです。
 
 ## forkIO と race
 `async` パッケージの `race` 関数を独自に実装してみましょう。以下の実装は本当にまずいものになるでしょう。理由はいくつもありますが、ここではその中の1つに焦点を当てることにします (他にも見つけてみましょう!)。
@@ -1134,7 +1134,7 @@ main = uninterruptibleMask_
      $ badRace (return ()) (threadDelay maxBound) >>= print
 ```
 
-これはデッドロックします (???)。なぜなら、`badRace` 中の `forkIO` 呼び出しはは親スレッドのマスキング状態を引き継ぐので、`killThread` が効かなくなってしまいます。このバグの直し方は分かりますか?
+これはデッドロックします (???)。なぜなら、`badRace` 中の `forkIO` 呼び出しは親スレッドのマスキング状態を引き継ぐので、`killThread` が効かなくなってしまうからです。このバグの直し方は分かりますか?
 
 ```
 badRace :: IO a -> IO b -> IO (Either a b)
