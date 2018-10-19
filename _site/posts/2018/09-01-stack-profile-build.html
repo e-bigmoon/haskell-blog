@@ -231,24 +231,24 @@ $ stack exec -- &lt;exe_name&gt; +RTS -xc</code></pre>
 <!--more-->
 <h2 id="バックトレースの取得方法">バックトレースの取得方法</h2>
 <p>まず、バックトレースを取得するために <a href="https://www.stackage.org/haddock/lts-12.8/base-4.11.1.0/GHC-Stack.html">GHC.Stack</a> で定義されている <a href="https://www.stackage.org/haddock/lts-12.8/base-4.11.1.0/GHC-Stack.html#t:HasCallStack">HasCallStack</a> をクラス制約として追加します。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">f1 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">f1 <span class="fu">=</span> f2</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ot">f2 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">f2 <span class="fu">=</span> f3</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="ot">f3 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">f3 <span class="fu">=</span> error <span class="st">&quot;f3&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="ot">f1 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-4" title="4">f1 <span class="fu">=</span> f2</a>
+<a class="sourceLine" id="cb2-5" title="5"></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="ot">f2 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-7" title="7">f2 <span class="fu">=</span> f3</a>
+<a class="sourceLine" id="cb2-8" title="8"></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="ot">f3 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-10" title="10">f3 <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;f3&quot;</span></a></code></pre></div>
 <p>上記の例を雛形として、<strong>HasCallStack</strong> を追加するとどうなるのか確認していきましょう。</p>
 <p><code>Main.hs</code> はこんな感じで <strong>f1</strong> を呼び出します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Lib</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">main <span class="fu">=</span> f1</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-2" title="2"></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw">import</span> <span class="dt">Lib</span></a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb3-6" title="6">main <span class="fu">=</span> f1</a></code></pre></div>
 <p><strong>HasCallStack</strong> を追加しない場合は以下のような出力となります。</p>
 <pre class="shell"><code>$ stack build
 ...
@@ -258,18 +258,18 @@ CallStack (from HasCallStack):
   error, called at src/Lib.hs:10:6 in backtrace-example-0.1.0.0-hgO68xdg85BUcmGsdFId:Lib</code></pre>
 <p><strong>f3</strong> でエラーが発生したことはわかりますが、それ以外は何もわかりません。</p>
 <h3 id="f1-f2-f3-に-hascallstack-を追加した場合">f1, f2, f3 に HasCallStack を追加した場合</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="ot">f1 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">f1 <span class="fu">=</span> f2</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="ot">f2 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">f2 <span class="fu">=</span> f3</a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="ot">f3 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">f3 <span class="fu">=</span> error <span class="st">&quot;f3&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-2" title="2"></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
+<a class="sourceLine" id="cb5-4" title="4"></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="ot">f1 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb5-6" title="6">f1 <span class="fu">=</span> f2</a>
+<a class="sourceLine" id="cb5-7" title="7"></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="ot">f2 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb5-9" title="9">f2 <span class="fu">=</span> f3</a>
+<a class="sourceLine" id="cb5-10" title="10"></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="ot">f3 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb5-12" title="12">f3 <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;f3&quot;</span></a></code></pre></div>
 <p>ビルドしてみます。</p>
 <pre class="shell"><code>$ stack build
 ...
@@ -283,18 +283,18 @@ CallStack (from HasCallStack):
 <p>ちゃんと呼び出しの関係が <code>error</code> -&gt; <code>f3</code> -&gt; <code>f2</code> -&gt; <code>f1</code> と表示されていますね！</p>
 <h3 id="f2-f3-にのみ-hascallstack-を追加する">f2, f3 にのみ HasCallStack を追加する</h3>
 <p>では、ここで <code>f1</code> の <strong>HasCallStack</strong> 制約を取り除くとどうなるか確認してみます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="ot">f1 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">f1 <span class="fu">=</span> f2</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="ot">f2 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">f2 <span class="fu">=</span> f3</a>
-<a class="sourceLine" id="cb7-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="ot">f3 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">f3 <span class="fu">=</span> error <span class="st">&quot;f3&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-2" title="2"></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
+<a class="sourceLine" id="cb7-4" title="4"></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="ot">f1 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-6" title="6">f1 <span class="fu">=</span> f2</a>
+<a class="sourceLine" id="cb7-7" title="7"></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="ot">f2 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-9" title="9">f2 <span class="fu">=</span> f3</a>
+<a class="sourceLine" id="cb7-10" title="10"></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="ot">f3 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-12" title="12">f3 <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;f3&quot;</span></a></code></pre></div>
 <p>実行してみます。</p>
 <pre class="shell"><code>$ stack build
 ...
@@ -308,18 +308,18 @@ CallStack (from HasCallStack):
 <p>しかし、依然として <strong>f2</strong> と <strong>f3</strong> のバックトレースは取得できています。そのため、本当に全てのバックトレースを取得したい場合は全ての関数に <strong>HasCallStack</strong> 制約を追加しなけばなりません。</p>
 <h3 id="f1-と-f3-にのみ-hascallstack-制約を追加する">f1 と f3 にのみ HasCallStack 制約を追加する</h3>
 <p>次に中間の <strong>f2</strong> の <strong>HasCallStack</strong> 制約を取り除いてみましょう。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="ot">f1 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-6" data-line-number="6">f1 <span class="fu">=</span> f2</a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="ot">f2 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-9" data-line-number="9">f2 <span class="fu">=</span> f3</a>
-<a class="sourceLine" id="cb9-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="ot">f3 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-12" data-line-number="12">f3 <span class="fu">=</span> error <span class="st">&quot;f3&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb9-2" title="2"></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
+<a class="sourceLine" id="cb9-4" title="4"></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="ot">f1 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb9-6" title="6">f1 <span class="fu">=</span> f2</a>
+<a class="sourceLine" id="cb9-7" title="7"></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="ot">f2 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb9-9" title="9">f2 <span class="fu">=</span> f3</a>
+<a class="sourceLine" id="cb9-10" title="10"></a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="ot">f3 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb9-12" title="12">f3 <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;f3&quot;</span></a></code></pre></div>
 <p>実行してみます。</p>
 <pre class="shell"><code>$ stack build
 ...
@@ -330,18 +330,18 @@ CallStack (from HasCallStack):
   f3, called at src/Lib.hs:9:6 in backtrace-example-0.1.0.0-hgO68xdg85BUcmGsdFId:Lib</code></pre>
 <p>今度は <strong>f2</strong> と <strong>f1</strong> の両方の情報がが抜け落ちてしまいました。<strong>f2</strong> で <strong>HasCallStack</strong> の伝搬がストップしてしまったということです。</p>
 <h3 id="f1-と-f2-のみに-hascallstack-を追加する">f1 と f2 のみに HasCallStack を追加する</h3>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="ot">f1 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">f1 <span class="fu">=</span> f2</a>
-<a class="sourceLine" id="cb11-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="ot">f2 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb11-9" data-line-number="9">f2 <span class="fu">=</span> f3</a>
-<a class="sourceLine" id="cb11-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="ot">f3 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb11-12" data-line-number="12">f3 <span class="fu">=</span> error <span class="st">&quot;f3&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb11-2" title="2"></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="kw">import</span> <span class="dt">GHC.Stack</span></a>
+<a class="sourceLine" id="cb11-4" title="4"></a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="ot">f1 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb11-6" title="6">f1 <span class="fu">=</span> f2</a>
+<a class="sourceLine" id="cb11-7" title="7"></a>
+<a class="sourceLine" id="cb11-8" title="8"><span class="ot">f2 ::</span> <span class="dt">HasCallStack</span> <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb11-9" title="9">f2 <span class="fu">=</span> f3</a>
+<a class="sourceLine" id="cb11-10" title="10"></a>
+<a class="sourceLine" id="cb11-11" title="11"><span class="ot">f3 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb11-12" title="12">f3 <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;f3&quot;</span></a></code></pre></div>
 <pre class="shell"><code>$ stack build
 $ stack exec example
 example: f3
@@ -353,16 +353,16 @@ CallStack (from HasCallStack):
 <p>先程の結果を見たとおり、正確な情報を取得するためには全ての関数に <strong>HasCallStack</strong> 制約を追加する必要がありそうです。</p>
 <p>しかしながら、規模が大きくなってくるとそんなの不可能ですよね。</p>
 <p>そんな時には <code>stack</code> の <code>--profile</code> オプションと <code>+RTS -xc</code> オプションを利用します。(<code>--profile</code> オプションは <strong>ghc</strong> のオプションを良い感じに追加してくれます)</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="ot">f1 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">f1 <span class="fu">=</span> f2</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="ot">f2 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb13-7" data-line-number="7">f2 <span class="fu">=</span> f3</a>
-<a class="sourceLine" id="cb13-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb13-9" data-line-number="9"><span class="ot">f3 ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb13-10" data-line-number="10">f3 <span class="fu">=</span> error <span class="st">&quot;f3&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-2" title="2"></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="ot">f1 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb13-4" title="4">f1 <span class="fu">=</span> f2</a>
+<a class="sourceLine" id="cb13-5" title="5"></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="ot">f2 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb13-7" title="7">f2 <span class="fu">=</span> f3</a>
+<a class="sourceLine" id="cb13-8" title="8"></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="ot">f3 ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb13-10" title="10">f3 <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;f3&quot;</span></a></code></pre></div>
 <p>上記のような素のコードに対しても、同様にバックトレースが取得できるようになります。</p>
 <pre class="shell"><code>$ stack build --profile
 ...

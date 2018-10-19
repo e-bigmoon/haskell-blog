@@ -168,87 +168,87 @@
 <p>まずは、カスタムヒントファイルの雛形を生成するために、プロジェクトのルートで以下のコマンドを実行しましょう。</p>
 <pre class="shell"><code>$ hlint --default &gt; .hlint.yaml</code></pre>
 <p>中身はこんな感じで、ヒントの書き方について具体例が載っています。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># HLint configuration file</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co"># https://github.com/ndmitchell/hlint</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">##########################</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># This file contains a template configuration file, which is typically</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># placed as .hlint.yaml in the root of your project</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># Specify additional command line arguments</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># - arguments: [--color, --cpp-simple, -XQuasiQuotes]</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="co"># Control which extensions/flags/modules/functions can be used</span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="co"># - extensions:</span></a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#   - default: false # all extension are banned by default</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#   - name: [PatternGuards, ViewPatterns] # only these listed extensions can be used</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#   - {name: CPP, within: CrossPlatform} # CPP can only be used in a given module</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co"># - flags:</span></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#   - {name: -w, within: []} # -w is allowed nowhere</span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-24" data-line-number="24"><span class="co"># - modules:</span></a>
-<a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co">#   - {name: [Data.Set, Data.HashSet], as: Set} # if you import Data.Set qualified, it must be as 'Set'</span></a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co">#   - {name: Control.Arrow, within: []} # Certain modules are banned entirely</span></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28"><span class="co"># - functions:</span></a>
-<a class="sourceLine" id="cb2-29" data-line-number="29"><span class="co">#   - {name: unsafePerformIO, within: []} # unsafePerformIO can only appear in no modules</span></a>
-<a class="sourceLine" id="cb2-30" data-line-number="30"></a>
-<a class="sourceLine" id="cb2-31" data-line-number="31"></a>
-<a class="sourceLine" id="cb2-32" data-line-number="32"><span class="co"># Add custom hints for this project</span></a>
-<a class="sourceLine" id="cb2-33" data-line-number="33"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-34" data-line-number="34"><span class="co"># Will suggest replacing &quot;wibbleMany [myvar]&quot; with &quot;wibbleOne myvar&quot;</span></a>
-<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co"># - error: {lhs: &quot;wibbleMany [x]&quot;, rhs: wibbleOne x}</span></a>
-<a class="sourceLine" id="cb2-36" data-line-number="36"></a>
-<a class="sourceLine" id="cb2-37" data-line-number="37"></a>
-<a class="sourceLine" id="cb2-38" data-line-number="38"><span class="co"># Turn on hints that are off by default</span></a>
-<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-40" data-line-number="40"><span class="co"># Ban &quot;module X(module X) where&quot;, to require a real export list</span></a>
-<a class="sourceLine" id="cb2-41" data-line-number="41"><span class="co"># - warn: {name: Use explicit module export list}</span></a>
-<a class="sourceLine" id="cb2-42" data-line-number="42"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-43" data-line-number="43"><span class="co"># Replace a $ b $ c with a . b $ c</span></a>
-<a class="sourceLine" id="cb2-44" data-line-number="44"><span class="co"># - group: {name: dollar, enabled: true}</span></a>
-<a class="sourceLine" id="cb2-45" data-line-number="45"><span class="co">#</span></a>
-<a class="sourceLine" id="cb2-46" data-line-number="46"><span class="co"># Generalise map to fmap, ++ to &lt;&gt;</span></a>
-<a class="sourceLine" id="cb2-47" data-line-number="47"><span class="co"># - group: {name: generalise, enabled: true}</span></a>
-<a class="sourceLine" id="cb2-48" data-line-number="48"></a>
-<a class="sourceLine" id="cb2-49" data-line-number="49"></a>
-<a class="sourceLine" id="cb2-50" data-line-number="50"><span class="co"># Ignore some builtin hints</span></a>
-<a class="sourceLine" id="cb2-51" data-line-number="51"><span class="co"># - ignore: {name: Use let}</span></a>
-<a class="sourceLine" id="cb2-52" data-line-number="52"><span class="co"># - ignore: {name: Use const, within: SpecialModule} # Only within certain modules</span></a>
-<a class="sourceLine" id="cb2-53" data-line-number="53"></a>
-<a class="sourceLine" id="cb2-54" data-line-number="54"></a>
-<a class="sourceLine" id="cb2-55" data-line-number="55"><span class="co"># Define some custom infix operators</span></a>
-<a class="sourceLine" id="cb2-56" data-line-number="56"><span class="co"># - fixity: infixr 3 ~^#^~</span></a>
-<a class="sourceLine" id="cb2-57" data-line-number="57"></a>
-<a class="sourceLine" id="cb2-58" data-line-number="58"></a>
-<a class="sourceLine" id="cb2-59" data-line-number="59"><span class="co"># To generate a suitable file for HLint do:</span></a>
-<a class="sourceLine" id="cb2-60" data-line-number="60"><span class="co"># $ hlint --default &gt; .hlint.yaml</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># HLint configuration file</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="co"># https://github.com/ndmitchell/hlint</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="co">##########################</span></a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co"># This file contains a template configuration file, which is typically</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="co"># placed as .hlint.yaml in the root of your project</span></a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8"></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="co"># Specify additional command line arguments</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co"># - arguments: [--color, --cpp-simple, -XQuasiQuotes]</span></a>
+<a class="sourceLine" id="cb2-12" title="12"></a>
+<a class="sourceLine" id="cb2-13" title="13"></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="co"># Control which extensions/flags/modules/functions can be used</span></a>
+<a class="sourceLine" id="cb2-15" title="15"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-16" title="16"><span class="co"># - extensions:</span></a>
+<a class="sourceLine" id="cb2-17" title="17"><span class="co">#   - default: false # all extension are banned by default</span></a>
+<a class="sourceLine" id="cb2-18" title="18"><span class="co">#   - name: [PatternGuards, ViewPatterns] # only these listed extensions can be used</span></a>
+<a class="sourceLine" id="cb2-19" title="19"><span class="co">#   - {name: CPP, within: CrossPlatform} # CPP can only be used in a given module</span></a>
+<a class="sourceLine" id="cb2-20" title="20"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-21" title="21"><span class="co"># - flags:</span></a>
+<a class="sourceLine" id="cb2-22" title="22"><span class="co">#   - {name: -w, within: []} # -w is allowed nowhere</span></a>
+<a class="sourceLine" id="cb2-23" title="23"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-24" title="24"><span class="co"># - modules:</span></a>
+<a class="sourceLine" id="cb2-25" title="25"><span class="co">#   - {name: [Data.Set, Data.HashSet], as: Set} # if you import Data.Set qualified, it must be as 'Set'</span></a>
+<a class="sourceLine" id="cb2-26" title="26"><span class="co">#   - {name: Control.Arrow, within: []} # Certain modules are banned entirely</span></a>
+<a class="sourceLine" id="cb2-27" title="27"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-28" title="28"><span class="co"># - functions:</span></a>
+<a class="sourceLine" id="cb2-29" title="29"><span class="co">#   - {name: unsafePerformIO, within: []} # unsafePerformIO can only appear in no modules</span></a>
+<a class="sourceLine" id="cb2-30" title="30"></a>
+<a class="sourceLine" id="cb2-31" title="31"></a>
+<a class="sourceLine" id="cb2-32" title="32"><span class="co"># Add custom hints for this project</span></a>
+<a class="sourceLine" id="cb2-33" title="33"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-34" title="34"><span class="co"># Will suggest replacing &quot;wibbleMany [myvar]&quot; with &quot;wibbleOne myvar&quot;</span></a>
+<a class="sourceLine" id="cb2-35" title="35"><span class="co"># - error: {lhs: &quot;wibbleMany [x]&quot;, rhs: wibbleOne x}</span></a>
+<a class="sourceLine" id="cb2-36" title="36"></a>
+<a class="sourceLine" id="cb2-37" title="37"></a>
+<a class="sourceLine" id="cb2-38" title="38"><span class="co"># Turn on hints that are off by default</span></a>
+<a class="sourceLine" id="cb2-39" title="39"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-40" title="40"><span class="co"># Ban &quot;module X(module X) where&quot;, to require a real export list</span></a>
+<a class="sourceLine" id="cb2-41" title="41"><span class="co"># - warn: {name: Use explicit module export list}</span></a>
+<a class="sourceLine" id="cb2-42" title="42"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-43" title="43"><span class="co"># Replace a $ b $ c with a . b $ c</span></a>
+<a class="sourceLine" id="cb2-44" title="44"><span class="co"># - group: {name: dollar, enabled: true}</span></a>
+<a class="sourceLine" id="cb2-45" title="45"><span class="co">#</span></a>
+<a class="sourceLine" id="cb2-46" title="46"><span class="co"># Generalise map to fmap, ++ to &lt;&gt;</span></a>
+<a class="sourceLine" id="cb2-47" title="47"><span class="co"># - group: {name: generalise, enabled: true}</span></a>
+<a class="sourceLine" id="cb2-48" title="48"></a>
+<a class="sourceLine" id="cb2-49" title="49"></a>
+<a class="sourceLine" id="cb2-50" title="50"><span class="co"># Ignore some builtin hints</span></a>
+<a class="sourceLine" id="cb2-51" title="51"><span class="co"># - ignore: {name: Use let}</span></a>
+<a class="sourceLine" id="cb2-52" title="52"><span class="co"># - ignore: {name: Use const, within: SpecialModule} # Only within certain modules</span></a>
+<a class="sourceLine" id="cb2-53" title="53"></a>
+<a class="sourceLine" id="cb2-54" title="54"></a>
+<a class="sourceLine" id="cb2-55" title="55"><span class="co"># Define some custom infix operators</span></a>
+<a class="sourceLine" id="cb2-56" title="56"><span class="co"># - fixity: infixr 3 ~^#^~</span></a>
+<a class="sourceLine" id="cb2-57" title="57"></a>
+<a class="sourceLine" id="cb2-58" title="58"></a>
+<a class="sourceLine" id="cb2-59" title="59"><span class="co"># To generate a suitable file for HLint do:</span></a>
+<a class="sourceLine" id="cb2-60" title="60"><span class="co"># $ hlint --default &gt; .hlint.yaml</span></a></code></pre></div>
 <p><strong>HLint</strong> はデフォルトヒントが記述されている <code>hlint.yaml</code> と、カスタムヒントが記述されている <code>.hlint.yaml</code> の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、<code>.hlint.yaml</code> に記述していくことになります。</p>
 <h2 id="カスタムヒントの追加">カスタムヒントの追加</h2>
 <p>ここでは説明のため以下のような <strong>tshow</strong> という関数があるとしましょう。この関数は <code>show :: Show a =&gt; a -&gt; String</code> の <strong>Text</strong> バージョンです。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">tshow <span class="fu">=</span> pack <span class="fu">.</span> show</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
+<a class="sourceLine" id="cb3-2" title="2"></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb3-4" title="4">tshow <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a></code></pre></div>
 <p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <strong>tshow</strong> に直すようにヒントを出させることです。</p>
 <p>まだヒントを追加していないため、当然ながら現時点では <code>pack . show</code> というコードが使われていたとしても何も起こりません。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">intToText <span class="fu">=</span> pack <span class="fu">.</span> show</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="co">-- src/Lib.hs</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
+<a class="sourceLine" id="cb4-5" title="5"></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb4-7" title="7">intToText <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>それでは <code>.hlint.yaml</code> に <code>tshow = pack . show</code> を検出するためのヒントを追記しましょう。</p>
 <p>以下の1行を追記するだけです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">-</span> <span class="fu">error:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs:</span><span class="at"> pack (show x)</span><span class="kw">,</span> <span class="fu">rhs:</span><span class="at"> tshow x</span><span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">-</span> <span class="fu">error:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs:</span><span class="at"> pack (show x)</span><span class="kw">,</span> <span class="fu">rhs:</span><span class="at"> tshow x</span><span class="kw">}</span></a></code></pre></div>
 <p><strong>lhs</strong>, <strong>rhs</strong> はそれぞれ <strong>Left Hand Side (左辺)</strong>, <strong>Right Hand Side (右辺)</strong> の略です。またヒントのレベルは <strong>error</strong> 以外にも <strong>warm</strong>, <strong>suggest</strong> (<strong>hint</strong> キーワードはただのエイリアスです) も指定できるため、好きなレベルを指定しましょう。(ヒントレベルの使い分けについては <a href="https://github.com/ndmitchell/hlint#what-is-the-difference-between-errorwarningsuggestion">What is the difference between error/warning/suggestion?</a> をご参照ください)</p>
 <p>では、実行してみましょう。</p>
 <pre class="shell"><code>$ hlint .
@@ -261,24 +261,24 @@ Why not:
 1 hint</code></pre>
 <p>無事に <strong>Error</strong> として <strong>tshow</strong> のためのヒントが表示されました！</p>
 <p>ヒントの修正方法は、先程定義した <strong>intToText</strong> 関数の実装をヒント通りに書き換えるだけです。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">intToText <span class="fu">=</span> tshow</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb8-2" title="2">intToText <span class="fu">=</span> tshow</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <h2 id="ヒントの定義方法について">ヒントの定義方法について</h2>
 <p>さきほど定義したヒントはこのようにポイントフリー形式で書くこともできます。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">-</span> <span class="fu">error:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs:</span><span class="at"> pack . show</span><span class="kw">,</span> <span class="fu">rhs:</span><span class="at"> tshow</span><span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">-</span> <span class="fu">error:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs:</span><span class="at"> pack . show</span><span class="kw">,</span> <span class="fu">rhs:</span><span class="at"> tshow</span><span class="kw">}</span></a></code></pre></div>
 <p>上記のヒント形式で次の内容を解析してみましょう。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7">intToText <span class="fu">=</span> pack <span class="fu">.</span> show</a>
-<a class="sourceLine" id="cb11-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="ot">intToText2  ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb11-10" data-line-number="10">intToText2 x <span class="fu">=</span> pack <span class="fu">$</span> show x</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="co">-- src/Lib.hs</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb11-3" title="3"></a>
+<a class="sourceLine" id="cb11-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
+<a class="sourceLine" id="cb11-5" title="5"></a>
+<a class="sourceLine" id="cb11-6" title="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb11-7" title="7">intToText <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a>
+<a class="sourceLine" id="cb11-8" title="8"></a>
+<a class="sourceLine" id="cb11-9" title="9"><span class="ot">intToText2  ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb11-10" title="10">intToText2 x <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">$</span> <span class="fu">show</span> x</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:6:13: Error: Use tshow
 Found:
@@ -292,8 +292,8 @@ Why not:
 <h2 id="hlint-に渡す引数を指定する">hlint に渡す引数を指定する</h2>
 <p>具体的には、<strong>QuasiQuotes</strong> を <strong>package.yaml</strong> の <strong>default-extensions</strong> に指定する場合などで役に立ちます。</p>
 <p>以下のように <strong>arguments</strong> に <strong>-XQuasiQuotes</strong> を指定します。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co"># .hlint.yaml</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">-</span> <span class="fu">arguments:</span><span class="at"> </span><span class="kw">[</span> -XQuasiQuotes <span class="kw">]</span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb13-1" title="1"><span class="co"># .hlint.yaml</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw">-</span> <span class="fu">arguments:</span><span class="at"> </span><span class="kw">[</span> -XQuasiQuotes <span class="kw">]</span></a></code></pre></div>
 <p><strong>arguments</strong> に指定できるのは言語拡張だけでなく <code>--color</code>, <code>--cpp-simple</code> など、<code>hlint</code> に渡せる引数であれば何でも指定することができます。</p>
       </article>
 

@@ -161,75 +161,75 @@
       <article class="page-content">
         <p><code>doctest</code> は一言で言えば、<code>Haddock</code> にテストを埋め込んだものです。</p>
 <p>例として、以下のような関数とコメントがあった場合に</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">-- 与えられた価格の消費税を計算する</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- calcSalseTax 100.0 == 8.0</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="ot">calcSalseTax ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">calcSalseTax <span class="fu">=</span> (<span class="fu">*</span><span class="fl">0.08</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="co">-- 与えられた価格の消費税を計算する</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="co">-- calcSalseTax 100.0 == 8.0</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="ot">calcSalseTax ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-4" title="4">calcSalseTax <span class="fu">=</span> (<span class="fu">*</span><span class="fl">0.08</span>)</a></code></pre></div>
 <p>消費税が<code>10%</code>に変更になったとしたらプログラムは以下のように修正されるでしょう。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">-- 与えられた価格の消費税を計算する</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- calcSalseTax 100.0 == 8.0</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">calcSalseTax ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">calcSalseTax <span class="fu">=</span> (<span class="fu">*</span><span class="fl">0.1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="co">-- 与えられた価格の消費税を計算する</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="co">-- calcSalseTax 100.0 == 8.0</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="ot">calcSalseTax ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb2-4" title="4">calcSalseTax <span class="fu">=</span> (<span class="fu">*</span><span class="fl">0.1</span>)</a></code></pre></div>
 <p>この時、ドキュメントも同様に修正されるべきですが、その保証はどこにもありません。この問題に対する有効な解決策が <code>doctest</code> です。</p>
 <h6 id="doctest-の準備">doctest の準備</h6>
 <p>まずは <code>package.yaml</code> に <code>doctest</code> のための記述を追加しましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode yaml:package.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">tests:</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">  <span class="fu">PFAD-test:</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">    <span class="fu">main:</span><span class="at">                Spec.hs</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">    <span class="fu">source-dirs:</span><span class="at">         test</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">    <span class="fu">ghc-options:</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">    <span class="kw">-</span> -threaded</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">    <span class="kw">-</span> -rtsopts</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">    <span class="kw">-</span> -with-rtsopts=-N</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">    <span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">    <span class="kw">-</span> PFAD</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11">    <span class="kw">-</span> hspec</a>
-<a class="sourceLine" id="cb3-12" data-line-number="12">    <span class="kw">-</span> QuickCheck</a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">  <span class="co"># ここから下の行を追記</span></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14">  <span class="fu">PFAD-doctest:</span></a>
-<a class="sourceLine" id="cb3-15" data-line-number="15">    <span class="fu">main:</span><span class="at"> test/doctests.hs</span></a>
-<a class="sourceLine" id="cb3-16" data-line-number="16">    <span class="fu">ghc-options:</span></a>
-<a class="sourceLine" id="cb3-17" data-line-number="17">    <span class="kw">-</span> -threaded</a>
-<a class="sourceLine" id="cb3-18" data-line-number="18">    <span class="kw">-</span> -rtsopts</a>
-<a class="sourceLine" id="cb3-19" data-line-number="19">    <span class="kw">-</span> -with-rtsopts=-N</a>
-<a class="sourceLine" id="cb3-20" data-line-number="20">    <span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb3-21" data-line-number="21">    <span class="kw">-</span> PFAD</a>
-<a class="sourceLine" id="cb3-22" data-line-number="22">    <span class="kw">-</span> doctest</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml:package.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">tests:</span></a>
+<a class="sourceLine" id="cb3-2" title="2">  <span class="fu">PFAD-test:</span></a>
+<a class="sourceLine" id="cb3-3" title="3">    <span class="fu">main:</span><span class="at">                Spec.hs</span></a>
+<a class="sourceLine" id="cb3-4" title="4">    <span class="fu">source-dirs:</span><span class="at">         test</span></a>
+<a class="sourceLine" id="cb3-5" title="5">    <span class="fu">ghc-options:</span></a>
+<a class="sourceLine" id="cb3-6" title="6">    <span class="kw">-</span> -threaded</a>
+<a class="sourceLine" id="cb3-7" title="7">    <span class="kw">-</span> -rtsopts</a>
+<a class="sourceLine" id="cb3-8" title="8">    <span class="kw">-</span> -with-rtsopts=-N</a>
+<a class="sourceLine" id="cb3-9" title="9">    <span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb3-10" title="10">    <span class="kw">-</span> PFAD</a>
+<a class="sourceLine" id="cb3-11" title="11">    <span class="kw">-</span> hspec</a>
+<a class="sourceLine" id="cb3-12" title="12">    <span class="kw">-</span> QuickCheck</a>
+<a class="sourceLine" id="cb3-13" title="13">  <span class="co"># ここから下の行を追記</span></a>
+<a class="sourceLine" id="cb3-14" title="14">  <span class="fu">PFAD-doctest:</span></a>
+<a class="sourceLine" id="cb3-15" title="15">    <span class="fu">main:</span><span class="at"> test/doctests.hs</span></a>
+<a class="sourceLine" id="cb3-16" title="16">    <span class="fu">ghc-options:</span></a>
+<a class="sourceLine" id="cb3-17" title="17">    <span class="kw">-</span> -threaded</a>
+<a class="sourceLine" id="cb3-18" title="18">    <span class="kw">-</span> -rtsopts</a>
+<a class="sourceLine" id="cb3-19" title="19">    <span class="kw">-</span> -with-rtsopts=-N</a>
+<a class="sourceLine" id="cb3-20" title="20">    <span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb3-21" title="21">    <span class="kw">-</span> PFAD</a>
+<a class="sourceLine" id="cb3-22" title="22">    <span class="kw">-</span> doctest</a></code></pre></div>
 <p>このままでは <code>doctests.hs</code> が見つからずにエラーになるため、以下のファイルを作成します。このファイルに <code>doctest</code> の対象ファイルを記述します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell:test/doctests.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Test.DocTest</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">main <span class="fu">=</span> doctest [<span class="st">&quot;-isrc&quot;</span>, <span class="st">&quot;src/Minfree.hs&quot;</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell:test/doctests.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">import</span> <span class="dt">Test.DocTest</span></a>
+<a class="sourceLine" id="cb4-2" title="2">main <span class="fu">=</span> doctest [<span class="st">&quot;-isrc&quot;</span>, <span class="st">&quot;src/Minfree.hs&quot;</span>]</a></code></pre></div>
 <p>これで準備は完了です。</p>
 <p><code>doctest</code> を実行するためには以下のように <code>stack test</code> コマンドを実行します。</p>
 <pre class="shell-session"><code>$ stack clean
 $ stack test</code></pre>
 <p>コマンド実行時に以下のようなエラーが出る場合があります。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">    [<span class="ex">16</span> of 16] Compiling Test.DocTest     ( src/Test/DocTest.hs, .stack-work/dist/x86_64-linux-nopie/Cabal-2.0.1.0/build/Test/DocTest.o )</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">    <span class="ex">/usr/bin</span>/ld.gold: エラー: <span class="ex">-ltinfo</span> が見つかりません</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">    <span class="ex">collect2</span>: error: ld returned 1 exit status</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">    <span class="kw">`</span><span class="ex">gcc</span><span class="st">' failed in phase `Linker'</span>. (Exit code: 1)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1">    [<span class="ex">16</span> of 16] Compiling Test.DocTest     ( src/Test/DocTest.hs, .stack-work/dist/x86_64-linux-nopie/Cabal-2.0.1.0/build/Test/DocTest.o )</a>
+<a class="sourceLine" id="cb6-2" title="2">    <span class="ex">/usr/bin</span>/ld.gold: エラー: <span class="ex">-ltinfo</span> が見つかりません</a>
+<a class="sourceLine" id="cb6-3" title="3">    <span class="ex">collect2</span>: error: ld returned 1 exit status</a>
+<a class="sourceLine" id="cb6-4" title="4">    <span class="kw">`</span><span class="ex">gcc</span><span class="st">' failed in phase `Linker'</span>. (Exit code: 1)</a></code></pre></div>
 <p>上記のエラーが出た場合は以下のように必要なパッケージをインストールしてください。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1">$ <span class="fu">sudo</span> apt install libtinfo-dev</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1">$ <span class="fu">sudo</span> apt install libtinfo-dev</a></code></pre></div>
 <h5 id="doctest-の書き方">doctest の書き方</h5>
 <p><code>doctest</code> は以下のように、非常に直感的に記述することができます。</p>
 <p><code>doctest</code> は <code>&gt;&gt;&gt;</code> に続く文字列が <code>ghci</code> によって処理され、その下の行の結果と等しいかどうかをテストするだけです。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">-- |</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">-- &gt;&gt;&gt; add 2 3</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">-- 5</span></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">add x y <span class="fu">=</span> x <span class="fu">+</span> y</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="co">-- |</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="co">-- &gt;&gt;&gt; add 2 3</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="co">-- 5</span></a>
+<a class="sourceLine" id="cb8-4" title="4">add x y <span class="fu">=</span> x <span class="fu">+</span> y</a></code></pre></div>
 <p>それでは <code>minfree</code> 関数に <code>doctest</code> を記述してみましょう。また、最初なので、間違ったテスト結果を書いてみます。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">-- |</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">-- 与えられた自然数のリストに含まれない最小の自然数を求める関数</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">--</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">-- 自然数は0を含む</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">--</span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">-- 前提条件1: 与えられたリストには順序がついていない</span></a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">--</span></a>
-<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">-- 前提条件2: 要素は重複していない</span></a>
-<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="co">--</span></a>
-<a class="sourceLine" id="cb9-10" data-line-number="10"><span class="co">-- &gt;&gt;&gt; minfree [8, 23, 9, 0, 12, 11, 1, 10, 13, 7, 41, 4, 14, 21, 5, 17, 3, 19, 2, 6]</span></a>
-<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="co">-- &quot;abcde&quot;</span></a>
-<a class="sourceLine" id="cb9-12" data-line-number="12"><span class="ot">minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb9-13" data-line-number="13">minfree xs <span class="fu">=</span> head ([<span class="dv">0</span><span class="fu">..</span>] \\ xs)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="co">-- |</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="co">-- 与えられた自然数のリストに含まれない最小の自然数を求める関数</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="co">--</span></a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="co">-- 自然数は0を含む</span></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="co">--</span></a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="co">-- 前提条件1: 与えられたリストには順序がついていない</span></a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="co">--</span></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="co">-- 前提条件2: 要素は重複していない</span></a>
+<a class="sourceLine" id="cb9-9" title="9"><span class="co">--</span></a>
+<a class="sourceLine" id="cb9-10" title="10"><span class="co">-- &gt;&gt;&gt; minfree [8, 23, 9, 0, 12, 11, 1, 10, 13, 7, 41, 4, 14, 21, 5, 17, 3, 19, 2, 6]</span></a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="co">-- &quot;abcde&quot;</span></a>
+<a class="sourceLine" id="cb9-12" title="12"><span class="ot">minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb9-13" title="13">minfree xs <span class="fu">=</span> <span class="fu">head</span> ([<span class="dv">0</span><span class="fu">..</span>] \\ xs)</a></code></pre></div>
 <p>本当にテストが失敗するか確認します。</p>
 <pre class="shell-session"><code>$ stack test
 ...
@@ -239,19 +239,19 @@ Test suite failure for package PFAD-0.1.0.0
     PFAD-doctest:  exited with: ExitFailure 1
 Logs printed to console</code></pre>
 <p>確かに失敗していることが確認できました。では、正しいテスト結果を記述してみましょう。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">-- |</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="co">-- 与えられた自然数のリストに含まれない最小の自然数を求める関数</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="co">--</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co">-- 自然数は0を含む</span></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="co">--</span></a>
-<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="co">-- 前提条件1: 与えられたリストには順序がついていない</span></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="co">--</span></a>
-<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="co">-- 前提条件2: 要素は重複していない</span></a>
-<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">--</span></a>
-<a class="sourceLine" id="cb11-10" data-line-number="10"><span class="co">-- &gt;&gt;&gt; minfree [8, 23, 9, 0, 12, 11, 1, 10, 13, 7, 41, 4, 14, 21, 5, 17, 3, 19, 2, 6]</span></a>
-<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="co">-- 15</span></a>
-<a class="sourceLine" id="cb11-12" data-line-number="12"><span class="ot">minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb11-13" data-line-number="13">minfree xs <span class="fu">=</span> head ([<span class="dv">0</span><span class="fu">..</span>] \\ xs)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="co">-- |</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="co">-- 与えられた自然数のリストに含まれない最小の自然数を求める関数</span></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="co">--</span></a>
+<a class="sourceLine" id="cb11-4" title="4"><span class="co">-- 自然数は0を含む</span></a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="co">--</span></a>
+<a class="sourceLine" id="cb11-6" title="6"><span class="co">-- 前提条件1: 与えられたリストには順序がついていない</span></a>
+<a class="sourceLine" id="cb11-7" title="7"><span class="co">--</span></a>
+<a class="sourceLine" id="cb11-8" title="8"><span class="co">-- 前提条件2: 要素は重複していない</span></a>
+<a class="sourceLine" id="cb11-9" title="9"><span class="co">--</span></a>
+<a class="sourceLine" id="cb11-10" title="10"><span class="co">-- &gt;&gt;&gt; minfree [8, 23, 9, 0, 12, 11, 1, 10, 13, 7, 41, 4, 14, 21, 5, 17, 3, 19, 2, 6]</span></a>
+<a class="sourceLine" id="cb11-11" title="11"><span class="co">-- 15</span></a>
+<a class="sourceLine" id="cb11-12" title="12"><span class="ot">minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb11-13" title="13">minfree xs <span class="fu">=</span> <span class="fu">head</span> ([<span class="dv">0</span><span class="fu">..</span>] \\ xs)</a></code></pre></div>
 <p>もう一度テストしてみます。</p>
 <pre class="shell-session"><code>$ stack test
 ...
@@ -262,16 +262,16 @@ $ stack haddock</code></pre>
 <img src="../../images/doctest01.png" alt="スクリーンショット 2017-12-11 18.27.52.png" /><figcaption>スクリーンショット 2017-12-11 18.27.52.png</figcaption>
 </figure>
 <p>また <code>QuichCheck</code> を使った書き方もできます。その場合は <code>&gt;&gt;&gt;</code> を <code>prop&gt;</code> にするだけです。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co">-- Haddock に表示させたいのでエクスポートしています</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Minfree</span> (minfree, minfree', (\\)) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="fu">...</span></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co">-- | リスト us から vs に含まれる要素をすべて除いた残りの要素のリストを返す</span></a>
-<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="co">--</span></a>
-<a class="sourceLine" id="cb13-8" data-line-number="8"><span class="co">-- prop&gt; (as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ bs)</span></a>
-<a class="sourceLine" id="cb13-9" data-line-number="9">(\\)<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb13-10" data-line-number="10">us \\ vs <span class="fu">=</span> filter (<span class="ot">`notElem`</span> vs) us</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="co">-- Haddock に表示させたいのでエクスポートしています</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw">module</span> <span class="dt">Minfree</span> (minfree, minfree', (\\)) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-3" title="3"></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="fu">...</span></a>
+<a class="sourceLine" id="cb13-5" title="5"></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="co">-- | リスト us から vs に含まれる要素をすべて除いた残りの要素のリストを返す</span></a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="co">--</span></a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="co">-- prop&gt; (as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ bs)</span></a>
+<a class="sourceLine" id="cb13-9" title="9">(\\)<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb13-10" title="10">us \\ vs <span class="fu">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> vs) us</a></code></pre></div>
 <p>この性質は満たされないためテストに失敗します。</p>
 <pre class="shell-session"><code>$ stack test
 ### Failure in src/Minfree.hs:21: expression `(as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ bs)'
@@ -280,20 +280,20 @@ $ stack haddock</code></pre>
 [0]
 []</code></pre>
 <p>正しく書き換えた場合はテストに通ります。ついでに、残りのプロパティテストも追加しておきます。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co">-- Haddock に表示させたいのでエクスポートしています</span></a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Minfree</span> (minfree, minfree', (\\)) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb15-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="fu">...</span></a>
-<a class="sourceLine" id="cb15-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb15-6" data-line-number="6"><span class="co">-- | リスト us から vs に含まれる要素をすべて除いた残りの要素のリストを返す</span></a>
-<a class="sourceLine" id="cb15-7" data-line-number="7"><span class="co">--</span></a>
-<a class="sourceLine" id="cb15-8" data-line-number="8"><span class="co">-- prop&gt; (as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ cs)</span></a>
-<a class="sourceLine" id="cb15-9" data-line-number="9"><span class="co">--</span></a>
-<a class="sourceLine" id="cb15-10" data-line-number="10"><span class="co">-- prop&gt; as \\ (bs ++ cs) == (as \\ bs) \\ cs</span></a>
-<a class="sourceLine" id="cb15-11" data-line-number="11"><span class="co">--</span></a>
-<a class="sourceLine" id="cb15-12" data-line-number="12"><span class="co">-- prop&gt; (as \\ bs) \\ cs == (as \\ cs) \\ bs</span></a>
-<a class="sourceLine" id="cb15-13" data-line-number="13">(\\)<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb15-14" data-line-number="14">us \\ vs <span class="fu">=</span> filter (<span class="ot">`notElem`</span> vs) us</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="co">-- Haddock に表示させたいのでエクスポートしています</span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="kw">module</span> <span class="dt">Minfree</span> (minfree, minfree', (\\)) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb15-3" title="3"></a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="fu">...</span></a>
+<a class="sourceLine" id="cb15-5" title="5"></a>
+<a class="sourceLine" id="cb15-6" title="6"><span class="co">-- | リスト us から vs に含まれる要素をすべて除いた残りの要素のリストを返す</span></a>
+<a class="sourceLine" id="cb15-7" title="7"><span class="co">--</span></a>
+<a class="sourceLine" id="cb15-8" title="8"><span class="co">-- prop&gt; (as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ cs)</span></a>
+<a class="sourceLine" id="cb15-9" title="9"><span class="co">--</span></a>
+<a class="sourceLine" id="cb15-10" title="10"><span class="co">-- prop&gt; as \\ (bs ++ cs) == (as \\ bs) \\ cs</span></a>
+<a class="sourceLine" id="cb15-11" title="11"><span class="co">--</span></a>
+<a class="sourceLine" id="cb15-12" title="12"><span class="co">-- prop&gt; (as \\ bs) \\ cs == (as \\ cs) \\ bs</span></a>
+<a class="sourceLine" id="cb15-13" title="13">(\\)<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb15-14" title="14">us \\ vs <span class="fu">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> vs) us</a></code></pre></div>
 <p>実行するとちゃんとテストをパスしてドキュメントを生成していると思います。</p>
 <pre class="shell-session"><code>$ stack test</code></pre>
 <figure>

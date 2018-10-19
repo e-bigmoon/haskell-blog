@@ -269,11 +269,11 @@ LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa0154
 Copyright 2013-18 Regents of the University of California. All Rights Reserved.</code></pre>
 <h2 id="サンプルプログラム">サンプルプログラム</h2>
 <p><code>myDiv</code> 関数の例を使って <code>LiquidHaskell</code> に慣れましょう！</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">-- MyDiv.hs</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">module</span> <span class="dt">MyDiv</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">myDiv <span class="fu">=</span> div</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="co">-- MyDiv.hs</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">module</span> <span class="dt">MyDiv</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-3" title="3"></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-5" title="5">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
 <p><code>myDiv</code> の実装は単に <code>div</code> をラップしただけです。</p>
 <p>この関数はだいたい上手く動きますが、もし第二引数に <strong>0</strong> が与えられたらどうでしょうか？そう、実行時エラーになります・・・。試してみましょう。</p>
 <pre class="shell"><code>$ stack repl -- MyDiv.hs
@@ -287,9 +287,9 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <p><code>Liquid Haskell</code> では <code>篩型</code> を <code>{-@ ... @-}</code> のコメント形式で記述します。<code>Liquid Haskell</code> を利用するメリットの1つは、篩型の自動推論です。(推論できない場合も多々ありますが、結構色々と推論してくれます)</p>
 <p>先程の <code>myDiv</code> には篩型を書いていませんが、こういう場合に <code>Liquid Haskell</code> は <code>Haskell</code> の型をそのまま篩型として利用します。</p>
 <p><code>myDiv</code> に対して明示的に篩型を書いてみましょう！</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span> <span class="co">-- これが篩型</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">myDiv <span class="fu">=</span> div</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span> <span class="co">-- これが篩型</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb7-3" title="3">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
 <p>この <code>myDiv</code> 関数を <code>LquidHaskell</code> でチェックしてみましょう。</p>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: UNSAFE ************************************************************
@@ -308,40 +308,40 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
    In Context</code></pre>
 <p>なぜか <code>UNSAFE</code> が表示されましたね。これは <code>Liquid Haskell</code> で既に <code>div</code> の篩型が定義されているからです。(<a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/GHC/Real.spec#L19">div</a> 以外にも色々ありますが、充実しているとは言い難いと思います)</p>
 <p>だいたいこんな感じで、第二引数に <strong>0を含まないInt型</strong> という事前条件がついているのです。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">{-@ div :: Int -&gt; {v:Int | v /= 0} -&gt; Int @-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="co">{-@ div :: Int -&gt; {v:Int | v /= 0} -&gt; Int @-}</span></a></code></pre></div>
 <p>そのため、先程のエラーメッセージで以下のように指摘されてしまったのです。</p>
 <pre class="shell"><code>not a subtype of Required type
      VV : {VV : Int | VV /= 0}</code></pre>
 <p>つまり、僕らの定義した篩型は <code>0</code> を含む <code>Int</code> 型なので、このままだと <code>div</code> に <code>0</code> が与えられてしまう可能性があるよ！ということを教えてくれています。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">myDiv <span class="fu">=</span> div</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb11-3" title="3">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
 <p><code>myDiv</code> にも同じ篩型をつけてみましょう。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co">{-@ myDiv :: Int -&gt; {v:Int | v /= 0} -&gt; Int @-}</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">myDiv <span class="fu">=</span> div</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="co">{-@ myDiv :: Int -&gt; {v:Int | v /= 0} -&gt; Int @-}</span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb12-3" title="3">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
 <p>これで <code>SAFE</code> になります。</p>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <p><code>0</code> を含まない <code>Int</code> 型というのは、よく使いそうなので篩型のエイリアスとして定義してみます。</p>
 <p>篩型のエイリアスは <code>type</code> キーワードを使います。<code>Haskell</code> と同じですね。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co">{-@ type NonZero = {v:Int | v /= 0} @-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="co">{-@ type NonZero = {v:Int | v /= 0} @-}</span></a></code></pre></div>
 <p>そして <code>myDiv</code> の篩型も <code>NonZero</code> で置き換えます。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co">{-@ type NonZero = {v:Int | v /= 0} @-}</span></a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="co">{-@ myDiv :: Int -&gt; NonZero -&gt; Int @-}</span></a>
-<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb15-5" data-line-number="5">myDiv <span class="fu">=</span> div</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="co">{-@ type NonZero = {v:Int | v /= 0} @-}</span></a>
+<a class="sourceLine" id="cb15-2" title="2"></a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="co">{-@ myDiv :: Int -&gt; NonZero -&gt; Int @-}</span></a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb15-5" title="5">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
 <p>意味は全く同じですが、先程よりもわかりやすくなりました。</p>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <p>最後に <code>myDiv</code> を呼び出す関数を定義してみましょう。</p>
 <p><code>good</code> は問題の無い使い方です。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="ot">good ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">good <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">2</span></a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="ot">good ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb17-2" title="2">good <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">2</span></a></code></pre></div>
 <p>しかし、以下のような関数 <code>bad</code> が定義された場合、<code>Liquid Haskell</code> は <code>UNSAFE</code> を返します。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="ot">bad ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">bad <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">0</span></a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="ot">bad ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb18-2" title="2">bad <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">0</span></a></code></pre></div>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: UNSAFE ************************************************************
 
@@ -362,34 +362,34 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <h2 id="問題">問題</h2>
 <p>以下のプログラムは標準入力から入力された数 <code>n</code>, <code>m</code> で <code>safeDiv n m</code> を計算します。</p>
 <p><code>safeDiv</code> の <code>check</code> を正しく実装して <code>Liquid Haskell</code> の結果を <code>SAFE</code> にしてみましょう。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co">-- Main.hs</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="co">{-@ type NonZero = {v:Int | v /= 0} @-}</span></a>
-<a class="sourceLine" id="cb20-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb20-6" data-line-number="6"><span class="co">{-@ myDiv :: Int -&gt; NonZero -&gt; Int @-}</span></a>
-<a class="sourceLine" id="cb20-7" data-line-number="7"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">myDiv <span class="fu">=</span> div</a>
-<a class="sourceLine" id="cb20-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb20-10" data-line-number="10"><span class="co">{-@ lazy main @-}</span></a>
-<a class="sourceLine" id="cb20-11" data-line-number="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb20-12" data-line-number="12">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb20-13" data-line-number="13">  n <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb20-14" data-line-number="14">  m <span class="ot">&lt;-</span> getLine</a>
-<a class="sourceLine" id="cb20-15" data-line-number="15">  <span class="kw">case</span> safeDiv (read n) (read m) <span class="kw">of</span></a>
-<a class="sourceLine" id="cb20-16" data-line-number="16">    <span class="dt">Just</span> res <span class="ot">-&gt;</span> print res</a>
-<a class="sourceLine" id="cb20-17" data-line-number="17">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb20-18" data-line-number="18">      putStrLn <span class="st">&quot;第二引数に0が入力されています&quot;</span></a>
-<a class="sourceLine" id="cb20-19" data-line-number="19">      putStrLn <span class="st">&quot;もう一度入力してください&quot;</span></a>
-<a class="sourceLine" id="cb20-20" data-line-number="20">      main</a>
-<a class="sourceLine" id="cb20-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb20-22" data-line-number="22"><span class="co">{-@ safeDiv :: Int -&gt; Int -&gt; Maybe Int @-}</span></a>
-<a class="sourceLine" id="cb20-23" data-line-number="23"><span class="ot">safeDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb20-24" data-line-number="24">safeDiv n m</a>
-<a class="sourceLine" id="cb20-25" data-line-number="25">  <span class="fu">|</span> check     <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> div n m</a>
-<a class="sourceLine" id="cb20-26" data-line-number="26">  <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb20-27" data-line-number="27">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-28" data-line-number="28">   check <span class="fu">=</span> <span class="dt">True</span></a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" title="1"><span class="co">-- Main.hs</span></a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb20-3" title="3"></a>
+<a class="sourceLine" id="cb20-4" title="4"><span class="co">{-@ type NonZero = {v:Int | v /= 0} @-}</span></a>
+<a class="sourceLine" id="cb20-5" title="5"></a>
+<a class="sourceLine" id="cb20-6" title="6"><span class="co">{-@ myDiv :: Int -&gt; NonZero -&gt; Int @-}</span></a>
+<a class="sourceLine" id="cb20-7" title="7"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb20-8" title="8">myDiv <span class="fu">=</span> <span class="fu">div</span></a>
+<a class="sourceLine" id="cb20-9" title="9"></a>
+<a class="sourceLine" id="cb20-10" title="10"><span class="co">{-@ lazy main @-}</span></a>
+<a class="sourceLine" id="cb20-11" title="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb20-12" title="12">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb20-13" title="13">  n <span class="ot">&lt;-</span> <span class="fu">getLine</span></a>
+<a class="sourceLine" id="cb20-14" title="14">  m <span class="ot">&lt;-</span> <span class="fu">getLine</span></a>
+<a class="sourceLine" id="cb20-15" title="15">  <span class="kw">case</span> safeDiv (<span class="fu">read</span> n) (<span class="fu">read</span> m) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb20-16" title="16">    <span class="dt">Just</span> res <span class="ot">-&gt;</span> <span class="fu">print</span> res</a>
+<a class="sourceLine" id="cb20-17" title="17">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb20-18" title="18">      <span class="fu">putStrLn</span> <span class="st">&quot;第二引数に0が入力されています&quot;</span></a>
+<a class="sourceLine" id="cb20-19" title="19">      <span class="fu">putStrLn</span> <span class="st">&quot;もう一度入力してください&quot;</span></a>
+<a class="sourceLine" id="cb20-20" title="20">      main</a>
+<a class="sourceLine" id="cb20-21" title="21"></a>
+<a class="sourceLine" id="cb20-22" title="22"><span class="co">{-@ safeDiv :: Int -&gt; Int -&gt; Maybe Int @-}</span></a>
+<a class="sourceLine" id="cb20-23" title="23"><span class="ot">safeDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb20-24" title="24">safeDiv n m</a>
+<a class="sourceLine" id="cb20-25" title="25">  <span class="fu">|</span> check     <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="fu">div</span> n m</a>
+<a class="sourceLine" id="cb20-26" title="26">  <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb20-27" title="27">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb20-28" title="28">   check <span class="fu">=</span> <span class="dt">True</span></a></code></pre></div>
 <p>Hint: <code>div</code> に <code>0</code> を通さないよう <code>check</code> でバリデーションすれば良いです。</p>
 <h3 id="エラーメッセージ">エラーメッセージ</h3>
 <p>現状では、<code>Liquid Haskell</code> は以下のエラーメッセージを返します。</p>

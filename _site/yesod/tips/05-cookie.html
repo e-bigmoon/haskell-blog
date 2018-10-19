@@ -166,15 +166,15 @@
 <p>もし変更したい場合は <code>Yesod</code> 型クラスの <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#defaultClientSessionBackend">makeSessionBackend</a> を自分で実装する。その際は <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#defaultClientSessionBackend">defaultClientSessionBackend</a> が参考になる。</p>
 <h2 id="セッションに指定されているデフォルトの属性">セッションに指定されているデフォルトの属性</h2>
 <p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#loadClientSession">loadClientSession</a> の中に定義がある。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1">[<span class="dt">AddCookie</span> defaultSetCookie</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">  { setCookieName <span class="fu">=</span> sessionName</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  , setCookieValue <span class="fu">=</span> encodeClientSession key iv date host sess'</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">  , setCookiePath <span class="fu">=</span> <span class="dt">Just</span> <span class="st">&quot;/&quot;</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">  , setCookieExpires <span class="fu">=</span> <span class="dt">Just</span> (csdcExpires date)</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  , setCookieDomain <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  , setCookieHttpOnly <span class="fu">=</span> <span class="dt">True</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  }</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">]</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1">[<span class="dt">AddCookie</span> defaultSetCookie</a>
+<a class="sourceLine" id="cb1-2" title="2">  { setCookieName <span class="fu">=</span> sessionName</a>
+<a class="sourceLine" id="cb1-3" title="3">  , setCookieValue <span class="fu">=</span> encodeClientSession key iv date host sess'</a>
+<a class="sourceLine" id="cb1-4" title="4">  , setCookiePath <span class="fu">=</span> <span class="dt">Just</span> <span class="st">&quot;/&quot;</span></a>
+<a class="sourceLine" id="cb1-5" title="5">  , setCookieExpires <span class="fu">=</span> <span class="dt">Just</span> (csdcExpires date)</a>
+<a class="sourceLine" id="cb1-6" title="6">  , setCookieDomain <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  , setCookieHttpOnly <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb1-8" title="8">  }</a>
+<a class="sourceLine" id="cb1-9" title="9">]</a></code></pre></div>
 <p>この結果</p>
 <ul>
 <li><code>Domain</code>: 設定無し</li>
@@ -184,18 +184,18 @@
 <h2 id="クッキーを追加した時のデフォルト値">クッキーを追加した時のデフォルト値</h2>
 <p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Handler.html#v:setCookie">setCookie</a> を使うことでクッキーを追加できる。</p>
 <p><a href="https://www.stackage.org/haddock/lts-12.4/cookie-0.4.4/Web-Cookie.html#t:SetCookie">SetCookie</a> 型の値は <a href="https://www.stackage.org/haddock/lts-12.4/cookie-0.4.4/Web-Cookie.html#v:defaultSetCookie">defaultSetCookie</a> を使って、必要な部分のみを変更すると良い。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">defaultSetCookie ::</span> <span class="dt">SetCookie</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">defaultSetCookie <span class="fu">=</span> <span class="dt">SetCookie</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">    { setCookieName     <span class="fu">=</span> <span class="st">&quot;name&quot;</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">    , setCookieValue    <span class="fu">=</span> <span class="st">&quot;value&quot;</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">    , setCookiePath     <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">    , setCookieExpires  <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">    , setCookieMaxAge   <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">    , setCookieDomain   <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">    , setCookieHttpOnly <span class="fu">=</span> <span class="dt">False</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">    , setCookieSecure   <span class="fu">=</span> <span class="dt">False</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">    , setCookieSameSite <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">    }</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">defaultSetCookie ::</span> <span class="dt">SetCookie</span></a>
+<a class="sourceLine" id="cb2-2" title="2">defaultSetCookie <span class="fu">=</span> <span class="dt">SetCookie</span></a>
+<a class="sourceLine" id="cb2-3" title="3">    { setCookieName     <span class="fu">=</span> <span class="st">&quot;name&quot;</span></a>
+<a class="sourceLine" id="cb2-4" title="4">    , setCookieValue    <span class="fu">=</span> <span class="st">&quot;value&quot;</span></a>
+<a class="sourceLine" id="cb2-5" title="5">    , setCookiePath     <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb2-6" title="6">    , setCookieExpires  <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb2-7" title="7">    , setCookieMaxAge   <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb2-8" title="8">    , setCookieDomain   <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb2-9" title="9">    , setCookieHttpOnly <span class="fu">=</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb2-10" title="10">    , setCookieSecure   <span class="fu">=</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb2-11" title="11">    , setCookieSameSite <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb2-12" title="12">    }</a></code></pre></div>
 <p>その際、デフォルト値は上記のようになっている。</p>
       </article>
 

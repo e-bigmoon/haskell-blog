@@ -170,14 +170,14 @@
 <p>書式がちょっとわかりづらいので、実際に色々試してみましょう。</p>
 <h2 id="関数単位で全てのヒントを無視する">関数単位で全てのヒントを無視する</h2>
 <p>最初に定義した <code>someFunc</code> 関数はヒントを2つ提案してくれていました。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  <span class="kw">let</span> x1 <span class="fu">=</span> concat (map toUpper [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">      x2 <span class="fu">=</span> maybe <span class="st">&quot;&quot;</span> id <span class="st">&quot;abc&quot;</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="co">-- src/Lib.hs</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-3" title="3"></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-5" title="5">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-6" title="6">  <span class="kw">let</span> x1 <span class="fu">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
+<a class="sourceLine" id="cb1-7" title="7">      x2 <span class="fu">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
+<a class="sourceLine" id="cb1-8" title="8">  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:6:12: Warning: Use concatMap
 Found:
@@ -199,15 +199,15 @@ Why not:
 </ul>
 <p>とりあえず <code>someFunc</code> のヒントを全て無視するようにしてしまいましょう。</p>
 <p>こんな感じで <code>{-# ANN someFunc &quot;HLint: ignore&quot; #-}</code> というアノテーションをつけます。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">  <span class="kw">let</span> x1 <span class="fu">=</span> concat (map toUpper [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">      x2 <span class="fu">=</span> maybe <span class="st">&quot;&quot;</span> id <span class="st">&quot;abc&quot;</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">  putStrLn <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="co">-- src/Lib.hs</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-3" title="3"></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb3-6" title="6">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-7" title="7">  <span class="kw">let</span> x1 <span class="fu">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
+<a class="sourceLine" id="cb3-8" title="8">      x2 <span class="fu">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
+<a class="sourceLine" id="cb3-9" title="9">  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>これで <code>src/Lib.hs</code> に記述されている <code>someFunc</code> 関数のみ <code>HLint</code> のヒントを無視できるようになりました。</p>
@@ -215,30 +215,30 @@ No hints</code></pre>
 <p>ヒントレベルは <code>ignore</code> 以外にも <code>suggest</code>, <code>warn</code>, <code>error</code> が利用可能です。これらの値を利用した場合は出力時のヒントレベルが強制的にそのレベルに上書きされます。つまり、ヒントファイルに <code>warn</code> で定義されていたとしても <code>error</code> や <code>ignore</code> として処理されることになります。</p>
 <h4 id="関数単位で全てのヒントを無視する方法">関数単位で全てのヒントを無視する方法</h4>
 <p><code>ANN</code> のあとに対象の関数名を書きます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></a></code></pre></div>
 <h4 id="関数単位で特定のヒントのみを無視する方法">関数単位で特定のヒントのみを無視する方法</h4>
 <p><code>HLint: ignore</code> の後にヒント名を書きます。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use fromMaybe&quot; #-}</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use concatMap&quot; #-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use fromMaybe&quot; #-}</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use concatMap&quot; #-}</span></a></code></pre></div>
 <h4 id="モジュール単位で無視する方法">モジュール単位で無視する方法</h4>
 <p><code>module</code> キーワードを使う場合はアノテーションを <code>import</code> 文の後に設置しないと上手く動かないので、その点のみ注意が必要です。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">{-# ANN module &quot;HLint: ignore&quot; #-}</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="ot">{-# ANN module &quot;HLint: ignore Use fromMaybe&quot; #-}</span></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="ot">{-# ANN module &quot;HLint: ignore Use concatMap&quot; #-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">{-# ANN module &quot;HLint: ignore&quot; #-}</span></a>
+<a class="sourceLine" id="cb7-2" title="2"></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="ot">{-# ANN module &quot;HLint: ignore Use fromMaybe&quot; #-}</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="ot">{-# ANN module &quot;HLint: ignore Use concatMap&quot; #-}</span></a></code></pre></div>
 <h2 id="overloadedstrings-言語拡張">OverloadedStrings 言語拡張</h2>
 <p>言語拡張の <code>OverloadedStrings</code> を有効化している場合は上手く動かないため、明示的に <code>String</code> の型注釈を指定する必要があります。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">{-# ANN someFunc (&quot;HLint: ignore&quot; :: String) #-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">{-# ANN someFunc (&quot;HLint: ignore&quot; :: String) #-}</span></a></code></pre></div>
 <h2 id="ヒントファイルを使って無視する方法">ヒントファイルを使って無視する方法</h2>
 <p>プロジェクト全体で無視したいヒントについては <code>.hint.yaml</code> に追記します。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># .hint.yaml</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use fromMaybe</span><span class="kw">}</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use concatMap</span><span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># .hint.yaml</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use fromMaybe</span><span class="kw">}</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use concatMap</span><span class="kw">}</span></a></code></pre></div>
 <p><code>within</code> キーワードでヒントを適用するモジュールを指定できます。</p>
 <p>例として <code>Lib</code> モジュールのみを対象とする場合は次のようになります。(この場合は <code>ignore</code> が指定されているので <code>Lib</code> モジュールのみヒントを無視します)</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># .hlint.yaml</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use fromMaybe</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[</span>Lib<span class="kw">]}</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use concatMap</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[</span>Lib<span class="kw">]}</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" title="1"><span class="co"># .hlint.yaml</span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use fromMaybe</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[</span>Lib<span class="kw">]}</span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">-</span> <span class="fu">ignore:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name:</span><span class="at"> Use concatMap</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[</span>Lib<span class="kw">]}</span></a></code></pre></div>
       </article>
 
       <div class="pager">

@@ -227,85 +227,85 @@ Yesod にはサブサイトという機能があり、Yesod Book の Creating a 
 </ul>
 <h2 id="修正後のソースコード">修正後のソースコード</h2>
 <p>ここでは公式サイトのコードと同様のディレクトリ構造及び、ファイル名とします。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">tree</span> .</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ex">.</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">├── <span class="ex">HelloSub</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">│   └── <span class="ex">Data.hs</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">├── <span class="ex">HelloSub.hs</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">└── <span class="ex">Main.hs</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="ex">1</span> directory, 3 files</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1">$ <span class="ex">tree</span> .</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ex">.</span></a>
+<a class="sourceLine" id="cb1-3" title="3">├── <span class="ex">HelloSub</span></a>
+<a class="sourceLine" id="cb1-4" title="4">│   └── <span class="ex">Data.hs</span></a>
+<a class="sourceLine" id="cb1-5" title="5">├── <span class="ex">HelloSub.hs</span></a>
+<a class="sourceLine" id="cb1-6" title="6">└── <span class="ex">Main.hs</span></a>
+<a class="sourceLine" id="cb1-7" title="7"></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="ex">1</span> directory, 3 files</a></code></pre></div>
 <p>ファイルを分割しているのは <code>TH</code> の <code>GHC stage restriction</code> を回避するためです。</p>
 <h3 id="hellosubdata.hs">HelloSub/Data.hs</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">{-# LANGUAGE QuasiQuotes     #-}</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ot">{-# LANGUAGE TypeFamilies    #-}</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">module</span> <span class="dt">HelloSub.Data</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">data</span> <span class="dt">HelloSub</span> <span class="fu">=</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">mkYesodSubData <span class="st">&quot;HelloSub&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">/ SubHomeR GET</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">|]</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes     #-}</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="ot">{-# LANGUAGE TypeFamilies    #-}</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="kw">module</span> <span class="dt">HelloSub.Data</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-5" title="5"></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="kw">data</span> <span class="dt">HelloSub</span> <span class="fu">=</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb2-9" title="9"></a>
+<a class="sourceLine" id="cb2-10" title="10">mkYesodSubData <span class="st">&quot;HelloSub&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb2-11" title="11">/ SubHomeR GET</a>
+<a class="sourceLine" id="cb2-12" title="12">|]</a></code></pre></div>
 <p>サブサイトのファウンデーション型 <code>HelloSub</code> とルートを定義しています。</p>
 <p>通常であれば <code>mkYesod</code> を利用しますが <code>mkYesodSubData</code> を利用している点がサブサイトの特徴です。</p>
 <h3 id="hellosub.hs">HelloSub.hs</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">{-# LANGUAGE FlexibleInstances     #-}</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">module</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">  ( <span class="kw">module</span> <span class="dt">HelloSub.Data</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">  , <span class="kw">module</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">  ) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="kw">import</span>           <span class="dt">HelloSub.Data</span></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="kw">import</span>           <span class="dt">Yesod.Core.Types</span></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="ot">getSubHomeR ::</span> <span class="dt">Yesod</span> master <span class="ot">=&gt;</span> <span class="dt">SubHandlerFor</span> <span class="dt">HelloSub</span> master <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb3-16" data-line-number="16">getSubHomeR <span class="fu">=</span> liftHandler <span class="fu">$</span> defaultLayout [whamlet|Welcome to the subsite!|]</a>
-<a class="sourceLine" id="cb3-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="kw">instance</span> <span class="dt">Yesod</span> master <span class="ot">=&gt;</span> <span class="dt">YesodSubDispatch</span> <span class="dt">HelloSub</span> master <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-19" data-line-number="19">  yesodSubDispatch <span class="fu">=</span> <span class="fu">$</span>(mkYesodSubDispatch resourcesHelloSub)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">{-# LANGUAGE FlexibleInstances     #-}</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="kw">module</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb3-7" title="7">  ( <span class="kw">module</span> <span class="dt">HelloSub.Data</span></a>
+<a class="sourceLine" id="cb3-8" title="8">  , <span class="kw">module</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb3-9" title="9">  ) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-10" title="10"></a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="kw">import</span>           <span class="dt">HelloSub.Data</span></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb3-13" title="13"><span class="kw">import</span>           <span class="dt">Yesod.Core.Types</span></a>
+<a class="sourceLine" id="cb3-14" title="14"></a>
+<a class="sourceLine" id="cb3-15" title="15"><span class="ot">getSubHomeR ::</span> <span class="dt">Yesod</span> master <span class="ot">=&gt;</span> <span class="dt">SubHandlerFor</span> <span class="dt">HelloSub</span> master <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb3-16" title="16">getSubHomeR <span class="fu">=</span> liftHandler <span class="fu">$</span> defaultLayout [whamlet|Welcome to the subsite!|]</a>
+<a class="sourceLine" id="cb3-17" title="17"></a>
+<a class="sourceLine" id="cb3-18" title="18"><span class="kw">instance</span> <span class="dt">Yesod</span> master <span class="ot">=&gt;</span> <span class="dt">YesodSubDispatch</span> <span class="dt">HelloSub</span> master <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-19" title="19">  yesodSubDispatch <span class="fu">=</span> <span class="fu">$</span>(mkYesodSubDispatch resourcesHelloSub)</a></code></pre></div>
 <p>サブサイトのハンドラと <code>dispatch</code> の定義です。</p>
 <p><code>resourcesHelloSub</code> は <code>HelloSub/Data.hs</code> で定義した <code>mkYesodSubData</code> でコンパイル時に自動生成されます。</p>
 <h3 id="main.hs">Main.hs</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">-- stack --resolver lts-11.0 script --package yesod-core --package yesod</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw">import</span>           <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw">data</span> <span class="dt">Master</span> <span class="fu">=</span> <span class="dt">Master</span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">  {<span class="ot"> getHelloSub ::</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">  }</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">mkYesod <span class="st">&quot;Master&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">/ HomeR GET</a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">/subsite SubsiteR HelloSub getHelloSub</a>
-<a class="sourceLine" id="cb4-18" data-line-number="18">|]</a>
-<a class="sourceLine" id="cb4-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Master</span></a>
-<a class="sourceLine" id="cb4-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="ot">getHomeR ::</span> <span class="dt">HandlerFor</span> <span class="dt">Master</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb4-23" data-line-number="23">getHomeR <span class="fu">=</span> defaultLayout</a>
-<a class="sourceLine" id="cb4-24" data-line-number="24">  [whamlet|</a>
-<a class="sourceLine" id="cb4-25" data-line-number="25">    <span class="kw">&lt;h1&gt;</span>Welcome to the homepage</a>
-<a class="sourceLine" id="cb4-26" data-line-number="26">    <span class="kw">&lt;p&gt;</span></a>
-<a class="sourceLine" id="cb4-27" data-line-number="27">      Feel free to visit the #</a>
-<a class="sourceLine" id="cb4-28" data-line-number="28">      <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">SubsiteR</span> <span class="dt">SubHomeR</span><span class="kw">}&gt;</span>subsite</a>
-<a class="sourceLine" id="cb4-29" data-line-number="29">      \ as well.</a>
-<a class="sourceLine" id="cb4-30" data-line-number="30">  |]</a>
-<a class="sourceLine" id="cb4-31" data-line-number="31"></a>
-<a class="sourceLine" id="cb4-32" data-line-number="32">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="fu">$</span> <span class="dt">Master</span> <span class="dt">HelloSub</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co">-- stack --resolver lts-11.0 script --package yesod-core --package yesod</span></a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="kw">import</span>           <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb4-10" title="10"></a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="kw">data</span> <span class="dt">Master</span> <span class="fu">=</span> <span class="dt">Master</span></a>
+<a class="sourceLine" id="cb4-12" title="12">  {<span class="ot"> getHelloSub ::</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb4-13" title="13">  }</a>
+<a class="sourceLine" id="cb4-14" title="14"></a>
+<a class="sourceLine" id="cb4-15" title="15">mkYesod <span class="st">&quot;Master&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb4-16" title="16">/ HomeR GET</a>
+<a class="sourceLine" id="cb4-17" title="17">/subsite SubsiteR HelloSub getHelloSub</a>
+<a class="sourceLine" id="cb4-18" title="18">|]</a>
+<a class="sourceLine" id="cb4-19" title="19"></a>
+<a class="sourceLine" id="cb4-20" title="20"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Master</span></a>
+<a class="sourceLine" id="cb4-21" title="21"></a>
+<a class="sourceLine" id="cb4-22" title="22"><span class="ot">getHomeR ::</span> <span class="dt">HandlerFor</span> <span class="dt">Master</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb4-23" title="23">getHomeR <span class="fu">=</span> defaultLayout</a>
+<a class="sourceLine" id="cb4-24" title="24">  [whamlet|</a>
+<a class="sourceLine" id="cb4-25" title="25">    <span class="kw">&lt;h1&gt;</span>Welcome to the homepage</a>
+<a class="sourceLine" id="cb4-26" title="26">    <span class="kw">&lt;p&gt;</span></a>
+<a class="sourceLine" id="cb4-27" title="27">      Feel free to visit the #</a>
+<a class="sourceLine" id="cb4-28" title="28">      <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">SubsiteR</span> <span class="dt">SubHomeR</span><span class="kw">}&gt;</span>subsite</a>
+<a class="sourceLine" id="cb4-29" title="29">      \ as well.</a>
+<a class="sourceLine" id="cb4-30" title="30">  |]</a>
+<a class="sourceLine" id="cb4-31" title="31"></a>
+<a class="sourceLine" id="cb4-32" title="32">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="fu">$</span> <span class="dt">Master</span> <span class="dt">HelloSub</span></a></code></pre></div>
 <p>重要なポイントは以下の3点です。</p>
 <ul>
 <li><code>Master</code> ファウンデーション型にサブサイトの型を含ませる (さらにアクセサ <code>getHelloSub</code> を定義)</li>
@@ -314,9 +314,9 @@ Yesod にはサブサイトという機能があり、Yesod Book の Creating a 
 </ul>
 <h2 id="実行">実行</h2>
 <p><code>stack interpreter</code> 形式で実行します。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1">$ <span class="fu">chmod</span> u+x Main.hs</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">$ <span class="ex">./Main.hs</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="ex">19/Mar</span>/2018:<span class="ex">00</span>:37:27 +0900 [Info#yesod-core] Application launched @(yesod-core-1.6.2-JztYji0NiLuH8rcbB3eMBP:Yesod.Core.Dispatch ./Yesod/Core/Dispatch.hs:167:11)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1">$ <span class="fu">chmod</span> u+x Main.hs</a>
+<a class="sourceLine" id="cb5-2" title="2">$ <span class="ex">./Main.hs</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="ex">19/Mar</span>/2018:<span class="ex">00</span>:37:27 +0900 [Info#yesod-core] Application launched @(yesod-core-1.6.2-JztYji0NiLuH8rcbB3eMBP:Yesod.Core.Dispatch ./Yesod/Core/Dispatch.hs:167:11)</a></code></pre></div>
 <p>この状態で <a href="http://localhost:3000/" class="uri">http://localhost:3000/</a> にアクセスしてみましょう。以下のようなページが表示されるはずです。</p>
 <figure>
 <img src="../../images/2018/03-19/img01.png" alt="トップページ" /><figcaption>トップページ</figcaption>
@@ -328,67 +328,67 @@ Yesod にはサブサイトという機能があり、Yesod Book の Creating a 
 <h2 id="scaffolded-site">Scaffolded Site</h2>
 <p>ここではさらに一歩踏み込んで <code>Scaffolded Site</code> を利用する際、どのファイルに何を書いたら良いのか簡単に解説しておこうと思います。</p>
 <p><code>Scaffolded Site</code> は一番素朴な <code>yesod-simple</code> を利用することとします。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">$ <span class="ex">stack</span> new example-subsite yesod-simple</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">$ <span class="bu">cd</span> example-subsite</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1">$ <span class="ex">stack</span> new example-subsite yesod-simple</a>
+<a class="sourceLine" id="cb6-2" title="2">$ <span class="bu">cd</span> example-subsite</a></code></pre></div>
 <p>サブサイトの内容は上記で定義した内容を再利用します。</p>
 <h3 id="stack.yaml">stack.yaml</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">resolver:</span><span class="at"> lts-11.0</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw">-</span> .</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">resolver:</span><span class="at"> lts-11.0</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="fu">packages:</span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">-</span> .</a></code></pre></div>
 <p>現状落ちてくるものは <code>yesod-1.6.0</code> ではないので、書き換えます。</p>
 <h3 id="package.yaml">package.yaml</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">-</span> base</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw">-</span> classy-prelude-yesod</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="kw">-</span> yesod</a>
-<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="kw">-</span> yesod-core</a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="kw">-</span> yesod-static</a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="kw">-</span> yesod-form</a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="kw">-</span> classy-prelude</a>
-<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="kw">-</span> classy-prelude-conduit</a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="kw">-</span> bytestring</a>
-<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="kw">-</span> text</a>
-<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="kw">-</span> template-haskell</a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="kw">-</span> shakespeare</a>
-<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="kw">-</span> hjsmin</a>
-<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="kw">-</span> monad-control</a>
-<a class="sourceLine" id="cb8-16" data-line-number="16"><span class="kw">-</span> wai-extra</a>
-<a class="sourceLine" id="cb8-17" data-line-number="17"><span class="kw">-</span> yaml</a>
-<a class="sourceLine" id="cb8-18" data-line-number="18"><span class="kw">-</span> http-conduit</a>
-<a class="sourceLine" id="cb8-19" data-line-number="19"><span class="kw">-</span> directory</a>
-<a class="sourceLine" id="cb8-20" data-line-number="20"><span class="kw">-</span> warp</a>
-<a class="sourceLine" id="cb8-21" data-line-number="21"><span class="kw">-</span> data-default</a>
-<a class="sourceLine" id="cb8-22" data-line-number="22"><span class="kw">-</span> aeson</a>
-<a class="sourceLine" id="cb8-23" data-line-number="23"><span class="kw">-</span> conduit</a>
-<a class="sourceLine" id="cb8-24" data-line-number="24"><span class="kw">-</span> monad-logger</a>
-<a class="sourceLine" id="cb8-25" data-line-number="25"><span class="kw">-</span> fast-logger</a>
-<a class="sourceLine" id="cb8-26" data-line-number="26"><span class="kw">-</span> wai-logger</a>
-<a class="sourceLine" id="cb8-27" data-line-number="27"><span class="kw">-</span> file-embed</a>
-<a class="sourceLine" id="cb8-28" data-line-number="28"><span class="kw">-</span> safe</a>
-<a class="sourceLine" id="cb8-29" data-line-number="29"><span class="kw">-</span> unordered-containers</a>
-<a class="sourceLine" id="cb8-30" data-line-number="30"><span class="kw">-</span> containers</a>
-<a class="sourceLine" id="cb8-31" data-line-number="31"><span class="kw">-</span> vector</a>
-<a class="sourceLine" id="cb8-32" data-line-number="32"><span class="kw">-</span> time</a>
-<a class="sourceLine" id="cb8-33" data-line-number="33"><span class="kw">-</span> case-insensitive</a>
-<a class="sourceLine" id="cb8-34" data-line-number="34"><span class="kw">-</span> wai</a>
-<a class="sourceLine" id="cb8-35" data-line-number="35"><span class="kw">-</span> foreign-store</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">-</span> base</a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw">-</span> classy-prelude-yesod</a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="kw">-</span> yesod</a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="kw">-</span> yesod-core</a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="kw">-</span> yesod-static</a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="kw">-</span> yesod-form</a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="kw">-</span> classy-prelude</a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="kw">-</span> classy-prelude-conduit</a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="kw">-</span> bytestring</a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="kw">-</span> text</a>
+<a class="sourceLine" id="cb8-12" title="12"><span class="kw">-</span> template-haskell</a>
+<a class="sourceLine" id="cb8-13" title="13"><span class="kw">-</span> shakespeare</a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="kw">-</span> hjsmin</a>
+<a class="sourceLine" id="cb8-15" title="15"><span class="kw">-</span> monad-control</a>
+<a class="sourceLine" id="cb8-16" title="16"><span class="kw">-</span> wai-extra</a>
+<a class="sourceLine" id="cb8-17" title="17"><span class="kw">-</span> yaml</a>
+<a class="sourceLine" id="cb8-18" title="18"><span class="kw">-</span> http-conduit</a>
+<a class="sourceLine" id="cb8-19" title="19"><span class="kw">-</span> directory</a>
+<a class="sourceLine" id="cb8-20" title="20"><span class="kw">-</span> warp</a>
+<a class="sourceLine" id="cb8-21" title="21"><span class="kw">-</span> data-default</a>
+<a class="sourceLine" id="cb8-22" title="22"><span class="kw">-</span> aeson</a>
+<a class="sourceLine" id="cb8-23" title="23"><span class="kw">-</span> conduit</a>
+<a class="sourceLine" id="cb8-24" title="24"><span class="kw">-</span> monad-logger</a>
+<a class="sourceLine" id="cb8-25" title="25"><span class="kw">-</span> fast-logger</a>
+<a class="sourceLine" id="cb8-26" title="26"><span class="kw">-</span> wai-logger</a>
+<a class="sourceLine" id="cb8-27" title="27"><span class="kw">-</span> file-embed</a>
+<a class="sourceLine" id="cb8-28" title="28"><span class="kw">-</span> safe</a>
+<a class="sourceLine" id="cb8-29" title="29"><span class="kw">-</span> unordered-containers</a>
+<a class="sourceLine" id="cb8-30" title="30"><span class="kw">-</span> containers</a>
+<a class="sourceLine" id="cb8-31" title="31"><span class="kw">-</span> vector</a>
+<a class="sourceLine" id="cb8-32" title="32"><span class="kw">-</span> time</a>
+<a class="sourceLine" id="cb8-33" title="33"><span class="kw">-</span> case-insensitive</a>
+<a class="sourceLine" id="cb8-34" title="34"><span class="kw">-</span> wai</a>
+<a class="sourceLine" id="cb8-35" title="35"><span class="kw">-</span> foreign-store</a></code></pre></div>
 <p>バージョンを全部消しただけです。</p>
 <h3 id="srcfoundation.hs">src/Foundation.hs</h3>
 <p><code>App</code> データ型にサブサイトを含め、さらに <code>import</code> を追加します。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">import</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">  {<span class="ot"> appSettings    ::</span> <span class="dt">AppSettings</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">  ,<span class="ot"> appStatic      ::</span> <span class="dt">Static</span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6">  ,<span class="ot"> appHttpManager ::</span> <span class="dt">Manager</span></a>
-<a class="sourceLine" id="cb9-7" data-line-number="7">  ,<span class="ot"> appLogger      ::</span> <span class="dt">Logger</span></a>
-<a class="sourceLine" id="cb9-8" data-line-number="8">  ,<span class="ot"> getHelloSub    ::</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb9-9" data-line-number="9">  }</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">import</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb9-2" title="2"></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb9-4" title="4">  {<span class="ot"> appSettings    ::</span> <span class="dt">AppSettings</span></a>
+<a class="sourceLine" id="cb9-5" title="5">  ,<span class="ot"> appStatic      ::</span> <span class="dt">Static</span></a>
+<a class="sourceLine" id="cb9-6" title="6">  ,<span class="ot"> appHttpManager ::</span> <span class="dt">Manager</span></a>
+<a class="sourceLine" id="cb9-7" title="7">  ,<span class="ot"> appLogger      ::</span> <span class="dt">Logger</span></a>
+<a class="sourceLine" id="cb9-8" title="8">  ,<span class="ot"> getHelloSub    ::</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb9-9" title="9">  }</a></code></pre></div>
 <p><code>yesod-1.6.0</code> した影響でコンパイルエラーが出るため、<code>shouldLog</code> をコメントアウトします。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1">    <span class="co">-- shouldLog app _source level =</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">    <span class="co">--     appShouldLogAll (appSettings app)</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">    <span class="co">--         || level == LevelWarn</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">    <span class="co">--         || level == LevelError</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">    <span class="co">-- shouldLog app _source level =</span></a>
+<a class="sourceLine" id="cb10-2" title="2">    <span class="co">--     appShouldLogAll (appSettings app)</span></a>
+<a class="sourceLine" id="cb10-3" title="3">    <span class="co">--         || level == LevelWarn</span></a>
+<a class="sourceLine" id="cb10-4" title="4">    <span class="co">--         || level == LevelError</span></a></code></pre></div>
 <h3 id="configroute">config/route</h3>
 <p>サブサイトへのルートを追加します。</p>
 <pre class="txt"><code>/subsite SubsiteR HelloSub getHelloSub</code></pre>
@@ -398,29 +398,29 @@ Yesod にはサブサイトという機能があり、Yesod Book の Creating a 
 <li><code>import HelloSub</code> を追加</li>
 <li><code>makeFoundation</code> 関数に <code>let getHelloSub = HelloSub</code> を追記</li>
 </ul>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">import</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="ot">makeFoundation ::</span> <span class="dt">AppSettings</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4">makeFoundation appSettings <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">  <span class="kw">let</span> getHelloSub <span class="fu">=</span> <span class="dt">HelloSub</span></a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7">  appHttpManager <span class="ot">&lt;-</span> newManager</a>
-<a class="sourceLine" id="cb12-8" data-line-number="8">  appLogger <span class="ot">&lt;-</span> newStdoutLoggerSet defaultBufSize <span class="fu">&gt;&gt;=</span> makeYesodLogger</a>
-<a class="sourceLine" id="cb12-9" data-line-number="9">  appStatic <span class="ot">&lt;-</span></a>
-<a class="sourceLine" id="cb12-10" data-line-number="10">    (<span class="kw">if</span> appMutableStatic appSettings <span class="kw">then</span> staticDevel <span class="kw">else</span> static)</a>
-<a class="sourceLine" id="cb12-11" data-line-number="11">    (appStaticDir appSettings)</a>
-<a class="sourceLine" id="cb12-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb12-13" data-line-number="13">  return <span class="dt">App</span> {<span class="fu">..</span>}</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">import</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb12-2" title="2"></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="ot">makeFoundation ::</span> <span class="dt">AppSettings</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb12-4" title="4">makeFoundation appSettings <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb12-5" title="5">  <span class="kw">let</span> getHelloSub <span class="fu">=</span> <span class="dt">HelloSub</span></a>
+<a class="sourceLine" id="cb12-6" title="6"></a>
+<a class="sourceLine" id="cb12-7" title="7">  appHttpManager <span class="ot">&lt;-</span> newManager</a>
+<a class="sourceLine" id="cb12-8" title="8">  appLogger <span class="ot">&lt;-</span> newStdoutLoggerSet defaultBufSize <span class="fu">&gt;&gt;=</span> makeYesodLogger</a>
+<a class="sourceLine" id="cb12-9" title="9">  appStatic <span class="ot">&lt;-</span></a>
+<a class="sourceLine" id="cb12-10" title="10">    (<span class="kw">if</span> appMutableStatic appSettings <span class="kw">then</span> staticDevel <span class="kw">else</span> static)</a>
+<a class="sourceLine" id="cb12-11" title="11">    (appStaticDir appSettings)</a>
+<a class="sourceLine" id="cb12-12" title="12"></a>
+<a class="sourceLine" id="cb12-13" title="13">  <span class="fu">return</span> <span class="dt">App</span> {<span class="fu">..</span>}</a></code></pre></div>
 <p><code>App {..}</code> は <code>GHC</code> の <code>RecordWildCards</code> 言語拡張です。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Example</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">  { a <span class="fu">=</span> a</a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">  , b <span class="fu">=</span> b</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">  , c <span class="fu">=</span> c</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">  }</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">data</span> <span class="dt">Example</span></a>
+<a class="sourceLine" id="cb13-2" title="2">  { a <span class="fu">=</span> a</a>
+<a class="sourceLine" id="cb13-3" title="3">  , b <span class="fu">=</span> b</a>
+<a class="sourceLine" id="cb13-4" title="4">  , c <span class="fu">=</span> c</a>
+<a class="sourceLine" id="cb13-5" title="5">  }</a></code></pre></div>
 <p>僕はあまり使いませんが、雰囲気はこんな感じです。</p>
 <h3 id="実行-1">実行</h3>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" data-line-number="1">$ <span class="ex">stack</span> build</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">$ <span class="ex">stack</span> exec example-subsite</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" title="1">$ <span class="ex">stack</span> build</a>
+<a class="sourceLine" id="cb14-2" title="2">$ <span class="ex">stack</span> exec example-subsite</a></code></pre></div>
 <p><a href="http://localhost:3000/subsite" class="uri">http://localhost:3000/subsite</a> にアクセスすると次のような画面が現れます。</p>
 <figure>
 <img src="../../images/2018/03-19/img03.png" alt="実行結果" /><figcaption>実行結果</figcaption>

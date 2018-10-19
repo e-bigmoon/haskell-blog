@@ -222,17 +222,17 @@ trans :: Monad m =&gt; C" />
         <h2 id="haskell-quiz-no.6">Haskell Quiz No.6</h2>
 <p>難易度: λλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.2</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">trans <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> trans <span class="fu">.|</span> mapM_C print</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-11.2</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
+<a class="sourceLine" id="cb1-6" title="6">trans <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb1-8" title="8">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-9" title="9"></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-11" title="11">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> trans <span class="fu">.|</span> mapM_C <span class="fu">print</span></a></code></pre></div>
 <p>答えは<a href="04-07-quiz-7.html">次回</a>。</p>
 <p>最近は <code>Conduit</code> にはまっているので、クイズも <code>Conduit</code> が続きます。</p>
 <!--more-->
@@ -241,20 +241,20 @@ trans :: Monad m =&gt; C" />
 <h3 id="問題">問題</h3>
 <p>難易度: λλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">-- stack script --resolver lts-11.0</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">sink <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC show <span class="fu">.|</span> foldC</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  y <span class="ot">&lt;-</span> sumC</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">  return (x, y)</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">  print res</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="co">-- stack script --resolver lts-11.0</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb2-6" title="6">sink <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-7" title="7">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC <span class="fu">show</span> <span class="fu">.|</span> foldC</a>
+<a class="sourceLine" id="cb2-8" title="8">  y <span class="ot">&lt;-</span> sumC</a>
+<a class="sourceLine" id="cb2-9" title="9">  <span class="fu">return</span> (x, y)</a>
+<a class="sourceLine" id="cb2-10" title="10"></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb2-12" title="12">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-13" title="13">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
+<a class="sourceLine" id="cb2-14" title="14">  <span class="fu">print</span> res</a></code></pre></div>
 <h3 id="こたえ">こたえ</h3>
 <p>実際に実行してみましょう！</p>
 <pre class="shell"><code>$ ./Quiz5.hs
@@ -272,38 +272,38 @@ trans :: Monad m =&gt; C" />
 <li>ファイル・ディレクトリの判定: <a href="https://www.stackage.org/haddock/lts-11.3/directory-1.3.0.2/System-Directory.html#v:doesFileExist">doesFileExist</a></li>
 </ul>
 <p>これらの関数を使って、こんな感じでプログラムを作ることができます。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">{-</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">stack script --resolver lts-11.3</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">  --package extra</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">  --package filepath</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">  --package directory</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">-}</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw">import</span> <span class="dt">System.Directory</span> (listDirectory, doesFileExist, getFileSize)</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw">import</span> <span class="dt">System.FilePath</span> ((&lt;/&gt;))</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (partitionM, ifM)</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">  arg <span class="ot">&lt;-</span> getArgs</a>
-<a class="sourceLine" id="cb4-18" data-line-number="18">  when (length arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19">    (cnt, size) <span class="ot">&lt;-</span> recListDir <span class="fu">$</span> head arg</a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> show cnt</a>
-<a class="sourceLine" id="cb4-21" data-line-number="21">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> show size</a>
-<a class="sourceLine" id="cb4-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="ot">recListDir ::</span> FilePath <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Int</span>, <span class="dt">Integer</span>)</a>
-<a class="sourceLine" id="cb4-24" data-line-number="24">recListDir fp <span class="fu">=</span> loop (<span class="dv">0</span>, <span class="dv">0</span>) [fp]</a>
-<a class="sourceLine" id="cb4-25" data-line-number="25">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-26" data-line-number="26">    loop summary [] <span class="fu">=</span> return summary</a>
-<a class="sourceLine" id="cb4-27" data-line-number="27">    loop (accCnt, accSize) (fp<span class="fu">:</span>fps) <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-28" data-line-number="28">      dirs <span class="ot">&lt;-</span> listDirectory fp</a>
-<a class="sourceLine" id="cb4-29" data-line-number="29">      (files, childDirs) <span class="ot">&lt;-</span> partitionM doesFileExist <span class="fu">$</span> map (fp <span class="fu">&lt;/&gt;</span>) dirs</a>
-<a class="sourceLine" id="cb4-30" data-line-number="30">      size <span class="ot">&lt;-</span> sum <span class="fu">&lt;$&gt;</span> mapM getFileSize files</a>
-<a class="sourceLine" id="cb4-31" data-line-number="31">      <span class="kw">let</span> summary <span class="fu">=</span> (accCnt <span class="fu">+</span> length files, accSize <span class="fu">+</span> size)</a>
-<a class="sourceLine" id="cb4-32" data-line-number="32">      loop summary <span class="fu">$</span> fps <span class="fu">++</span> childDirs</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co">{-</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co">stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co">  --package extra</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="co">  --package filepath</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="co">  --package directory</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb4-8" title="8"></a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="kw">import</span> <span class="dt">System.Directory</span> (listDirectory, doesFileExist, getFileSize)</a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="kw">import</span> <span class="dt">System.FilePath</span> ((&lt;/&gt;))</a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (partitionM, ifM)</a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
+<a class="sourceLine" id="cb4-14" title="14"></a>
+<a class="sourceLine" id="cb4-15" title="15"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-16" title="16">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-17" title="17">  arg <span class="ot">&lt;-</span> getArgs</a>
+<a class="sourceLine" id="cb4-18" title="18">  when (<span class="fu">length</span> arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-19" title="19">    (cnt, size) <span class="ot">&lt;-</span> recListDir <span class="fu">$</span> <span class="fu">head</span> arg</a>
+<a class="sourceLine" id="cb4-20" title="20">    <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> <span class="fu">show</span> cnt</a>
+<a class="sourceLine" id="cb4-21" title="21">    <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> <span class="fu">show</span> size</a>
+<a class="sourceLine" id="cb4-22" title="22"></a>
+<a class="sourceLine" id="cb4-23" title="23"><span class="ot">recListDir ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Int</span>, <span class="dt">Integer</span>)</a>
+<a class="sourceLine" id="cb4-24" title="24">recListDir fp <span class="fu">=</span> loop (<span class="dv">0</span>, <span class="dv">0</span>) [fp]</a>
+<a class="sourceLine" id="cb4-25" title="25">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-26" title="26">    loop summary [] <span class="fu">=</span> <span class="fu">return</span> summary</a>
+<a class="sourceLine" id="cb4-27" title="27">    loop (accCnt, accSize) (fp<span class="fu">:</span>fps) <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-28" title="28">      dirs <span class="ot">&lt;-</span> listDirectory fp</a>
+<a class="sourceLine" id="cb4-29" title="29">      (files, childDirs) <span class="ot">&lt;-</span> partitionM doesFileExist <span class="fu">$</span> <span class="fu">map</span> (fp <span class="fu">&lt;/&gt;</span>) dirs</a>
+<a class="sourceLine" id="cb4-30" title="30">      size <span class="ot">&lt;-</span> <span class="fu">sum</span> <span class="fu">&lt;$&gt;</span> <span class="fu">mapM</span> getFileSize files</a>
+<a class="sourceLine" id="cb4-31" title="31">      <span class="kw">let</span> summary <span class="fu">=</span> (accCnt <span class="fu">+</span> <span class="fu">length</span> files, accSize <span class="fu">+</span> size)</a>
+<a class="sourceLine" id="cb4-32" title="32">      loop summary <span class="fu">$</span> fps <span class="fu">++</span> childDirs</a></code></pre></div>
 <p>実際に、プロファイリングを取得しつつ動かしてみます。</p>
 <pre class="shell"><code>$ stack ghc Ex &amp;&amp; sudo ./Ex /home/bm12/Desktop/ +RTS -s
 総ファイル数: 338866
@@ -341,37 +341,37 @@ trans :: Monad m =&gt; C" />
 <p>解決方法は色々ありますが、今回はストリームライブラリの <code>Conduit</code> を使って解決していきましょう。</p>
 <p><code>Conduit</code> には <a href="https://www.stackage.org/haddock/lts-11.3/conduit-1.3.0.2/Conduit.html#v:sourceDirectoryDeep">sourceDirectoryDeep</a> という、関数が用意されています。</p>
 <p>だいたいこんな感じで書き直すことができます。先程の定義と比べると <strong>sourceDirectoryDeep</strong> 関数のおかげでスッキリした印象です。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">{-</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">stack script --resolver lts-11.3</span></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">  --package conduit</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">  --package extra</span></a>
-<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="co">  --package directory</span></a>
-<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="co">-}</span></a>
-<a class="sourceLine" id="cb7-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="kw">import</span> <span class="dt">Conduit</span></a>
-<a class="sourceLine" id="cb7-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
-<a class="sourceLine" id="cb7-12" data-line-number="12"><span class="kw">import</span> <span class="dt">System.Directory</span> (doesFileExist, getFileSize)</a>
-<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (whenM)</a>
-<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
-<a class="sourceLine" id="cb7-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb7-16" data-line-number="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb7-17" data-line-number="17">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb7-18" data-line-number="18">  arg <span class="ot">&lt;-</span> getArgs</a>
-<a class="sourceLine" id="cb7-19" data-line-number="19">  when (length arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb7-20" data-line-number="20">    (cnt, size) <span class="ot">&lt;-</span></a>
-<a class="sourceLine" id="cb7-21" data-line-number="21">      runConduitRes <span class="fu">$</span> sourceDirectoryDeep <span class="dt">True</span> (head arg)</a>
-<a class="sourceLine" id="cb7-22" data-line-number="22">                   <span class="fu">.|</span> awaitForever getInfo</a>
-<a class="sourceLine" id="cb7-23" data-line-number="23">                   <span class="fu">.|</span> getZipSink ((,) <span class="fu">&lt;$&gt;</span> <span class="dt">ZipSink</span> lengthC <span class="fu">&lt;*&gt;</span> <span class="dt">ZipSink</span> sumC)</a>
-<a class="sourceLine" id="cb7-24" data-line-number="24">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> show cnt</a>
-<a class="sourceLine" id="cb7-25" data-line-number="25">    putStrLn <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> show size</a>
-<a class="sourceLine" id="cb7-26" data-line-number="26"></a>
-<a class="sourceLine" id="cb7-27" data-line-number="27"><span class="ot">getInfo ::</span> <span class="dt">MonadResource</span> m <span class="ot">=&gt;</span> FilePath <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> FilePath <span class="dt">Integer</span> m ()</a>
-<a class="sourceLine" id="cb7-28" data-line-number="28">getInfo path <span class="fu">=</span></a>
-<a class="sourceLine" id="cb7-29" data-line-number="29">  whenM (liftIO <span class="fu">$</span> doesFileExist path) <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb7-30" data-line-number="30">    size <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> getFileSize path</a>
-<a class="sourceLine" id="cb7-31" data-line-number="31">    yield size</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co">{-</span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co">stack script --resolver lts-11.3</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">  --package conduit</span></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">  --package extra</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">  --package directory</span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb7-8" title="8"></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="kw">import</span> <span class="dt">Conduit</span></a>
+<a class="sourceLine" id="cb7-10" title="10"></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="kw">import</span> <span class="dt">System.Directory</span> (doesFileExist, getFileSize)</a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="kw">import</span> <span class="dt">Control.Monad.Extra</span> (whenM)</a>
+<a class="sourceLine" id="cb7-14" title="14"><span class="kw">import</span> <span class="dt">Control.Monad</span> (when)</a>
+<a class="sourceLine" id="cb7-15" title="15"></a>
+<a class="sourceLine" id="cb7-16" title="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-17" title="17">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-18" title="18">  arg <span class="ot">&lt;-</span> getArgs</a>
+<a class="sourceLine" id="cb7-19" title="19">  when (<span class="fu">length</span> arg <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-20" title="20">    (cnt, size) <span class="ot">&lt;-</span></a>
+<a class="sourceLine" id="cb7-21" title="21">      runConduitRes <span class="fu">$</span> sourceDirectoryDeep <span class="dt">True</span> (<span class="fu">head</span> arg)</a>
+<a class="sourceLine" id="cb7-22" title="22">                   <span class="fu">.|</span> awaitForever getInfo</a>
+<a class="sourceLine" id="cb7-23" title="23">                   <span class="fu">.|</span> getZipSink ((,) <span class="fu">&lt;$&gt;</span> <span class="dt">ZipSink</span> lengthC <span class="fu">&lt;*&gt;</span> <span class="dt">ZipSink</span> sumC)</a>
+<a class="sourceLine" id="cb7-24" title="24">    <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;総ファイル数: &quot;</span> <span class="fu">++</span> <span class="fu">show</span> cnt</a>
+<a class="sourceLine" id="cb7-25" title="25">    <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;総ファイルサイズ: &quot;</span> <span class="fu">++</span> <span class="fu">show</span> size</a>
+<a class="sourceLine" id="cb7-26" title="26"></a>
+<a class="sourceLine" id="cb7-27" title="27"><span class="ot">getInfo ::</span> <span class="dt">MonadResource</span> m <span class="ot">=&gt;</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> <span class="dt">FilePath</span> <span class="dt">Integer</span> m ()</a>
+<a class="sourceLine" id="cb7-28" title="28">getInfo path <span class="fu">=</span></a>
+<a class="sourceLine" id="cb7-29" title="29">  whenM (liftIO <span class="fu">$</span> doesFileExist path) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-30" title="30">    size <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> getFileSize path</a>
+<a class="sourceLine" id="cb7-31" title="31">    yield size</a></code></pre></div>
 <p>では、同様にプロファイルを取得しつつ、実行してみましょう。</p>
 <pre class="shell"><code>$ stack ghc Ex2 &amp;&amp; sudo ./Ex2 /home/bm12/Desktop/ +RTS -s
 総ファイル数: 338866
@@ -413,17 +413,17 @@ trans :: Monad m =&gt; C" />
 <li><code>yieldMany</code> 関数は受け取ったデータをパイプに流す<strong>準備</strong>をします (<code>yieldMany</code> は自分から積極的にデータを流すことはしません。準備だけしておき <code>await</code> 関数などで、実際に必要になった際にだけデータを流します)</li>
 <li><code>.|</code> はパイプを<strong>合成</strong>します</li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">  print res</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb11-2" title="2">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb11-3" title="3">  <span class="kw">let</span> res <span class="fu">=</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> sink</a>
+<a class="sourceLine" id="cb11-4" title="4">  <span class="fu">print</span> res</a></code></pre></div>
 <p><code>sink</code> 関数は <code>takeC 5 .| mapC show .| foldC</code> というパイプと <code>sumC</code> というパイプからなる、大きなパイプです。</p>
 <p><code>takeC 5 .| mapC show .| foldC</code> 関数は <code>takeC 5</code> の部分でデータを <strong>5つだけ</strong> 上流のパイプに要求します。そのため、残りの5つのデータは次の <code>sumC</code> に流れることになります。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">sink <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC show <span class="fu">.|</span> foldC <span class="co">-- 1,2,3,4,5  のデータが処理される</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4">  y <span class="ot">&lt;-</span> sumC                          <span class="co">-- 6,7,8,9,10 のデータが処理される</span></a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">  return (x, y)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb12-2" title="2">sink <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb12-3" title="3">  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="fu">.|</span> mapC <span class="fu">show</span> <span class="fu">.|</span> foldC <span class="co">-- 1,2,3,4,5  のデータが処理される</span></a>
+<a class="sourceLine" id="cb12-4" title="4">  y <span class="ot">&lt;-</span> sumC                          <span class="co">-- 6,7,8,9,10 のデータが処理される</span></a>
+<a class="sourceLine" id="cb12-5" title="5">  <span class="fu">return</span> (x, y)</a></code></pre></div>
 <p>そのため、最終的には <code>(&quot;12345&quot;,40)</code> となりました。</p>
 <p><code>&quot;12345&quot;</code> はそれぞれの <strong>Int</strong> 型が <code>mapC show</code> によって <strong>String</strong> 型に変換され、<code>foldC</code> の <code>mappend</code> による畳込みによって文字列連結されます。</p>
 <h2 id="まとめ">まとめ</h2>

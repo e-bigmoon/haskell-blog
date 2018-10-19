@@ -344,19 +344,19 @@ commit
 </tbody>
 </table>
 <p>実際の<a href="https://github.com/commercialhaskell/stack/blob/9a23b91bd1ba4d120a77c9982e85079f825ebf06/etc/scripts/get-stack.sh#L224">コード</a>を見てみるとまだ使えそうな気がしますが、stack 1.7.1 からは<a href="https://github.com/commercialhaskell/stack/releases/download/v1.7.1/stack-1.7.1-linux-i386-gmp4.tar.gz">リンク切れ</a>になります。(stack v1.6.5 とかであれば<a href="https://github.com/commercialhaskell/stack/releases/download/v1.6.5/stack-1.6.5-linux-i386-gmp4.tar.gz">ダウンロード可能</a>です。)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">  <span class="kw">else</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">    <span class="ex">install_dependencies</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">    <span class="kw">case</span> <span class="st">&quot;</span><span class="va">$1</span><span class="st">&quot;</span><span class="kw"> in</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">      <span class="st">&quot;6&quot;</span><span class="kw">)</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">        <span class="ex">print_bindist_notice</span> <span class="st">&quot;libgmp4&quot;</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">        <span class="ex">install_32bit_gmp4_linked_binary</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">        <span class="kw">;;</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">      *<span class="kw">)</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">        <span class="ex">print_bindist_notice</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">        <span class="ex">install_32bit_standard_binary</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">        <span class="kw">;;</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">    <span class="kw">esac</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="kw">fi</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">  <span class="kw">else</span></a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="ex">install_dependencies</span></a>
+<a class="sourceLine" id="cb2-3" title="3">    <span class="kw">case</span> <span class="st">&quot;</span><span class="va">$1</span><span class="st">&quot;</span><span class="kw"> in</span></a>
+<a class="sourceLine" id="cb2-4" title="4">      <span class="st">&quot;6&quot;</span><span class="kw">)</span></a>
+<a class="sourceLine" id="cb2-5" title="5">        <span class="ex">print_bindist_notice</span> <span class="st">&quot;libgmp4&quot;</span></a>
+<a class="sourceLine" id="cb2-6" title="6">        <span class="ex">install_32bit_gmp4_linked_binary</span></a>
+<a class="sourceLine" id="cb2-7" title="7">        <span class="kw">;;</span></a>
+<a class="sourceLine" id="cb2-8" title="8">      *<span class="kw">)</span></a>
+<a class="sourceLine" id="cb2-9" title="9">        <span class="ex">print_bindist_notice</span></a>
+<a class="sourceLine" id="cb2-10" title="10">        <span class="ex">install_32bit_standard_binary</span></a>
+<a class="sourceLine" id="cb2-11" title="11">        <span class="kw">;;</span></a>
+<a class="sourceLine" id="cb2-12" title="12">    <span class="kw">esac</span></a>
+<a class="sourceLine" id="cb2-13" title="13">  <span class="kw">fi</span></a></code></pre></div>
 <h3 id="大きな変更">大きな変更</h3>
 <ul>
 <li><strong>Cabal のバージョンを 2.0 から 2.2 にアップグレードしました。</strong></li>
@@ -468,10 +468,10 @@ commit
 </tbody>
 </table>
 <p>今まで通り <code>stack.yaml</code> が含まれている場合でも初期化させたい場合は<code>forceOverwrite initOpts</code> が <code>True</code> になれば良いので、<code>--force</code> フラグをつければ良さそうですね。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="st">-        initProject IsNewCmd dir initOpts globalResolver</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="va">+        exists &lt;- doesFileExist $ dir &lt;/&gt; stackDotYaml</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="va">+        when (forceOverwrite initOpts || not exists) $</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="va">+            initProject IsNewCmd dir initOpts globalResolver</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb3-1" title="1"><span class="st">-        initProject IsNewCmd dir initOpts globalResolver</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="va">+        exists &lt;- doesFileExist $ dir &lt;/&gt; stackDotYaml</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="va">+        when (forceOverwrite initOpts || not exists) $</span></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="va">+            initProject IsNewCmd dir initOpts globalResolver</span></a></code></pre></div>
 <h3 id="その他の改良点">その他の改良点</h3>
 <ul>
 <li><strong>stack に新たなサブコマンド <code>ls</code> が導入されました。このコマンドによってローカル及びリモートのスナップショットを確認することができます。詳細は <code>stack ls snapshots --help</code> コマンドでご確認ください。</strong></li>
@@ -551,9 +551,9 @@ commit
 </tbody>
 </table>
 <p>v1.7.1 ではまだ利用できますが、以下のように <code>DEPRECATED</code> メッセージが表示されます。一応 v1.8 で削除される予定です。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="ex">stack</span> list-dependencies</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ex">DEPRECATED</span>: Use ls dependencies instead. Will be removed in next major version.</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="ex">...</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1">$ <span class="ex">stack</span> list-dependencies</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ex">DEPRECATED</span>: Use ls dependencies instead. Will be removed in next major version.</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ex">...</span></a></code></pre></div>
 <ul>
 <li><strong>全ての HTTP リクエストヘッダに User-Agent が追加されるようになりました。</strong></li>
 </ul>
@@ -593,8 +593,8 @@ commit
 </tbody>
 </table>
 <p>今までは <code>User-Agent</code> が付いていなかったみたいですが、<code>The Haskell Stack</code> が全てのHTTPリクエストに対して付与されるようになったみたいです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="va">+setUserAgent :: Request -&gt; Request</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="va">+setUserAgent = setRequestHeader &quot;User-Agent&quot; [&quot;The Haskell Stack&quot;]</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb5-1" title="1"><span class="va">+setUserAgent :: Request -&gt; Request</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="va">+setUserAgent = setRequestHeader &quot;User-Agent&quot; [&quot;The Haskell Stack&quot;]</span></a></code></pre></div>
 <ul>
 <li><strong><code>stack setup</code> コマンドは互換性のある GHC をインストールするために、任意の OS キーによるインストールを試すようになりました (これは OS キーをどれか1つだけチェックするよりも良い方法です)。この変更は Linux の各ディストリビューションで libinfo 5/6, ncurses 5/6, gmp 4/5 の異なった組み合わせに起因するものです。今後の GHC リリースを見据えて、セットアップに関する YAML メタデータをシンプルに保つことができます。</strong></li>
 </ul>
@@ -847,13 +847,13 @@ commit
 </tbody>
 </table>
 <p><code>stack.yaml</code> の <code>build</code> セクションに指定することもできるようです。(デフォルト値は <code>False</code>)</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">build:</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="fu">library-profiling:</span><span class="at"> false</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">  <span class="fu">executable-profiling:</span><span class="at"> false</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">  <span class="fu">copy-bins:</span><span class="at"> false</span></a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">  <span class="fu">prefetch:</span><span class="at"> false</span></a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">  <span class="fu">keep-going:</span><span class="at"> false</span></a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">  <span class="fu">keep-tmp-files:</span><span class="at"> false</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">build:</span></a>
+<a class="sourceLine" id="cb10-2" title="2">  <span class="fu">library-profiling:</span><span class="at"> </span><span class="ch">false</span></a>
+<a class="sourceLine" id="cb10-3" title="3">  <span class="fu">executable-profiling:</span><span class="at"> </span><span class="ch">false</span></a>
+<a class="sourceLine" id="cb10-4" title="4">  <span class="fu">copy-bins:</span><span class="at"> </span><span class="ch">false</span></a>
+<a class="sourceLine" id="cb10-5" title="5">  <span class="fu">prefetch:</span><span class="at"> </span><span class="ch">false</span></a>
+<a class="sourceLine" id="cb10-6" title="6">  <span class="fu">keep-going:</span><span class="at"> </span><span class="ch">false</span></a>
+<a class="sourceLine" id="cb10-7" title="7">  <span class="fu">keep-tmp-files:</span><span class="at"> </span><span class="ch">false</span></a></code></pre></div>
 <ul>
 <li><strong>スナップショットのパーズ例外時のエラーメッセージを改善しました。</strong></li>
 </ul>
@@ -1004,11 +1004,11 @@ commit
 </tbody>
 </table>
 <p>以下のように書くことができます。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> commercialhaskell/rio</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="fu">commit:</span><span class="at"> 09654f9fcbdcd96d0f5102796b32fdac5da7260e</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> commercialhaskell/rio</span></a>
+<a class="sourceLine" id="cb11-2" title="2">  <span class="fu">commit:</span><span class="at"> 09654f9fcbdcd96d0f5102796b32fdac5da7260e</span></a></code></pre></div>
 <p><code>commit</code> は短縮して記述することもできます。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> commercialhaskell/rio</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="fu">commit:</span><span class="at"> </span><span class="st">&quot;09654&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> commercialhaskell/rio</span></a>
+<a class="sourceLine" id="cb12-2" title="2">  <span class="fu">commit:</span><span class="at"> </span><span class="st">&quot;09654&quot;</span></a></code></pre></div>
 <p><a href="https://github.com/mitchellwrosen/stack/blob/9489cf7d12c54ea40ab043e199d7850d2502e140/src/test/Stack/Types/BuildPlanSpec.hs">BuildPlanSpec.hs</a> にテストがいくつか載っていいるので、そこを見れば利用可能な形式がわかります。</p>
 <h3 id="バグフィックス">バグフィックス</h3>
 <ul>
@@ -1395,14 +1395,14 @@ commit
 </tbody>
 </table>
 <p><code>stack repl</code> を実行すると、実際にはこんな感じでディレクトリとファイルが作られます。<code>ba125cb0</code> や <code>e4ed4429</code> というファイル名はファイルのコンテンツハッシュによって決まるそうです。(<code>tmp</code> というディレクトリ名は環境によって異なります)</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb13-1" data-line-number="1">$ <span class="ex">tree</span> /tmp/haskell-stack-ghci/</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="ex">/tmp/haskell-stack-ghci/</span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">├── <span class="ex">ba125cb0</span></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">│   └── <span class="ex">cabal_macros.h</span></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">└── <span class="ex">e4ed4429</span></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6">    └── <span class="ex">ghci-script</span></a>
-<a class="sourceLine" id="cb13-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb13-8" data-line-number="8"><span class="ex">2</span> directories, 2 files</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb13-1" title="1">$ <span class="ex">tree</span> /tmp/haskell-stack-ghci/</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="ex">/tmp/haskell-stack-ghci/</span></a>
+<a class="sourceLine" id="cb13-3" title="3">├── <span class="ex">ba125cb0</span></a>
+<a class="sourceLine" id="cb13-4" title="4">│   └── <span class="ex">cabal_macros.h</span></a>
+<a class="sourceLine" id="cb13-5" title="5">└── <span class="ex">e4ed4429</span></a>
+<a class="sourceLine" id="cb13-6" title="6">    └── <span class="ex">ghci-script</span></a>
+<a class="sourceLine" id="cb13-7" title="7"></a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="ex">2</span> directories, 2 files</a></code></pre></div>
 <h2 id="changelog-オリジナル">Changelog (オリジナル)</h2>
 <h3 id="release-notes">Release notes</h3>
 <ul>

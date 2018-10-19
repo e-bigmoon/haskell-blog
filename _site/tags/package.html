@@ -199,21 +199,21 @@ $ import Data.Time</code></pre>
 <p>Haskell でファイルやディレクトリを扱うプログラムを書く時によく使うパッケージとして <a href="https://www.stackage.org/lts-12.7/package/filepath-1.4.2">filepath</a> パッケージや <a href="https://www.stackage.org/lts-12.7/package/directory-1.3.1.5">directory</a> パッケージがあります。(Haskell入門の「4.4 ファイルシステム」に <strong>directory</strong> パッケージの話が少し載っています。)</p>
 <p>これらのパッケージは結局のところただの文字列操作なので、バグを出さないためにはパッケージ利用者がかなり注意深く使わなければなりません。</p>
 <p>例えば、以下のようなパスは型レベルでは同じ文字列 (<strong>FilePath</strong>) ですが</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">-- 相対パス</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ot">pathRel ::</span> FilePath</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">pathRel <span class="fu">=</span> <span class="fu">./</span>aaa<span class="fu">/</span>bbb<span class="fu">/</span>ccc</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">-- 絶対パス</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="ot">pathAbs ::</span> FilePath</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">pathAbs <span class="fu">=</span> <span class="fu">/</span>home<span class="fu">/</span>user<span class="fu">/</span>aaa<span class="fu">/</span>bbb<span class="fu">/</span>ccc</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">-- ファイルへのパス</span></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="ot">pathFile ::</span> FilePath</a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">pathFile <span class="fu">=</span> <span class="fu">./</span>aaa<span class="fu">/</span>a<span class="fu">.</span>png</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="co">-- ディレクトリへのパス</span></a>
-<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="ot">pathDir ::</span> FilePath</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15">pathDir <span class="fu">=</span> <span class="fu">./</span>aaa</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="co">-- 相対パス</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ot">pathRel ::</span> <span class="dt">FilePath</span></a>
+<a class="sourceLine" id="cb1-3" title="3">pathRel <span class="fu">=</span> <span class="fu">./</span>aaa<span class="fu">/</span>bbb<span class="fu">/</span>ccc</a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="co">-- 絶対パス</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="ot">pathAbs ::</span> <span class="dt">FilePath</span></a>
+<a class="sourceLine" id="cb1-7" title="7">pathAbs <span class="fu">=</span> <span class="fu">/</span>home<span class="fu">/</span>user<span class="fu">/</span>aaa<span class="fu">/</span>bbb<span class="fu">/</span>ccc</a>
+<a class="sourceLine" id="cb1-8" title="8"></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co">-- ファイルへのパス</span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="ot">pathFile ::</span> <span class="dt">FilePath</span></a>
+<a class="sourceLine" id="cb1-11" title="11">pathFile <span class="fu">=</span> <span class="fu">./</span>aaa<span class="fu">/</span>a<span class="fu">.</span>png</a>
+<a class="sourceLine" id="cb1-12" title="12"></a>
+<a class="sourceLine" id="cb1-13" title="13"><span class="co">-- ディレクトリへのパス</span></a>
+<a class="sourceLine" id="cb1-14" title="14"><span class="ot">pathDir ::</span> <span class="dt">FilePath</span></a>
+<a class="sourceLine" id="cb1-15" title="15">pathDir <span class="fu">=</span> <span class="fu">./</span>aaa</a></code></pre></div>
 <p>このように、<strong>FilePath</strong> 型では<strong>相対パス</strong>なのか<strong>絶対パス</strong>なのか型レベルで判断する方法が無かったり、そもそもパスが<strong>ファイル</strong>なのか<strong>ディレクトリ</strong>なのかすらわからなかったりします。</p>
 <p>今回紹介するのは、型レベルでこれらをちゃんと分類できるようにしている <a href="https://github.com/commercialhaskell/path">path</a> と <a href="https://github.com/mrkkrp/path-io">path-io</a> パッケージです。</p>
 <p>型レベルで <strong>相対パス</strong> or <strong>絶対パス</strong> と <strong>ファイル</strong> or <strong>ディレクトリ</strong> を表現するため、不正な操作はコンパイル時にチェックできるようになります。</p>
@@ -253,15 +253,15 @@ $ import Data.Time</code></pre>
             <p><h2 id="はじめに">はじめに</h2>
 <p>今回は <a href="https://www.stackage.org/package/prettyprinter">prettyprinter</a> を使ってみました。</p>
 <p>使おうと思ったモチベーションとしては、以下のようなデータ型をデバッグ表示させる際に <code>prettyprinter</code> 系パッケージを使って良い感じに表示してみようかな？という感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span> <span class="dt">Text</span> <span class="dt">String</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span> <span class="dt">Text</span> <span class="dt">String</span></a></code></pre></div>
 <p>表示をカスタマイズするために <code>Show</code> クラスのインスタンスを書き換えることは、経験上嫌なことしか起きないです・・。</p>
 <p>自分でそれっぽい型クラスを作っても良いのですが、普通は素直に <code>prettyprinter</code> 系のパッケージを使った方が良いと思います！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">$ <span class="ex">stack</span> repl --package text</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ex">Prelude</span><span class="op">&gt;</span> import Data.Text</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> data Person = Person Text String deriving Show</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> :set -XOverloadedStrings</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> Person <span class="st">&quot;はすける&quot;</span> <span class="st">&quot;らむだ&quot;</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ex">Person</span> <span class="st">&quot;\12399\12377\12369\12427&quot;</span> <span class="st">&quot;\12425\12416\12384&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="ex">stack</span> repl --package text</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="ex">Prelude</span><span class="op">&gt;</span> import Data.Text</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> data Person = Person Text String deriving Show</a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> :set -XOverloadedStrings</a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> Person <span class="st">&quot;はすける&quot;</span> <span class="st">&quot;らむだ&quot;</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="ex">Person</span> <span class="st">&quot;\12399\12377\12369\12427&quot;</span> <span class="st">&quot;\12425\12416\12384&quot;</span></a></code></pre></div>
 </p>
             <div>
               
@@ -321,13 +321,13 @@ $ import Data.Time</code></pre>
 <p>今回は <a href="https://www.stackage.org/package/gitrev">gitrev</a> パッケージと <a href="https://www.stackage.org/package/optparse-simple">optparse-simple</a> パッケージを使ってアプリケーションに <code>Git</code> の情報を含めてみようと思います！</p>
 <p>利用者の多いアプリケーションだと、バグ報告時にどのコミットでビルドしたものなのか知りたい場合に便利です。</p>
 <p>表示されるバージョン情報はこんな感じになります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot"># gitrev の例</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="fu">$</span> <span class="fu">./</span>Main.hs</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">Main.hs<span class="fu">:</span> [panic master<span class="fu">@</span>3a0bd17fdfb8a3e334292a560280e8e0791e941c (<span class="dt">Tue</span> <span class="dt">Mar</span> <span class="dv">20</span> <span class="dv">02</span><span class="fu">:</span><span class="dv">00</span><span class="fu">:</span><span class="dv">17</span> <span class="dv">2018</span> <span class="fu">+</span><span class="dv">0900</span>) (<span class="dv">1</span> commits <span class="kw">in</span> <span class="dt">HEAD</span>)]</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot"># optparse-simple の例</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="fu">$</span> stack exec <span class="co">-- example-version-exe</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="dt">Version</span> <span class="fl">0.1</span><span class="fu">.</span><span class="fl">0.0</span>, <span class="dt">Git</span> revision <span class="fl">341e785</span>b02c4c599f64b922b4aa9cfff3c006945</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot"># gitrev の例</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="fu">$</span> <span class="fu">./</span>Main.hs</a>
+<a class="sourceLine" id="cb1-3" title="3">Main.hs<span class="fu">:</span> [panic master<span class="fu">@</span>3a0bd17fdfb8a3e334292a560280e8e0791e941c (<span class="dt">Tue</span> <span class="dt">Mar</span> <span class="dv">20</span> <span class="dv">02</span><span class="fu">:</span><span class="dv">00</span><span class="fu">:</span><span class="dv">17</span> <span class="dv">2018</span> <span class="fu">+</span><span class="dv">0900</span>) (<span class="dv">1</span> commits <span class="kw">in</span> <span class="dt">HEAD</span>)]</a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="ot"># optparse-simple の例</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="fu">$</span> stack exec <span class="co">-- example-version-exe</span></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="dt">Version</span> <span class="fl">0.1</span><span class="fu">.</span><span class="fl">0.0</span>, <span class="dt">Git</span> revision <span class="fl">341e785</span>b02c4c599f64b922b4aa9cfff3c006945</a></code></pre></div>
 <p>以下のアプリケーション等でも利用されているように、実用度はとても高めです。</p>
 <ul>
 <li><a href="https://github.com/commercialhaskell/stack">stack</a></li>

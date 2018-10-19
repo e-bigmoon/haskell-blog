@@ -216,19 +216,19 @@ nLen :: [Int] -&gt;" />
         <h2 id="はじめに">はじめに</h2>
 <p><code>LiquidHaskell</code> では <code>measure</code> という仕組みを使って <code>Haskell</code> の関数を <code>LH</code> の述語に持ち上げることができます。</p>
 <p>しかし、以下の <code>nLen</code> 関数は <code>measure</code> によって持ち上げることができません。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">{-@ measure nLen @-}</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="co">{-@ measure nLen @-}</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb1-3" title="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-4" title="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
 <p>結論から言えば、これを解決するためには <code>--prune-unsorted</code> フラグを利用します。</p>
 <p>以下は <code>measure</code> の基本的な使い方等についての説明です。</p>
 <!--more-->
 <h2 id="measure-の基本的な使い方">measure の基本的な使い方</h2>
 <p>例えばリストの長さを求める <code>lLen</code> という関数を述語に持ち上げるにはこのようにします。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">{-@ measure lLen @-}</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ot">lLen ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">lLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">lLen (_<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> lLen xs</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="co">{-@ measure lLen @-}</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="ot">lLen ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-3" title="3">lLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-4" title="4">lLen (_<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> lLen xs</a></code></pre></div>
 <pre class="shell"><code>$ liquid LH.hs
 LiquidHaskell Version 0.8.2.4, Git revision 5b68dc72f628a4c16a77616fb32d8c685580ed2d (dirty)
 Copyright 2013-18 Regents of the University of California. All Rights Reserved.
@@ -240,15 +240,15 @@ Working 150% [=================================================================]
 **** DONE:  annotate ***********************************************************
 **** RESULT: SAFE **************************************************************</code></pre>
 <p>実際にはこんな感じで長さ付きリストのリファインメント型をつけます。先程から<strong>述語</strong>と言っているのはリファインメント型 <code>{ | }</code> の <code>|</code> の右側のことです。<code>measure</code> によってこの部分で <code>Haskell</code> で定義した <code>lLen</code> 関数が使えるようになります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">{-@ type ListN a N = {v:[a] | lLen v = N} @-}</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">{-@ goodList :: ListN Int 2 @-}</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="ot">goodList ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">goodList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="co">{-@ type ListN a N = {v:[a] | lLen v = N} @-}</span></a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co">{-@ goodList :: ListN Int 2 @-}</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">goodList ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb4-5" title="5">goodList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
 <p>当然ですが、仕様を満たしていない場合は <code>UNSAFE</code> になります。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">{-@ badList :: ListN Int 1 @-}</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="ot">badList ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">badList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="co">{-@ badList :: ListN Int 1 @-}</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="ot">badList ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb5-3" title="3">badList <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</a></code></pre></div>
 <pre class="shell"><code>**** RESULT: UNSAFE ************************************************************
 Error: Liquid Type Mismatch
 
@@ -275,33 +275,33 @@ Error: Liquid Type Mismatch
                         &amp;&amp; head ?d == (2 : int)
                         &amp;&amp; len ?d &gt;= 0}</code></pre>
 <p>エラーメッセージがつらいですが、とりあえずは以下の部分に着目すれば良いでしょう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1">not a subtype <span class="kw">of</span> <span class="dt">Required</span> <span class="kw">type</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">     <span class="dt">VV</span> <span class="fu">:</span> {<span class="dt">VV</span> <span class="fu">:</span> [<span class="dt">Int</span>] <span class="fu">|</span> Main.lLen <span class="dt">VV</span> <span class="fu">==</span> <span class="dv">1</span>}</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">not</span> a subtype <span class="kw">of</span> <span class="dt">Required</span> <span class="kw">type</span></a>
+<a class="sourceLine" id="cb7-2" title="2">     <span class="dt">VV</span> <span class="fu">:</span> {<span class="dt">VV</span> <span class="fu">:</span> [<span class="dt">Int</span>] <span class="fu">|</span> Main.lLen <span class="dt">VV</span> <span class="fu">==</span> <span class="dv">1</span>}</a></code></pre></div>
 <p><code>lLen VV == 1</code> の制約が満たされていない。つまり、<code>lLen</code> の結果が <code>1</code> になってないよ。ということです。</p>
 <h2 id="measure-でエラーが出る場合">measure でエラーが出る場合</h2>
 <p><code>measure</code> はどんな関数にも使えるわけではありません。</p>
 <p>例えば、以下のような数値のリストに対して、リストの値の合計を返す関数 <code>nLen</code> を考えましょう。(<code>sum</code> と同じですが <code>Preude</code> とかぶるので名前を変更しています)</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">{-@ measure nLen @-}</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="co">{-@ measure nLen @-}</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb8-3" title="3">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb8-4" title="4">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
 <p><code>LiquidHaskell</code> はこの定義に対してエラーを表示します。これは <code>nLen</code> 関数がリストの型変数 <code>a</code> を <code>Int</code> に特殊化しているためです。(<a href="https://github.com/ucsd-progsys/liquidhaskell#prune-unsorted-predicates">Prune Unsorted Predicates</a>)</p>
 <p>こういう関数に対しては <code>--prune-unsorted</code> フラグを用いれば良いです。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">{-@ LIQUID &quot;--prune-unsorted&quot; @-}</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">{-@ measure nLen @-}</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="co">{-@ LIQUID &quot;--prune-unsorted&quot; @-}</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="co">{-@ measure nLen @-}</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb9-4" title="4">nLen [] <span class="fu">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb9-5" title="5">nLen (n<span class="fu">:</span>ns) <span class="fu">=</span> n <span class="fu">+</span> nLen ns</a></code></pre></div>
 <p><code>nLen</code> を使った型は、先ほどの <code>lLen</code> とほとんど同じです。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">{-@ type ListSum a N = {v:[a] | nLen v = N} @-}</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">{-@ goodListSum :: ListSum Int 111 @-}</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="ot">goodListSum ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">goodListSum <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">100</span>]</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">{-@ badListSum :: ListSum Int 111 @-}</span></a>
-<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="ot">badListSum ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb10-9" data-line-number="9">badListSum <span class="fu">=</span> [<span class="dv">1</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="co">{-@ type ListSum a N = {v:[a] | nLen v = N} @-}</span></a>
+<a class="sourceLine" id="cb10-2" title="2"></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="co">{-@ goodListSum :: ListSum Int 111 @-}</span></a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="ot">goodListSum ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb10-5" title="5">goodListSum <span class="fu">=</span> [<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">100</span>]</a>
+<a class="sourceLine" id="cb10-6" title="6"></a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="co">{-@ badListSum :: ListSum Int 111 @-}</span></a>
+<a class="sourceLine" id="cb10-8" title="8"><span class="ot">badListSum ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb10-9" title="9">badListSum <span class="fu">=</span> [<span class="dv">1</span>]</a></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <ul>
 <li>型パラメータが特殊化された関数を <code>measure</code> で述語に持ち上げる際には <code>--prune-unsorted</code> を使う</li>
