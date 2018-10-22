@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Stack 1.9.1 がリリースされました。</title>
+  <meta name="description" content="はじめに
+10月18日に Stack version 1.9.1 がリリースされました。
+更新は stack upgrade コマンドを実行します。
+$ stack upgrade
+Current Stack version: 1.7.1, available download version: 1.9.1
+Newer">
+  <link rel="canonical" href="../../posts/2018/10-22-stack-191.html">
+  <link rel="alternate" type="application/atom+xml" title="Stack 1.9.1 がリリースされました。" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="Stack 1.9.1 がリリースされました。" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/10-22-stack-191.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Stack 1.9.1 がリリースされました。" />
+  <meta property="og:description" content="はじめに
+10月18日に Stack version 1.9.1 がリリースされました。
+更新は stack upgrade コマンドを実行します。
+$ stack upgrade
+Current Stack version: 1.7.1, available download version: 1.9.1
+Newer" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+        <a href="../../yesod/" class="white-text">
+          <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+          Yesod
+        </a>
+      </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on October 22, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Stack 1.9.1 がリリースされました。</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a>, <a href="../../tags/stack.html">stack</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Stack 1.9.1 がリリースされました。&url=https://haskell.e-bigmoon.com/posts/2018/10-22-stack-191.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/10-22-stack-191.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/10-22-stack-191.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p>10月18日に Stack version 1.9.1 が<a href="https://github.com/commercialhaskell/stack/blob/v1.9.1/ChangeLog.md#v191">リリース</a>されました。</p>
+<p>更新は <code>stack upgrade</code> コマンドを実行します。</p>
+<pre class="shell"><code>$ stack upgrade
+Current Stack version: 1.7.1, available download version: 1.9.1
+Newer version detected, downloading
+Querying for archive location for platform: linux-x86_64-static
+Downloading from: https://github.com/commercialhaskell/stack/releases/download/v1.9.1/stack-1.9.1-linux-x86_64-static.tar.gz
+Download complete, testing executable
+Version 1.9.1, Git revision f9d0042c141660e1d38f797e1d426be4a99b2a3c (6168 commits) x86_64 hpack-0.31.0
+New stack executable available at /home/guchi/.local/bin/stack
+Also copying stack executable to /usr/local/bin/stack
+Permission error when trying to copy: /usr/local/bin: copyFile:atomicCopyFileContents:withReplacementFile:openBinaryTempFile: permission denied (Permission denied)
+Should I try to perform the file copy using sudo? This may fail
+Try using sudo? (y/n)</code></pre>
+<p>実行ファイルは <code>~/.local/bin/stack</code> と <code>/usr/local/bin</code> にインストールされます。</p>
+<p>ただし、権限が無いと上記のように <code>/usr/local/bin</code> へのコピーに失敗するため <code>sudo</code> で再実行するか聞かれます。必要であれば <code>y</code> でインストールしましょう。</p>
+<pre class="shell"><code>Try using sudo? (y/n) y
+Going to run the following commands:
+
+-  sudo cp /home/guchi/.local/bin/stack /usr/local/bin/stack.tmp
+-  sudo mv /usr/local/bin/stack.tmp /usr/local/bin/stack
+
+sudo file copy worked!</code></pre>
+<p>インストールされるバージョンは以下の通りです。</p>
+<pre class="shell"><code>$ stack --version
+Version 1.9.1, Git revision f9d0042c141660e1d38f797e1d426be4a99b2a3c (6168 commits) x86_64 hpack-0.31.0</code></pre>
+<p>気になる更新内容まとめ</p>
+<ul>
+<li>static binary の復活</li>
+<li>Cabal 2.4 への対応</li>
+<li>internal-library 関連のバグ修正</li>
+<li>namespaced template</li>
+<li>stack run</li>
+<li>ghci に -fobject-code を渡した際にちゃんとキャッシュされるようになった</li>
+</ul>
+<!--more-->
+<h2 id="changelog-翻訳">Changelog (翻訳)</h2>
+<h3 id="リリースノート">リリースノート</h3>
+<ul>
+<li><a href="https://github.com/nh2">@nh2</a>さんのおかげで、静的にリンクされた Linux バイナリが再び利用できるようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/blob/c34f11190302b2db9bab44ac6e45ca2c5f7810ce/doc/maintainers/releases.md#build-linux-static-binary-distribution-with-nix">Build Linux static binary distribution with Nix</a></li>
+<li><a href="https://github.com/nh2/static-haskell-nix/tree/upstream-nixpkgs-musl-1.1.19/static-stack">Fully statically linked stack</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>download.fpcomplete.com</code> から Ubuntu, Debian, CentOS, Fedora, Arch のパッケージリポジトリを削除する予定です。これらは既に1年以上前から非推奨となっており、新しいリリースにも対応していませんでしたが、過去のスクリプトとの互換性のために残していました。</li>
+</ul>
+<hr />
+<h3 id="大きな変更点">大きな変更点</h3>
+<ul>
+<li>Cabal 2.4 にアップグレードしました。
+<ul>
+<li>注意点: ファイル名のパターンマッチの動作が変わりました。Cabal spec 2.4 より前のバージョンでは <code>*.txt</code> は <code>foo.txt</code> にマッチしていましたが、<code>foo.2.txt</code> にはマッチしませんでした。</li>
+</ul></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4317">Use Cabal 2.4 for the 1.9 branch #4317</a></li>
+<li><a href="https://github.com/haskell/cabal/blob/master/Cabal/ChangeLog.md#2400-mikhail-glushenkov-september-2018">ChangeLog (Cabal 2.4)</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/5372">Multi-dot globbing #5372</a></li>
+<li><a href="https://github.com/haskell/cabal/issues/784">Wildcards in data-files don’t work with filenames containing multiple dots #784</a></li>
+<li><a href="https://github.com/haskell/cabal/issues/5057"><code>cabal sdist</code> does not pick up files with multiple dots #5057</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>GHCJS</code> のサポートが <code>experimental (実験的)</code> へ降格しました。また、<code>GHCJS</code> が実験段階であることをユーザに知らせるための警告が表示されるようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4086">DISCUSSION: Mark GHCJS support as deprecated? #4086</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4154">Warning about GHCJS use when constructing a build plan #4154</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/commit/729a052cede11855644bf00c4b7661a89148bdc7#diff-e705c8fadf1193ab59443a5e6c8cbe8b">commit@729a052cede11855644bf00c4b7661a89148bdc7</a></li>
+</ul>
+<hr />
+<h3 id="変更点">変更点</h3>
+<ul>
+<li><code>stack.yaml</code> の <code>ghc-options</code> と <code>config.yaml</code> の <code>ghc-options</code> を結合するようにしました。今までは置き換えていました。</li>
+</ul>
+<h4 id="解説">解説</h4>
+<p>グローバルな <code>~/.stack/.config.yaml</code> とプロジェクト固有の <code>stack.yaml</code> の話で <code>package.yaml</code> は関係しません。</p>
+<p>例として、それぞれファイルの内容を以下のように設定しておきます。(<code>$everything</code> は全てのパッケージを指定)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># ~/.stack/config.yaml</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="fu">ghc-options:</span></a>
+<a class="sourceLine" id="cb4-3" title="3">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;aaa&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># stack.yaml</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="fu">resolver:</span><span class="at"> lts-12.13</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="fu">packages:</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="kw">-</span> .</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="fu">ghc-options:</span></a>
+<a class="sourceLine" id="cb5-6" title="6">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;bbb&quot;</span></a></code></pre></div>
+<p>パッケージの指定が重複していたときに今までは、<code>stack.yaml</code> (プロジェクト固有) の <code>ghc-options</code> で上書きされていましたが、 <code>stack.yaml</code> の <code>ghc-options</code> を結合するようになりました。以下は動作例です。</p>
+<pre class="shell"><code># stack v1.9.1 の動作
+$ stack build
+... --ghc-options aaa --ghc-options bbb
+
+# stack v1.7.1 の動作
+$ stack build
+... --ghc-options bbb</code></pre>
+<p><code>ghc-options</code> の内容が重複する場合は両方とも引数に与えられますが、後ろの値で上書きされるようなのでプロジェクト固有の設定が優先されます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># ~/.stack/config.yaml</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="fu">ghc-options:</span></a>
+<a class="sourceLine" id="cb7-3" title="3">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;-dumpdir=./respect-config&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb8-1" title="1"><span class="co"># stack.yaml</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="fu">resolver:</span><span class="at"> lts-12.13</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="fu">packages:</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="kw">-</span> .</a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="fu">ghc-options:</span></a>
+<a class="sourceLine" id="cb8-6" title="6">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;-dumpdir=./respect-stack&quot;</span></a></code></pre></div>
+<p>実際に試してみると、以下のようになると思います。</p>
+<pre class="sell"><code>$ stack build -v
+... --ghc-options -dumpdir=./respect-config --ghc-options -dumpdir=./respect-stack
+
+$ ls  -l
+...
+drwxrwxr-x 5 guchi guchi 4096 10月 21 13:35 respect-stack
+...</code></pre>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3753">Stack does not respect ghc-options in user config #3753</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3781">Fix inheritance of category ghc-options from config.yaml #3753 #3781</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4089">Have project ghc-options append to config.yaml ghc-options #3753</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack build</code> コマンドはパッケージのサブライブラリをビルドする際に executables, test, benchmarks, libraries などと同様の方法でアナウンスを行うようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4111">Consistent handling of internal libraries #4111</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4111/commits/4a4b63f59130bb66477d155dcb401d50fac02fab">commit@4a4b63f59130bb66477d155dcb401d50fac02fab</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack sdist</code> コマンドはサニティチェックの結果にかかわらず、生成された tarball の場所をアナウンスするようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4117">Mention tarball earlier in sdist #4117</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4112">stack sdist fails when modules are exposed based on a flag in the cabal file #4112</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack setup</code> コマンドの <code>--upgrade-cabal</code> オプションは廃止されます。この機能は GHC 8.2 以降では動作しません。また、このフラグが実装された当初の動機は Stack がカスタムセットアップのためにスナップショットの <code>Caba</code> ライブラリを利用し始めたことでほとんど無くなりました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4070">#4070</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4118">Deprecate the –upgrade-cabal flag (fixes #4070) #4118</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4070"><code>stack setup --upgrade-cabal</code> doesn’t work for Cabal-2.2.0.1 + ghc-8.2.2 #4070</a></li>
+</ul>
+<hr />
+<ul>
+<li>新たに namespaced template 機能が実装されたため、<code>stack templates</code> コマンドは利用可能な全てのテンプレートの一覧を良い感じに表示できなくなりました。代わりに、テンプレートを見つける方法についての<a href="https://github.com/commercialhaskell/stack-templates/blob/master/STACK_HELP.md">ヘルプファイル</a>をダウンロードし、表示します。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4039">#4039</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4129">Get stack templates help from Github file #4039 #4129</a></li>
+<li><a href="https://github.com/commercialhaskell/stack-templates/blob/master/STACK_HELP.md">help file</a></li>
+</ul>
+<hr />
+<ul>
+<li>ビルドツールを <code>cabal-install</code> と同様の方法で取り扱うようになりました。また、レガシーな <code>build-tools</code> フィールドに対しては、ツールマップの中からビルドツールパッケージを調べるのではなく、ハードコードされたビルドツールのリストを利用します。この変更により Stack の動作は <code>cabal-install</code> に近づいたため、いくつかのバグを回避し、最適化/遅延性の恩恵を得られる可能性があります。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4125">#4125</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4125">stack 1.7.1 still has problems finding build tools (“The program ‘happy’ is required”) #4125</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4132">Use a hard-coded tool dependency map (fixes #4125) #4132</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/595">Build-tools not detected when not using Stackage snapshot #595</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3178">Stack cannot find happy during build #3178</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3249">Extensible snapshots #3249</a></li>
+</ul>
+<hr />
+<ul>
+<li>パフォーマンスの低下を避けるため、Mustache テンプレートに (50kb を超える) 大きなファイルを適用できなくなりました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4133">#4133</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4134">Do not apply Mustache to large files (fixes #4133) #4134</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4133">stack new is very slow at compiling Mustache templates #4133</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack upload</code> はデフォルトでパッケージに署名を行うようになりました。また、<code>--no-signature</code> オプションで署名をスキップできます。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3739">#3739</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3739">stack upload –no-signature still shows “Unable to find gpg2 or gpg executable” #3739</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4167">Fix behavior of –no-signature to turn signing off #4167</a></li>
+</ul>
+<hr />
+<ul>
+<li>テンプレートダウンロード時のネットワーク接続問題に備えて、事前にチェックを行うようになりました。もし、問題があればキャッシュ済みのテンプレートを利用します。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3850">stack new requires network to work #3850</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3850">stack new requires network to work #3850</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4173">Use cached template if template download fails #4173</a></li>
+</ul>
+<hr />
+<h3 id="その他の改良点">その他の改良点</h3>
+<ul>
+<li>Windows 10 より前の Windows 環境では、ターミナルのデフォルト値が <code>--color=never</code> となります。エミュレーションによる出力のみ ANSI カラーコードが利用できます。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4106">Re #4091: Pre-Windows 10, default –color=never #4106</a></li>
+</ul>
+<hr />
+<ul>
+<li>Windows 環境では、デフォルトのターミナルを ‘mintty’ (false) として認識するように変更しました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4015">Windows: use ‘hIsTerminalDevice or isMinTTYHandle’ #4015</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack build</code> コマンドは <code>stack.yaml</code> の <code>extra-deps</code> に <code>base</code> が明示的に記載されているとき、警告を出すようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3993">Help users not to go down the road of base upgrade/downgrade, addresses #3940 #3993</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3940">Warn when upgrading base #3940</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack build</code> コマンドは、ビルドプランで達成不可能な <code>base</code> バージョンが要求された際に、別の GHC バージョンを試すように提案するようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3993">Help users not to go down the road of base upgrade/downgrade, addresses #3940 #3993</a></li>
+</ul>
+<hr />
+<ul>
+<li>新たなサブコマンド <code>run</code> が導入されました。このコマンドは <code>cabal run</code> のように、指定された executable をビルド&amp;実行します。executable が省略された場合は、プロジェクト内で最初に利用可能な executable が指定されます。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3952">Introduce <code>stack run</code> command line option #3952</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/233">Wishlist: <code>stack run</code> #233</a></li>
+<li><a href="https://haskell.e-bigmoon.com/posts/2018/06-25-stack-run.html">stack run コマンド – BIGMOON Blog</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack build</code> コマンドは、依存関係が足りない旨を伝えるメッセージにパッケージの最新の cabal ファイルリビジョンハッシュを含めるようになりました。詳細: <a href="https://github.com/commercialhaskell/stack/pull/4068">#4068</a></li>
+</ul>
+<h4 id="解説-1">解説</h4>
+<p>こんな感じで表示されるようです。</p>
+<pre class="shell"><code>...
+  * Recommended action: try adding the following to your extra-deps in /home/thomas/github/stack/stack.yaml:
+rio-0.1.2.0@sha256:cb2a65cee1c0450815002ca890633215e4544b5c1c9f7091a950142c6efe8f3f</code></pre>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4068">Add cabal-hash revision info when displaying recommended packages when failing to construct buildplan #4068</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3925">Modify “recommended packages” output to include revision info #3925</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack sdist</code> コマンドに新しく <code>--tar-dir</code> オプションを追加しました。このオプションにより指定したディレクトリに生成された tarball をコピーできるようになります。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3621">3568 add tar files option to sdist #3621</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3568">Stack sdist option to place build artefacts elsewhere #3568</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/commit/9a58d5bf5346bedb0d460335c7018c256591966d">commit@9a58d5bf5346bedb0d460335c7018c256591966d</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>--interleaved-output</code> オプションと <code>build.interleaved-output</code> 設定値が導入されました。これにより、複数の並行ビルドの出力が <code>packagename&gt;</code> プレフィックス付きで同時に標準エラー出力にダンプされます。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3225">#3225</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4097">Add the interleaved-output option/config value #3225 #4097</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3225">Add flag to print GHC output to stdout #3225</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3508">Report progress on STDOUT/STDERR during compilation of individual modules #3508</a></li>
+</ul>
+<hr />
+<ul>
+<li>デフォルトの再接続戦略を exponential backoff に変更しました。これにより <a href="https://github.com/commercialhaskell/stack/issues/3510">#3510</a> の問題が緩和されます。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4109">Changed the default retry strategy #4109</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3510">Stack does not retry effectively when S3 is being flaky. #3510</a></li>
+<li><a href="https://www.stackage.org/haddock/lts-12.14/retry-0.7.7.0/Control-Retry.html#v:exponentialBackoff">exponentialBackoff</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack new</code> コマンドは <code>username/foo</code> という形式で、<code>commercialstack</code> 以外のリポジトリからテンプレートをダウンロードできるようになりました。また <code>github:</code> という形式でプレフィックスを付けることでサービスを指定することもできます。現状は <code>github:</code> の他に <code>gitlab:</code> と <code>bitbucket:</code> が利用可能です。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4103">4039 namespaced templates #4103</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4039">Namespaced templates #4039</a></li>
+<li><a href="https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html">namespaced templates - BIGMOON Blog</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>gitrev</code> から <code>githash</code> に切り替えました。このパッケージには <code>gitrev</code> にマージされていないバグフィックスが含まれています。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4130">Switch to githash to include some unmerged bugfixes in gitrev #4130</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>'allow-newer': true</code> を追加するファイルがわかりづらいため、ユーザ設定ファイルへのパスをエラーメッセージに含めるようにしました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3685">#3685</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3685">allow-newer in global-project doesn’t work #3685</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4127">Point to user’s config.yaml when advising ‘allow-newer: true’ #4127</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack ghci</code> コマンドはビルド後ではなく、ビルド前にどのメインターゲットを読み込むか質問するようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4138">‘stack ghci’ now asks which main module to load before building #4138</a></li>
+</ul>
+<hr />
+<ul>
+<li>hpack のバージョンを 0.29.0 に更新しました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4151">Bump to hpack 0.29 #4151</a></li>
+</ul>
+<hr />
+<ul>
+<li>GHC 8.4 以降のバージョンを利用したとき、自動的に Haddock へ <code>--quickjump</code> オプションが渡されるようになります。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4163">Pass –quickjump to Haddock for GHC 8.4 and later #4163</a></li>
+</ul>
+<hr />
+<ul>
+<li><p><code>hackage-base-url</code> 設定オプションを利用することで、パッケージアップロード時の Hackage ベースURL に任意のURLを指定できるようになりました。(デフォルトは <code>https://hackage.haskell.org/</code> です)</p></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4167">Fix behavior of –no-signature to turn signing off #4167</a></li>
+<li><p><a href="https://github.com/commercialhaskell/stack/issues/3739">stack upload –no-signature still shows “Unable to find gpg2 or gpg executable” #3739</a></p></li>
+</ul>
+<hr />
+<ul>
+<li>Nix 利用時に GHC のマイナーバージョンを省略した場合、メジャーブランチの最新のマイナーバージョンを自動的に利用するようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4189">Do not hardcode GHC versions for Nixpkgs #4189</a></li>
+</ul>
+<hr />
+<h3 id="バグフィックス">バグフィックス</h3>
+<ul>
+<li><code>stack ghci</code> を繰り返し実行したときに <code>.o</code> ファイルを無効化しなくなりました。これにより、<code>-fobject-code</code> でコンパイルされた全てのモジュールは ghci を実行する度にキャッシュされます。 詳細: <a href="https://github.com/commercialhaskell/stack/pull/4038">#4038</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4038">Set cabal_macros.h work directory in stack ghci to something non-temporary #4038</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3344">stack ghci recompiles all modules on every startup, even when invoked with “-fobject-code” or “–no-build” #3344</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>~/.stack/config.yaml</code> と <code>stack.yaml</code> の最後に改行が追加されました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3983">fixed: terminating is newline #3983</a></li>
+</ul>
+<hr />
+<ul>
+<li>前回のリリースで <code>ghc-pkg</code> コマンドの出力が <code>stderr</code> に出力されてしまう問題が再発したので修正しました。現在の出力はとても静かになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4028">Make ghc-pkg calls less noisy #4028</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>v1.7.1</code> で導入された再コンパイルチェックの問題を修正し、回帰テストを追加しました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4001">#4001</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4003">4001 excess recompilation #4003</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4001">–file-watch is watching test suites again #4001</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack ghci</code> は internal library を含むパッケージの処理で internal libray に対応する間違ったパッケージを探し、モジュールの読み込みに失敗していました。この問題は現在修正済みで、ライブラリとサブライブラリが適切に追跡されるようにコードが変更されました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3926">#3926</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3926"><code>stack ghci</code> does not recognise internal libraries #3926</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/3982">Handle internal libraries in GHCi. #3982</a></li>
+</ul>
+<hr />
+<ul>
+<li>internal library に依存していないパッケージを <code>stack build</code> すると、internal library をビルドしていないのにも関わらず登録しようとするため、ビルドに失敗していました。この問題は internal library を常にビルドすることで解決しました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4033">Handle internal libs not listed as dependencies #4033</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3996">Build fails with internal libraries that aren’t dependencies #3996</a></li>
+</ul>
+<hr />
+<ul>
+<li>NixOS 環境では <code>--no-nix</code> オプションの影響を受けなくなりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4021">Allow Nix mode to be disabled under NixOS #4021</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4002">stack does not honor –no-nix under NixOS #4002</a></li>
+</ul>
+<hr />
+<ul>
+<li>RAM を大量に消費してしまう問題が再発していたので修正しました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4027">#4027</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4027">Regression in 1.7.1 (compared to 1.6.5) in getPackageFiles RAM usage #4027</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4066">Fix RAM usage upon big dump-hi files parsing #4066</a></li>
+</ul>
+<hr />
+<ul>
+<li>コマンドラインの引数の順序によって動作が異なる問題を修正しました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3959">#3959</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3959">It should not matter if flags given before command or after #3959</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4067">Change parsers to use <code>flag'</code> instead of <code>switch</code> #4067</a></li>
+</ul>
+<hr />
+<ul>
+<li>パッケージをアップロードする際の Hackage クレデンシャル保存プロンプトで、ユーザの入力前に表示されなければならないメッセージが入力後に表示されてしまっていた問題を修正しました。ghci のターゲット選択プロンプトでも同様の問題が発生していたので修正しました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4063">Flush after prompt #4063</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4162">Stack Upload waits for confirmation BEFORE printing confirmation message #4162</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack solver</code> コマンドで、PATH に <code>cabal</code> が存在しない場合、ユーザに対して <code>stack install cabal-install</code> の実行を促すためのメッセージが表示されるようになりました。</li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4100">Solver cabal install hint #4100</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3841">stack solver complains there’s no cabal in path. #3841</a></li>
+</ul>
+<hr />
+<ul>
+<li><code>stack build</code> コマンドはサブライブラリを含むパッケージが executable, test, benchmark などの依存関係になっている場合でも、正しくビルドできるようになりました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3787">#3787</a>.</li>
+</ul>
+<h4 id="解説-2">解説</h4>
+<p>Cabal 2.0 から <code>internal Libraries</code> が追加され、stack 側も対応したという感じです。</p>
+<p>例として以下のような <code>package.yaml</code> があった場合</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb11-1" title="1"><span class="co"># package.yaml</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="fu">name:</span><span class="at"> test-internal</span></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb11-4" title="4">  <span class="kw">-</span> base</a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="fu">internal-libraries:</span></a>
+<a class="sourceLine" id="cb11-6" title="6">  <span class="fu">internal-foo:</span><span class="at"> </span><span class="kw">{}</span></a></code></pre></div>
+<p>自動生成される <code>cabal</code> ファイルは以下のようになります。</p>
+<pre class="cabal"><code>name:           test-internal
+version:        0.0.0
+build-type:     Simple
+cabal-version:  &gt;= 2.0
+
+library internal-foo
+  other-modules:
+      Paths_test_internal
+  build-depends:
+      base
+  default-language: Haskell2010</code></pre>
+<p>この状態でビルドした結果は次のとおりです。</p>
+<pre class="shell"><code># v1.7.1
+$ stack build
+Package has buildable sublibraries but no buildable libraries, I'm giving up
+CallStack (from HasCallStack):
+  error, called at src/Stack/Package.hs:280:30 in stack-1.7.1-JqFYW3fz7If7um4NzPRwPj:Stack.Package
+
+# v1.9.1
+$ stack build
+test-internal-0.0.0: configure (internal-lib)
+Configuring test-internal-0.0.0...
+test-internal-0.0.0: build (internal-lib)
+Preprocessing library 'internal-foo' for test-internal-0.0.0..
+Building library 'internal-foo' for test-internal-0.0.0..
+[1 of 1] Compiling Paths_test_internal ( .stack-work/dist/x86_64-linux/Cabal-2.2.0.1/build/internal-foo/autogen/Paths_test_internal.hs, .stack-work/dist/x86_64-linux/Cabal-2.2.0.1/build/internal-foo/Paths_test_internal.o )
+ignoring (possibly broken) abi-depends field for packages
+test-internal-0.0.0: copy/register
+Installing internal library internal-foo in /home/guchi/Desktop/stack-191-working/test-internal/.stack-work/install/x86_64-linux/lts-12.14/8.4.3/lib/x86_64-linux-ghc-8.4.3/test-internal-0.0.0-6jijyMwb8IH16YEILzaUQW-internal-foo</code></pre>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4111">Consistent handling of internal libraries #4111</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3787">Internal libraries does not work if there’s no main library #3787</a></li>
+<li><a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#sublibs">Internal Libraries - Cabal document</a></li>
+<li><a href="https://github.com/sol/hpack#library-fields">hpack Top-level fields</a></li>
+</ul>
+<hr />
+<ul>
+<li>internal library に依存したテストスイートのカバレッジレポートで、サブライブラリが適切に処理されるようになりました。以前まではカバレッジレポートを生成するときにエラーとなっていました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4105">#4105</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4111">Consistent handling of internal libraries #4111</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4105">Error running test coverage when tests depend on internal lbraries. #4105</a></li>
+</ul>
+<hr />
+<ul>
+<li>スナップショット更新時にサブライブラリがプリコンパイルキャシュに追加されるようになりました。以前まではスナップショットにサブライブラリを含むパッケージが存在するようなスナップショットを更新するとビルドが壊れていました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4071">#4071</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4111">Consistent handling of internal libraries #4111</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4071">haddock-library’s internal attoparsec library cannot be found - broken package #4071</a></li>
+</ul>
+<hr />
+<ul>
+<li>Stack は <code>warning</code> の代わりに適切な <code>error</code> ログレベルでエラーメッセージをプリティプリントするようになりました。これにより self-executing scripts で runhaskell のプラン構築エラーがターミナルに出力されない問題も修正されます。詳細: <a href="https://github.com/commercialhaskell/stack/pull/4114">#4114</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4114">Fixes self-executing scripts not piping plan construction errors from runhaskell to terminal, issue #3942 #4114</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3942">Self-executing scripts don’t pipe plan construction errors from runhaskell to terminal #3942</a></li>
+</ul>
+<hr />
+<ul>
+<li>Cabal の呼び出しに失敗した際に “While building Setup.hs” という間違ったメッセージが表示されていた問題を修正しました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/3934">#3934</a></li>
+</ul>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4131">Fix invalid “While building Setup.hs” #3934 #4131</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/3934">Invalid “While building Setup.hs” error message #3934</a></li>
+</ul>
+<hr />
+<h2 id="changelog-オリジナル">Changelog (オリジナル)</h2>
+<h3 id="release-notes">Release notes</h3>
+<ul>
+<li>Statically linked Linux bindists are back again, thanks to <a href="https://github.com/nh2">@nh2</a>.</li>
+<li>We will be deleting the Ubuntu, Debian, CentOS, Fedora, and Arch package repos from <code>download.fpcomplete.com</code> soon. These have been deprecated for over a year and have not received new releases, but were left in place for compatibility with older scripts.</li>
+</ul>
+<h3 id="major-changes">Major changes</h3>
+<ul>
+<li>Upgrade to Cabal 2.4
+<ul>
+<li>Note that, in this process, the behavior of file globbing has been modified to match that of Cabal. In particular, this means that for Cabal spec versions less than 2.4, <code>*.txt</code> will match <code>foo.txt</code>, but not <code>foo.2.txt</code>.</li>
+</ul></li>
+<li><code>GHCJS</code> support is being downgraded to ‘experimental’. A warning notifying the user of the experimental status of <code>GHCJS</code> will be displayed.</li>
+</ul>
+<h3 id="behavior-changes">Behavior changes:</h3>
+<ul>
+<li><code>ghc-options</code> from <code>stack.yaml</code> are now appended to <code>ghc-options</code> from <code>config.yaml</code>, whereas before they would be replaced.</li>
+<li><code>stack build</code> will now announce when sublibraries of a package are being build, in the same way executables, tests, benchmarks and libraries are announced</li>
+<li><code>stack sdist</code> will now announce the destination of the generated tarball, regardless of whether or not it passed the sanity checks</li>
+<li>The <code>--upgrade-cabal</code> option to <code>stack setup</code> has been deprecated. This feature no longer works with GHC 8.2 and later. Furthermore, the reason for this flag originally being implemented was drastically lessened once Stack started using the snapshot’s <code>Cabal</code> library for custom setups. See: <a href="https://github.com/commercialhaskell/stack/issues/4070">#4070</a>.</li>
+<li>With the new namespaced template feature, <code>stack templates</code> is no longer able to meaningfully display a list of all templates available. Instead, the command will download and display a <a href="https://github.com/commercialhaskell/stack-templates/blob/master/STACK_HELP.md">help file</a> with more information on how to discover templates. See: <a href="https://github.com/commercialhaskell/stack/issues/4039">#4039</a></li>
+<li>Build tools are now handled in a similar way to <code>cabal-install</code>. In particular, for legacy <code>build-tools</code> fields, we use a hard-coded list of build tools in place of looking up build tool packages in a tool map. This both brings Stack’s behavior closer into line with <code>cabal-install</code>, avoids some bugs, and opens up some possible optimizations/laziness. See: <a href="https://github.com/commercialhaskell/stack/issues/4125">#4125</a>.</li>
+<li>Mustache templating is not applied to large files (over 50kb) to avoid performance degredation. See: <a href="https://github.com/commercialhaskell/stack/issues/4133">#4133</a>.</li>
+<li><code>stack upload</code> signs the package by default, as documented. <code>--no-signature</code> turns the signing off. <a href="https://github.com/commercialhaskell/stack/issues/3739">#3739</a></li>
+<li>In case there is a network connectivity issue while trying to download a template, stack will check whether that template had been downloaded before. In that case, the cached version will be used. See <a href="https://github.com/commercialhaskell/stack/issues/3739">#3850</a>.</li>
+</ul>
+<h3 id="other-enhancements">Other enhancements</h3>
+<ul>
+<li>On Windows before Windows 10, –color=never is the default on terminals that can support ANSI color codes in output only by emulation</li>
+<li>On Windows, recognise a ‘mintty’ (false) terminal as a terminal, by default</li>
+<li><code>stack build</code> issues a warning when <code>base</code> is explicitly listed in <code>extra-deps</code> of <code>stack.yaml</code></li>
+<li><code>stack build</code> suggests trying another GHC version should the build plan end up requiring unattainable <code>base</code> version.</li>
+<li>A new sub command <code>run</code> has been introduced to build and run a specified executable similar to <code>cabal run</code>. If no executable is provided as the first argument, it defaults to the first available executable in the project.</li>
+<li><code>stack build</code> missing dependency suggestions (on failure to construct a valid build plan because of missing deps) are now printed with their latest cabal file revision hash. See <a href="https://github.com/commercialhaskell/stack/pull/4068">#4068</a>.</li>
+<li>Added new <code>--tar-dir</code> option to <code>stack sdist</code>, that allows to copy the resulting tarball to the specified directory.</li>
+<li>Introduced the <code>--interleaved-output</code> command line option and <code>build.interleaved-output</code> config value which causes multiple concurrent builds to dump to stderr at the same time with a <code>packagename&gt;</code> prefix. See <a href="https://github.com/commercialhaskell/stack/issues/3225">#3225</a>.</li>
+<li>The default retry strategy has changed to exponential backoff. This should help with <a href="https://github.com/commercialhaskell/stack/issues/3510">#3510</a>.</li>
+<li><code>stack new</code> now allows template names of the form <code>username/foo</code> to download from a user other than <code>commercialstack</code> on Github, and can be prefixed with the service <code>github:</code>, <code>gitlab:</code>, or <code>bitbucket:</code>. <a href="https://github.com/commercialhaskell/stack/issues/4039">#4039</a></li>
+<li>Switch to <code>githash</code> to include some unmerged bugfixes in <code>gitrev</code> Suggestion to add <code>'allow-newer': true</code> now shows path to user config file where this flag should be put into <a href="https://github.com/commercialhaskell/stack/issues/3685">#3685</a></li>
+<li><code>stack ghci</code> now asks which main target to load before doing the build, rather than after</li>
+<li>Bump to hpack 0.29.0</li>
+<li>With GHC 8.4 and later, Haddock is given the <code>--quickjump</code> flag.</li>
+<li>It is possible to specify the Hackage base URL to upload packages to, instead of the default of <code>https://hackage.haskell.org/</code>, by using <code>hackage-base-url</code> configuration option.</li>
+<li>When using Nix, if a specific minor version of GHC is not requested, the latest minor version in the given major branch will be used automatically.</li>
+</ul>
+<h3 id="bug-fixes">Bug fixes</h3>
+<ul>
+<li><code>stack ghci</code> now does not invalidate <code>.o</code> files on repeated runs, meaning any modules compiled with <code>-fobject-code</code> will be cached between ghci runs. See <a href="https://github.com/commercialhaskell/stack/pull/4038">#4038</a>.</li>
+<li><code>~/.stack/config.yaml</code> and <code>stack.yaml</code> terminating by newline</li>
+<li>The previous released caused a regression where some <code>stderr</code> from the <code>ghc-pkg</code> command showed up in the terminal. This output is now silenced.</li>
+<li>A regression in recompilation checking introduced in v1.7.1 has been fixed. See <a href="https://github.com/commercialhaskell/stack/issues/4001">#4001</a></li>
+<li><code>stack ghci</code> on a package with internal libraries was erroneously looking for a wrong package corresponding to the internal library and failing to load any module. This has been fixed now and changes to the code in the library and the sublibrary are properly tracked. See <a href="https://github.com/commercialhaskell/stack/issues/3926">#3926</a>.</li>
+<li>For packages with internal libraries not depended upon, <code>stack build</code> used to fail the build process since the internal library was not built but it was tried to be registered. This is now fixed by always building internal libraries. See <a href="https://github.com/commercialhaskell/stack/issues/3996">#3996</a>.</li>
+<li><code>--no-nix</code> was not respected under NixOS</li>
+<li>Fix a regression which might use a lot of RAM. See <a href="https://github.com/commercialhaskell/stack/issues/4027">#4027</a>.</li>
+<li>Order of commandline arguments does not matter anymore. See <a href="https://github.com/commercialhaskell/stack/issues/3959">#3959</a></li>
+<li>When prompting users about saving their Hackage credentials on upload, flush to stdout before waiting for the response so the prompt actually displays. Also fixes a similar issue with ghci target selection prompt.</li>
+<li>If <code>cabal</code> is not on PATH, running <code>stack solver</code> now prompts the user to run <code>stack install cabal-install</code></li>
+<li><code>stack build</code> now succeeds in building packages which contain sublibraries which are dependencies of executables, tests or benchmarks but not of the main library. See <a href="https://github.com/commercialhaskell/stack/issues/3959">#3787</a>.</li>
+<li>Sublibraries are now properly considered for coverage reports when the test suite depends on the internal library. Before, stack was erroring when trying to generate the coverage report, see <a href="https://github.com/commercialhaskell/stack/issues/4105">#4105</a>.</li>
+<li>Sublibraries are now added to the precompiled cache and recovered from there when the snapshot gets updated. Previously, updating the snapshot when there was a package with a sublibrary in the snapshot resulted in broken builds. This is now fixed, see <a href="https://github.com/commercialhaskell/stack/issues/4071">#4071</a>.</li>
+<li>[#4114] Stack pretty prints error messages with proper <code>error</code> logging level instead of <code>warning</code> now. This also fixes self-executing scripts not piping plan construction errors from runhaskell to terminal (issue #3942).</li>
+<li>Fix invalid “While building Setup.hs” when Cabal calls fail. See: <a href="https://github.com/commercialhaskell/stack/issues/3934">#3934</a></li>
+<li><code>stack upload</code> signs the package by default, as documented. <code>--no-signature</code> turns the signing off. <a href="https://github.com/commercialhaskell/stack/issues/3739">#3739</a></li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/09-17-time-package.html"><i class="material-icons left">navigate_before</i>time パッケージの使い方</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Stack 1.9.1 がリリースされました。&url=https://haskell.e-bigmoon.com/posts/2018/10-22-stack-191.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/10-22-stack-191.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/10-22-stack-191.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
