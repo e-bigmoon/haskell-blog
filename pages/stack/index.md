@@ -41,6 +41,7 @@ date: 2018/09/14
 
 ### stack リリース解説
 
+- [stack v1.9.1](/posts/2018/10-22-stack191.html)
 - [stack v1.7.1](/posts/2018/05-04-stack171.html)
 - [stack v1.6.5](/posts/2018/02-21-stack165.html)
 - [stack v1.6.3](/posts/2017/12-24-stack163.html)
