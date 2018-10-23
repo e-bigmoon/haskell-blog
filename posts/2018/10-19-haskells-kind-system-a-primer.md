@@ -553,3 +553,7 @@ Levity 多相にも制限があります。使うことができない場所が�
 しかしバージョン8から、GHC は方向性を変えます。気づいている人もいると思いますが、この記事で私は、型とカインドの類似性について説明しようとしてきました。どちらも高階で、多相で、推論ができて、カリー化されていて、等々、これは偶然ではなかったのです! `TypeInType` の進展により、GHC 8 である拡張が導入され、型とカインド (それに sort) は1つに統合され、同じものになりました! ここまで来ると、型を他の型に分類することができるようになります (???)。`3` は `Int` 型に、`Int` 型は `*` に、`*` は `*` 型に分類されます。この統合によって、完全な依存型への道が開かれたことになります[^3]。
 
 また、より最新のドキュメントを見ると、`*` というカインドが `Type` になっているのに気づくかもしれません (`TYPE r` と混同しないように)。こいつらは今のところ[シノニム](https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Kind.html#t:Type)になっていますが、徐々に `*` から `Type` を使うように移行される予定です。
+
+1. 特筆すべき例外は `data Void` で、定義することができません。それ自体に値が存在しないのです。そして、`undefined` や `f x = f x` の無限ループのように、[絶対に成功することのない値](https://wiki.haskell.org/Bottom)を持っています。
+2. `Proxy` は base の `Data.Proxy` モジュールにすでに定義されています。ここでは、こいつのカインドの裏にあるロジックをお見せするために、独自の定義をしています。`Data.Proxy` とその使い方についてもっと知りたいのなら、[Kwang Seo のブログ記事](https://kseo.github.io/posts/2017-01-15-data-proxy.html)をチェックしてみてください。
+3. もっと依存型について学習したいのなら、[Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris) や、最近発行された [The Little Typer](https://mitpress.mit.edu/books/little-typer) について読んでみることをおすすめします。
