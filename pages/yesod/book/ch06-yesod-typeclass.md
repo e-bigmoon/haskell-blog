@@ -291,21 +291,23 @@ scaffolded された `addStaticContent` は便利ないくつかの賢い機能�
 - 出力されるファイル名はファイルコンテンツのハッシュによって決まります。これは、古いコンテンツを気にすることなく、遠い将来までキャッシュヘッダをセット可能なことを意味します。
 - ファイル名はハッシュに基づいているため、同じ名前のファイルが存在しても、ファイル名を書き直す必要がないことが保証されています。scaffold コードは、自動的にそのようなファイルの存在を確認し、必要でなければ、コストのかかるディスクIOによる書き込みを回避します。
 
-## スマートな静的ファイル
+## 静的ファイルの最適化
 
 グーグルは[静的ファイルを異なるドメインから受信せよ](https://developers.google.com/speed/docs/insights/EnableCompression)という重要な最適化を推奨しています。この方法による利点は、メインのドメインにセットしたクッキーが静的ファイルを取り出す際に送信されないので、帯域幅の節約になります。
 
-これを可能にするために `urlRenderOverride` メソッドがあります。このメソッドは、通常の URL レンダリングを中断し、何らかのルートに特別な値をセットします。例えば scaffolding はこのメソッドを次のように定義しています。
+これを可能にするために `urlParamRenderOverride` メソッドがあります。このメソッドは、通常のURLレンダリング処理に割り込み、何らかのルートに特別な値をセットします。例えば scaffolding はこのメソッドを次のように定義しています。
 
 ```haskell
-urlRenderOverride y (StaticR s) =
-    Just $ uncurry (joinPath y (Settings.staticRoot $ settings y)) $ renderRoute s
-
-urlRenderOverride _ _ = Nothing
+urlParamRenderOverride :: site
+                       -> Route site
+                       -> [(T.Text, T.Text)] -- ^ クエリ文字列
+                       -> Maybe Builder
+urlParamRenderOverride y (StaticR s) _ =
+  Just $ uncurry (joinPath y (Settings.staticRoot $ settings y)) $ renderRoute s
+urlParamRenderOverride _ _ _ = Nothing
 ```
 
-これは、静的ルートが特別な静的ルートから受信されることを意味し、そのルートは異なるドメインになるよう設定可能です。
-これは、型安全URL の強力さと柔軟性の重要な例でもあり、たった1行のコードで、全てのハンドラを通して、静的ルートのレンダリングを変更することができてしまうのです。
+これは、静的ルートが特別な静的ルートから受信されることを意味し、そのルートは異なるドメインになるよう設定可能です。これは、型安全URL の強力さと柔軟性の重要な例でもあり、たった1行のコードで、全てのハンドラを通して、静的ルートのレンダリングを変更することができてしまうのです。
 
 ## 認証 / 認可
 
