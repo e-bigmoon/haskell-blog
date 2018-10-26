@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>ch13-Yesod’s-Monads</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/book/ch13-Yesod%E2%80%99s-Monads.html">
+  <link rel="alternate" type="application/atom+xml" title="ch13-Yesod’s-Monads" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="ch13-Yesod’s-Monads" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/book/ch13-Yesod%E2%80%99s-Monads.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="ch13-Yesod’s-Monads" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+        <a href="../../yesod/" class="white-text">
+          <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+          Yesod
+        </a>
+      </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">ch13-Yesod’s-Monads</h1>
+        
+      </div>
+
+      <article class="page-content">
+        <h1 id="yesods-monads">Yesod’s Monads</h1>
+<p>この本を読み進めるにつれ, 多くのモナドが現れてきた: <code>Handler</code>, <code>Widget</code>, そして, <code>YesodDB</code>(Persistentのための)などである. 多くのモナドと同様に, それぞれは, 特有の機能を持つ: <code>handler</code>はリクエストにアクセスし, レスポンスを送信できるようにする. <code>Widget</code>は, HTML, CSS, そして, Javascriptを含む. <code>YesodDB</code>はデータベースのクエリを発行することを可能にする. Model-View-Controller(MVC)の用語で言うと, <code>YesodDB</code>はモデルであり, <code>Widget</code>はビュー, そして, <code>Handler</code>はコントローラと考えられる.</p>
+<p>これまでのところ, これらのモナドを使うための非常に率直な方法を紹介してきた: メインのハンドラは<code>Handler</code>で実行され, <code>runDB</code>を用いて<code>YesodDB</code>クエリを実行し, そして, <code>defaultLayout</code>を用いて<code>Widget</code>を返し, <code>Widget</code>は<code>toWidget</code>を呼ぶことで次々に作られた.</p>
+<p>しかし, これらの型をより深く理解できれば, より面白い結果が得られるだろう.</p>
+<h2 id="モナドトランスフォーマ">モナドトランスフォーマ</h2>
+<p>Shrek- more or less モナドは玉ねぎのようである. モナドはケーキのようではない.</p>
+<p>Yesodのモナドの核に迫る前に, モナドトランスフォーマの理解が少し必要になる(もし, モナドとランスフォーマについて少し知っているのならば, この節は読み飛ばしてもよいだろう.). 異なるモナドは異なる機能を持つ: <code>Reader</code>は計算時において, いくつかのデータに対するread-onlyアクセスを与え, <code>Error</code>は, 計算を短絡する, などである.</p>
+<p>しかし, しばしば, これらのいくつかの特徴を組み合わせたいと思うだろう. 結局, どうしてエラーアウトし得る設定変数に対し, 読み取り専用アクセスを付与した計算ができない必要があるだろうか? これに対する1つの方法は, <code>ReaderError</code>のような新しいモナドを書くことである. しかし, これは非常に複雑になるという明から欠点を持つ: つまり, 1つの可能な組み合わせ毎に, 新しいモナドを書く必要が出てくる.</p>
+<p>代わりに, モナドトランスフォーマが存在する. <code>Reader</code>に加え, <code>readerT</code>があり, それは, 他のモナドにreader機能を与える. すると, ReaderErrorは, (概念的には)次のように表せる.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">type</span> <span class="dt">ReaderError</span> <span class="fu">=</span> <span class="dt">ReaderT</span> <span class="dt">Error</span></a></code></pre></div>
+<p>設定変数にアクセスするために, <code>ask</code>関数を用いる. しかし, 計算の短絡にはどうするのであろうか? <code>throwError</code>を用いたいが, それは正しくは機能しない. 代わりに, 呼び出しを<code>lift</code>し, 次のモナドにつなげるのである. 言い換えると:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">throwError ::</span> errValue <span class="ot">-&gt;</span> <span class="dt">Error</span></a>
+<a class="sourceLine" id="cb2-2" title="2">lift <span class="fu">.</span><span class="ot"> throwError ::</span> errValue <span class="ot">-&gt;</span> <span class="dt">ReaderT</span> <span class="dt">Error</span></a></code></pre></div>
+<p>ここに, いくつかの要点を挙げる:</p>
+<ul>
+<li><p>トランスフォーマは, 既存のモナドに機能を追加するために用いられる.</p></li>
+<li><p>トランスフォーマは, 常に既存のモナドをラップしなければならない.</p></li>
+<li><p>ラップされたモナドが利用可能な機能は, モナドトランスフォーマだけでなく, ラップされた内部モナドにも依存する.</p></li>
+</ul>
+<p>最後の点における最もよい例は, <code>IO</code>モナドである. <code>IO</code>の周りにトランスフォーマの層がいくつあったとしても, 核には<code>IO</code>があり, これらのモナドトランスフォーマの層において, I/Oを実行できることを意味する. <code>liftIO $ putStrLn &quot;Hello There!&quot;</code>のように見えるコードをよく目にすることだろう.</p>
+<h2 id="つのトランスフォーマ">3つのトランスフォーマ</h2>
+<div class="yesod-book-notice">
+Yesod初期バージョンにおいては, <code>Handler</code>や<code>Widget</code>はより魔術的で難しいものであった. バージョン1.2から, 物事はずっと単純になった. もし, 偽物のトランスフォーマやサブサイトのパラメータに関する難しいものを読んだことを覚えているならば, 安心してもよい: 戸惑う必要はない, 物事は実際に少し変わったのである. パージステントの話も同様にずっと単純である.
+<div>
+
+<p>これまでに, 2つのトランスフォーマについて論じた: <code>Handler</code>と<code>Widget</code>である. より一般的な<code>handlerT</code>や, <code>WidgetT</code>のようなアプリケーション固有のエイリアスが存在することを思い出そう. これらの各々は, 2つの型パラメータを取る: ファウンデーションデータ型と, ベースモナドである. 最も一般的に用いられるベースモナドは, <code>IO</code>である. persistentでは, <code>PersistStore</code>と呼ばれる型クラスがある. この型クラスは<code>get</code>のようにデータベースに対して実行できる, 全てのプリミティブな関数を定義している. この型クラスには, persistentによって支持されたバックエンドのデータベース毎にインスタンスが存在する. 例えば, SQLデータベースについては, <code>SqlBackend</code>と呼ばれるデータ型が存在する. そして, 標準的<code>ReaderT</code> 変換子を用いて, <code>SqlBackend</code>値を全ての演算に与える. このことは, SQLデータベースを<code>MonadIO</code>のインスタンスである任意のベースモナドを用いて実行できることを意味する. ここで覚えておくべき点は, Persistent変換子を<code>Handler</code>や<code>Widget</code>の上に載せることができる点である.</p>
+<p>関連するPersistent変換子を言及するのを容易にするために, yesod persistentパッケージは, <code>YesodPersistentBackend</code>関連型を定義する. 例えば, <code>MyApp</code>というサイトがあり, それがSQLを用いていれば, <code>type instance YesodPersistentBackend App = SqlBackend</code>のようなものを定義するだろう. そして利便性のために, <code>YesodDB</code>という型シノニムが次のように定義できる:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">type</span> <span class="dt">YesodDB</span> site <span class="fu">=</span> <span class="dt">ReaderT</span> (<span class="dt">YesodPersistBackend</span> site) (<span class="dt">HandlerT</span> site <span class="dt">IO</span>)</a></code></pre></div>
+<p>するとデータベースの操作は次の<code>YesodDB MyApp SomeResult</code>ような型で表せる. これらを実行するために, 標準的なPersistentのアンラップ関数(<code>runsqlPool</code>のような)を用い, アクションを実行し通常の<code>handler</code>値を得る. これを自動化するために, <code>runDB</code>関数を用いる. これらを全てまとめると, ハンドラ内でデータベース操作を実行できる.</p>
+<p>Yesodコードの大部分, 特にこれまでのところこの本においては, ウィジットは, アクションのないコンテナであり, 単にHTML, CSS, そして, Javascriptを組み合わせるものと扱われてきた. しかし実際には, <code>Widget</code>は<code>Handler</code>ができることは, <code>handlerToWidget</code>関数を用いて何でもできる. 例えば, <code>Widget</code>において<code>handlerToWidget . runDB</code>のようなものを用いて, データベースクエリを実行できる.</p>
+<h2 id="例-データベースによって駆動されたナブバー">例 : データベースによって駆動されたナブバー</h2>
+<p>この新しい知識を行動に移しましょう. <code>Widget</code>を作り, データベースの中身に基づいて, 結果を生成したい. 以前は, 方法としてデータをハンドラに読み込み, そのデータをウィジットに渡していた. 今回は, データの読み込みをウィジットそれ自身で行う. これはモジュラリティのためである. なぜならば, この<code>Widget</code>は用いたいどの<code>Handler</code>においても使うことができ, データベースの中身を通過する必要がないためである.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">{-# LANGUAGE GADTs                      #-}</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span>    (runNoLoggingT)</a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="kw">import</span>           <span class="dt">Data.Text</span>               (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="kw">import</span>           <span class="dt">Data.Time</span></a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb4-14" title="14"></a>
+<a class="sourceLine" id="cb4-15" title="15">share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</a>
+<a class="sourceLine" id="cb4-16" title="16">Link</a>
+<a class="sourceLine" id="cb4-17" title="17">    title Text</a>
+<a class="sourceLine" id="cb4-18" title="18">    url Text</a>
+<a class="sourceLine" id="cb4-19" title="19">    added UTCTime</a>
+<a class="sourceLine" id="cb4-20" title="20">|]</a>
+<a class="sourceLine" id="cb4-21" title="21"></a>
+<a class="sourceLine" id="cb4-22" title="22"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span> <span class="dt">ConnectionPool</span></a>
+<a class="sourceLine" id="cb4-23" title="23"></a>
+<a class="sourceLine" id="cb4-24" title="24">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb4-25" title="25">/         HomeR    GET</a>
+<a class="sourceLine" id="cb4-26" title="26">/add-link AddLinkR POST</a>
+<a class="sourceLine" id="cb4-27" title="27">|]</a>
+<a class="sourceLine" id="cb4-28" title="28"></a>
+<a class="sourceLine" id="cb4-29" title="29"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb4-30" title="30"></a>
+<a class="sourceLine" id="cb4-31" title="31"><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-32" title="32">    renderMessage _ _ <span class="fu">=</span> defaultFormMessage</a>
+<a class="sourceLine" id="cb4-33" title="33"></a>
+<a class="sourceLine" id="cb4-34" title="34"><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-35" title="35">    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">SqlBackend</span></a>
+<a class="sourceLine" id="cb4-36" title="36">    runDB db <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-37" title="37">        <span class="dt">App</span> pool <span class="ot">&lt;-</span> getYesod</a>
+<a class="sourceLine" id="cb4-38" title="38">        runSqlPool db pool</a>
+<a class="sourceLine" id="cb4-39" title="39"></a>
+<a class="sourceLine" id="cb4-40" title="40"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb4-41" title="41">getHomeR <span class="fu">=</span> defaultLayout</a>
+<a class="sourceLine" id="cb4-42" title="42">    [whamlet|</a>
+<a class="sourceLine" id="cb4-43" title="43">        <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddLinkR</span><span class="kw">}&gt;</span></a>
+<a class="sourceLine" id="cb4-44" title="44">            <span class="kw">&lt;p&gt;</span></a>
+<a class="sourceLine" id="cb4-45" title="45">                Add a new link to</a>
+<a class="sourceLine" id="cb4-46" title="46">                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">url</span><span class="ot"> name=</span><span class="st">url</span><span class="ot"> value=</span><span class="st">http://</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb4-47" title="47">                titled</a>
+<a class="sourceLine" id="cb4-48" title="48">                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">text</span><span class="ot"> name=</span><span class="st">title</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb4-49" title="49">                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add link&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb4-50" title="50">        <span class="kw">&lt;h2&gt;</span>Existing links</a>
+<a class="sourceLine" id="cb4-51" title="51">        <span class="kw">^{</span>existingLinks<span class="kw">}</span></a>
+<a class="sourceLine" id="cb4-52" title="52">    |]</a>
+<a class="sourceLine" id="cb4-53" title="53"></a>
+<a class="sourceLine" id="cb4-54" title="54"><span class="ot">existingLinks ::</span> <span class="dt">Widget</span></a>
+<a class="sourceLine" id="cb4-55" title="55">existingLinks <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-56" title="56">    links <span class="ot">&lt;-</span> handlerToWidget <span class="fu">$</span> runDB <span class="fu">$</span> selectList [] [<span class="dt">LimitTo</span> <span class="dv">5</span>, <span class="dt">Desc</span> <span class="dt">LinkAdded</span>]</a>
+<a class="sourceLine" id="cb4-57" title="57">    [whamlet|</a>
+<a class="sourceLine" id="cb4-58" title="58">        <span class="kw">&lt;ul&gt;</span></a>
+<a class="sourceLine" id="cb4-59" title="59">            <span class="kw">$forall</span> <span class="dt">Entity</span> _ link <span class="ot">&lt;-</span> links</a>
+<a class="sourceLine" id="cb4-60" title="60">                <span class="kw">&lt;li&gt;</span></a>
+<a class="sourceLine" id="cb4-61" title="61">                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">#{</span>linkUrl link<span class="kw">}&gt;#{</span>linkTitle link<span class="kw">}</span></a>
+<a class="sourceLine" id="cb4-62" title="62">    |]</a>
+<a class="sourceLine" id="cb4-63" title="63"></a>
+<a class="sourceLine" id="cb4-64" title="64"><span class="ot">postAddLinkR ::</span> <span class="dt">Handler</span> ()</a>
+<a class="sourceLine" id="cb4-65" title="65">postAddLinkR <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-66" title="66">    url <span class="ot">&lt;-</span> runInputPost <span class="fu">$</span> ireq urlField <span class="st">&quot;url&quot;</span></a>
+<a class="sourceLine" id="cb4-67" title="67">    title <span class="ot">&lt;-</span> runInputPost <span class="fu">$</span> ireq textField <span class="st">&quot;title&quot;</span></a>
+<a class="sourceLine" id="cb4-68" title="68">    now <span class="ot">&lt;-</span> liftIO getCurrentTime</a>
+<a class="sourceLine" id="cb4-69" title="69">    runDB <span class="fu">$</span> insert <span class="fu">$</span> <span class="dt">Link</span> title url now</a>
+<a class="sourceLine" id="cb4-70" title="70">    setMessage <span class="st">&quot;Link added&quot;</span></a>
+<a class="sourceLine" id="cb4-71" title="71">    redirect <span class="dt">HomeR</span></a>
+<a class="sourceLine" id="cb4-72" title="72"></a>
+<a class="sourceLine" id="cb4-73" title="73"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-74" title="74">main <span class="fu">=</span> runNoLoggingT <span class="fu">$</span> withSqlitePool <span class="st">&quot;links.db3&quot;</span> <span class="dv">10</span> <span class="fu">$</span> \pool <span class="ot">-&gt;</span> liftIO <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-75" title="75">    runSqlPersistMPool (runMigration migrateAll) pool</a>
+<a class="sourceLine" id="cb4-76" title="76">    warp <span class="dv">3000</span> <span class="fu">$</span> <span class="dt">App</span> pool</a></code></pre></div>
+<p>特に<code>existingLink</code>関数に注意を払いなさい. 必要なこと全ては, <code>handlerToWidget . runDB</code>を通常のデータベースアクションに適用することである. そして, <code>getHomeR</code>から, <code>existingLinks</code>を通常の<code>Widget</code>のように扱い, 特別なパラメータは全く用いなかった. このアプリの結果については, 図を参照しなさい.</p>
+<p><img src="https://www.yesodweb.com/book/image/navbar" title="navbar" /></p>
+<h2 id="例-リクエスト情報">例 : リクエスト情報</h2>
+<p>同様に<code>Widget</code>内にリクエスト情報を取得できる. ここでは, GETパラメータに基づき, リストのソート順を決定できる.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="kw">import</span>           <span class="dt">Data.List</span> (sortBy)</a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="kw">import</span>           <span class="dt">Data.Ord</span>  (comparing)</a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="kw">import</span>           <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb5-10" title="10"></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb5-12" title="12">    {<span class="ot"> personName ::</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb5-13" title="13">    ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-14" title="14">    }</a>
+<a class="sourceLine" id="cb5-15" title="15"></a>
+<a class="sourceLine" id="cb5-16" title="16"><span class="ot">people ::</span> [<span class="dt">Person</span>]</a>
+<a class="sourceLine" id="cb5-17" title="17">people <span class="fu">=</span></a>
+<a class="sourceLine" id="cb5-18" title="18">    [ <span class="dt">Person</span> <span class="st">&quot;Miriam&quot;</span> <span class="dv">25</span></a>
+<a class="sourceLine" id="cb5-19" title="19">    , <span class="dt">Person</span> <span class="st">&quot;Eliezer&quot;</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb5-20" title="20">    , <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="dv">26</span></a>
+<a class="sourceLine" id="cb5-21" title="21">    , <span class="dt">Person</span> <span class="st">&quot;Gavriella&quot;</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb5-22" title="22">    ]</a>
+<a class="sourceLine" id="cb5-23" title="23"></a>
+<a class="sourceLine" id="cb5-24" title="24"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb5-25" title="25"></a>
+<a class="sourceLine" id="cb5-26" title="26">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb5-27" title="27">/ HomeR GET</a>
+<a class="sourceLine" id="cb5-28" title="28">|]</a>
+<a class="sourceLine" id="cb5-29" title="29"></a>
+<a class="sourceLine" id="cb5-30" title="30"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb5-31" title="31"></a>
+<a class="sourceLine" id="cb5-32" title="32"><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-33" title="33">    renderMessage _ _ <span class="fu">=</span> defaultFormMessage</a>
+<a class="sourceLine" id="cb5-34" title="34"></a>
+<a class="sourceLine" id="cb5-35" title="35"></a>
+<a class="sourceLine" id="cb5-36" title="36"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb5-37" title="37">getHomeR <span class="fu">=</span> defaultLayout</a>
+<a class="sourceLine" id="cb5-38" title="38">    [whamlet|</a>
+<a class="sourceLine" id="cb5-39" title="39">        <span class="kw">&lt;p&gt;</span></a>
+<a class="sourceLine" id="cb5-40" title="40">            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?sort=name&quot;</span><span class="kw">&gt;</span>Sort by name</a>
+<a class="sourceLine" id="cb5-41" title="41">            |</a>
+<a class="sourceLine" id="cb5-42" title="42">            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?sort=age&quot;</span><span class="kw">&gt;</span>Sort by age</a>
+<a class="sourceLine" id="cb5-43" title="43">            |</a>
+<a class="sourceLine" id="cb5-44" title="44">            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?&quot;</span><span class="kw">&gt;</span>No sort</a>
+<a class="sourceLine" id="cb5-45" title="45">        <span class="kw">^{</span>showPeople<span class="kw">}</span></a>
+<a class="sourceLine" id="cb5-46" title="46">    |]</a>
+<a class="sourceLine" id="cb5-47" title="47"></a>
+<a class="sourceLine" id="cb5-48" title="48"><span class="ot">showPeople ::</span> <span class="dt">Widget</span></a>
+<a class="sourceLine" id="cb5-49" title="49">showPeople <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-50" title="50">    msort <span class="ot">&lt;-</span> runInputGet <span class="fu">$</span> iopt textField <span class="st">&quot;sort&quot;</span></a>
+<a class="sourceLine" id="cb5-51" title="51">    <span class="kw">let</span> people' <span class="fu">=</span></a>
+<a class="sourceLine" id="cb5-52" title="52">            <span class="kw">case</span> msort <span class="kw">of</span></a>
+<a class="sourceLine" id="cb5-53" title="53">                <span class="dt">Just</span> <span class="st">&quot;name&quot;</span> <span class="ot">-&gt;</span> sortBy (comparing personName) people</a>
+<a class="sourceLine" id="cb5-54" title="54">                <span class="dt">Just</span> <span class="st">&quot;age&quot;</span>  <span class="ot">-&gt;</span> sortBy (comparing personAge)  people</a>
+<a class="sourceLine" id="cb5-55" title="55">                _           <span class="ot">-&gt;</span> people</a>
+<a class="sourceLine" id="cb5-56" title="56">    [whamlet|</a>
+<a class="sourceLine" id="cb5-57" title="57">        <span class="kw">&lt;dl&gt;</span></a>
+<a class="sourceLine" id="cb5-58" title="58">            <span class="kw">$forall</span> person <span class="ot">&lt;-</span> people'</a>
+<a class="sourceLine" id="cb5-59" title="59">                <span class="kw">&lt;dt&gt;#{</span>personName person<span class="kw">}</span></a>
+<a class="sourceLine" id="cb5-60" title="60">                <span class="kw">&lt;dd&gt;#{</span><span class="fu">show</span> <span class="fu">$</span> personAge person<span class="kw">}</span></a>
+<a class="sourceLine" id="cb5-61" title="61">    |]</a>
+<a class="sourceLine" id="cb5-62" title="62"></a>
+<a class="sourceLine" id="cb5-63" title="63"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb5-64" title="64">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<p>この場合, <code>handlerToWidget</code>すら呼び出す必要がないことに注意しなさい. その理由は, Yesodに含まれる多くの関数が, <code>MonadHandler</code>型クラスを用いて, 自動的に<code>Handler</code>と<code>Widget</code>の機能を果たすためである. 実際に, <code>MonadHandler</code>によって, これらの関数は多くの共通のモナド変換により“自動的にリフト”される. しかし, 望むのなら, <code>runInputGet</code>の呼び出しを<code>handlerToWidget</code>を用いてラップすることができるが, その場合も全く同じ動作をする.</p>
+<h2 id="パフォーマンスとエラーメッセージ">パフォーマンスとエラーメッセージ</h2>
+<div class="yesod-book-notice">
+この節は課外と考えて良い. Yesodの裏にある設計動機についてであるが, Yesodの使用上においては, 必要ではない.
+<div>
+
+<p>この点において, 少し混乱するかもしれない. 上に述べたように, <code>Widget</code>シノニムは<code>Hanlder</code>ではなく, <code>IO</code>をベースモナドとして用いる. それでは, どのようにして<code>Widget</code>は<code>Handler</code>操作を実行できるのであろうか? そして, どうして<code>Widget</code>を<code>Handler</code>の上部のトランスフォーマにし, <code>lift</code>を用いることをしないで, このような特別な<code>handlerToWidget</code>を用いるのであろうか. そして, 最後に, <code>Widget</code>と<code>Handler</code>は共に<code>MonadResource</code>のインスタンスになることを述べた. もし, <code>MonadResource</code>に馴染みがあるならば, なぜ<code>ResourceT</code>がモナドトランスフォーマスタックに現れないのか不思議に思うかも知れない.</p>
+<p>この問題の真相としては, これらのモナドトランスフォーマすべてに対し, 取り得るずっと簡単な(実装面において)方法があるということである. <code>Handler</code>は単なる<code>IO</code>ではなく, <code>ResourceT IO</code>の上部にあるトランスフォーマであり, そのほうが多少正確であった. そして, <code>Widget</code>は<code>Handler</code>の上部に重ねることもできた. 最終的な結果は, 次のようになるだろう.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">type</span> <span class="dt">Handler</span> <span class="fu">=</span> <span class="dt">HandlerT</span> <span class="dt">App</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>)</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="kw">type</span> <span class="dt">Widget</span>  <span class="fu">=</span> <span class="dt">WidgetT</span>  <span class="dt">App</span> (<span class="dt">HandlerT</span> <span class="dt">App</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>))</a></code></pre></div>
+<p>直接トランスフォーマ型を用いる代わりに, より親切な型シノニムを大部分で用いているため, そんなに悪くは見えないだろう. 問題点は, 根底にあるトランスフォーマが漏出するたびに, 大きな型シノニムは信じられないくらい混乱を招くものとなることである. 漏出が最も起こりやすい場面は, エラーメッセージにおいてであり, おそらくそこで非常に混乱するだろう! (他の場面では, サブサイトで作業をする場合であり, それもたまに混乱するものとなるだろう.)</p>
+<p>他の心配事は, 各モナドとランスフォーマのレイヤはいくらかの動作ペナルティを付加することである. これは, 動作しているI/Oに比較すれば無視できるほどであるが, オーバーヘッドは存在する.</p>
+<p>そこで, 正しく層にしたトランスフォーマを用いる代わりに, 各<code>HandlerT</code>と<code>WidgetT</code>を1つのレベルのトランスフォーマに平坦化する. ここでは, 用いられる方法を高みから外観する.</p>
+<ul>
+<li><p><code>HandlerT</code>は実際には<code>ReaderT</code>モナドである. (エラーメッセージを明確にするために異なる名称を与えただけである。) これは, <code>HandlerData</code>型に対するリーダーであり, リクエスト情報とほかの不変コンテンツを含んでいる.</p></li>
+<li><p>さらに, <code>HandlerData</code>は, <code>GHState</code>(歴史的な理由でよくない名前である)に対する<code>IORef</code>を持ち, それはハンドラ(例えば, セッション変数)の過程で変化するデータを保持する. <code>StateT</code>の代わりに<code>IORef</code>の方法を用いるのは,<code>IORef</code>は実行時例外が投げられても変化した状態を持ち続けるためである.</p></li>
+<li><p><code>ResourceT</code>モナドは実質的には, <code>IORef</code>を持つ<code>ReaderT</code>モナドトランスフォーマである. この<code>IORef</code>は, 実行されなければならないすべてのクリーンアップ動作に関する情報を含んでいる.(これは, <code>InternalState</code>と呼ばれる) 参照を保持する別々のトランスフォーマのレイヤを持つ代わりに, <code>HandlerData</code>の自己参照を行う.(その通り, ここで<code>IORef</code>を用いる理由は, 実行時例外のためでもある.)</p></li>
+<li><p><code>WidgetT</code>は本質的には, 単に<code>HandlerT</code>が行う全てのものの上にある<code>WriterT</code>である. しかし, <code>HandlerT</code>は, 単なる<code>ReaderT</code>であるため, 容易に2つの側面を1つのトランスフォーマに圧縮でき, <code>newtype WidgetT site m a = WidgetT (HandlerData → m (a, WidgetData))</code>のようなものである.</p></li>
+</ul>
+<p>この部分をより理解したければ, <code>Yesod.Core.Type</code>における<code>HandlerT</code>と<code>WidgetT</code>の定義を見てみるといいだろう.</p>
+<h2 id="新しいモナドトランスフォーマを追加する.">新しいモナドトランスフォーマを追加する.</h2>
+<p>アプリケーションの一部に, 自身のモナドランスフォーマを追加したい時があるかもしれない. 動機づけのための例として, Hackageにおける<a href="https://www.stackage.org/package/monadcryptorandom">monadcryptorandom</a>パーッケージを考えてみよう. これは, モナドに対し, 暗号論的に安全な乱数を生成する<code>MonadCRandom</code>型クラスと, その型クラスの具体的なインスタンスとして<code>CRandT</code>を定義する. ランダムなバイトストリングを生成するコードを以下の例で書いてみよう.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">import</span> <span class="dt">Control.Monad.CryptoRandom</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">import</span> <span class="dt">Data.ByteString.Base16</span> (encode)</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</a>
+<a class="sourceLine" id="cb7-4" title="4"></a>
+<a class="sourceLine" id="cb7-5" title="5">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-6" title="6">    randomBS <span class="ot">&lt;-</span> getBytes <span class="dv">128</span></a>
+<a class="sourceLine" id="cb7-7" title="7">    defaultLayout</a>
+<a class="sourceLine" id="cb7-8" title="8">        [whamlet|</a>
+<a class="sourceLine" id="cb7-9" title="9">            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="fu">$</span> encode randomBS<span class="kw">}</span></a>
+<a class="sourceLine" id="cb7-10" title="10">        |]</a></code></pre></div>
+<p>しかし, これは次の行を伴ったエラーメッセージとなる:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1">    <span class="ex">No</span> instance for (MonadCRandom e0 (HandlerT App IO))</a>
+<a class="sourceLine" id="cb8-2" title="2">      <span class="ex">arising</span> from a use of ‘getBytes’</a>
+<a class="sourceLine" id="cb8-3" title="3">    <span class="ex">In</span> a stmt of a <span class="st">'do'</span> block: randomBS <span class="op">&lt;</span>- getBytes 128</a></code></pre></div>
+<p>どのようにすれば, そのようなインスタンスを取得できるであろうか. ひとつの方法として, <code>getBytes</code>を呼ぶ際に, 単純に<code>CRand</code>モナドトランスフォーマを用いる方法がある. そのようにするための完全な例は以下のようになる:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings, QuasiQuotes, TemplateHaskell, TypeFamilies #-}</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="kw">import</span> <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">import</span> <span class="dt">Crypto.Random</span> (<span class="dt">SystemRandom</span>, newGenIO)</a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="kw">import</span> <span class="dt">Control.Monad.CryptoRandom</span></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="kw">import</span> <span class="dt">Data.ByteString.Base16</span> (encode)</a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</a>
+<a class="sourceLine" id="cb9-7" title="7"></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb9-9" title="9"></a>
+<a class="sourceLine" id="cb9-10" title="10">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb9-11" title="11">/ HomeR GET</a>
+<a class="sourceLine" id="cb9-12" title="12">|]</a>
+<a class="sourceLine" id="cb9-13" title="13"></a>
+<a class="sourceLine" id="cb9-14" title="14"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb9-15" title="15"></a>
+<a class="sourceLine" id="cb9-16" title="16"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb9-17" title="17">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-18" title="18">    gen <span class="ot">&lt;-</span> liftIO newGenIO</a>
+<a class="sourceLine" id="cb9-19" title="19">    eres <span class="ot">&lt;-</span> evalCRandT (getBytes <span class="dv">16</span>) (<span class="ot">gen ::</span> <span class="dt">SystemRandom</span>)</a>
+<a class="sourceLine" id="cb9-20" title="20">    randomBS <span class="ot">&lt;-</span></a>
+<a class="sourceLine" id="cb9-21" title="21">        <span class="kw">case</span> eres <span class="kw">of</span></a>
+<a class="sourceLine" id="cb9-22" title="22">            <span class="dt">Left</span> e <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="fu">$</span> <span class="fu">show</span> (<span class="ot">e ::</span> <span class="dt">GenError</span>)</a>
+<a class="sourceLine" id="cb9-23" title="23">            <span class="dt">Right</span> gen <span class="ot">-&gt;</span> <span class="fu">return</span> gen</a>
+<a class="sourceLine" id="cb9-24" title="24">    defaultLayout</a>
+<a class="sourceLine" id="cb9-25" title="25">        [whamlet|</a>
+<a class="sourceLine" id="cb9-26" title="26">            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="fu">$</span> encode randomBS<span class="kw">}</span></a>
+<a class="sourceLine" id="cb9-27" title="27">        |]</a>
+<a class="sourceLine" id="cb9-28" title="28"></a>
+<a class="sourceLine" id="cb9-29" title="29"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb9-30" title="30">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<p>今行っていることは, <code>CRandT</code>トランスフォーマを<code>HandlerT</code>トランスフォーマの上にレイヤリングすることである. 他の方法では機能しない: Yesodそれ自身は, 最終的に<code>CRand</code>トランスフォーマをアンラップする必要があるが, そうするための知識がないのである. これは<code>Persistent</code>でとった方法と同じであることに留意しなさい: トランスフォーマは<code>HandlerT</code>の上に位置する.</p>
+<p>しかし, この方法には2つの短所が存在する.</p>
+<ol type="1">
+<li><p>乱数を扱うごとに, この代わりのモナドに入り込む必要がある.</p></li>
+<li><p>それは非効率的である: このモナドに入るたびに、新しい乱数を作る必要がある.</p></li>
+</ol>
+<p>2つ目の点については, 乱数のシードを<code>IORef</code>のような可変参照であるファウンデーションデータ型に保存し, <code>CRandT</code>トランスフォーマに入るたびに, アトミックにサンプリングすることで回避できる. しかし, さらにワンステップ深入りし, <code>Handler</code>モナド自身を<code>MonadCRandom</code>のインスタンスにできる! 実は少し関係ないが, コードを見てみよう.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="ot">{-# LANGUAGE FlexibleInstances     #-}</span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="ot">{-# LANGUAGE TypeSynonymInstances  #-}</span></a>
+<a class="sourceLine" id="cb10-8" title="8"><span class="kw">import</span>           <span class="dt">Control.Monad</span>              (join)</a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="kw">import</span>           <span class="dt">Control.Monad.Catch</span>        (catch, throwM)</a>
+<a class="sourceLine" id="cb10-10" title="10"><span class="kw">import</span>           <span class="dt">Control.Monad.CryptoRandom</span></a>
+<a class="sourceLine" id="cb10-11" title="11"><span class="kw">import</span>           <span class="dt">Control.Monad.Error.Class</span>  (<span class="dt">MonadError</span> (..))</a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="kw">import</span>           <span class="dt">Crypto.Random</span>              (<span class="dt">SystemRandom</span>, newGenIO)</a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="kw">import</span>           <span class="dt">Data.ByteString.Base16</span>     (encode)</a>
+<a class="sourceLine" id="cb10-14" title="14"><span class="kw">import</span>           <span class="dt">Data.IORef</span></a>
+<a class="sourceLine" id="cb10-15" title="15"><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>         (decodeUtf8)</a>
+<a class="sourceLine" id="cb10-16" title="16"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb10-17" title="17"></a>
+<a class="sourceLine" id="cb10-18" title="18"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb10-19" title="19">    {<span class="ot"> randGen ::</span> <span class="dt">IORef</span> <span class="dt">SystemRandom</span></a>
+<a class="sourceLine" id="cb10-20" title="20">    }</a>
+<a class="sourceLine" id="cb10-21" title="21"></a>
+<a class="sourceLine" id="cb10-22" title="22">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb10-23" title="23">/ HomeR GET</a>
+<a class="sourceLine" id="cb10-24" title="24">|]</a>
+<a class="sourceLine" id="cb10-25" title="25"></a>
+<a class="sourceLine" id="cb10-26" title="26"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb10-27" title="27"></a>
+<a class="sourceLine" id="cb10-28" title="28"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb10-29" title="29">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb10-30" title="30">    randomBS <span class="ot">&lt;-</span> getBytes <span class="dv">16</span></a>
+<a class="sourceLine" id="cb10-31" title="31">    defaultLayout</a>
+<a class="sourceLine" id="cb10-32" title="32">        [whamlet|</a>
+<a class="sourceLine" id="cb10-33" title="33">            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="fu">$</span> encode randomBS<span class="kw">}</span></a>
+<a class="sourceLine" id="cb10-34" title="34">        |]</a>
+<a class="sourceLine" id="cb10-35" title="35"></a>
+<a class="sourceLine" id="cb10-36" title="36"><span class="kw">instance</span> <span class="dt">MonadError</span> <span class="dt">GenError</span> <span class="dt">Handler</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-37" title="37">    throwError <span class="fu">=</span> throwM</a>
+<a class="sourceLine" id="cb10-38" title="38">    catchError <span class="fu">=</span> <span class="fu">catch</span></a>
+<a class="sourceLine" id="cb10-39" title="39"><span class="kw">instance</span> <span class="dt">MonadCRandom</span> <span class="dt">GenError</span> <span class="dt">Handler</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-40" title="40">    getCRandom  <span class="fu">=</span> wrap crandom</a>
+<a class="sourceLine" id="cb10-41" title="41">    <span class="ot">{-# INLINE getCRandom #-}</span></a>
+<a class="sourceLine" id="cb10-42" title="42">    getBytes i <span class="fu">=</span> wrap (genBytes i)</a>
+<a class="sourceLine" id="cb10-43" title="43">    <span class="ot">{-# INLINE getBytes #-}</span></a>
+<a class="sourceLine" id="cb10-44" title="44">    getBytesWithEntropy i e <span class="fu">=</span> wrap (genBytesWithEntropy i e)</a>
+<a class="sourceLine" id="cb10-45" title="45">    <span class="ot">{-# INLINE getBytesWithEntropy #-}</span></a>
+<a class="sourceLine" id="cb10-46" title="46">    doReseed bs <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb10-47" title="47">        genRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> randGen getYesod</a>
+<a class="sourceLine" id="cb10-48" title="48">        join <span class="fu">$</span> liftIO <span class="fu">$</span> atomicModifyIORef genRef <span class="fu">$</span> \gen <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb10-49" title="49">            <span class="kw">case</span> reseed bs gen <span class="kw">of</span></a>
+<a class="sourceLine" id="cb10-50" title="50">                <span class="dt">Left</span> e <span class="ot">-&gt;</span> (gen, throwM e)</a>
+<a class="sourceLine" id="cb10-51" title="51">                <span class="dt">Right</span> gen' <span class="ot">-&gt;</span> (gen', <span class="fu">return</span> ())</a>
+<a class="sourceLine" id="cb10-52" title="52">    <span class="ot">{-# INLINE doReseed #-}</span></a>
+<a class="sourceLine" id="cb10-53" title="53"></a>
+<a class="sourceLine" id="cb10-54" title="54"><span class="ot">wrap ::</span> (<span class="dt">SystemRandom</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">GenError</span> (a, <span class="dt">SystemRandom</span>)) <span class="ot">-&gt;</span> <span class="dt">Handler</span> a</a>
+<a class="sourceLine" id="cb10-55" title="55">wrap f <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb10-56" title="56">    genRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> randGen getYesod</a>
+<a class="sourceLine" id="cb10-57" title="57">    join <span class="fu">$</span> liftIO <span class="fu">$</span> atomicModifyIORef genRef <span class="fu">$</span> \gen <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb10-58" title="58">        <span class="kw">case</span> f gen <span class="kw">of</span></a>
+<a class="sourceLine" id="cb10-59" title="59">            <span class="dt">Left</span> e <span class="ot">-&gt;</span> (gen, throwM e)</a>
+<a class="sourceLine" id="cb10-60" title="60">            <span class="dt">Right</span> (x, gen') <span class="ot">-&gt;</span> (gen', <span class="fu">return</span> x)</a>
+<a class="sourceLine" id="cb10-61" title="61"></a>
+<a class="sourceLine" id="cb10-62" title="62"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb10-63" title="63">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb10-64" title="64">    gen <span class="ot">&lt;-</span> newGenIO</a>
+<a class="sourceLine" id="cb10-65" title="65">    genRef <span class="ot">&lt;-</span> newIORef gen</a>
+<a class="sourceLine" id="cb10-66" title="66">    warp <span class="dv">3000</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb10-67" title="67">        { randGen <span class="fu">=</span> genRef</a>
+<a class="sourceLine" id="cb10-68" title="68">        }</a></code></pre></div>
+<p>これは, 実際にいくつかの異なる概念に帰着する.</p>
+<ol type="1">
+<li><p><code>App</code>データ型を<code>IORef SystemRandom</code>のフィールドを持つように変更する.</p></li>
+<li><p>同様に, <code>main</code>関数を<code>IORef SystemRandom</code>を生成するように変更する.</p></li>
+<li><p><code>getHomeR</code>関数は, ずっと単純になる: 今や, トランスフォーマを使わずに, 単に<code>getBytes</code>を呼ぶだけでよい.</p></li>
+<li><p>しかし, <code>MonadCRandom</code>インスタンスが必要になるという複雑さが増す. これはYesodについての本であり, <code>monadcryptorandom</code>についての本ではないため, このインスタンスについては詳細は述べないが, それを検証し, もし興味があれば, <code>CRandT</code>のインスタンスと比較することを推奨する.</p></li>
+</ol>
+<p>幸いなことに, これは重要な点を理解するのに役立つ: <code>HandlerT</code>トランスフォーマの力である. 単に, 読み取り可能な環境を与え, 可変参照に頼ることで, <code>StateT</code>トランスフォーマを再作成できる. 実際に, もし実行時エラーのために基底にある<code>IO</code>モナドを用いるとしたら, この抽象化を用いることで<code>ReaderT</code>, <code>WriterT</code>, <code>StateT</code>, そして, <code>ErrorT</code>の大部分を実装できる.</p>
+<h2 id="まとめ">まとめ</h2>
+<p>もしこの章を完全に無視したとしても, <code>Yesod</code>を非常にうまく使うことはできる. Yesodモナドがどのようにして相互作用するかを理解することの利点は, よりクリーンなモジュラーコードを生成できる点にある. 任意のアクションを<code>Widget</code>で実行できることは, 強力な道具になり得, どのようにしてPersistentと<code>Handler</code>コードが相互作用するのかを理解することは, アプリケーションにおいて, より情報性に富んだデザイン決定をするのに役立つ.</p>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=ch13-Yesod’s-Monads&url=https://haskell.e-bigmoon.com/yesod/book/ch13-Yesod%E2%80%99s-Monads.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/ch13-Yesod%E2%80%99s-Monads.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/yesod/book/ch13-Yesod%E2%80%99s-Monads.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
