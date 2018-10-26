@@ -22,7 +22,7 @@ Link
     added UTCTime
 |]
 
-data App = App ConnectionPool
+newtype App = App ConnectionPool
 
 mkYesod "App" [parseRoutes|
 /         HomeR    GET
@@ -74,6 +74,6 @@ postAddLinkR = do
     redirect HomeR
 
 main :: IO ()
-main = runNoLoggingT $ withSqlitePool "links.db3" 10 $ \pool -> liftIO $ do
+main = runNoLoggingT $ withSqlitePool "links.sqlite" 10 $ \pool -> liftIO $ do
     runSqlPersistMPool (runMigration migrateAll) pool
     warp 3000 $ App pool

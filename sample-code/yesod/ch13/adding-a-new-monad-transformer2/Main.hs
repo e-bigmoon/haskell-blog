@@ -14,9 +14,9 @@ import           Crypto.Random              (SystemRandom, newGenIO)
 import           Data.ByteString.Base16     (encode)
 import           Data.IORef
 import           Data.Text.Encoding         (decodeUtf8)
-import           Yesod 
+import           Yesod
 
-data App = App
+newtype App = App
     { randGen :: IORef SystemRandom
     }
 
