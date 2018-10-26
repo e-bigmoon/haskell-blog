@@ -7,13 +7,13 @@
 {-# LANGUAGE TypeSynonymInstances  #-}
 import           Control.Monad              (join)
 import           Control.Monad.Catch        (throwM)
-import           UnliftIO.Exception         (catch)
 import           Control.Monad.CryptoRandom
 import           Control.Monad.Error.Class  (MonadError (..))
 import           Crypto.Random              (SystemRandom, newGenIO)
 import           Data.ByteString.Base16     (encode)
 import           Data.IORef
 import           Data.Text.Encoding         (decodeUtf8)
+import           UnliftIO.Exception         (catch)
 import           Yesod
 
 newtype App = App
@@ -48,7 +48,7 @@ instance MonadCRandom GenError Handler where
         genRef <- fmap randGen getYesod
         join $ liftIO $ atomicModifyIORef genRef $ \gen ->
             case reseed bs gen of
-                Left e -> (gen, throwM e)
+                Left e     -> (gen, throwM e)
                 Right gen' -> (gen', return ())
     {-# INLINE doReseed #-}
 
@@ -57,7 +57,7 @@ wrap f = do
     genRef <- fmap randGen getYesod
     join $ liftIO $ atomicModifyIORef genRef $ \gen ->
         case f gen of
-            Left e -> (gen, throwM e)
+            Left e          -> (gen, throwM e)
             Right (x, gen') -> (gen', return x)
 
 main :: IO ()

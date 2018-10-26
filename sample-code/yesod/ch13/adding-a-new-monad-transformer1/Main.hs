@@ -1,9 +1,12 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes, TemplateHaskell, TypeFamilies #-}
-import Yesod
-import Crypto.Random (SystemRandom, newGenIO)
-import Control.Monad.CryptoRandom
-import Data.ByteString.Base16 (encode)
-import Data.Text.Encoding (decodeUtf8)
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
+import           Control.Monad.CryptoRandom
+import           Crypto.Random              (SystemRandom, newGenIO)
+import           Data.ByteString.Base16     (encode)
+import           Data.Text.Encoding         (decodeUtf8)
+import           Yesod
 
 data App = App
 
@@ -19,7 +22,7 @@ getHomeR = do
     eres <- evalCRandT (getBytes 16) (gen :: SystemRandom)
     randomBS <-
         case eres of
-            Left e -> error $ show (e :: GenError)
+            Left e    -> error $ show (e :: GenError)
             Right gen -> return gen
     defaultLayout
         [whamlet|
