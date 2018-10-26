@@ -6,8 +6,7 @@
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeFamilies          #-}
-import           Data.List (sortBy)
-import           Data.Ord  (comparing)
+import           Data.List (sortOn)
 import           Data.Text (Text)
 import           Yesod
 
@@ -53,8 +52,8 @@ showPeople = do
     msort <- runInputGet $ iopt textField "sort"
     let people' =
             case msort of
-                Just "name" -> sortBy (comparing personName) people
-                Just "age"  -> sortBy (comparing personAge)  people
+                Just "name" -> sortOn personName people
+                Just "age"  -> sortOn personAge  people
                 _           -> people
     [whamlet|
         <dl>
