@@ -1113,7 +1113,7 @@ main :: IO ()
 main = badRace (return ()) (threadDelay maxBound) >>= print
 ```
 
-これは大丈夫ですね:
+ご想像の通り、結果はこうなります:
 
 ```haskell
 Left ()
