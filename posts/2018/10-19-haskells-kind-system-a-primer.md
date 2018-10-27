@@ -7,34 +7,34 @@ tags: fpcomplete, 翻訳
 
 [原文](https://diogocastro.com/blog/2018/10/17/haskells-kind-system-a-primer/)
 
-この記事では、Haskell のカインド、型とカインドの類似点について探り、それがどのようにより安全で再利用可能なコードを書くのに利用できるのかお見せしていこうと思います。
+この記事では、Haskell のカインドシステム、型とカインドの類似点について探り、それがどのようにより安全で再利用可能なコードを書くのに利用できるのかお見せしていこうと思います。
 
 今日のメニューはこちら:
 
-* 型とカインド
-* データコンストラクタと型コンストラクタ
-* 型シグネチャとカインドシグネチャ
-* HOF と HKT
-* その他のカインド
-  * unboxed/unlifted 型
-  * 制約
-  * データ型の昇格
-  * GHC.TypeLit
-* 多相カインド
-* levity 多相
+* [型とカインド]()
+* [データコンストラクタと型コンストラクタ]()
+* [型シグネチャとカインドシグネチャ]()
+* [HOF と HKT]()
+* [その他のカインド]()
+  * [unboxed/unlifted 型]()
+  * [制約]()
+  * [データ型の昇格]()
+  * [GHC.TypeLit](9
+* [カインドポリモーフィズム]()
+* [levity ポリモーフィズム]()
 
 注: この記事では、GHC 8.4.3 を使っています
 
 # 型とカインド
 簡潔に言いましょう:
 
-> 値 (???) が型に分類されるように、型もカインドに分類されます。
+> 項が型に分類されるように、型もカインドに分類されます。
 
 `"hello"` と `"world"` という値は `String` という型に分類されます。`True` や `False` といった値は `Bool` に分類されます。同じように、`String` や `Bool` といった型も `*` というカインドに分類されるのです。これは「スター」と発音します。
 
 ![State type](https://diogocastro.com/img/diagrams/kind-system001.svg)
 
-GHCi であるタームの型を確認するとき `:t/:type` を使うように、ある型のカインドを確認するときは、`:k/:kind` を使うことができます。
+GHCi である項の型を確認するとき `:t/:type` を使うように、ある型のカインドを確認するときは、`:k/:kind` を使うことができます。
 
 ```plain
 λ> :t True
@@ -44,9 +44,9 @@ True :: Bool
 Bool :: *
 ```
 
-標準の Haskell では、inhabited 型 (???) (少なくとも1つの値を持つような型) のカインドは `*` です。なので、`Int`, `Int -> String`, `[Int]`,  `Maybe Int`, `Either Int Int` などのカインドは全て `*` です。なぜなら、これらの型には少なくとも1つのタームがあるからです[^1]。
+標準の Haskell では、inhabited type (少なくとも1つの値を持つような型) のカインドは `*` です。なので、`Int`, `Int -> String`, `[Int]`,  `Maybe Int`, `Either Int Int` などのカインドは全て `*` です。なぜなら、これらの型には少なくとも1つのタームがあるからです[^1]。
 
-全ての型が inhabited であるわけではありません。例えば `Maybe` や `Either` は inhabited な型ではありません。`Maybe` 型には値がありませんが、無限ループにさえも値はないのです!
+全ての型が inhabited であるわけではありません。例えば `Maybe` や `Either` は inhabited type ではありません。`Maybe` 型には項がありませんが、無限ループにさえも値はないのです!
 
 ```plain
 λ> x = undefined :: Maybe
@@ -58,10 +58,10 @@ Bool :: *
     • Expecting one more argument to ‘Maybe’
 ```
 
-`Maybe` や `Either` が inhabited 型ではないのなら、何なのでしょう? 答えはタイプコンストラクタです。
+`Maybe` や `Either` が inhabited 型ではないのなら、何なのでしょう? 答えは型コンストラクタです。
 
 # データコンストラクタと型コンストラクタ
-値を作るためにデータコンストラクタがあるように、型を作るためには型コンストラクタが用意されています。
+データを作るためにデータコンストラクタがあるように、型を作るためには型コンストラクタが用意されています。
 
 ```plain
 λ> data Person = MkPerson { name :: String, age :: Int }
@@ -69,8 +69,6 @@ Bool :: *
 λ> :t MkPerson
 MkPerson :: String -> Int -> Person
 ```
-
-MkPerson is a data constructor that, given two values name and  age of type String and Int, creates another value of type  Person. In other words, MkPerson is a value of type  String -> Int -> Person.
 
 `MkPerson` は `String` 型の `name` と `Int` 型の `age` という値を受け取り、`Person` 型の別の値を生成するようなデータコンストラクタです。つまり、`MkPerson` は `String -> Int - Person` という型の値です。
 
@@ -81,9 +79,7 @@ MkPerson is a data constructor that, given two values name and  age of type Stri
 Either :: * -> * -> *
 ```
 
-同じように、`Either` はカインドが `*` である2つの型 `a` と `b` を受け取り、カインドが `*` の別の型を作るタイプコンストラクタです。つまり、`Either` は `* -> * -> *` というカインドを持つ型です。
-
-Just like data constructors are curried and can be partially applied, so can type constructors.
+同じように、`Either` はカインドが `*` である2つの型 `a` と `b` を受け取り、カインドが `*` の別の型を作る型コンストラクタです。つまり、`Either` は `* -> * -> *` というカインドを持つ型です。
 
 データコンストラクタがカリー化されて部分適用が可能になっているように、型コンストラクタにも部分適用することも可能になっています。
 
@@ -110,7 +106,7 @@ Either String Int :: *
 ![Either type constructor](https://diogocastro.com/img/diagrams/kind-system003.svg)
 
 # 型シグネチャとカインドシグネチャ
-GHC はたいてい変数の型推論をしてくれますが、型変数のカインドも同じように推論してくれます。 
+GHC はたいてい変数の型推論をしてくれますが、型変数のカインドも同じように正確に推論してくれます。 
 
 ```plain
 -- `x` は `Bool` 型だと推論される
@@ -150,7 +146,7 @@ class Functor (f :: * -> *) where
   fmap :: forall (a :: *) (b :: *). (a -> b) -> (f a -> f b)
 ```
 
-分かりやすさのため、`ExplicitForAll` 拡張を使っています。これを使うとそれぞれの型変数を明示的に定義することができるようになります (???)。
+分かりやすさのため、`ExplicitForAll` 拡張を使っています。これを使うとそれぞれの型変数を明示的に定義することができるようになります。
 
 # HOF と HKT
 他の関数を引数として取る高階関数 (HOF) のように、高階カインド型 (Higher-kinded types, HKT) というものもあります。これは他の型コンストラクタを引数として取るような型コンストラクタです。
@@ -160,7 +156,7 @@ class Functor (f :: * -> *) where
 map :: (a -> b) -> [a] -> [b]
 ```
 
-`map` は `(a -> b)` という型を持つ他の関数と `[a]` という型のリストを引数として取る関数です。
+`map` は `(a -> b)` という型を持つ他の関数と `[a]` というリストを引数として取る関数です。
 
 ```
 λ> data NonEmpty f a = MkNonEmpty { head :: a, tail :: f a }
@@ -186,7 +182,7 @@ inhabited 型のカインドが全て `*` だとというのは覚えていま�
 
 これらの型は `ghc-prim` パッケージの `GHC.Prim` モジュールで定義されています。慣例では、全ての unlifted 型は `#` で終わるようになっており、これはマジックハッシュと呼ばれています。`MagicHash` 拡張を有効にすると使うことができます。例を挙げるなら、`Char#` や `Int#` などです。unboxed タプル `(# a, b #)` や　unboxed sum (???) `(# a | b #)` みたいなものもあるのです!
 
-それぞれの unlifted 型は、実行時の表現を反映したカインドを持っています。これはヒープの中の何かを指したポインタなのでしょうか? それとも signed/unsigned の1マシンワードの値なのでしょうか? コンパイラはこの型のカインドを、どんなマシン語を生成するべきか決定する際に使います。これは「カインド主導コンパイル」と呼ばれています。
+それぞれの unlifted 型は、実行時の表現を反映したカインドを持っています。これはヒープの中の何かを指したポインタなのでしょうか? それとも符号付/符号なしの1ワードサイズの値なのでしょうか? コンパイラはこの型のカインドを、どんなマシン語を生成するべきか決定する際に使います。これは kind-directed compilation と呼ばれています。
 
 いくつか例を載せておきます:
 
@@ -195,7 +191,7 @@ inhabited 型のカインドが全て `*` だとというのは覚えていま�
 `TYPE` みたいなのはあとで説明します。
 
 ## Constraint
-`=>` 矢印の左側に置くことができるものは全て `Constraint` カインドを持ちます。型クラス制約も含まれています:
+`=>` 矢印の左側に置くことができるものは全て `Constraint` カインドを持っていて、その中には型クラス制約も含まれています:
 
 ```plain
 λ> :k Show
@@ -239,7 +235,7 @@ instance GFunctor EmptyConstraint [] where
   gfmap = List.map
 ```
 
-`EmptyConstraint` は、全ての型が満たす型クラス制約です。
+`EmptyConstraint` は、全ての型が自明に満たすような型クラス制約です。
 
 ```haskell
 {-# LANGUAGE FlexibleInstances #-}
@@ -248,8 +244,8 @@ class EmptyConstraint a
 instance EmptyConstraint a
 ```
 
-## 型クラス昇格
-標準 Haskell では、`data` キーワードを使うことで自分の型や型コンストラクタを定義することができ、その後にはデータコンストラクタが来ます:
+## データ型昇格
+標準 Haskell では、`data` キーワードを使うことで自分の型や型コンストラクタを定義することができ、その後に一連のデータコンストラクタが続きます:
 
 ```haskell
 data ConnectionStatus = Open | Closed
@@ -271,7 +267,7 @@ data ConnectionStatus = Open | Closed
 
 こういった場合、`ConnectionStatus` はカインドに、`Open` と `Closed` は型に昇格した、と表現します。昇格した型 `'Open` と `'Closed` にはシングルクォートが付いていますね。このシングルクォートはほとんど常に無視することができますが、まれに[違いを明確にするために](https://downloads.haskell.org/~ghc/8.4.3/docs/html/users_guide/glasgow_exts.html#distinguishing-between-types-and-constructors)気にする必要がある場合も出てきます。
 
-このカスタムカインドを使って、`Open` か 'Closed' にしか許可しないような型変数を定義することができます。
+このカスタムカインドを使って、`Open` か `Closed` にしか許可しないような型変数を定義することができます。
 
 ```haskell
 {-# LANGUAGE KindSignatures #-}
@@ -290,7 +286,7 @@ connectionAddress :: Connection s      -> Address
     • Expected kind ‘ConnectionStatus’, but ‘Int’ has kind ‘*’
 ```
 
-コネクションをステータスと紐付けることで、「既に閉じたコネクションに対して `closeConnection` を呼ぶことはできない」などのルールを静的に作ることができます。
+コネクションをステータスと紐付けることで、「既に閉じたコネクションに対して `closeConnection` を呼ぶことはできない」などのルールを静的に強いることができます。
 
 以上の手法は、私たちのカスタムデータ型以外にも使うことができます。例えば、`DataKinds` を有効にした状態で `Bool` があるとき、同じようにカインドに昇格させてみましょう。
 
@@ -332,7 +328,7 @@ twoEuros :: Money "EUR"
 twoEuros = Money 2
 ```
 
-値レベル (`data Money = Money String Rational`) ではなく、型レベルで通貨を表現することで、異なる通貨が混ざることはないことを静的に保証できます。例えば、EUR (ユーロ) と GBP (ポンド) を足すことはできません。
+項レベル (`data Money = Money String Rational`) ではなく、型レベルで通貨を表現することで、異なる通貨が混ざることはないことを静的に保証できます。例えば、EUR (ユーロ) と GBP (ポンド) を足すことはできません。
 
 ```haskell
 add :: Money c -> Money c -> Money c
@@ -375,8 +371,8 @@ oneDollarThirtyCents = Discrete 130
 
 えぇ、これは問題ありません。`scale :: (Nat, Nat)` の中の `(,)` は、`DataKinds` によって昇格されたタプル型です。そして、`'(100, 1)` の `(,)` は、型コンストラクタに昇格されたタプルのデータコンストラクタです。
 
-# カインド多相
-パラメトリック多相は、Haskell の世界ではどこにでも見られます。型の抽象化を助けるものですね。`PolyKinds` 拡張を使えば、カインドに対してもより高い抽象化を行うことができますよ!
+# カインドポリモーフィズム
+パラメトリック多相は、Haskell の世界ではどこにでも見られます。型の抽象化を助けるものですね。`PolyKinds` 拡張を使えば、カインドに対してもより多相的な抽象化を行うことができますよ!
 
 例を見てみましょう。
 
@@ -392,7 +388,7 @@ data Proxy a = MkProxy
 λ> stringRepresentative = MkProxy :: Proxy String
 ```
 
-問題は、デフォルトで GHC が `a` のカインドを `*` だと解釈してしまうことで、これはつまり、`Proxy` が全ての型について readonly ではないことを意味しています。ただ、 lifted な型のみ readonly なのです。
+問題は、デフォルトで GHC が `a` のカインドを `*` だと解釈してしまうことで、これはつまり、`Proxy` が全ての型について動くわけではないことを意味しています。lifted な型に対してのみなのです。
 
 ```plain
 λ> :k Proxy
@@ -446,7 +442,7 @@ openRepresentative     = MkProxy :: Proxy 'Open
 Proxy :: k -> *
 ```
 
-実世界で使われているカインド多相の別の例を挙げるなら、Servant に存在しています。これは型安全な web API を書くためのライブラリです。このライブラリには `:>` という型があって、これは API のコンポーネントを組み合わせて、完全なエンドポイントにするのに使われます。これらのコンポーネントの型とカインドは、それぞれ異なるものになります。
+実世界で使われているカインドポリモーフィズムの別の例を挙げるなら、Servant に存在しています。これは型安全な web API を書くためのライブラリです。このライブラリには `:>` という型があって、これは API のコンポーネントを組み合わせて、完全なエンドポイントにするのに使われます。これらのコンポーネントの型とカインドは、それぞれ異なるものになります。
 
 ```haskell
 {-# LANGUAGE PolyKinds #-}
@@ -462,8 +458,8 @@ infixr 4 :>
 type BooksAPI = "books" :> ReqBody '[JSON] Book :> Post '[JSON] ()
 ```
 
-# `Levity 多相`
-いくつかのケースでは、lifted と unlifted の型どちらに対しても使えるように、抽象化するのが便利かもしれません。例えば、`error` "関数"(???)を考えてみましょう。これはエラーメッセージを受け取って、例外を投げる関数です:
+# `Levity ポリモーフィズム`
+いくつかのケースでは、lifted と unlifted の型どちらに対しても使えるように、抽象化するのが便利かもしれません。例えば、`error` "関数"を考えてみましょう。これはエラーメッセージを受け取って、例外を投げる関数です:
 
 ```haskell
 {-# LANGUAGE ExplicitForAll #-}
@@ -503,7 +499,7 @@ error :: forall k (a :: k). String -> a
     • In the type signature: error :: forall k (a :: k). String -> a
 ```
 
-コンパイルが通らなかったのは、`a :: k` が inhabited な型以外の別の型になる意味が分からないと判断されたからです。`k` が `Symbol` で、`a` が `"hello"` だということにしてみまyしょう。もしも `"hello"` 型が uninhabited だった場合、この関数はどんな値を返すのでしょうか?
+コンパイルが通らなかったのは、`a :: k` が inhabited な型以外の別の型になる意味が分からないと判断されたからです。`k` が `Symbol` で、`a` が `"hello"` だということにしてみましょう。もしも `"hello"` 型が uninhabited だった場合、この関数はどんな値を返すのでしょうか?
 
 `error` 関数を lifted と unlifted に含まれる全ての inhabited な型に対して動くようにするためには、levity 多相というものが必要になります。
 
@@ -542,18 +538,18 @@ error :: forall (r :: RuntimeRep) (a :: TYPE r). String -> a
 Levity 多相にも制限があります。使うことができない場所があるのです。それがどこでなぜ使えないのか知りたいのなら、Richard Eisenberg によるこのテーマの[すばらしいお話](https://www.youtube.com/watch?v=lSJwXZ7vWBw)を観てみてください。
 
 # まとめ
-今まで、当然ですが、こう不思議に思った方もいるかもしれません。一体何の話だったんだ? なんでカインドなんていうシステムがあって、なんでカインドを気に掛ける必要があるんだ? ってね。えーっと、Java や C# など、型を全く分類することができないような言語では、全ての型変数 `<T>` は `*` というカインドに含まれています。`Functor<List>` のように (???)、`* -> *` というカインドの型変数を持つことができないのです。カインドについて語ることができなければ、ファンクターやモナド、もしくは `NonEmpty f a` という、私たちがさっき見たデータ型に存在するような抽象さえ定義することができなくなります。さらに、levity 多相を使うことで、[ここにある `Num a` クラスの一般的なバージョン](https://gist.github.com/dcastro/a7f9730981fa404415588224350dc918)のように、boxed 型でも unboxed 型でも使えるような抽象を書くことができますが、Java のような言語では、一般的な (???) 型変数は boxed 型にしかなれません。
+今まで、当然ですが、こう不思議に思った方もいるかもしれません。一体何の話だったんだ? なんでカインドなんていうシステムがあって、なんでカインドを気に掛ける必要があるんだ? ってね。えーっと、Java や C# など、型を全く分類することができないような言語では、全ての型変数 `<T>` は `*` というカインドに含まれています。`Functor<List>` のように、`* -> *` というカインドの型変数を持つことができないのです。カインドについて語ることができなければ、ファンクターやモナド、もしくは `NonEmpty f a` という、私たちがさっき見たデータ型に存在するような抽象さえ定義することができなくなります。さらに、levity 多相を使うことで、[ここにある `Num a` クラスの一般的なバージョン](https://gist.github.com/dcastro/a7f9730981fa404415588224350dc918)のように、boxed 型でも unboxed 型でも使えるような抽象を書くことができますが、Java のような言語では、総称的型変数は boxed 型にしかなれません。
 
 カインドシステムを持つことで、型レベルプログラミングの世界へのドアも開けてきます (次のブログ記事でもっと掘り下げようと思っていますが)。こうすることで、extensible レコードや、Servant の型レベルの web API、それに `Connection s` や `Money c` のような、ただ単純に、一般に安全な API を定義することも可能になります。
 
 最先端の研究を探してみると、SImon Peyton Jones は最近、[Haskell に線型性を与えることを議論しています](https://www.youtube.com/watch?v=t0mhvd3-60Y) (???)。これは私の想像ですが、関数の型 `(->) a b` が、追加で新しいカインド `Linearity` の型変数を持つようになって、`Omega` と `One` が組み合わせられることになる、ということだと思います。(???)
 
-この他にありそうな質問は、値が型に分類されて型がカインドに分類されるのなら、カインドも何かに分類されるの? というものでしょう。えー、GHC 7 を含むそれ以前のバージョンでは、カインドは __sort__ に分類されていました。全てのカインドは[ユニークな sort である `BOX`](https://downloads.haskell.org/~ghc/7.6.1/docs/html/users_guide/promotion.html) を持ち、GHC のインターナルになっていて、私たち開発者からは見えないようになっていました。
+この他にありそうな質問は、項が型に分類されて型がカインドに分類されるのなら、カインドも何かに分類されるの? というものでしょう。えー、GHC 7 を含むそれ以前のバージョンでは、カインドは __sort__ に分類されていました。全てのカインドは[ユニークな sort である `BOX`](https://downloads.haskell.org/~ghc/7.6.1/docs/html/users_guide/promotion.html) を持ち、GHC のインターナルになっていて、私たち開発者からは見えないようになっていました。
 
 しかしバージョン8から、GHC は方向性を変えます。気づいている人もいると思いますが、この記事で私は、型とカインドの類似性について説明しようとしてきました。どちらも高階で、多相で、推論ができて、カリー化されていて、等々、これは偶然ではなかったのです! `TypeInType` の進展により、GHC 8 である拡張が導入され、型とカインド (それに sort) は1つに統合され、同じものになりました! ここまで来ると、型を他の型に分類することができるようになります (???)。`3` は `Int` 型に、`Int` 型は `*` に、`*` は `*` 型に分類されます。この統合によって、完全な依存型への道が開かれたことになります[^3]。
 
 また、より最新のドキュメントを見ると、`*` というカインドが `Type` になっているのに気づくかもしれません (`TYPE r` と混同しないように)。こいつらは今のところ[シノニム](https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Kind.html#t:Type)になっていますが、徐々に `*` から `Type` を使うように移行される予定です。
 
-1. 特筆すべき例外は `data Void` で、定義することができません。それ自体に値が存在しないのです。そして、`undefined` や `f x = f x` の無限ループのように、[絶対に成功することのない値](https://wiki.haskell.org/Bottom)を持っています。
+1. 特筆すべき例外は `data Void` で、作ることができません。それ自体に値が存在しないのです。そして、`undefined` や `f x = f x` の無限ループのように、[絶対に成功することのない項](https://wiki.haskell.org/Bottom)を持っています。
 2. `Proxy` は base の `Data.Proxy` モジュールにすでに定義されています。ここでは、こいつのカインドの裏にあるロジックをお見せするために、独自の定義をしています。`Data.Proxy` とその使い方についてもっと知りたいのなら、[Kwang Seo のブログ記事](https://kseo.github.io/posts/2017-01-15-data-proxy.html)をチェックしてみてください。
-3. もっと依存型について学習したいのなら、[Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris) や、最近発行された [The Little Typer](https://mitpress.mit.edu/books/little-typer) について読んでみることをおすすめします。
+3. もっと依存型について学習したいのなら、[Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris) や、最近出版された [The Little Typer](https://mitpress.mit.edu/books/little-typer) について読んでみることをおすすめします。
