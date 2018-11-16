@@ -1,16 +1,16 @@
 module SplitCC
-  ( ansSplit
-  , ansFold
+  ( splitCC
+  , foldSplitCC
   ) where
 
 import           Data.Char       (isSpace, isUpper)
 import           Data.List.Split (split, startsWithOneOf)
 
-ansSplit :: String -> String
-ansSplit = unwords . split (startsWithOneOf ['A'..'Z'])
+splitCC :: String -> String
+splitCC  = unwords . split (startsWithOneOf ['A'..'Z'])
 
-ansFold :: String -> String
-ansFold = fmt . foldr go []
+foldSplitCC :: String -> String
+foldSplitCC = fmt . foldr go []
   where
     go c acc
       | isUpper c = ' ':c:acc

@@ -19,14 +19,14 @@ Twitter で `CamelCase` の文字列を `Camel Case` にするという話を見
 ```hs
 import Data.List.Split (split, startsWithOneOf)
 
-ansSplit :: String -> String
-ansSplit = unwords . split (startsWithOneOf ['A'..'Z'])
+splitCC :: String -> String
+splitCC  = unwords . split (startsWithOneOf ['A'..'Z'])
 ```
 
 実行結果
 
 ```shell
-ghci> ansSplit "CamelCase"
+ghci> splitCC "CamelCase"
 "Camel Case"
 ```
 
@@ -41,8 +41,8 @@ ghci> ansSplit "CamelCase"
 ```hs
 import Data.Char (isUpper, isSpace)
 
-ansFold :: String -> String
-ansFold = fmt . foldr go []
+foldSplitCC :: String -> String
+foldSplitCC = fmt . foldr go []
   where
     go c acc
       | isUpper c = ' ':c:acc
@@ -56,7 +56,7 @@ ansFold = fmt . foldr go []
 実行結果
 
 ```shell
-ghci> ansFold "CamelCase"
+ghci> foldSplitCC "CamelCase"
 "Camel Case"
 ```
 
@@ -81,7 +81,7 @@ main :: IO ()
 main = quickCheck prop_split
 
 prop_split :: MyString -> Bool
-prop_split xs = ansSplit xs' == ansFold xs'
+prop_split xs = splitCC xs' == foldSplitCC xs'
   where xs' = getString xs
 ```
 
@@ -106,6 +106,8 @@ import Gauge.Main.Options
 
 import Test.QuickCheck
 
+import SplitCC
+
 main :: IO ()
 main = do
   let conf = defaultConfig { displayMode = Condensed }
@@ -115,16 +117,16 @@ main = do
   sampleData4 <- generate $ vectorOf 10000000 charGen
 
   defaultMainWith conf
-    [ bgroup "ansSplit" [ bench "10" $ whnf ansSplit sampleData1
-                        , bench "1000" $ whnf ansSplit sampleData2
-                        , bench "100000" $ whnf ansSplit sampleData3
-                        , bench "10000000" $ whnf ansSplit sampleData4
-                        ]
-    , bgroup "ansFold"  [ bench "10" $ whnf ansFold sampleData1
-                        , bench "1000" $ whnf ansFold sampleData2
-                        , bench "100000" $ whnf ansFold sampleData3
-                        , bench "10000000" $ whnf ansFold sampleData4
-                        ]
+    [ bgroup "splitCC" [ bench "10"       $ whnf splitCC sampleData1
+                       , bench "1000"     $ whnf splitCC sampleData2
+                       , bench "100000"   $ whnf splitCC sampleData3
+                       , bench "10000000" $ whnf splitCC sampleData4
+                       ]
+    , bgroup "foldSplitCC" [ bench "10"       $ whnf foldSplitCC sampleData1
+                           , bench "1000"     $ whnf foldSplitCC sampleData2
+                           , bench "100000"   $ whnf foldSplitCC sampleData3
+                           , bench "10000000" $ whnf foldSplitCC sampleData4
+                           ]
     ]
 
 charGen :: Gen Char
@@ -136,14 +138,14 @@ charGen = elements (['a'..'z']++['A'..'Z'])
 ```shell
 $ stack bench
 Benchmark splitcc: RUNNING...
-ansSplit/10                              mean 538.8 ns  ( +- 274.7 ns  )
-ansSplit/1000                            mean 423.3 ns  ( +- 65.61 ns  )
-ansSplit/100000                          mean 343.1 ns  ( +- 35.88 ns  )
-ansSplit/10000000                        mean 725.5 ns  ( +- 132.6 ns  )
-ansFold/10                               mean 26.40 ns  ( +- 8.706 ns  )
-ansFold/1000                             mean 25.17 ns  ( +- 2.550 ns  )
-ansFold/100000                           mean 21.20 ns  ( +- 2.566 ns  )
-ansFold/10000000                         mean 25.27 ns  ( +- 2.758 ns  )
+splitCC/10                              mean 538.8 ns  ( +- 274.7 ns  )
+splitCC/1000                            mean 423.3 ns  ( +- 65.61 ns  )
+splitCC/100000                          mean 343.1 ns  ( +- 35.88 ns  )
+splitCC/10000000                        mean 725.5 ns  ( +- 132.6 ns  )
+foldSplitCC/10                          mean 26.40 ns  ( +- 8.706 ns  )
+foldSplitCC/1000                        mean 25.17 ns  ( +- 2.550 ns  )
+foldSplitCC/100000                      mean 21.20 ns  ( +- 2.566 ns  )
+foldSplitCC/10000000                    mean 25.27 ns  ( +- 2.758 ns  )
 Benchmark splitcc: FINISH
 ```
 
@@ -154,24 +156,24 @@ Benchmark splitcc: FINISH
 ```hs
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveGeneric #-}
-module Input (ts, ansSplit, ansFold) where
+module Input (ts, splitCC, foldSplitCC) where
 
-import           Data.Char          (isSpace, isUpper)
-import           Data.List.Split    (split, startsWithOneOf)
+import Data.Char          (isSpace, isUpper)
+import Data.List.Split    (split, startsWithOneOf)
 
-import           GHC.Generics    (Generic)
-import           Control.DeepSeq
+import GHC.Generics    (Generic)
+import Control.DeepSeq
 
-import           Data.Default         (def)
-import           AutoBench.Types      (DataOpts(..), TestSuite(..))
-import           AutoBench.QuickCheck ()
-import           Test.QuickCheck
+import Data.Default         (def)
+import AutoBench.Types      (DataOpts(..), TestSuite(..))
+import AutoBench.QuickCheck ()
+import Test.QuickCheck
 
-ansSplit :: MyString -> String
-ansSplit = unwords . split (startsWithOneOf ['A'..'Z']) . getString
+splitCC :: MyString -> String
+splitCC = unwords . split (startsWithOneOf ['A'..'Z']) . getString
 
-ansFold :: MyString -> String
-ansFold = fmt . foldr go [] . getString
+foldSplitCC :: MyString -> String
+foldSplitCC = fmt . foldr go [] . getString
   where
     go c acc
       | isUpper c = ' ':c:acc
@@ -192,18 +194,21 @@ instance Arbitrary MyString where
 ```
 
 - AutoBench を利用する際、入力の型は `NFData` 型クラスのインスタンスになっている必要があります。
-- デフォルトの設定だと実行完了までに5分程度かかります。
 
 AutoBench の結果
 
 ![AutoBench の結果](/images/2018/11-16/AutoBenched.png)
 
-一応ターミナルにもこんな感じで結果を出力してくれます。
+一応ターミナルにもこんな感じで詳細な結果も出力してくれます。
 
 ```shell
+     • Executed benchmarking file ✔
+     • Generating test report ✔
+     • Analysing performance results...
+
  ―― Test summary ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
-  Programs       ansFold, ansSplit
+  Programs       foldSplitCC, splitCC
   Data           Random, size range [0,10000..200000]
   Normalisation  nf
   QuickCheck     ✔
@@ -211,46 +216,46 @@ AutoBench の結果
 
  ―― Analysis ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 
-  ansFold
+  foldSplitCC
     Size          0       10000   20000   30000   40000   50000   60000   70000
                   80000   90000   100000  110000  120000  130000  140000  150000
                   160000  170000  180000  190000  200000
-    Time    (ms)  0.000   0.581   0.376   0.115   2.795   3.645   5.881   1.399
-                  2.619   3.767   4.792   1.419   1.709   11.00   8.169   5.921
-                  15.06   12.73   17.61   12.57   9.051
-    Std dev (ms)  2.218
-    Average variance introduced by outliers: 91% (severely inflated)
+    Time    (ms)  0.000   0.179   1.225   1.978   2.112   6.172   4.232   1.248
+                  0.217   5.961   5.184   2.715   5.186   2.690   6.810   4.810
+                  7.073   7.760   5.122   8.280   18.66
+    Std dev (ms)  1.742
+    Average variance introduced by outliers: 83% (severely inflated)
 
-    Fits          y = 4.48e-13 + 6.12e-8x
-                  y = 1.54e-23 + 8.69e-17x + 3.87e-13x²
-                  y = 1.50e-15 + 3.57e-9xlog₂(x)
+    Fits          y = 1.18e-23 + 8.49e-17x + 2.98e-13x²
+                  y = 3.45e-13 + 4.71e-8x
+                  y = 3.47e-34 + 5.68e-29x + 9.70e-24x² + 1.70e-18x³
 
-  ansSplit
+  splitCC
     Size          0       10000   20000   30000   40000   50000   60000   70000
                   80000   90000   100000  110000  120000  130000  140000  150000
                   160000  170000  180000  190000  200000
-    Time    (ms)  0.000   4.140   2.812   1.240   10.43   45.66   61.93   12.14
-                  20.63   31.00   41.17   26.11   10.80   98.83   73.31   44.92
-                  55.60   50.67   140.7   68.02   112.4
-    Std dev (ms)  27.40
-    Average variance introduced by outliers: 74% (severely inflated)
+    Time    (ms)  0.000   1.080   9.397   13.53   6.133   39.55   29.14   9.504
+                  1.596   44.46   38.58   16.35   35.41   17.94   38.40   52.06
+                  59.35   62.88   40.68   58.27   105.0
+    Std dev (ms)  10.54
+    Average variance introduced by outliers: 62% (severely inflated)
 
-    Fits          y = 3.27e-12 + 4.47e-7x
-                  y = 1.09e-14 + 2.61e-8xlog₂(x)
-                  y = 1.11e-22 + 1.38e-16x + 2.79e-12x²
+    Fits          y = 2.41e-12 + 3.29e-7x
+                  y = 8.06e-15 + 1.92e-8xlog₂(x)
+                  y = 8.20e-23 + 1.21e-16x + 2.07e-12x²
 
   Optimisation:
 
-    ansSplit ≥ ansFold (1.00)
+    splitCC ≥ foldSplitCC (1.00)
 
  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 ```
 
-`ansSplit ≥ ansFold (1.00)` ということなので `ansFold` の方が良い結果となりました。
+`splitCC ≥ foldSplitCC (1.00)` ということなので `splitFoldCC` の方が良い結果となりました。
 
 ## まとめ
 
 - リストを何度も走査すると遅くなるので、fold で書くと良いよ！
-- 関数の振る舞いが変化していないか確認するために QuickCheck を使おう
+- 関数の振る舞いが変化していないか確認するために QuickCheck を使おう！
 - ベンチマークの実行はとても簡単なので積極的にやってみよう！
-- AutoBench を使って可視化しよう！
+- AutoBench を使って可視化すると楽しいよ！

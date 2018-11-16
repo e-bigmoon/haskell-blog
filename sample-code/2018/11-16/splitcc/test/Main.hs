@@ -15,5 +15,5 @@ main :: IO ()
 main = quickCheck prop_split
 
 prop_split :: MyString -> Bool
-prop_split xs = ansSplit xs' == ansFold xs'
+prop_split xs = splitCC xs' == foldSplitCC xs'
   where xs' = getString xs

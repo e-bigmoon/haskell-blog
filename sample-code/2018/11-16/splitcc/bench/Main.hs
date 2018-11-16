@@ -16,16 +16,16 @@ main = do
   sampleData4 <- generate $ vectorOf 10000000 charGen
 
   defaultMainWith conf
-    [ bgroup "ansSplit" [ bench "10" $ whnf ansSplit sampleData1
-                        , bench "1000" $ whnf ansSplit sampleData2
-                        , bench "100000" $ whnf ansSplit sampleData3
-                        , bench "10000000" $ whnf ansSplit sampleData4
-                        ]
-    , bgroup "ansFold"  [ bench "10" $ whnf ansFold sampleData1
-                        , bench "1000" $ whnf ansFold sampleData2
-                        , bench "100000" $ whnf ansFold sampleData3
-                        , bench "10000000" $ whnf ansFold sampleData4
-                        ]
+    [ bgroup "splitCC" [ bench "10"       $ whnf splitCC sampleData1
+                       , bench "1000"     $ whnf splitCC sampleData2
+                       , bench "100000"   $ whnf splitCC sampleData3
+                       , bench "10000000" $ whnf splitCC sampleData4
+                       ]
+    , bgroup "foldSplitCC" [ bench "10"       $ whnf foldSplitCC sampleData1
+                           , bench "1000"     $ whnf foldSplitCC sampleData2
+                           , bench "100000"   $ whnf foldSplitCC sampleData3
+                           , bench "10000000" $ whnf foldSplitCC sampleData4
+                           ]
     ]
 
 charGen :: Gen Char
