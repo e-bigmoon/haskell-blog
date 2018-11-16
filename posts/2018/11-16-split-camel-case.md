@@ -149,7 +149,7 @@ Benchmark splitcc: FINISH
 
 ## AutoBench
 
-[AutoBench](https://github.com/mathandley/AutoBench) を使って視覚的に実行時間の変化を確認してみましょう。
+最後に [AutoBench](https://github.com/mathandley/AutoBench) を使って視覚的に実行時間の変化を確認してみましょう。
 
 ```hs
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
