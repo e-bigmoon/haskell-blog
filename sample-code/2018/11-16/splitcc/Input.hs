@@ -35,4 +35,3 @@ newtype MyString = MyString { getString :: String }
 
 instance Arbitrary MyString where
   arbitrary = fmap MyString $ listOf $ elements (['a'..'z']++['A'..'Z'])
-~
