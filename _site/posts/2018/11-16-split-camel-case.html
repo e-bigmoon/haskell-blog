@@ -14,7 +14,10 @@
   <title>CamelCase の split</title>
   <meta name="description" content="はじめに
 Twitter で CamelCase の文字列を Camel Case にするという話を見かけたので、やってみました。
-文字列に含まれる文字は ['a'..'z'] ++ ['A'..'Z'] を想定しています。">
+文字列に含まれる文字は ['a'..'z'] ++ ['A'..'Z'] を想定しています。
+
+追記: 寄せられたご意見について追記しました。
+">
   <link rel="canonical" href="../../posts/2018/11-16-split-camel-case.html">
   <link rel="alternate" type="application/atom+xml" title="CamelCase の split" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
@@ -36,7 +39,10 @@ Twitter で CamelCase の文字列を Camel Case にするという話を見か�
   <meta property="og:site_name" content="CamelCase の split" />
   <meta property="og:description" content="はじめに
 Twitter で CamelCase の文字列を Camel Case にするという話を見かけたので、やってみました。
-文字列に含まれる文字は ['a'..'z'] ++ ['A'..'Z'] を想定しています。" />
+文字列に含まれる文字は ['a'..'z'] ++ ['A'..'Z'] を想定しています。
+
+追記: 寄せられたご意見について追記しました。
+" />
 
   <meta name="twitter:card" content="summary" />
   <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
@@ -212,6 +218,9 @@ Twitter で CamelCase の文字列を Camel Case にするという話を見か�
         <h2 id="はじめに">はじめに</h2>
 <p>Twitter で <code>CamelCase</code> の文字列を <code>Camel Case</code> にするという話を見かけたので、やってみました。</p>
 <p>文字列に含まれる文字は <code>['a'..'z'] ++ ['A'..'Z']</code> を想定しています。</p>
+<ul>
+<li>追記: 寄せられたご意見について追記しました。</li>
+</ul>
 <!--more-->
 <h2 id="split">split</h2>
 <p>分割するということなので <a href="https://www.stackage.org/package/split">split</a> パッケージを使ってみます。</p>
@@ -353,7 +362,7 @@ Benchmark splitcc-bench: FINISH</code></pre>
 <a class="sourceLine" id="cb9-36" title="36"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb9-37" title="37">  arbitrary <span class="fu">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="fu">$</span> listOf <span class="fu">$</span> elements ([<span class="ch">'a'</span><span class="fu">..</span><span class="ch">'z'</span>]<span class="fu">++</span>[<span class="ch">'A'</span><span class="fu">..</span><span class="ch">'Z'</span>])</a></code></pre></div>
 <ul>
-<li>AutoBench を利用する際、入力の型は <code>NFData</code> 型クラスのインスタンスになっている必要があります。</li>
+<li>AutoBench を利用する際、デフォルトの設定では、入力の型は <code>NFData</code> 型クラスのインスタンスになっている必要があります。</li>
 </ul>
 <p>AutoBench の結果</p>
 <figure>
@@ -414,6 +423,86 @@ Benchmark splitcc-bench: FINISH</code></pre>
 <li>関数の振る舞いが変化していないか確認するために QuickCheck を使おう！</li>
 <li>ベンチマークの実行はとても簡単なので積極的にやってみよう！</li>
 <li>AutoBench を使って可視化すると楽しいよ！</li>
+</ul>
+<h2 id="寄せられたご意見">寄せられたご意見</h2>
+<blockquote>
+<p>問題設定として <code>convertRGB</code> は <code>convert R G B</code> でいいの？</p>
+</blockquote>
+<p>直感的に良くないですが、全然考えてなかったので今回は良いことにしておきたいと思います・・・。</p>
+<blockquote>
+<p>グラフの隅に、“splitCCは線形でfoldsplitCCは2次”とか書いてあって本当にそうだと巨大な列で結果が逆転してしまうんだけどそれは間違いだよね。</p>
+</blockquote>
+<p>これは (たぶん) グラフをプロットする際の値の選択が良くなかったため、間違った計算量が推論されてしまっています。</p>
+<p>具体的にはこのような表示があり、ここから選ぶことになるのですが全然わからないので <code>1</code> を選択した結果、今回の図のようになりました。</p>
+<pre class="shell"><code>  ▸ Select trend lines for the graph of results:
+
+  foldSplitCC
+    1)  y = 1.18e-23 + 8.49e-17x + 2.98e-13x²
+    2)  y = 3.45e-13 + 4.71e-8x
+    3)  y = 3.47e-34 + 5.68e-29x + 9.70e-24x² + 1.70e-18x³
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+&gt; 1
+
+  splitCC
+    1)  y = 2.41e-12 + 3.29e-7x
+    2)  y = 8.06e-15 + 1.92e-8xlog₂(x)
+    3)  y = 8.20e-23 + 1.21e-16x + 2.07e-12x²
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+&gt; 1</code></pre>
+<p>以下のように正しく選ぶと</p>
+<pre class="shell"><code>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+  ▸ Select trend lines for the graph of results:
+
+  foldSplitCC
+    1)  y = 2.80e-13 + 3.83e-8x
+    2)  y = 9.34e-16 + 2.22e-9xlog₂(x)
+    3)  y = -7.13e-3 + 1.34e-6log₂(x) + 4.22e-5log₂²(x)
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+&gt; 1
+
+  splitCC
+    1)  y = 2.15e-12 + 2.94e-7x
+    2)  y = 7.18e-15 + 1.71e-8xlog₂(x)
+    3)  y = 6.99e-23 + 2.79e-16x + 1.76e-12x²
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+&gt; 1</code></pre>
+<p>このように、正しい計算量になります。</p>
+<figure>
+<img src="../../images/2018/11-16/true-result.png" alt="AutoBench の真の結果" /><figcaption>AutoBench の真の結果</figcaption>
+</figure>
+<blockquote>
+<p>MyString を定義するのが面倒な場合は以下のようにすると良いよ</p>
+</blockquote>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">prop_split <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb13-2" title="2">  xs <span class="ot">&lt;-</span> listOf <span class="fu">$</span> elements ([<span class="ch">'a'</span><span class="fu">..</span><span class="ch">'z'</span>]<span class="fu">++</span>[<span class="ch">'A'</span><span class="fu">..</span><span class="ch">'Z'</span>])</a>
+<a class="sourceLine" id="cb13-3" title="3">  <span class="fu">return</span> <span class="fu">$</span> splitCC xs <span class="fu">==</span> foldSplitCC xs</a></code></pre></div>
+<blockquote>
+<p><code>splitCC ≥ foldSplitCC (1.00)</code> っていうのはどういう意味</p>
+</blockquote>
+<ul>
+<li><code>splitCC ≥ foldSplitCC</code> の部分は <code>splitCC</code> よりも <code>foldSplitCC</code> 関数の方がパフォーマンスが向上していることを示しています。</li>
+<li><code>(1.00)</code> は QuickCheck によって生成されたテストケースを入力として利用した時に全てのテストケース (<code>100%</code>) で性能が改善されたという意味です。<code>0.5</code> などとなっていた場合はテストケースによっては性能が向上していないということです。</li>
 </ul>
       </article>
 
