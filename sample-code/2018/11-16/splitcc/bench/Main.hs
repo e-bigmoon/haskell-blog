@@ -1,10 +1,10 @@
-import Data.Char (isUpper, isSpace)
-import Data.List.Split (split, startsWithOneOf)
+import           Data.Char          (isSpace, isUpper)
+import           Data.List.Split    (split, startsWithOneOf)
 
-import Gauge.Main
-import Gauge.Main.Options
+import           Gauge.Main
+import           Gauge.Main.Options
 
-import Test.QuickCheck
+import           Test.QuickCheck
 
 ansSplit :: String -> String
 ansSplit = unwords . split (startsWithOneOf ['A'..'Z'])
