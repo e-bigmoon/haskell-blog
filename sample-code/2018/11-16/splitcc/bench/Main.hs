@@ -1,26 +1,12 @@
-import           Data.Char          (isSpace, isUpper)
-import           Data.List.Split    (split, startsWithOneOf)
+module Main (main) where
 
 import           Gauge.Main
 import           Gauge.Main.Options
 
 import           Test.QuickCheck
 
-ansSplit :: String -> String
-ansSplit = unwords . split (startsWithOneOf ['A'..'Z'])
+import SplitCC
 
-ansFold :: String -> String
-ansFold = fmt . foldr go []
-  where
-    go c acc
-      | isUpper c = ' ':c:acc
-      | otherwise = c:acc
-    fmt cs
-      | null cs = cs
-      | isSpace (head cs) = tail cs
-      | otherwise = cs
-
--- bench
 main :: IO ()
 main = do
   let conf = defaultConfig { displayMode = Condensed }
