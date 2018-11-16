@@ -114,18 +114,18 @@ main = do
   sampleData1 <- generate $ vectorOf 10 charGen
   sampleData2 <- generate $ vectorOf 1000 charGen
   sampleData3 <- generate $ vectorOf 100000 charGen
-  sampleData4 <- generate $ vectorOf 10000000 charGen
+  sampleData4 <- generate $ vectorOf 1000000 charGen
 
   defaultMainWith conf
-    [ bgroup "splitCC" [ bench "10"       $ whnf splitCC sampleData1
-                       , bench "1000"     $ whnf splitCC sampleData2
-                       , bench "100000"   $ whnf splitCC sampleData3
-                       , bench "10000000" $ whnf splitCC sampleData4
+    [ bgroup "splitCC" [ bench "10"      $ nf splitCC sampleData1
+                       , bench "1000"    $ nf splitCC sampleData2
+                       , bench "100000"  $ nf splitCC sampleData3
+                       , bench "1000000" $ nf splitCC sampleData4
                        ]
-    , bgroup "foldSplitCC" [ bench "10"       $ whnf foldSplitCC sampleData1
-                           , bench "1000"     $ whnf foldSplitCC sampleData2
-                           , bench "100000"   $ whnf foldSplitCC sampleData3
-                           , bench "10000000" $ whnf foldSplitCC sampleData4
+    , bgroup "foldSplitCC" [ bench "10"      $ nf foldSplitCC sampleData1
+                           , bench "1000"    $ nf foldSplitCC sampleData2
+                           , bench "100000"  $ nf foldSplitCC sampleData3
+                           , bench "1000000" $ nf foldSplitCC sampleData4
                            ]
     ]
 
@@ -137,16 +137,17 @@ charGen = elements (['a'..'z']++['A'..'Z'])
 
 ```shell
 $ stack bench
-Benchmark splitcc: RUNNING...
-splitCC/10                              mean 538.8 ns  ( +- 274.7 ns  )
-splitCC/1000                            mean 423.3 ns  ( +- 65.61 ns  )
-splitCC/100000                          mean 343.1 ns  ( +- 35.88 ns  )
-splitCC/10000000                        mean 725.5 ns  ( +- 132.6 ns  )
-foldSplitCC/10                          mean 26.40 ns  ( +- 8.706 ns  )
-foldSplitCC/1000                        mean 25.17 ns  ( +- 2.550 ns  )
-foldSplitCC/100000                      mean 21.20 ns  ( +- 2.566 ns  )
-foldSplitCC/10000000                    mean 25.27 ns  ( +- 2.758 ns  )
-Benchmark splitcc: FINISH
+Benchmark splitcc-bench: RUNNING...
+splitCC/10                               mean 2.847 μs  ( +- 261.0 ns  )
+splitCC/1000                             mean 287.2 μs  ( +- 3.935 μs  )
+splitCC/100000                           mean 29.10 ms  ( +- 1.348 ms  )
+splitCC/1000000                          mean 287.3 ms  ( +- 735.0 μs  )
+
+foldSplitCC/10                           mean 219.3 ns  ( +- 2.955 ns  )
+foldSplitCC/1000                         mean 25.65 μs  ( +- 246.5 ns  )
+foldSplitCC/100000                       mean 2.640 ms  ( +- 22.98 μs  )
+foldSplitCC/1000000                      mean 27.43 ms  ( +- 1.795 ms  )
+Benchmark splitcc-bench: FINISH
 ```
 
 ## AutoBench
