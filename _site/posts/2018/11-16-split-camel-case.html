@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>CamelCase の split</title>
+  <meta name="description" content="はじめに
+Twitter で CamelCase の文字列を Camel Case にするという話を見かけたので、やってみました。
+文字列に含まれる文字は ['a'..'z'] ++ ['A'..'Z'] を想定しています。">
+  <link rel="canonical" href="../../posts/2018/11-16-split-camel-case.html">
+  <link rel="alternate" type="application/atom+xml" title="CamelCase の split" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="../../lib/mdi/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="CamelCase の split" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/11-16-split-camel-case.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="CamelCase の split" />
+  <meta property="og:description" content="はじめに
+Twitter で CamelCase の文字列を Camel Case にするという話を見かけたので、やってみました。
+文字列に含まれる文字は ['a'..'z'] ++ ['A'..'Z'] を想定しています。" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+        <a href="../../yesod/" class="white-text">
+          <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+          Yesod
+        </a>
+      </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on November 16, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">CamelCase の split</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=CamelCase の split&url=https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p>Twitter で <code>CamelCase</code> の文字列を <code>Camel Case</code> にするという話を見かけたので、やってみました。</p>
+<p>文字列に含まれる文字は <code>['a'..'z'] ++ ['A'..'Z']</code> を想定しています。</p>
+<!--more-->
+<h2 id="split">split</h2>
+<p>分割するということなので <a href="https://www.stackage.org/package/split">split</a> パッケージを使ってみます。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">import</span> <span class="dt">Data.List.Split</span> (split, startsWithOneOf)</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="ot">splitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-4" title="4">splitCC  <span class="fu">=</span> <span class="fu">unwords</span> <span class="fu">.</span> split (startsWithOneOf [<span class="ch">'A'</span><span class="fu">..</span><span class="ch">'Z'</span>])</a></code></pre></div>
+<p>実行結果</p>
+<pre class="shell"><code>ghci&gt; splitCC &quot;CamelCase&quot;
+&quot;Camel Case&quot;</code></pre>
+<h2 id="fold">fold</h2>
+<p><code>split</code> パッケージを使った実装は直感的でコードもコンパクトです。</p>
+<p>しかし、見た感じ効率悪そうですよね。(リスト全体を分割した後で <code>unwords</code> かけるため)</p>
+<p>そのため、<code>fold</code> バージョンも実装してみましょう。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Data.Char</span> (isUpper, isSpace)</a>
+<a class="sourceLine" id="cb3-2" title="2"></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ot">foldSplitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb3-4" title="4">foldSplitCC <span class="fu">=</span> fmt <span class="fu">.</span> <span class="fu">foldr</span> go []</a>
+<a class="sourceLine" id="cb3-5" title="5">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-6" title="6">    go c acc</a>
+<a class="sourceLine" id="cb3-7" title="7">      <span class="fu">|</span> <span class="fu">isUpper</span> c <span class="fu">=</span> <span class="ch">' '</span><span class="fu">:</span>c<span class="fu">:</span>acc</a>
+<a class="sourceLine" id="cb3-8" title="8">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> c<span class="fu">:</span>acc</a>
+<a class="sourceLine" id="cb3-9" title="9">    fmt cs</a>
+<a class="sourceLine" id="cb3-10" title="10">      <span class="fu">|</span> <span class="fu">null</span> cs <span class="fu">=</span> cs</a>
+<a class="sourceLine" id="cb3-11" title="11">      <span class="fu">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="fu">=</span> <span class="fu">tail</span> cs</a>
+<a class="sourceLine" id="cb3-12" title="12">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> cs</a></code></pre></div>
+<p>実行結果</p>
+<pre class="shell"><code>ghci&gt; foldSplitCC &quot;CamelCase&quot;
+&quot;Camel Case&quot;</code></pre>
+<h2 id="quickcheck">QuickCheck</h2>
+<p>念の為 <a href="https://www.stackage.org/package/QuickCheck">QuickCheck</a> を使ってランダムテストを行ってみましょう。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-2" title="2"></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
+<a class="sourceLine" id="cb5-4" title="4"></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="kw">import</span> <span class="dt">SplitCC</span></a>
+<a class="sourceLine" id="cb5-6" title="6"></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="fu">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</a>
+<a class="sourceLine" id="cb5-8" title="8">  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb5-9" title="9"></a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-11" title="11">  arbitrary <span class="fu">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="fu">$</span> listOf <span class="fu">$</span> elements ([<span class="ch">'a'</span><span class="fu">..</span><span class="ch">'z'</span>]<span class="fu">++</span>[<span class="ch">'A'</span><span class="fu">..</span><span class="ch">'Z'</span>])</a>
+<a class="sourceLine" id="cb5-12" title="12"></a>
+<a class="sourceLine" id="cb5-13" title="13"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb5-14" title="14">main <span class="fu">=</span> quickCheck prop_split</a>
+<a class="sourceLine" id="cb5-15" title="15"></a>
+<a class="sourceLine" id="cb5-16" title="16"><span class="ot">prop_split ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb5-17" title="17">prop_split xs <span class="fu">=</span> splitCC xs' <span class="fu">==</span> foldSplitCC xs'</a>
+<a class="sourceLine" id="cb5-18" title="18">  <span class="kw">where</span> xs' <span class="fu">=</span> getString xs</a></code></pre></div>
+<p>実行結果</p>
+<pre class="shell"><code>$ stack test
+splitcc-0.1.0.0: test (suite: splitcc-test)
+
++++ OK, passed 100 tests.
+
+splitcc-0.1.0.0: Test suite splitcc-test passed</code></pre>
+<h2 id="ベンチマーク">ベンチマーク</h2>
+<p>次は <a href="https://github.com/vincenthz/hs-gauge">gauge</a> を使ってどっちが速いか確認してみましょう。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">import</span> <span class="dt">Gauge.Main</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">import</span> <span class="dt">Gauge.Main.Options</span></a>
+<a class="sourceLine" id="cb7-3" title="3"></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
+<a class="sourceLine" id="cb7-5" title="5"></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="kw">import</span> <span class="dt">SplitCC</span></a>
+<a class="sourceLine" id="cb7-7" title="7"></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb7-9" title="9">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-10" title="10">  <span class="kw">let</span> conf <span class="fu">=</span> defaultConfig { displayMode <span class="fu">=</span> <span class="dt">Condensed</span> }</a>
+<a class="sourceLine" id="cb7-11" title="11">  sampleData1 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">10</span> charGen</a>
+<a class="sourceLine" id="cb7-12" title="12">  sampleData2 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">1000</span> charGen</a>
+<a class="sourceLine" id="cb7-13" title="13">  sampleData3 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">100000</span> charGen</a>
+<a class="sourceLine" id="cb7-14" title="14">  sampleData4 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">1000000</span> charGen</a>
+<a class="sourceLine" id="cb7-15" title="15"></a>
+<a class="sourceLine" id="cb7-16" title="16">  defaultMainWith conf</a>
+<a class="sourceLine" id="cb7-17" title="17">    [ bgroup <span class="st">&quot;splitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="fu">$</span> nf splitCC sampleData1</a>
+<a class="sourceLine" id="cb7-18" title="18">                       , bench <span class="st">&quot;1000&quot;</span>    <span class="fu">$</span> nf splitCC sampleData2</a>
+<a class="sourceLine" id="cb7-19" title="19">                       , bench <span class="st">&quot;100000&quot;</span>  <span class="fu">$</span> nf splitCC sampleData3</a>
+<a class="sourceLine" id="cb7-20" title="20">                       , bench <span class="st">&quot;1000000&quot;</span> <span class="fu">$</span> nf splitCC sampleData4</a>
+<a class="sourceLine" id="cb7-21" title="21">                       ]</a>
+<a class="sourceLine" id="cb7-22" title="22">    , bgroup <span class="st">&quot;foldSplitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="fu">$</span> nf foldSplitCC sampleData1</a>
+<a class="sourceLine" id="cb7-23" title="23">                           , bench <span class="st">&quot;1000&quot;</span>    <span class="fu">$</span> nf foldSplitCC sampleData2</a>
+<a class="sourceLine" id="cb7-24" title="24">                           , bench <span class="st">&quot;100000&quot;</span>  <span class="fu">$</span> nf foldSplitCC sampleData3</a>
+<a class="sourceLine" id="cb7-25" title="25">                           , bench <span class="st">&quot;1000000&quot;</span> <span class="fu">$</span> nf foldSplitCC sampleData4</a>
+<a class="sourceLine" id="cb7-26" title="26">                           ]</a>
+<a class="sourceLine" id="cb7-27" title="27">    ]</a>
+<a class="sourceLine" id="cb7-28" title="28"></a>
+<a class="sourceLine" id="cb7-29" title="29"><span class="ot">charGen ::</span> <span class="dt">Gen</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb7-30" title="30">charGen <span class="fu">=</span> elements ([<span class="ch">'a'</span><span class="fu">..</span><span class="ch">'z'</span>]<span class="fu">++</span>[<span class="ch">'A'</span><span class="fu">..</span><span class="ch">'Z'</span>])</a></code></pre></div>
+<p>実行結果</p>
+<pre class="shell"><code>$ stack bench
+Benchmark splitcc-bench: RUNNING...
+splitCC/10                               mean 2.847 μs  ( +- 261.0 ns  )
+splitCC/1000                             mean 287.2 μs  ( +- 3.935 μs  )
+splitCC/100000                           mean 29.10 ms  ( +- 1.348 ms  )
+splitCC/1000000                          mean 287.3 ms  ( +- 735.0 μs  )
+
+foldSplitCC/10                           mean 219.3 ns  ( +- 2.955 ns  )
+foldSplitCC/1000                         mean 25.65 μs  ( +- 246.5 ns  )
+foldSplitCC/100000                       mean 2.640 ms  ( +- 22.98 μs  )
+foldSplitCC/1000000                      mean 27.43 ms  ( +- 1.795 ms  )
+Benchmark splitcc-bench: FINISH</code></pre>
+<h2 id="autobench">AutoBench</h2>
+<p>最後に <a href="https://github.com/mathandley/AutoBench">AutoBench</a> を使って視覚的に実行時間の変化を確認してみましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="ot">{-# LANGUAGE DeriveGeneric #-}</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">module</span> <span class="dt">Input</span> (ts, splitCC, foldSplitCC) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb9-4" title="4"></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="kw">import</span> <span class="dt">Data.Char</span>          (isSpace, isUpper)</a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="kw">import</span> <span class="dt">Data.List.Split</span>    (split, startsWithOneOf)</a>
+<a class="sourceLine" id="cb9-7" title="7"></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="kw">import</span> <span class="dt">GHC.Generics</span>    (<span class="dt">Generic</span>)</a>
+<a class="sourceLine" id="cb9-9" title="9"><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></a>
+<a class="sourceLine" id="cb9-10" title="10"></a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="kw">import</span> <span class="dt">Data.Default</span>         (def)</a>
+<a class="sourceLine" id="cb9-12" title="12"><span class="kw">import</span> <span class="dt">AutoBench.Types</span>      (<span class="dt">DataOpts</span>(..), <span class="dt">TestSuite</span>(..))</a>
+<a class="sourceLine" id="cb9-13" title="13"><span class="kw">import</span> <span class="dt">AutoBench.QuickCheck</span> ()</a>
+<a class="sourceLine" id="cb9-14" title="14"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
+<a class="sourceLine" id="cb9-15" title="15"></a>
+<a class="sourceLine" id="cb9-16" title="16"><span class="ot">splitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb9-17" title="17">splitCC <span class="fu">=</span> <span class="fu">unwords</span> <span class="fu">.</span> split (startsWithOneOf [<span class="ch">'A'</span><span class="fu">..</span><span class="ch">'Z'</span>]) <span class="fu">.</span> getString</a>
+<a class="sourceLine" id="cb9-18" title="18"></a>
+<a class="sourceLine" id="cb9-19" title="19"><span class="ot">foldSplitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb9-20" title="20">foldSplitCC <span class="fu">=</span> fmt <span class="fu">.</span> <span class="fu">foldr</span> go [] <span class="fu">.</span> getString</a>
+<a class="sourceLine" id="cb9-21" title="21">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb9-22" title="22">    go c acc</a>
+<a class="sourceLine" id="cb9-23" title="23">      <span class="fu">|</span> <span class="fu">isUpper</span> c <span class="fu">=</span> <span class="ch">' '</span><span class="fu">:</span>c<span class="fu">:</span>acc</a>
+<a class="sourceLine" id="cb9-24" title="24">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> c<span class="fu">:</span>acc</a>
+<a class="sourceLine" id="cb9-25" title="25">    fmt cs</a>
+<a class="sourceLine" id="cb9-26" title="26">      <span class="fu">|</span> <span class="fu">null</span> cs <span class="fu">=</span> cs</a>
+<a class="sourceLine" id="cb9-27" title="27">      <span class="fu">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="fu">=</span> <span class="fu">tail</span> cs</a>
+<a class="sourceLine" id="cb9-28" title="28">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> cs</a>
+<a class="sourceLine" id="cb9-29" title="29"></a>
+<a class="sourceLine" id="cb9-30" title="30"><span class="ot">ts ::</span> <span class="dt">TestSuite</span></a>
+<a class="sourceLine" id="cb9-31" title="31">ts  <span class="fu">=</span> def { _dataOpts <span class="fu">=</span> <span class="dt">Gen</span> <span class="dv">0</span> <span class="dv">10000</span> <span class="dv">200000</span> }</a>
+<a class="sourceLine" id="cb9-32" title="32"></a>
+<a class="sourceLine" id="cb9-33" title="33"><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="fu">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</a>
+<a class="sourceLine" id="cb9-34" title="34">  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">NFData</span>)</a>
+<a class="sourceLine" id="cb9-35" title="35"></a>
+<a class="sourceLine" id="cb9-36" title="36"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb9-37" title="37">  arbitrary <span class="fu">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="fu">$</span> listOf <span class="fu">$</span> elements ([<span class="ch">'a'</span><span class="fu">..</span><span class="ch">'z'</span>]<span class="fu">++</span>[<span class="ch">'A'</span><span class="fu">..</span><span class="ch">'Z'</span>])</a></code></pre></div>
+<ul>
+<li>AutoBench を利用する際、入力の型は <code>NFData</code> 型クラスのインスタンスになっている必要があります。</li>
+</ul>
+<p>AutoBench の結果</p>
+<figure>
+<img src="../../images/2018/11-16/AutoBenched.png" alt="AutoBench の結果" /><figcaption>AutoBench の結果</figcaption>
+</figure>
+<p>一応ターミナルにもこんな感じで詳細な結果も出力してくれます。</p>
+<pre class="shell"><code>     • Executed benchmarking file ✔
+     • Generating test report ✔
+     • Analysing performance results...
+
+ ―― Test summary ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+  Programs       foldSplitCC, splitCC
+  Data           Random, size range [0,10000..200000]
+  Normalisation  nf
+  QuickCheck     ✔
+  GHC flags      n/a
+
+ ―― Analysis ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+  foldSplitCC
+    Size          0       10000   20000   30000   40000   50000   60000   70000
+                  80000   90000   100000  110000  120000  130000  140000  150000
+                  160000  170000  180000  190000  200000
+    Time    (ms)  0.000   0.179   1.225   1.978   2.112   6.172   4.232   1.248
+                  0.217   5.961   5.184   2.715   5.186   2.690   6.810   4.810
+                  7.073   7.760   5.122   8.280   18.66
+    Std dev (ms)  1.742
+    Average variance introduced by outliers: 83% (severely inflated)
+
+    Fits          y = 1.18e-23 + 8.49e-17x + 2.98e-13x²
+                  y = 3.45e-13 + 4.71e-8x
+                  y = 3.47e-34 + 5.68e-29x + 9.70e-24x² + 1.70e-18x³
+
+  splitCC
+    Size          0       10000   20000   30000   40000   50000   60000   70000
+                  80000   90000   100000  110000  120000  130000  140000  150000
+                  160000  170000  180000  190000  200000
+    Time    (ms)  0.000   1.080   9.397   13.53   6.133   39.55   29.14   9.504
+                  1.596   44.46   38.58   16.35   35.41   17.94   38.40   52.06
+                  59.35   62.88   40.68   58.27   105.0
+    Std dev (ms)  10.54
+    Average variance introduced by outliers: 62% (severely inflated)
+
+    Fits          y = 2.41e-12 + 3.29e-7x
+                  y = 8.06e-15 + 1.92e-8xlog₂(x)
+                  y = 8.20e-23 + 1.21e-16x + 2.07e-12x²
+
+  Optimisation:
+
+    splitCC ≥ foldSplitCC (1.00)
+
+ ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</code></pre>
+<p><code>splitCC ≥ foldSplitCC (1.00)</code> ということなので <code>splitFoldCC</code> の方が良い結果となりました。</p>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>リストを何度も走査すると遅くなるので、fold で書くと良いよ！</li>
+<li>関数の振る舞いが変化していないか確認するために QuickCheck を使おう！</li>
+<li>ベンチマークの実行はとても簡単なので積極的にやってみよう！</li>
+<li>AutoBench を使って可視化すると楽しいよ！</li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/10-22-stack-191.html"><i class="material-icons left">navigate_before</i>Stack 1.9.1 がリリースされました。</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=CamelCase の split&url=https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
