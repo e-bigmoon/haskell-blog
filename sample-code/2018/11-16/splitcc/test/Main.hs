@@ -1,8 +1,8 @@
 module Main (main) where
 
-import Test.QuickCheck
+import           Test.QuickCheck
 
-import SplitCC
+import           SplitCC
 
 newtype MyString = MyString { getString :: String }
   deriving (Eq, Show)

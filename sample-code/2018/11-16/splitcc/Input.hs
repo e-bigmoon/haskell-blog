@@ -1,16 +1,16 @@
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DeriveGeneric #-}
 module Input (ts, ansSplit, ansFold) where
 
-import           Data.Char          (isSpace, isUpper)
-import           Data.List.Split    (split, startsWithOneOf)
+import           Data.Char            (isSpace, isUpper)
+import           Data.List.Split      (split, startsWithOneOf)
 
-import           GHC.Generics    (Generic)
 import           Control.DeepSeq
+import           GHC.Generics         (Generic)
 
-import           Data.Default         (def)
-import           AutoBench.Types      (DataOpts(..), TestSuite(..))
 import           AutoBench.QuickCheck ()
+import           AutoBench.Types      (DataOpts (..), TestSuite (..))
+import           Data.Default         (def)
 import           Test.QuickCheck
 
 ansSplit :: MyString -> String

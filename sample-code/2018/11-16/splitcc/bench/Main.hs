@@ -5,7 +5,7 @@ import           Gauge.Main.Options
 
 import           Test.QuickCheck
 
-import SplitCC
+import           SplitCC
 
 main :: IO ()
 main = do

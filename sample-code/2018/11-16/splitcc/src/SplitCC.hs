@@ -3,8 +3,8 @@ module SplitCC
   , ansFold
   ) where
 
-import           Data.Char          (isSpace, isUpper)
-import           Data.List.Split    (split, startsWithOneOf)
+import           Data.Char       (isSpace, isUpper)
+import           Data.List.Split (split, startsWithOneOf)
 
 ansSplit :: String -> String
 ansSplit = unwords . split (startsWithOneOf ['A'..'Z'])
