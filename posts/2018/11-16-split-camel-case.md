@@ -10,6 +10,8 @@ Twitter で `CamelCase` の文字列を `Camel Case` にするという話を見
 
 文字列に含まれる文字は `['a'..'z'] ++ ['A'..'Z']` を想定しています。
 
+- 追記: 寄せられたご意見について追記しました。
+
 <!--more-->
 
 ## split
@@ -194,7 +196,7 @@ instance Arbitrary MyString where
   arbitrary = fmap MyString $ listOf $ elements (['a'..'z']++['A'..'Z'])
 ```
 
-- AutoBench を利用する際、入力の型は `NFData` 型クラスのインスタンスになっている必要があります。
+- AutoBench を利用する際、デフォルトの設定では、入力の型は `NFData` 型クラスのインスタンスになっている必要があります。
 
 AutoBench の結果
 
@@ -260,3 +262,92 @@ AutoBench の結果
 - 関数の振る舞いが変化していないか確認するために QuickCheck を使おう！
 - ベンチマークの実行はとても簡単なので積極的にやってみよう！
 - AutoBench を使って可視化すると楽しいよ！
+
+## 寄せられたご意見
+
+> 問題設定として `convertRGB` は `convert R G B` でいいの？
+
+直感的に良くないですが、全然考えてなかったので今回は良いことにしておきたいと思います・・・。
+
+> グラフの隅に、"splitCCは線形でfoldsplitCCは2次"とか書いてあって本当にそうだと巨大な列で結果が逆転してしまうんだけどそれは間違いだよね。
+
+これは (たぶん) グラフをプロットする際の値の選択が良くなかったため、間違った計算量が推論されてしまっています。
+
+具体的にはこのような表示があり、ここから選ぶことになるのですが全然わからないので `1` を選択した結果、今回の図のようになりました。
+
+```shell
+  ▸ Select trend lines for the graph of results:
+
+  foldSplitCC
+    1)  y = 1.18e-23 + 8.49e-17x + 2.98e-13x²
+    2)  y = 3.45e-13 + 4.71e-8x
+    3)  y = 3.47e-34 + 5.68e-29x + 9.70e-24x² + 1.70e-18x³
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+> 1
+
+  splitCC
+    1)  y = 2.41e-12 + 3.29e-7x
+    2)  y = 8.06e-15 + 1.92e-8xlog₂(x)
+    3)  y = 8.20e-23 + 1.21e-16x + 2.07e-12x²
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+> 1
+```
+
+以下のように正しく選ぶと
+
+```shell
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+  ▸ Select trend lines for the graph of results:
+
+  foldSplitCC
+    1)  y = 2.80e-13 + 3.83e-8x
+    2)  y = 9.34e-16 + 2.22e-9xlog₂(x)
+    3)  y = -7.13e-3 + 1.34e-6log₂(x) + 4.22e-5log₂²(x)
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+> 1
+
+  splitCC
+    1)  y = 2.15e-12 + 2.94e-7x
+    2)  y = 7.18e-15 + 1.71e-8xlog₂(x)
+    3)  y = 6.99e-23 + 2.79e-16x + 1.76e-12x²
+
+  ▸ Select a fit       [1..3]
+  ▸ View fits          [V]
+  ▸ View statistics    [S]
+  ▸ Don't plot         [X]
+
+> 1
+```
+
+このように、正しい計算量になります。
+
+![AutoBench の真の結果](/images/2018/11-16/true-result.png)
+
+> MyString を定義するのが面倒な場合は以下のようにすると良いよ
+
+```hs
+prop_split = do
+  xs <- listOf $ elements (['a'..'z']++['A'..'Z'])
+  return $ splitCC xs == foldSplitCC xs
+```
+
+> `splitCC ≥ foldSplitCC (1.00)` っていうのはどういう意味
+
+- `splitCC ≥ foldSplitCC` の部分は `splitCC` よりも `foldSplitCC` 関数の方がパフォーマンスが向上していることを示しています。
+- `(1.00)` は QuickCheck によって生成されたテストケースを入力として利用した時に全てのテストケース (`100%`) で性能が改善されたという意味です。`0.5` などとなっていた場合はテストケースによっては性能が向上していないということです。
