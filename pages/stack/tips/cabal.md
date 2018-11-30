@@ -25,6 +25,9 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 - `extra-lib-dirs` や `extra-include-dirs` などで依存するライブラリが変化した時
   - stack: `~/.stack/snapshots/` 以下を手動で削除し、リビルドする必要がある
   - cabal: `nix-style` を採用しているため、リビルドするだけで良い
+- パッケージをリビルドするタイミング
+  - stack: `resolver` が変化した際に、パッケージを新たに全てリビルドする必要がある
+  - cabal: `compiler` が変化した際に、パッケージを新たに全てリビルドする必要がある
 
 ## コマンド対応表
 
