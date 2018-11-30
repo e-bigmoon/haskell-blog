@@ -38,6 +38,12 @@ stack clean | cabal new-clean
 stack run | cabal new-run
 stack --version | cabal --version
 
+### どちらか一方にしかないコマンドやオプション
+
+stack | cabal | 備考
+------|--------|-------
+`stack build --file-watch` | [#5252](https://github.com/haskell/cabal/issues/5252)
+
 ## 設定ファイル等のパス対応表 (初期値)
 
 stack | cabal
