@@ -24,6 +24,7 @@ date: 2018/09/14
 - [extra-deps に github の短縮形が指定できるようになります](/posts/2018/03-13-stack-extra-deps-shorthand.html)
 - [stack-1.11 から location に extra-dep を指定できなくなります](/posts/2018/08-31-stack-extradep-legacy-syntax.html)
 - [アプリケーションのバックトレースを取得する](/posts/2018/09-01-stack-profile-build.html)
+- [cabal コマンドとの対応表](tips/cabal.html)
 
 ### stack サブコマンド
 
