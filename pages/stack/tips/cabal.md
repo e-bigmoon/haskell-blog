@@ -41,6 +41,10 @@ stack | cabal | 備考
 `stack --version` | `cabal --version`
 `stack --numeric-version` | `cabal --numeric-version`
 `stack upgrade` | `cabal new-install cabal-install --overwrite-policy=always`
+ ? | `cabal new-haddock`
+ ? | `cabal new-sdist`
+ ? | `cabal check`
+ ? | `cabal upload` <br> `cabal upload --publish`
 
 ### どちらか一方にしかないコマンドやオプション
 
