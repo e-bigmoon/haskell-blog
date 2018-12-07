@@ -1,17 +1,16 @@
 ---
 title: cabal コマンドとの対応表
-date: 2018/11/30
+date: 2018/12/07
 ---
 
 ## stack と cabal
 
 ```shell
 $ stack --numeric-version
-1.9.1
+1.9.3
 
-$ cabal --version
-cabal-install version 2.4.1.0
-compiled using version 2.4.1.0 of the Cabal library
+$ cabal --numeric-version
+2.4.1.0
 ```
 
 　| stack | cabal
@@ -33,13 +32,15 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 
 stack | cabal | 備考
 ------|--------|-------
-stack init | cabal init -n --is-executable
-stack setup | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
-stack build | cabal new-build
-stack repl | cabal new-repl
-stack clean | cabal new-clean
-stack run | cabal new-run
-stack --version | cabal --version
+`stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` | [#5707](https://github.com/haskell/cabal/pull/5707)
+`stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
+`stack build` | `cabal new-build`
+`stack repl` | `cabal new-repl`
+`stack clean` | `cabal new-clean`
+`stack run` | `cabal new-run`
+`stack --version` | `cabal --version`
+`stack --numeric-version` | `cabal --numeric-version`
+`stack upgrade` | `cabal new-install cabal-install --overwrite-policy=always`
 
 ### どちらか一方にしかないコマンドやオプション
 
