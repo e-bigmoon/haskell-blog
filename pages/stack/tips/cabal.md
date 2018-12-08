@@ -40,7 +40,7 @@ stack | cabal | 備考
 `stack run` | `cabal new-run`
 `stack --version` | `cabal --version`
 `stack --numeric-version` | `cabal --numeric-version`
-`stack upgrade` | `cabal new-install cabal-install --overwrite-policy=always`
+`stack upgrade` | `cabal new-install<br>cabal-install --overwrite-policy=always`
  ? | `cabal new-haddock`
  ? | `cabal new-sdist`
  ? | `cabal check`
