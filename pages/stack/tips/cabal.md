@@ -91,6 +91,7 @@ $ stack repl package1
 ```shell
 -- cabal.project
 packages:
+  ./
   package1
   package2
   package3
