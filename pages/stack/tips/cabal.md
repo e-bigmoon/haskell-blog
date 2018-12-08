@@ -124,6 +124,7 @@ extra-deps:
 #### cabal
 
 - [Specifying Packages from Remote Version Control Locations](https://cabal.readthedocs.io/en/latest/nix-local-build.html#specifying-packages-from-remote-version-control-locations)
+- リポジトリに `cabal` ファイルが含まれていない場合は `NoCabalFileFound` となる。リポジトリに含めるしかない。
 
 ```cabal
 # cabal.project`
