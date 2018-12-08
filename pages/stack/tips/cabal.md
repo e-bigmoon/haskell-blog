@@ -106,7 +106,31 @@ $ cabal new-repl
 # 個別のパッケージ
 $ cabal new-build package1
 $ cabal new-repl basic
+```
 
+### リモートリポジトリ
+
+#### stack
+
+- [Git and Mercurial repos](https://docs.haskellstack.org/en/stable/yaml_configuration/#git-and-mercurial-repos)
+
+```yaml
+# stack.yaml
+extra-deps:
+- github: fumieval/extensible
+  commit: 81ccac73f7480ea66e6008e660972bfee9e83976
+```
+
+#### cabal
+
+- [Specifying Packages from Remote Version Control Locations](https://cabal.readthedocs.io/en/latest/nix-local-build.html#specifying-packages-from-remote-version-control-locations)
+
+```cabal
+# cabal.project`
+source-repository-package
+  type: git
+  location: https://github.com/fumieval/extensible
+  tag: 81ccac73f7480ea66e6008e660972bfee9e83976
 ```
 
 ## 参考
