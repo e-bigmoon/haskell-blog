@@ -45,6 +45,7 @@ stack | cabal | 備考
  ? | `cabal new-sdist`
  ? | `cabal check`
  ? | `cabal upload` <br> `cabal upload --publish`
+ `stack update` | `cabal new-update`
 
 ### どちらか一方にしかないコマンドやオプション
 
