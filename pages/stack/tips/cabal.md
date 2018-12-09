@@ -35,6 +35,7 @@ stack | cabal | 備考
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` | [#5707](https://github.com/haskell/cabal/pull/5707)
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 `stack build` | `cabal new-build`
+`stack test` | `cabal new-test`
 `stack repl` | `cabal new-repl`
 `stack clean` | `cabal new-clean`
 `stack run` | `cabal new-run`
@@ -153,6 +154,22 @@ profiling: True
 `cabal.project.local` に上記の内容を追加し、`cabal new-build` すれば良い。
 
 - [How can I profile my library/application?](https://cabal.readthedocs.io/en/latest/nix-local-build.html#how-can-i-profile-my-library-application)
+
+### プロジェクトで利用する ghc を強制する方法
+
+#### cabal
+
+`cabal.project` に `with-compiler` を追記する
+
+```
+with-compiler: ghc-8.6.2
+```
+
+### cabal.project.local の設定
+
+```shell
+$ cabal new-configure -j
+```
 
 ## 参考
 
