@@ -136,6 +136,24 @@ source-repository-package
   tag: 81ccac73f7480ea66e6008e660972bfee9e83976
 ```
 
+### プロファイリング
+
+#### stack
+
+```shell
+$ stack build --profile
+```
+
+#### cabal
+
+```
+profiling: True
+```
+
+`cabal.project.local` に上記の内容を追加し、`cabal new-build` すれば良い。
+
+- [How can I profile my library/application?](https://cabal.readthedocs.io/en/latest/nix-local-build.html#how-can-i-profile-my-library-application)
+
 ## 参考
 
 - [Announcing cabal new-build: Nix-style local builds](http://blog.ezyang.com/2016/05/announcing-cabal-new-build-nix-style-local-builds/)
