@@ -130,7 +130,7 @@ extra-deps:
 - リポジトリに `cabal` ファイルが含まれていない場合は `NoCabalFileFound` となる。リポジトリに含めるしかない。
 
 ```cabal
-# cabal.project`
+# cabal.project
 source-repository-package
   type: git
   location: https://github.com/fumieval/extensible
