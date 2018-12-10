@@ -8,8 +8,79 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-11-16T00:00:00Z</updated>
+    <updated>2018-12-10T00:00:00Z</updated>
     <entry>
+    <title>Stack 1.9.3 がリリースされました。</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/12-10-stack-193.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/12-10-stack-193.html</id>
+    <published>2018-12-10T00:00:00Z</published>
+    <updated>2018-12-10T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>12月3日に Stack version 1.9.3 が<a href="https://github.com/commercialhaskell/stack/blob/v1.9.3/ChangeLog.md#v193">リリース</a>されました。</p>
+<p>更新は <code>stack upgrade</code> コマンドを実行します。</p>
+<pre class="shell"><code>$ stack upgrade
+...
+
+$ stack --numeric-version
+1.9.3</code></pre>
+<p>今回はバグフィックスが3点のみです。</p>
+<!--more-->
+<h2 id="changelog-翻訳">Changelog (翻訳)</h2>
+<h3 id="バグフィックス">バグフィックス</h3>
+<ul>
+<li>Stack をコンパイルする際に <code>.git</code> ディレクトリが含まれていない場合、コンパイルに失敗する問題を修正しました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4364#issuecomment-431600841">#4364</a></li>
+</ul>
+<p>この問題は <code>Stack</code> をビルドする人の話なので、普通の人は問題になりませんが、githash を使っている人は自分のアプリケーションでも起こりうる問題なので注意です。</p>
+<p>Stack はバージョン情報に git の情報を含めるために <a href="https://github.com/acfoltzer/gitrev">gitrev</a> を使っていたのですが、現在は開発が止まっているようで <a href="https://github.com/snoyberg/githash">githash</a> に切り替えました。(<a href="https://github.com/commercialhaskell/stack/pull/4130">Switch to githash to include some unmerged bugfixes in gitrev #4130</a>)</p>
+<p>今回の問題を修正するために実装された <code>tGitInfoCwdTry</code> 関数を使うことで <code>.git</code> ディレクトリが存在しない場合でもコンパイルできるようになります。</p>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4364">1.9.1 fails to build from tarball without .git/ #4364</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4368">Compile without a Git dir #4364 #4368</a></li>
+</ul>
+<hr />
+<ul>
+<li>GHC が生成する hi-dump ファイルの <code>addDependentFile</code> 関連のフォーマット変更 (ハッシュを含むようになった) に対応しました。詳細: <a href="https://github.com/yesodweb/yesod/issues/1551">yesodweb/yesod#1551</a></li>
+</ul>
+<p>Yesod で報告された問題に対する修正です。<code>.hi-dump</code> フォーマットが変わったので、それに対応しました。shakespeare の問題なので主に Yesod ユーザに影響があるかと思われます。以下のバージョンを利用すればこの問題は解決するため、この現象で悩んでいる人は stack と shakespeare の両方を更新しましょう。</p>
+<ul>
+<li>stack &gt;= 1.9.3</li>
+<li>shakespeare &gt;= 2.0.19</li>
+</ul>
+<p>stack は GHC が出力する <code>hi</code> ファイルの情報を内部で利用しているため、このようなことが起きます。(ビルド時にデフォルトで <code>-ddump-hi -ddump-to-file</code> オプションが追加されています)</p>
+<p><code>-ddump-to-file</code> が自動的に追加されてしまうせいで <code>-ddump-splices</code> の結果を表示しようとしてもコンソールに出力されなかったりして不便だったので出力先のディレクトリを指定できるようにしました。たぶん次のメジャーリリースで使えるようになると思います。</p>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/yesodweb/yesod/issues/1551">Unable to detect file changes on hamlet templates on stack devel for lts-12.5 #1551</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4369">Support GHC 8.4 in addDependentFile for 1.9.3 #4369</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4360">qAddDependentFile doesn’t cause re-compilation without extra-source-files #4360</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/commit/aae15e3">commit@aae15e3ae5767febe9fcad36bf5a5e184c635de1</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/issues/4225">Can’t display -ddump-splices result. #4225</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4242">Add the ddump-dir option/config value #4225 #4242</a></li>
+</ul>
+<hr />
+<ul>
+<li>テンプレートファイルのファイル名に変数が利用できるようになりました</li>
+</ul>
+<p>こんな感じで使えます。</p>
+<pre class="mastache"><code>{-# START_FILE {{name}}.cabal #-}
+name: {{name}}
+version: 0.0</code></pre>
+<p>参考リンク</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4397">Expand mustache variables in template file names #4397</a></li>
+<li><a href="https://github.com/commercialhaskell/stack/pull/4381">Allow variables in filenames in templates #4381</a></li>
+</ul>
+<hr />
+<h2 id="changelog-オリジナル">Changelog (オリジナル)</h2>
+<h3 id="bug-fixes">Bug fixes</h3>
+<ul>
+<li>Stack can now be compiled again inside a directory that does not contain a <code>.git</code> directory, see <a href="https://github.com/commercialhaskell/stack/issues/4364#issuecomment-431600841">#4364</a></li>
+<li>Handle a change in GHC’s hi-dump format around <code>addDependentFile</code>, which now includes a hash. See <a href="https://github.com/yesodweb/yesod/issues/1551">yesodweb/yesod#1551</a></li>
+<li>Allow variables to appear in template file names.</li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>CamelCase の split</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html</id>
@@ -2104,140 +2175,6 @@ main = undefined</code></pre>
 <li>現実世界で Arrow をバリバリ使っているコードをみかけることは (僕は) 全く無いです。(Hakyll は過去に Arrow ベースで定義されていたようですが、Monad ベースに切り替わりました)</li>
 </ul>
 <p>たぶん使うことは無いですが、パズルみたいで楽しい。</p>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>Yesod には脆弱性があるのかな？</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html</id>
-    <published>2018-07-31T00:00:00Z</published>
-    <updated>2018-07-31T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><a href="https://www.yesodweb.com/">Yesod</a> は Haskell で書かれた Web アプリケーションフレームワークです。</p>
-<p>WordPress や Drupal と違って、セキュリティはかなり万全です。(ユーザが気にしなければならない部分が非常に少ないです)</p>
-<p>最近、<a href="https://www.sbcr.jp/products/4797393163.html">体系的に学ぶ 安全なWebアプリケーションの作り方 第2版 (通称: 徳丸本)</a> が発売されました。</p>
-<p>勉強のため、本書の内容を Yesod で確認しているのですが、その中で面白い例を見つけました。</p>
-<p>今回はその内容について紹介したいと思います。(セキュリティの専門家ではないので間違いがあればご指摘ください)</p>
-<!--more-->
-<h2 id="脆弱性のあるコード">脆弱性のあるコード</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb1-8" title="8"></a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb1-10" title="10"></a>
-<a class="sourceLine" id="cb1-11" title="11">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb1-12" title="12">/ HomeR GET</a>
-<a class="sourceLine" id="cb1-13" title="13">|]</a>
-<a class="sourceLine" id="cb1-14" title="14"></a>
-<a class="sourceLine" id="cb1-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb1-16" title="16"></a>
-<a class="sourceLine" id="cb1-17" title="17"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-18" title="18">getHomeR <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-19" title="19">  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></a>
-<a class="sourceLine" id="cb1-20" title="20"></a>
-<a class="sourceLine" id="cb1-21" title="21">  [whamlet|</a>
-<a class="sourceLine" id="cb1-22" title="22">    <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</a>
-<a class="sourceLine" id="cb1-23" title="23">      <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;#{name}&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></a>
-<a class="sourceLine" id="cb1-24" title="24">    <span class="kw">$nothing</span></a>
-<a class="sourceLine" id="cb1-25" title="25">      パラメータが設定されていません。</a>
-<a class="sourceLine" id="cb1-26" title="26">  |]</a>
-<a class="sourceLine" id="cb1-27" title="27"></a>
-<a class="sourceLine" id="cb1-28" title="28">  toWidget [julius|</a>
-<a class="sourceLine" id="cb1-29" title="29">    <span class="kw">function</span> <span class="at">init</span>(text) <span class="op">{</span></a>
-<a class="sourceLine" id="cb1-30" title="30">      <span class="co">// 何かしらの処理</span></a>
-<a class="sourceLine" id="cb1-31" title="31">    <span class="op">}</span></a>
-<a class="sourceLine" id="cb1-32" title="32">  |]</a>
-<a class="sourceLine" id="cb1-33" title="33"></a>
-<a class="sourceLine" id="cb1-34" title="34"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-35" title="35">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
-<p>このコードには脆弱性があります。</p>
-<p><strong>Yesod</strong> の変数展開 <code>#{..}</code> は、このような <strong>JavaScript</strong> の動的生成でも大丈夫だろうと思っていたのですが、そうではありませんでした。</p>
-<h3 id="正常系">正常系</h3>
-<p>期待する動作として、例えば <code>http://localhost/?name=bigmoon</code> いう形式の <strong>URL</strong> にアクセスすると、以下のような URL が組み立てられます。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;bigmoon&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
-<p>これは予定通りです。</p>
-<h3 id="異常系">異常系</h3>
-<p><strong>URL</strong> の形式を <code>http://localhost/?name=%27),alert(XSS)//</code> とするとインジェクションが発生します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;%27),alert(XSS)//&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
-<p>読みやすさのため、パーセントエンコーディングを元に戻します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(&#39;&#39;),alert(XSS)//&#39;)&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
-<p><code>alert</code> が出てきてしまいましたね・・・。</p>
-<p>余談ですが <strong>Yesod</strong> ではパラメータ中に出現する <code>;</code> をパラメータの区切り文字として認識するようです。そのため <code>http://localhost/?name=%27);alert(XSS)//</code> ではインジェクションは発生しません。</p>
-<h2 id="原因">原因</h2>
-<p>問題はどこにあるのでしょうか？</p>
-<p>パラメータを取得しているコードはこの部分です。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></a></code></pre></div>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Handler.html#v:lookupGetParam">lookupGetParam</a> の型は以下の通りです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">lookupGetParam ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Maybe</span> <span class="dt">Text</span>)</a></code></pre></div>
-<p>つまり、<code>mname :: Maybe Text</code> 型となってしまいます。ここが問題の原因です。</p>
-<p>ただの <strong>Text</strong> 型なので変数展開時に <strong>HTMLのエスケープ処理</strong> が行われます。本来ならば <strong>JavaScript</strong> 用のエスケープ処理が必要なのです。</p>
-<h2 id="展開部分を改良してみる">展開部分を改良してみる</h2>
-<p>では <strong>Javascript</strong> 型に変換すれば問題は解決するのでしょうか？</p>
-<p>試しに以下のようにコードを変更してみました。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">&lt;</span>img onload<span class="fu">=</span><span class="st">&quot;init(&#39;#{renderJavascript $ toJavascript $ rawJS $ name}&#39;)&quot;</span> src<span class="fu">=</span><span class="st">&quot;...&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
-<p>ですが、やはり結果は同じです。</p>
-<h2 id="エスケープ処理">エスケープ処理</h2>
-<p>ソースコードを追いかけてみるとどうやら <strong>Value</strong> の値については <a href="https://www.stackage.org/haddock/lts-12.4/shakespeare-2.0.15/src/Text.Julius.html#string">string</a> というサニタイザーが適用されるようです。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">string ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></a>
-<a class="sourceLine" id="cb8-2" title="2">string s <span class="fu">=</span> <span class="ot">{-# SCC &quot;string&quot; #-}</span> singleton <span class="ch">&#39;&quot;&#39;</span> <span class="fu">&lt;&gt;</span> quote s <span class="fu">&lt;&gt;</span> singleton <span class="ch">&#39;&quot;&#39;</span></a>
-<a class="sourceLine" id="cb8-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-4" title="4">    quote q <span class="fu">=</span> <span class="kw">case</span> T.uncons t <span class="kw">of</span></a>
-<a class="sourceLine" id="cb8-5" title="5">                <span class="dt">Nothing</span>      <span class="ot">-&gt;</span> fromText h</a>
-<a class="sourceLine" id="cb8-6" title="6">                <span class="dt">Just</span> (<span class="fu">!</span>c,t&#39;) <span class="ot">-&gt;</span> fromText h <span class="fu">&lt;&gt;</span> escape c <span class="fu">&lt;&gt;</span> quote t&#39;</a>
-<a class="sourceLine" id="cb8-7" title="7">        <span class="kw">where</span> (h,t) <span class="fu">=</span> <span class="ot">{-# SCC &quot;break&quot; #-}</span> T.break isEscape q</a>
-<a class="sourceLine" id="cb8-8" title="8">    isEscape c <span class="fu">=</span> c <span class="fu">==</span> <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-9" title="9">                 c <span class="fu">==</span> <span class="ch">&#39;\\&#39;</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-10" title="10">                 c <span class="fu">==</span> <span class="ch">&#39;&lt;&#39;</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-11" title="11">                 c <span class="fu">==</span> <span class="ch">&#39;&gt;&#39;</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-12" title="12">                 c <span class="fu">==</span> <span class="ch">&#39;&amp;&#39;</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-13" title="13">                 c <span class="fu">&lt;</span> <span class="ch">&#39;\x20&#39;</span></a>
-<a class="sourceLine" id="cb8-14" title="14">    escape <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
-<a class="sourceLine" id="cb8-15" title="15">    escape <span class="ch">&#39;\\&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\\&quot;</span></a>
-<a class="sourceLine" id="cb8-16" title="16">    escape <span class="ch">&#39;\n&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\n&quot;</span></a>
-<a class="sourceLine" id="cb8-17" title="17">    escape <span class="ch">&#39;\r&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\r&quot;</span></a>
-<a class="sourceLine" id="cb8-18" title="18">    escape <span class="ch">&#39;\t&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\t&quot;</span></a>
-<a class="sourceLine" id="cb8-19" title="19">    escape <span class="ch">&#39;&lt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
-<a class="sourceLine" id="cb8-20" title="20">    escape <span class="ch">&#39;&gt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
-<a class="sourceLine" id="cb8-21" title="21">    escape <span class="ch">&#39;&amp;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
-<a class="sourceLine" id="cb8-22" title="22"></a>
-<a class="sourceLine" id="cb8-23" title="23">    escape c</a>
-<a class="sourceLine" id="cb8-24" title="24">        <span class="fu">|</span> c <span class="fu">&lt;</span> <span class="ch">&#39;\x20&#39;</span> <span class="fu">=</span> fromString <span class="fu">$</span> <span class="st">&quot;\\u&quot;</span> <span class="fu">++</span> <span class="fu">replicate</span> (<span class="dv">4</span> <span class="fu">-</span> <span class="fu">length</span> h) <span class="ch">&#39;0&#39;</span> <span class="fu">++</span> h</a>
-<a class="sourceLine" id="cb8-25" title="25">        <span class="fu">|</span> <span class="fu">otherwise</span>  <span class="fu">=</span> singleton c</a>
-<a class="sourceLine" id="cb8-26" title="26">        <span class="kw">where</span> h <span class="fu">=</span> showHex (<span class="fu">fromEnum</span> c) <span class="st">&quot;&quot;</span></a></code></pre></div>
-<p>なので、先程のコードを少し修正してこの <code>string</code> を適用してみました。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">&lt;</span>img onload<span class="fu">=</span><span class="st">&quot;init(&#39;#{renderJavascript $ toJavascript $ rawJS $ string $ name}&#39;)&quot;</span> src<span class="fu">=</span><span class="st">&quot;...&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
-<p>しかし、これでもやっぱりだめです。なぜなら <code>'</code> に対してはサニタイズしていないからだと思います。</p>
-<h3 id="string-関数の修正">string 関数の修正</h3>
-<p>以下のように <code>'</code> のエスケープ処理を追加したところ、インジェクションが発生しなくなりました。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">isEscape c <span class="fu">=</span> c <span class="fu">==</span> <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-2" title="2">             c <span class="fu">==</span> <span class="ch">&#39;\\&#39;</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-3" title="3">             c <span class="fu">==</span> <span class="ch">&#39;&lt;&#39;</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-4" title="4">             c <span class="fu">==</span> <span class="ch">&#39;&gt;&#39;</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-5" title="5">             c <span class="fu">==</span> <span class="ch">&#39;&amp;&#39;</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-6" title="6">             c <span class="fu">==</span> <span class="ch">&#39;\&#39;&#39;</span> <span class="fu">||</span> <span class="co">-- 追記</span></a>
-<a class="sourceLine" id="cb10-7" title="7">             c <span class="fu">&lt;</span> <span class="ch">&#39;\x20&#39;</span></a>
-<a class="sourceLine" id="cb10-8" title="8"></a>
-<a class="sourceLine" id="cb10-9" title="9">escape <span class="ch">&#39;\&quot;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
-<a class="sourceLine" id="cb10-10" title="10">escape <span class="ch">&#39;\\&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\\&quot;</span></a>
-<a class="sourceLine" id="cb10-11" title="11">escape <span class="ch">&#39;\n&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\n&quot;</span></a>
-<a class="sourceLine" id="cb10-12" title="12">escape <span class="ch">&#39;\r&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\r&quot;</span></a>
-<a class="sourceLine" id="cb10-13" title="13">escape <span class="ch">&#39;\t&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\t&quot;</span></a>
-<a class="sourceLine" id="cb10-14" title="14">escape <span class="ch">&#39;&lt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
-<a class="sourceLine" id="cb10-15" title="15">escape <span class="ch">&#39;&gt;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
-<a class="sourceLine" id="cb10-16" title="16">escape <span class="ch">&#39;&amp;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
-<a class="sourceLine" id="cb10-17" title="17"><span class="co">-- 追記</span></a>
-<a class="sourceLine" id="cb10-18" title="18">escape <span class="ch">&#39;\&#39;&#39;</span> <span class="fu">=</span> <span class="st">&quot;\\\&#39;&quot;</span></a></code></pre></div>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li><strong>JavaScript</strong> を動的に組み立てない</li>
-<li>ユーザが気をつけなけば <strong>Yesod</strong> でも脆弱性が発生する</li>
-<li>変数展開で全てがエスケープされると思っていたが、場所によってはそれだけでは不十分な場合がある</li>
-</ul>
 <p>以上です。</p>]]></summary>
 </entry>
 
