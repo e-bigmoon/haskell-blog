@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/09/14
+date: 2018/12/10
 ---
 
 <div class="row">
@@ -106,6 +106,8 @@ date: 2018/09/14
 - [正格性のすべて (翻訳)](/posts/2018/06-25-All-About-Strictness.html)
 - [ContT を使ってコードを綺麗にしよう！](/posts/2018/06-26-cont-param.html)
 - [RecordWildCards と Reader モナド](/posts/2018/08-26-recordwildcards.html)
+- [Haskell 情報収集術](https://qiita.com/waddlaw/items/b7ed253db36c6f8a04fc)
+- [GHC Source Plugin 作ってみた](https://qiita.com/waddlaw/items/65b57517f105fcbbe724)
 
 ## エディタ
 
