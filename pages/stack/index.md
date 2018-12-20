@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/12/10
+date: 2018/12/20
 ---
 
 <div class="row">
@@ -42,8 +42,8 @@ date: 2018/12/10
 
 ### stack リリース解説
 
-- [stack v1.9.3](/posts/2018/12-10-stack193.html)
-- [stack v1.9.1](/posts/2018/10-22-stack191.html)
+- [stack v1.9.3](/posts/2018/12-10-stack-193.html)
+- [stack v1.9.1](/posts/2018/10-22-stack-191.html)
 - [stack v1.7.1](/posts/2018/05-04-stack171.html)
 - [stack v1.6.5](/posts/2018/02-21-stack165.html)
 - [stack v1.6.3](/posts/2017/12-24-stack163.html)
