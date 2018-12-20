@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2018/12/10
+date: 2018/12/20
 ---
 
 ## stack と cabal
