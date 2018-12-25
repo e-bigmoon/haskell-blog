@@ -141,7 +141,7 @@ module Main (main) where
 
 import Distribution.Simple
 import Distribution.Simple.Setup (BuildFlags)
-import Distribution.Types.HookedBuildInfo (HookedBuildInfo)
+import Distribution.Types.HookedBuildInfo (HookedBuildInfo, emptyHookedBuildInfo)
 import Hpack
 
 main :: IO ()
@@ -154,12 +154,12 @@ main = do
 pbHpack :: Args -> BuildFlags -> IO HookedBuildInfo
 pbHpack _ _ = do
   hpack Verbose (defaultOptions { optionsForce = Force })
-  return (Nothing, [])
+  return emptyHookedBuildInfo
 ```
 
 [hpack](https://www.stackage.org/package/hpack) パッケージの関数をそのまま使ってます。
 
-今回は他に何もしないので `return (Nothing, [])` で大丈夫でした。(たぶん)
+今回は他に何もしないので `emptyHookedBuildInfo` で大丈夫でした。(たぶん)
 
 ### custom-setup
 
