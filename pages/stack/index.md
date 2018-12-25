@@ -109,6 +109,8 @@ date: 2018/12/20
 - [RecordWildCards と Reader モナド](/posts/2018/08-26-recordwildcards.html)
 - [Haskell 情報収集術](https://qiita.com/waddlaw/items/b7ed253db36c6f8a04fc)
 - [GHC Source Plugin 作ってみた](https://qiita.com/waddlaw/items/65b57517f105fcbbe724)
+- [Monoid と DerivingVia](https://qiita.com/waddlaw/items/f349bd363963d59e9ef5)
+- [RankNTypes と型レベルリストと extensible](https://qiita.com/waddlaw/items/b49e9daa02b2d254fba3)
 
 ## エディタ
 
