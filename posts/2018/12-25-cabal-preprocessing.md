@@ -6,11 +6,11 @@ tags: bigmoon,cabal
 
 ## はじめに
 
-最近すこしずつ `cabal` を使うようになりました。
+最近少しずつ `cabal` を使うようになりました。
 
 そのため、`stack` と `cabal` のどちらを使ってもビルドできるようにプロジェクトを修正していたのですが、`cabal` ファイルの取り扱いが難しかったのでメモ程度に残しておきます。
 
-方針としては `cabal` コマンドの実行時に `Hook` を仕掛けて `package.yaml` から `cabal` ファイルを生成しようという感じです。
+方針としては `cabal` コマンドの実行時にフックを仕掛けて `hpack` を使って `package.yaml` から `cabal` ファイルを生成しようという感じです。
 
 ```hs
 $ cabal --numeric-version
@@ -21,7 +21,7 @@ $ cabal --numeric-version
 
 ## Setup.hs は何のためにあるのか？
 
-`stack` を使ってプロジェクトを作ると以下の内容で `Setup.hs` が自動的に作られると思います。
+`stack` を使ってプロジェクトを作ると `Setup.hs` が以下の内容で自動的に生成されると思います。
 
 ```hs
 import Distribution.Simple
@@ -30,9 +30,11 @@ main = defaultMain
 
 今まで特に使わなくても困らなかったので、気にせずに放置していましたが、このファイルが今回の主役になります。
 
-`cabal` には [build-type](https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-type) という設定項目があり、この値は自動的に推論され、デフォルトでは `Simple` か `Custom` のどちらかになります。(他にも `Configure`, `Make` などもあります。詳しくはドキュメント参照)
+`cabal` には [build-type](https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-type) という設定項目があり、この値はデフォルトでは `Simple` か `Custom` のどちらかに自動的に推論されます。(他にも `Configure`, `Make` などもあります。詳しくはドキュメントを参照してください)
 
-値に `Simple` が指定された場合、`Setup.hs` の内容は以下のものとして処理されます。
+### Simple
+
+`build-type` に `Simple` を指定した場合、`cabal` は `Setup.hs` に以下の内容が記述されているものとして処理を進めます。
 
 ```haskell
 import Distribution.Simple
@@ -43,17 +45,17 @@ main = defaultMain
 
 ### Custom
 
-`build-type` の値を `Custom` にした場合、`Setup.hs` の内容を自由に書き換えることができます。
+`build-type` に `Custom` を指定した場合、`Setup.hs` の内容をユーザが自由に書き換えることができます。
 
 Cabal には [defaultMainWithHooks](https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#v:defaultMainWithHooks) という素晴らしい関数が用意されています。
 
-この関数を利用することで、コマンドの前後に好きな処理を挟むことができます。(コマンドの処理の上書きも可能です)
+この関数を利用することで、コマンドの前後に好きな処理を挟むことができます。(処理の上書きも可能です)
 
 詳しいドキュメントは [3.3.8. More complex packages](https://www.haskell.org/cabal/users-guide/developing-packages.html#more-complex-packages) を参照ください。
 
 ### UserHooks
 
-[UserHooks](https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#t:UserHooks) 型はこんな感じで定義されてます。
+`defaultMainWithHooks` に渡す [UserHooks](https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#t:UserHooks) 型はこんな感じで定義されています。
 
 ```hs
 data UserHooks = UserHooks {
@@ -126,13 +128,13 @@ data UserHooks = UserHooks {
 
 フックする場所はたくさんあるので問題無さそうです。
 
-しかし、これだけあると、どこに hook すれば良いのか？ということになるのですが、処理的には `package.yaml` から `.cabal` ファイルを生成したいので `.cabal` ファイルを読み込む手前で差し込む必要がありそうです。
+しかし、これだけあると、どこにフックすれば良いのか？ということになるのですが、処理的には `package.yaml` から `.cabal` ファイルを生成したいので `.cabal` ファイルを読み込む手前で差し込む必要がありそうです。
 
 適当に cabal のコードを読んでいると、どうやら [establishProjectBaseContext](https://github.com/haskell/cabal/blob/e15d87d542b4b23983aed3d54e0b42585257f453/cabal-install/Distribution/Client/CmdBuild.hs#L119) という関数が `.cabal` ファイルを読み込んでコンテキストを作っているっぽいことがわかりました。
 
 なので、`preBuild` にフックすれば良さそうです。
 
-こんな感じで完成しました。
+最終的に、こんな感じで完成しました。
 
 ```hs
 module Main (main) where
