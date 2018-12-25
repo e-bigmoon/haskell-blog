@@ -206,8 +206,8 @@ import Hpack
 
 main :: IO ()
 main = do
-  hpack Verbose (defaultOptions { optionsForce = Force })
-  defaultMain myHook
+  hpack Verbose defaultOptions
+  defaultMain
 ```
 
 これだと、あんまり上手くいきません。
