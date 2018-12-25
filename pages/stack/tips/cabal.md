@@ -63,6 +63,25 @@ stack | cabal
 
 ## Tips
 
+### コマンドの自動補完
+
+#### stack
+
+- [Shell Auto-completion](https://docs.haskellstack.org/en/stable/shell_autocompletion/#shell-auto-completion)
+
+```shell
+$ echo 'eval "$(stack --bash-completion-script stack)"' >> ~/.bashrc
+```
+
+#### cabal
+
+- [bash-completion script](https://github.com/haskell/cabal/blob/master/cabal-install/bash-completion/cabal)
+
+```shell
+$ curl https://raw.githubusercontent.com/haskell/cabal/master/cabal-install/bash-completion/cabal -O
+$ sudo mv cabal /usr/share/bash-completion/completions/
+```
+
 ### マルチパッケージプロジェクト
 
 #### stack
