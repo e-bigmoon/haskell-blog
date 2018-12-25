@@ -159,6 +159,28 @@ pbHpack _ _ = do
 
 今回は他に何もしないので `return (Nothing, [])` で大丈夫でした。(たぶん)
 
+最後に忘れてはいけないのが、`custom-setup` の設定です。
+
+`Setup.hs` で利用する依存関係などは `library` や `executables`, `tests` と同様に `custom-setup` を `package.yaml` に追記します。
+
+```yaml
+custom-setup:
+  dependencies:
+    - base
+    - Cabal
+    - hpack
+```
+
+これで完成です。
+
+最初の一度だけは `hpack` を使って `cabal` ファイルを生成する必要がありますが、それ以降は必要ありません。
+
+```shell
+$ curl -sSL https://github.com/sol/hpack/raw/master/get-hpack.sh | bash
+$ hpack package.yaml
+$ cabal new-build
+```
+
 ## 失敗したこと
 
 最初はフックさせずにこんな感じですぐに実装できるものだと思ってましたが、
