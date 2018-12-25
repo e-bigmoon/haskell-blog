@@ -8,8 +8,163 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-12-10T00:00:00Z</updated>
+    <updated>2018-12-25T00:00:00Z</updated>
     <entry>
+    <title>cabal build で package.yaml を使う</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2018/12-25-cabal-preprocessing.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2018/12-25-cabal-preprocessing.html</id>
+    <published>2018-12-25T00:00:00Z</published>
+    <updated>2018-12-25T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>最近少しずつ <code>cabal</code> を使うようになりました。</p>
+<p>そのため、<code>stack</code> と <code>cabal</code> のどちらを使ってもビルドできるようにプロジェクトを修正していたのですが、<code>cabal</code> ファイルの取り扱いが難しかったのでメモ程度に残しておきます。</p>
+<p>方針としては <code>cabal</code> コマンドの実行時にフックを仕掛けて <code>hpack</code> を使って <code>package.yaml</code> から <code>cabal</code> ファイルを生成しようという感じです。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">$</span> cabal <span class="co">--numeric-version</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="fl">2.4</span><span class="fu">.</span><span class="fl">1.0</span></a></code></pre></div>
+<!--more-->
+<h2 id="setup.hs-は何のためにあるのか">Setup.hs は何のためにあるのか？</h2>
+<p><code>stack</code> を使ってプロジェクトを作ると <code>Setup.hs</code> が以下の内容で自動的に生成されると思います。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
+<a class="sourceLine" id="cb2-2" title="2">main <span class="fu">=</span> defaultMain</a></code></pre></div>
+<p>今まで特に使わなくても困らなかったので、気にせずに放置していましたが、このファイルが今回の主役になります。</p>
+<p><code>cabal</code> には <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-type">build-type</a> という設定項目があり、この値はデフォルトでは <code>Simple</code> か <code>Custom</code> のどちらかに自動的に推論されます。(他にも <code>Configure</code>, <code>Make</code> などもあります。詳しくはドキュメントを参照してください)</p>
+<h3 id="simple">Simple</h3>
+<p><code>build-type</code> に <code>Simple</code> を指定した場合、<code>cabal</code> は <code>Setup.hs</code> に以下の内容が記述されているものとして処理を進めます。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
+<a class="sourceLine" id="cb3-2" title="2">main <span class="fu">=</span> defaultMain</a></code></pre></div>
+<p>そのため <code>Setup.hs</code> を削除しても問題なくビルド可能です。</p>
+<h3 id="custom">Custom</h3>
+<p><code>build-type</code> に <code>Custom</code> を指定した場合、<code>Setup.hs</code> の内容をユーザが自由に書き換えることができます。</p>
+<p>Cabal には <a href="https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#v:defaultMainWithHooks">defaultMainWithHooks</a> という素晴らしい関数が用意されています。</p>
+<p>この関数を利用することで、コマンドの前後に好きな処理を挟むことができます。(処理の上書きも可能です)</p>
+<p>詳しいドキュメントは <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#more-complex-packages">3.3.8. More complex packages</a> を参照ください。</p>
+<h3 id="userhooks">UserHooks</h3>
+<p><code>defaultMainWithHooks</code> に渡す <a href="https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#t:UserHooks">UserHooks</a> 型はこんな感じで定義されています。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="fu">=</span> <span class="dt">UserHooks</span> {</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">    runTests ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">    readDesc ::</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> <span class="dt">GenericPackageDescription</span>),</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">    hookedPreProcessors ::</span> [ <span class="dt">PPSuffixHandler</span> ],</a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="ot">    hookedPrograms ::</span> [<span class="dt">Program</span>],</a>
+<a class="sourceLine" id="cb4-6" title="6"></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="ot">    preConf  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="ot">    confHook ::</span> (<span class="dt">GenericPackageDescription</span>, <span class="dt">HookedBuildInfo</span>) <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">LocalBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="ot">    postConf ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-10" title="10"></a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="ot">    preBuild  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="ot">    buildHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="ot">    postBuild ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-14" title="14"></a>
+<a class="sourceLine" id="cb4-15" title="15"><span class="ot">    preRepl  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-16" title="16"><span class="ot">    replHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-17" title="17"><span class="ot">    postRepl ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-18" title="18"></a>
+<a class="sourceLine" id="cb4-19" title="19"><span class="ot">    preClean  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-20" title="20"><span class="ot">    cleanHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-21" title="21"><span class="ot">    postClean ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-22" title="22"></a>
+<a class="sourceLine" id="cb4-23" title="23"><span class="ot">    preCopy  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-24" title="24"><span class="ot">    copyHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-25" title="25"><span class="ot">    postCopy ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-26" title="26"></a>
+<a class="sourceLine" id="cb4-27" title="27"><span class="ot">    preInst  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-28" title="28"><span class="ot">    instHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-29" title="29"><span class="ot">    postInst ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-30" title="30"></a>
+<a class="sourceLine" id="cb4-31" title="31"><span class="ot">    preSDist  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-32" title="32"><span class="ot">    sDistHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-33" title="33"><span class="ot">    postSDist ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-34" title="34"></a>
+<a class="sourceLine" id="cb4-35" title="35"><span class="ot">    preReg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-36" title="36"><span class="ot">    regHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-37" title="37"><span class="ot">    postReg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-38" title="38"></a>
+<a class="sourceLine" id="cb4-39" title="39"><span class="ot">    preUnreg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-40" title="40"><span class="ot">    unregHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-41" title="41"><span class="ot">    postUnreg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-42" title="42"></a>
+<a class="sourceLine" id="cb4-43" title="43"><span class="ot">    preHscolour  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-44" title="44"><span class="ot">    hscolourHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-45" title="45"><span class="ot">    postHscolour ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-46" title="46"></a>
+<a class="sourceLine" id="cb4-47" title="47"><span class="ot">    preDoctest  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-48" title="48"><span class="ot">    doctestHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-49" title="49"><span class="ot">    postDoctest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-50" title="50"></a>
+<a class="sourceLine" id="cb4-51" title="51"><span class="ot">    preHaddock  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-52" title="52"><span class="ot">    haddockHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-53" title="53"><span class="ot">    postHaddock ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-54" title="54"></a>
+<a class="sourceLine" id="cb4-55" title="55"><span class="ot">    preTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-56" title="56"><span class="ot">    testHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-57" title="57"><span class="ot">    postTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-58" title="58"></a>
+<a class="sourceLine" id="cb4-59" title="59"><span class="ot">    preBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
+<a class="sourceLine" id="cb4-60" title="60"><span class="ot">    benchHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
+<a class="sourceLine" id="cb4-61" title="61"><span class="ot">    postBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb4-62" title="62">  }</a></code></pre></div>
+<p>これだけあれば、やりたいことはほとんど出来そうですね。</p>
+<h2 id="実装">実装</h2>
+<p>フックする場所はたくさんあるので問題無さそうです。</p>
+<p>しかし、これだけあると、どこにフックすれば良いのか？ということになるのですが、処理的には <code>package.yaml</code> から <code>.cabal</code> ファイルを生成したいので <code>.cabal</code> ファイルを読み込む手前で差し込む必要がありそうです。</p>
+<p>適当に cabal のコードを読んでいると、どうやら <a href="https://github.com/haskell/cabal/blob/e15d87d542b4b23983aed3d54e0b42585257f453/cabal-install/Distribution/Client/CmdBuild.hs#L119">establishProjectBaseContext</a> という関数が <code>.cabal</code> ファイルを読み込んでコンテキストを作っているっぽいことがわかりました。</p>
+<p>なので、<code>preBuild</code> にフックすれば良さそうです。(<code>cabal</code> のコードベースについて全然わからないので、本当に合ってるかどうかは不安)</p>
+<p>最終的に、こんな感じで完成しました。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-2" title="2"></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="kw">import</span> <span class="dt">Distribution.Simple.Setup</span> (<span class="dt">BuildFlags</span>)</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="kw">import</span> <span class="dt">Distribution.Types.HookedBuildInfo</span> (<span class="dt">HookedBuildInfo</span>, emptyHookedBuildInfo)</a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="kw">import</span> <span class="dt">Hpack</span></a>
+<a class="sourceLine" id="cb5-7" title="7"></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb5-9" title="9">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-10" title="10">  <span class="kw">let</span> myHook <span class="fu">=</span> simpleUserHooks {</a>
+<a class="sourceLine" id="cb5-11" title="11">    preBuild <span class="fu">=</span> pbHpack</a>
+<a class="sourceLine" id="cb5-12" title="12">  }</a>
+<a class="sourceLine" id="cb5-13" title="13">  defaultMainWithHooks myHook</a>
+<a class="sourceLine" id="cb5-14" title="14"></a>
+<a class="sourceLine" id="cb5-15" title="15"><span class="ot">pbHpack ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span></a>
+<a class="sourceLine" id="cb5-16" title="16">pbHpack _ _ <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-17" title="17">  hpack <span class="dt">Verbose</span> defaultOptions</a>
+<a class="sourceLine" id="cb5-18" title="18">  <span class="fu">return</span> emptyHookedBuildInfo</a></code></pre></div>
+<p><a href="https://www.stackage.org/package/hpack">hpack</a> パッケージの関数をそのまま使ってます。</p>
+<p>今回は他に何もしないので <code>emptyHookedBuildInfo</code> で大丈夫でした。(たぶん)</p>
+<h3 id="extra-source-files">extra-source-files</h3>
+<p>キャッシュの問題があるので <code>extra-source-files</code> に <code>package.yaml</code> を追加しておくと良さそうです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">extra-source-files:</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="kw">-</span> package.yaml</a></code></pre></div>
+<h3 id="custom-setup">custom-setup</h3>
+<p>最後に忘れてはいけないのが、<code>custom-setup</code> の設定です。</p>
+<p><code>Setup.hs</code> で利用する依存関係などは <code>library</code> や <code>executables</code>, <code>tests</code> と同様に <code>custom-setup</code> を <code>package.yaml</code> に追記します。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">custom-setup:</span></a>
+<a class="sourceLine" id="cb7-2" title="2">  <span class="fu">dependencies:</span></a>
+<a class="sourceLine" id="cb7-3" title="3">    <span class="kw">-</span> base</a>
+<a class="sourceLine" id="cb7-4" title="4">    <span class="kw">-</span> Cabal</a>
+<a class="sourceLine" id="cb7-5" title="5">    <span class="kw">-</span> hpack</a></code></pre></div>
+<p>これで完成です。</p>
+<p>最初の一度だけは <code>hpack</code> を使って <code>cabal</code> ファイルを生成する必要がありますが、それ以降は必要ありません。</p>
+<pre class="shell"><code>$ curl -sSL https://github.com/sol/hpack/raw/master/get-hpack.sh | bash
+$ hpack package.yaml
+$ cabal new-build</code></pre>
+<h2 id="失敗したこと">失敗したこと</h2>
+<p>最初はフックさせずにこんな感じですぐに実装できるものだと思ってましたが、</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb9-2" title="2"></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="kw">import</span> <span class="dt">Hpack</span></a>
+<a class="sourceLine" id="cb9-5" title="5"></a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb9-7" title="7">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-8" title="8">  hpack <span class="dt">Verbose</span> defaultOptions</a>
+<a class="sourceLine" id="cb9-9" title="9">  defaultMain</a></code></pre></div>
+<p>これだと、あんまり上手くいきません。</p>
+<p><code>package.yaml</code> を更新しても実行されなかったり、期待するタイミングで <code>.cabal</code> ファイルが生成されていないっぽい感じでした。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>とりあえず実装してみたという感じなので、実際どのぐらい使えるのか試してみようと思います。</p>
+<p><code>stack</code> も <code>cabal</code> も両方とも良いビルドツールだと思います。</p>
+<p>もうちょっとしたら、<code>cabal</code> も同様にオススメしていこうと思います。</p>]]></summary>
+</entry>
+<entry>
     <title>Stack 1.9.3 がリリースされました。</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/12-10-stack-193.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/12-10-stack-193.html</id>
@@ -2107,74 +2262,6 @@ main = undefined</code></pre>
 <a class="sourceLine" id="cb8-9" title="9">    (<span class="dt">Node</span></a>
 <a class="sourceLine" id="cb8-10" title="10">      (<span class="dt">Leaf</span> <span class="dv">4</span>)</a>
 <a class="sourceLine" id="cb8-11" title="11">      (<span class="dt">Leaf</span> <span class="dv">5</span>))</a></code></pre></div>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>(^>>) と (>>^)</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/08-07-arrow-operators.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/08-07-arrow-operators.html</id>
-    <published>2018-08-07T00:00:00Z</published>
-    <updated>2018-08-07T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Control-Arrow.html#">Control.Arrow</a> モジュールに <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Control-Arrow.html#v:-94--62--62-">(^&gt;&gt;)</a> と <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Control-Arrow.html#v:-62--62--94-">(&gt;&gt;^)</a> という演算子が定義されています。</p>
-<p>ちょっとだけ面白かったので紹介しようと思います。</p>
-<!--more-->
-<h2 id="準備">準備</h2>
-<p>例として、文字列を全て<strong>大文字</strong>に変換する関数を考えてみましょう。</p>
-<p>素朴に書けばこんな感じでしょうか。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">import</span> <span class="dt">Data.Char</span> (toUpper)</a>
-<a class="sourceLine" id="cb1-2" title="2"></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb1-4" title="4">toAllUpper <span class="fu">=</span> <span class="fu">map</span> <span class="fu">toUpper</span></a></code></pre></div>
-<p>この関数は以下のように期待通りに動きます。</p>
-<pre class="shell"><code>*Main&gt; toAllUpper &quot;B|g0on&quot;
-&quot;B|G0ON&quot;</code></pre>
-<p>ではここで、同じように <code>Text</code> バージョンを作りたいと思います。何も考えずに pack と unpack を使えばすぐ定義できますね。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span>           <span class="dt">Data.Char</span> (toUpper)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw">import</span>           <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span> <span class="kw">as</span> <span class="dt">T</span></a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb3-6" title="6">toAllUpper <span class="fu">=</span> <span class="fu">map</span> <span class="fu">toUpper</span></a>
-<a class="sourceLine" id="cb3-7" title="7"></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="ot">toAllUpperText ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb3-9" title="9">toAllUpperText <span class="fu">=</span> T.pack <span class="fu">.</span> toAllUpper <span class="fu">.</span> T.unpack</a></code></pre></div>
-<p>この関数も同様にちゃんと動きます。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> toAllUpperText <span class="fu">$</span> T.pack <span class="st">&quot;B|g0on&quot;</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="st">&quot;B|G0ON&quot;</span></a></code></pre></div>
-<h2 id="と-を無理矢理使ってみる">(^&gt;&gt;) と (&gt;&gt;^) を無理矢理使ってみる</h2>
-<p>先程定義した <code>toAllUpperText</code> 関数は <code>(^&gt;&gt;)</code> と <code>(&gt;&gt;^)</code> を使って、以下のように書き直すことができます。(<code>Control.Arrow</code> をインポートする必要があります。)</p>
-<p>左から右バージョン</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">toAllUpperText&#39; ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb5-2" title="2">toAllUpperText&#39; <span class="fu">=</span> T.unpack <span class="fu">^&gt;&gt;</span> toAllUpper <span class="fu">&gt;&gt;^</span> T.pack</a></code></pre></div>
-<p>右から左バージョン</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">toAllUpperText&#39;&#39; ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb6-2" title="2">toAllUpperText&#39;&#39; <span class="fu">=</span> T.pack <span class="fu">&lt;&lt;^</span> toAllUpper <span class="fu">^&lt;&lt;</span> T.unpack</a></code></pre></div>
-<p>関数合成 (<code>.</code>) を単純に置き換えただけです・・・。</p>
-<h3 id="型">型</h3>
-<p>この演算子の何が面白いかと言うと、<strong>入力</strong>と<strong>出力</strong>をそれぞれ変換できるんですね！</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="ot">(&gt;&gt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a b c <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b d</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">(&lt;&lt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a c d <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a b d</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="ot">(^&lt;&lt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b c <span class="ot">-&gt;</span> a b d</a></code></pre></div>
-<p>先程の例は <code>Arrow a</code> の <code>a</code> を関数型 <code>(-&gt;)</code> として具体化したものになります。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</a>
-<a class="sourceLine" id="cb9-2" title="2">  <span class="co">-- a = (-&gt;) として具体化した</span></a>
-<a class="sourceLine" id="cb9-3" title="3">    (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) c d <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) b d</a>
-<a class="sourceLine" id="cb9-4" title="4">  <span class="fu">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a></code></pre></div>
-<p>引数の順番を逆にすれば関数合成の型と同じですね。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">  <span class="fu">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a>
-<a class="sourceLine" id="cb10-2" title="2">  <span class="co">-- 引数を逆にした</span></a>
-<a class="sourceLine" id="cb10-3" title="3">  (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a>
-<a class="sourceLine" id="cb10-4" title="4">  <span class="co">-- 変数名の変更</span></a>
-<a class="sourceLine" id="cb10-5" title="5">  <span class="fu">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a>
-<a class="sourceLine" id="cb10-6" title="6"></a>
-<a class="sourceLine" id="cb10-7" title="7"><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a></code></pre></div>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li>現実世界で Arrow をバリバリ使っているコードをみかけることは (僕は) 全く無いです。(Hakyll は過去に Arrow ベースで定義されていたようですが、Monad ベースに切り替わりました)</li>
-</ul>
-<p>たぶん使うことは無いですが、パズルみたいで楽しい。</p>
 <p>以上です。</p>]]></summary>
 </entry>
 
