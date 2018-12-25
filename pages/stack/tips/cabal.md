@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2018/12/20
+date: 2018/12/25
 ---
 
 ## stack と cabal
@@ -32,7 +32,7 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 
 stack | cabal | 備考
 ------|--------|-------
-`stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` | [#5707](https://github.com/haskell/cabal/pull/5707)
+`stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759)
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 `stack build` | `cabal new-build`
 `stack test` | `cabal new-test`
@@ -128,6 +128,7 @@ extra-deps:
 
 - [Specifying Packages from Remote Version Control Locations](https://cabal.readthedocs.io/en/latest/nix-local-build.html#specifying-packages-from-remote-version-control-locations)
 - リポジトリに `cabal` ファイルが含まれていない場合は `NoCabalFileFound` となる。リポジトリに含めるしかない。
+  - [Specifying remote Git repositories without .cabal file? #5785](https://github.com/haskell/cabal/issues/5785)
 
 ```cabal
 # cabal.project
