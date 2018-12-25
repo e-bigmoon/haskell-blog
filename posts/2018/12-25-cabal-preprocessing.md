@@ -132,7 +132,7 @@ data UserHooks = UserHooks {
 
 適当に cabal のコードを読んでいると、どうやら [establishProjectBaseContext](https://github.com/haskell/cabal/blob/e15d87d542b4b23983aed3d54e0b42585257f453/cabal-install/Distribution/Client/CmdBuild.hs#L119) という関数が `.cabal` ファイルを読み込んでコンテキストを作っているっぽいことがわかりました。
 
-なので、`preBuild` にフックすれば良さそうです。
+なので、`preBuild` にフックすれば良さそうです。(`cabal` のコードベースについて全然わからないので、本当に合ってるかどうかは不安)
 
 最終的に、こんな感じで完成しました。
 
@@ -160,6 +160,8 @@ pbHpack _ _ = do
 [hpack](https://www.stackage.org/package/hpack) パッケージの関数をそのまま使ってます。
 
 今回は他に何もしないので `return (Nothing, [])` で大丈夫でした。(たぶん)
+
+### custom-setup
 
 最後に忘れてはいけないのが、`custom-setup` の設定です。
 
