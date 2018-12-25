@@ -153,13 +153,22 @@ main = do
 
 pbHpack :: Args -> BuildFlags -> IO HookedBuildInfo
 pbHpack _ _ = do
-  hpack Verbose (defaultOptions { optionsForce = Force })
+  hpack Verbose defaultOptions
   return emptyHookedBuildInfo
 ```
 
 [hpack](https://www.stackage.org/package/hpack) パッケージの関数をそのまま使ってます。
 
 今回は他に何もしないので `emptyHookedBuildInfo` で大丈夫でした。(たぶん)
+
+### extra-source-files
+
+キャッシュの問題があるので `extra-source-files` に `package.yaml` を追加しておくと良さそうです。
+
+```yaml
+extra-source-files:
+- package.yaml
+```
 
 ### custom-setup
 
@@ -206,6 +215,8 @@ main = do
 `package.yaml` を更新しても実行されなかったり、期待するタイミングで `.cabal` ファイルが生成されていないっぽい感じでした。
 
 ## まとめ
+
+とりあえず実装してみたという感じなので、実際どのぐらい使えるのか試してみようと思います。
 
 `stack` も `cabal` も両方とも良いビルドツールだと思います。
 
