@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/12/20
+date: 2018/12/25
 ---
 
 <div class="row">
