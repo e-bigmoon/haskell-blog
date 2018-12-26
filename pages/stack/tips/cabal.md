@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2018/12/25
+date: 2018/12/26
 ---
 
 ## stack と cabal
@@ -143,6 +143,17 @@ extra-deps:
   commit: 81ccac73f7480ea66e6008e660972bfee9e83976
 ```
 
+複数パッケージになっている場合は `subdir` を指定する
+
+```yaml
+# stack.yaml
+extra-deps:
+- github: gtk2hs/gtk2hs
+  commit: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdirs:
+  - cairo
+```
+
 #### cabal
 
 - [Specifying Packages from Remote Version Control Locations](https://cabal.readthedocs.io/en/latest/nix-local-build.html#specifying-packages-from-remote-version-control-locations)
@@ -155,6 +166,18 @@ source-repository-package
   type: git
   location: https://github.com/fumieval/extensible
   tag: 81ccac73f7480ea66e6008e660972bfee9e83976
+```
+
+複数パッケージになっている場合は `subdir` を指定する
+
+```cabal
+# cabal.project
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: cairo
+
 ```
 
 ### プロファイリング
