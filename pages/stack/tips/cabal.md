@@ -177,7 +177,6 @@ source-repository-package
   location: https://github.com/gtk2hs/gtk2hs
   tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
   subdir: cairo
-
 ```
 
 ### プロファイリング
