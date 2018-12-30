@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/12/25
+date: 2018/12/30
 ---
 
 <div class="row">
@@ -142,12 +142,15 @@ date: 2018/12/25
   - [tweag/guides](https://github.com/tweag/guides)
   - [input-output-hk/cardano-sl](https://github.com/input-output-hk/cardano-sl/blob/develop/docs/style-guide.md)
   - [serokell/serokell-util](https://github.com/serokell/serokell-util/blob/master/serokell-style.md)
-- Haskell 情報
+- Haskell 情報収集
   - [Haskell News](http://haskellnews.org/)
   - [Haskell Weekly](https://haskellweekly.news/)
   - [planet haskell](https://planet.haskell.org/)
+  - [Haskell mailing list](http://haskell.1045720.n5.nabble.com/)
 - コミュニティ
   - [Haskell-jp](https://haskell.jp/)
+- 学習
+  - [wikibooks](https://en.wikibooks.org/wiki/Haskell)
 - [その他](etc/links.html)
 
   </div>
