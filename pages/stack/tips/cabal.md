@@ -207,6 +207,41 @@ profiling: True
 with-compiler: ghc-8.6.2
 ```
 
+### build-depends で利用するバージョン制約の指定方法
+
+- [3.3.2.9. Build information](https://www.haskell.org/cabal/users-guide/developing-packages.html#build-information)
+
+演算子名 | 記号
+------|--------
+比較演算子 | `==`, `>=`, `>`, `<`, `<=`, `^>=`
+条件演算子 | `&&`, `\|\|`
+
+#### 良くある指定方法
+
+```cabal
+pkgname >= n
+pkgname ^>= n
+pkgname >= n && < m
+pkgname == n.*
+```
+
+#### 省略形
+
+省略形 | 展開後
+-------|--------
+`foo == 4.*`      | `foo >= 4 && < 5` 
+`foo == 1.2.*`    | `foo >= 1.2 && < 1.3`
+`foo ^>= x`       | `foo >= x && < x.1`
+`foo ^>= x.y`     | `foo >= x.y && < x.(y+1)`
+`foo ^>= x.y.z`   | `foo >= x.y.z && < x.(y+1)`
+`foo ^>= x.y.z.u` | `foo >= x.y.z.u && < x.(y+1)`
+
+#### 備考
+
+- ワイルドカードは `Cabal 1.6` から利用可能
+- `^>=` は `Cabal 2.0` から利用可能 (キャレット)
+- `foo == 1.0.*` は `foo-1` にはマッチしないので注意 (`^>=` の利用を推奨)
+
 ### cabal.project.local の設定
 
 ```shell
