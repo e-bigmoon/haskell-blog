@@ -156,7 +156,7 @@
       <div class="post-heading">
         <h1 class="post-title">cabal コマンドとの対応表</h1>
         
-        <span>最終更新日: 2018/12/26</span>
+        <span>最終更新日: 2019/01/04</span>
         
       </div>
 
@@ -387,7 +387,7 @@ $ cabal new-repl basic</code></pre>
 <a class="sourceLine" id="cb8-2" title="2"><span class="fu">extra-deps:</span></a>
 <a class="sourceLine" id="cb8-3" title="3"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> fumieval/extensible</span></a>
 <a class="sourceLine" id="cb8-4" title="4">  <span class="fu">commit:</span><span class="at"> 81ccac73f7480ea66e6008e660972bfee9e83976</span></a></code></pre></div>
-<p>複数パッケージになっている場合は <code>subdir</code> を指定する</p>
+<p>複数パッケージになっている場合は <code>subdirs</code> を指定する</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># stack.yaml</span></a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="fu">extra-deps:</span></a>
 <a class="sourceLine" id="cb9-3" title="3"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> gtk2hs/gtk2hs</span></a>
@@ -429,6 +429,68 @@ source-repository-package
 <pre><code>with-compiler: ghc-8.6.2</code></pre>
 <h3 id="cabal.project.local-の設定">cabal.project.local の設定</h3>
 <pre class="shell"><code>$ cabal new-configure -j</code></pre>
+<h3 id="スクリプト形式">スクリプト形式</h3>
+<h4 id="stack-4">stack</h4>
+<ul>
+<li><a href="https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html">script interpreter + stack script でスクリプティング！</a></li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb16-2" title="2"></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb16-7" title="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb16-8" title="8"></a>
+<a class="sourceLine" id="cb16-9" title="9"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb16-10" title="10"></a>
+<a class="sourceLine" id="cb16-11" title="11">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb16-12" title="12">/ HomeR GET</a>
+<a class="sourceLine" id="cb16-13" title="13">|]</a>
+<a class="sourceLine" id="cb16-14" title="14"></a>
+<a class="sourceLine" id="cb16-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb16-16" title="16"></a>
+<a class="sourceLine" id="cb16-17" title="17"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb16-18" title="18">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
+<a class="sourceLine" id="cb16-19" title="19"></a>
+<a class="sourceLine" id="cb16-20" title="20"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb16-21" title="21">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
+<p>実行方法</p>
+<pre class="shell"><code>$ stack script --resolver lts-13.1 Script.hs</code></pre>
+<h4 id="cabal-5">cabal</h4>
+<ul>
+<li><a href="https://www.haskell.org/cabal/users-guide/nix-local-build.html#cabal-new-run">5.4.5. cabal new-run</a></li>
+<li><a href="https://github.com/haskell/cabal/issues/3843">RFC: Add support for &quot;#! /usr/bin/env cabal #3843</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/5483">Add cabal scripting support #5483</a></li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="ot">#!/usr/bin/env cabal</span></a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="co">{- cabal:</span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="co">build-depends: base   ^&gt;= 4.12</span></a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="co">             , yesod  ^&gt;= 1.6.0</span></a>
+<a class="sourceLine" id="cb18-5" title="5"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb18-6" title="6"></a>
+<a class="sourceLine" id="cb18-7" title="7"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb18-8" title="8"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb18-9" title="9"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb18-10" title="10"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb18-11" title="11"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb18-12" title="12"></a>
+<a class="sourceLine" id="cb18-13" title="13"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb18-14" title="14"></a>
+<a class="sourceLine" id="cb18-15" title="15">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb18-16" title="16">/ HomeR GET</a>
+<a class="sourceLine" id="cb18-17" title="17">|]</a>
+<a class="sourceLine" id="cb18-18" title="18"></a>
+<a class="sourceLine" id="cb18-19" title="19"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb18-20" title="20"></a>
+<a class="sourceLine" id="cb18-21" title="21"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb18-22" title="22">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
+<a class="sourceLine" id="cb18-23" title="23"></a>
+<a class="sourceLine" id="cb18-24" title="24"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb18-25" title="25">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
+<p>実行方法</p>
+<pre class="shell"><code>$ cabal new-run Script.hs
+$ cabal new-run Script.hs -- --arg1 # 引数有り</code></pre>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="http://blog.ezyang.com/2016/05/announcing-cabal-new-build-nix-style-local-builds/">Announcing cabal new-build: Nix-style local builds</a></li>
