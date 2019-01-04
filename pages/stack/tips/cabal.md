@@ -211,7 +211,7 @@ with-compiler: ghc-8.6.2
 
 - [3.3.2.9. Build information](https://www.haskell.org/cabal/users-guide/developing-packages.html#build-information)
 
-演算子名 | 記号
+利用可能な演算子 | 記号
 ------|--------
 比較演算子 | `==`, `>=`, `>`, `<`, `<=`, `^>=`
 条件演算子 | `&&`, `\|\|`
