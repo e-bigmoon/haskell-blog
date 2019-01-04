@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2018/12/26
+date: 2019/01/04
 ---
 
 ## stack と cabal
@@ -143,7 +143,7 @@ extra-deps:
   commit: 81ccac73f7480ea66e6008e660972bfee9e83976
 ```
 
-複数パッケージになっている場合は `subdir` を指定する
+複数パッケージになっている場合は `subdirs` を指定する
 
 ```yaml
 # stack.yaml
@@ -211,6 +211,83 @@ with-compiler: ghc-8.6.2
 
 ```shell
 $ cabal new-configure -j
+```
+
+### スクリプト形式
+
+#### stack
+
+- [script interpreter + stack script でスクリプティング！](https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html)
+
+```haskell
+#!/usr/bin/env stack
+
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TypeFamilies          #-}
+import           Yesod
+
+data HelloWorld = HelloWorld
+
+mkYesod "HelloWorld" [parseRoutes|
+/ HomeR GET
+|]
+
+instance Yesod HelloWorld
+
+getHomeR :: Handler Html
+getHomeR = defaultLayout [whamlet|Hello World!|]
+
+main :: IO ()
+main = warp 3000 HelloWorld
+```
+
+実行方法
+
+```shell
+$ stack script --resolver lts-13.1 Script.hs
+```
+
+#### cabal
+
+- [5.4.5. cabal new-run](https://www.haskell.org/cabal/users-guide/nix-local-build.html#cabal-new-run)
+- [RFC: Add support for "#! /usr/bin/env cabal #3843](https://github.com/haskell/cabal/issues/3843)
+- [Add cabal scripting support #5483](https://github.com/haskell/cabal/pull/5483)
+
+```haskell
+#!/usr/bin/env cabal
+{- cabal:
+build-depends: base   ^>= 4.12
+             , yesod  ^>= 1.6.0
+-}
+
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TypeFamilies          #-}
+import           Yesod
+
+data HelloWorld = HelloWorld
+
+mkYesod "HelloWorld" [parseRoutes|
+/ HomeR GET
+|]
+
+instance Yesod HelloWorld
+
+getHomeR :: Handler Html
+getHomeR = defaultLayout [whamlet|Hello World!|]
+
+main :: IO ()
+main = warp 3000 HelloWorld
+```
+
+実行方法
+
+```shell
+$ cabal new-run Script.hs
+$ cabal new-run Script.hs -- --arg1 # 引数有り
 ```
 
 ## 参考
