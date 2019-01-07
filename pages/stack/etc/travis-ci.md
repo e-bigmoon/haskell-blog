@@ -53,13 +53,13 @@ matrix:
     - env: BUILD=style
       ghc: "8.6.3"
 
-    - env: BUILD=pedantic ARGS="--resolver lts-13 --system-ghc --pedantic"
+    - env: BUILD=pedantic ARGS="--resolver lts-13 --system-ghc"
       ghc: "8.6.3"
 
   allow_failures:
     - env: BUILD=stack ARGS="--resolver nightly --system-ghc"
     - env: BUILD=style
-    - env: BUILD=pedantic ARGS="--resolver lts-13 --system-ghc --pedantic"
+    - env: BUILD=pedantic ARGS="--resolver lts-13 --system-ghc"
 
 before_install:
   - case "$BUILD" in
@@ -124,7 +124,7 @@ script:
       stack --no-terminal $ARGS test --haddock --no-haddock-deps
       ;;
     pedantic)
-      stack --no-terminal $ARGS test --no-run-tests
+      stack --no-terminal $ARGS test --pedantic --no-run-tests
       ;;
   esac
   set +ex
