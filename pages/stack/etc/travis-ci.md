@@ -43,7 +43,7 @@ matrix:
     - env: BUILD=stack ARGS="--resolver lts-12 --system-ghc"
       ghc: "8.4.4"
 
-    - env: BUILD=stack ARGS="--system-ghc"
+    - env: BUILD=stack ARGS="--resolver lts-13 --system-ghc"
       ghc: "8.6.3"
 
       # nightly build
@@ -53,13 +53,13 @@ matrix:
     - env: BUILD=style
       ghc: "8.6.3"
 
-    - env: BUILD=pedantic ARGS="--system-ghc --pedantic"
+    - env: BUILD=pedantic ARGS="--resolver lts-13 --system-ghc --pedantic"
       ghc: "8.6.3"
 
   allow_failures:
     - env: BUILD=stack ARGS="--resolver nightly --system-ghc"
     - env: BUILD=style
-    - env: BUILD=pedantic ARGS="--system-ghc --pedantic"
+    - env: BUILD=pedantic ARGS="--resolver lts-13 --system-ghc --pedantic"
 
 before_install:
   - case "$BUILD" in
