@@ -1,11 +1,11 @@
 ---
 title: シェイクスピア テンプレート
-date: 2018/11/13
+date: 2019/1/18
 ---
 
-Yesod では HTML, CSS, Javascript を生成するための標準的な方法として、テンプレート言語のシェイクスピアファミリーを採用しています。シェイクスピアでは以下の原則と共通の構文を持ちます。
+Yesod では HTML, CSS, Javascript を生成するための標準的な方法として、テンプレート言語のシェイクスピアファミリーを採用しています。シェイクスピアでは共通の構文を持ち、以下の原則に従います。
 
-- ベース言語 (Html, Css, Javascript) に対する干渉をできる限り少なくし、さりげなく便利な機能を提供します。
+- ベース言語 (Html, Css, Javascript) への干渉をできる限り少なくしながら、便利な機能を提供します。
 - 妥当なコンテンツ (well-formed content) であることをコンパイル時に保証します。
 - 静的型安全性は [XSS攻撃(cross-site scripting)](http://en.wikipedia.org/wiki/Cross-site_scripting) の防止に非常に役立ちます。
 - 型安全URLを利用することで、可能な場合は常に展開されたリンクに対して自動的にバリデーションを行います。
@@ -66,11 +66,20 @@ section.blog
         background-image: url(@{MyBackgroundR})
 ```
 
-### Julius(Javascript)
+### Julius (Javascript)
+
+Julius の文字列展開は他の2つとは少し異なります。これは、セキュリティの観点からとても重要なことです。通常、全ての展開された値は妥当な JSON となっているため、XSS 攻撃を防ぐことができます。しかし、`rawJS` 関数は文字列をダブルクォートで囲まないため、利用する際は気をつけてください。
+
+信頼できないのであれば、どんな入力に対しても絶対に `rawJS` 関数を使ってはいけません。例えば、ユーザが任意の入力を行えるフォームで使ってしまったら、それだけで脆弱性が発生します。
+
+```haskell
+-- 型クラスをインポートすることで rawJS 関数をインポートします
+import Text.Julius (RawJS (..))
+```
 
 ```julius
 $(function(){
-    $("section.#{sectionClass}").hide();
+    $("section.#{rawJS sectionClass}").hide();
     $("#mybutton").click(function(){document.location = "@{SomeRouteR}";});
     ^{addBling}
 });
