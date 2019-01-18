@@ -168,14 +168,14 @@
       <div class="post-heading">
         <h1 class="post-title">シェイクスピア テンプレート</h1>
         
-        <span>最終更新日: 2018/11/13</span>
+        <span>最終更新日: 2019/1/18</span>
         
       </div>
 
       <article class="page-content">
-        <p>Yesod では HTML, CSS, Javascript を生成するための標準的な方法として、テンプレート言語のシェイクスピアファミリーを採用しています。シェイクスピアでは以下の原則と共通の構文を持ちます。</p>
+        <p>Yesod では HTML, CSS, Javascript を生成するための標準的な方法として、テンプレート言語のシェイクスピアファミリーを採用しています。シェイクスピアでは共通の構文を持ち、以下の原則に従います。</p>
 <ul>
-<li>ベース言語 (Html, Css, Javascript) に対する干渉をできる限り少なくし、さりげなく便利な機能を提供します。</li>
+<li>ベース言語 (Html, Css, Javascript) への干渉をできる限り少なくしながら、便利な機能を提供します。</li>
 <li>妥当なコンテンツ (well-formed content) であることをコンパイル時に保証します。</li>
 <li>静的型安全性は <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">XSS攻撃(cross-site scripting)</a> の防止に非常に役立ちます。</li>
 <li>型安全URLを利用することで、可能な場合は常に展開されたリンクに対して自動的にバリデーションを行います。</li>
@@ -219,20 +219,24 @@
     h1
         color: #{headingColor}
         background-image: url(@{MyBackgroundR})</code></pre>
-<h3 id="juliusjavascript">Julius(Javascript)</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode julius"><code class="sourceCode javascript"><a class="sourceLine" id="cb4-1" title="1"><span class="at">$</span>(<span class="kw">function</span>()<span class="op">{</span></a>
-<a class="sourceLine" id="cb4-2" title="2">    <span class="at">$</span>(<span class="st">&quot;section.#{sectionClass}&quot;</span>).<span class="at">hide</span>()<span class="op">;</span></a>
-<a class="sourceLine" id="cb4-3" title="3">    <span class="at">$</span>(<span class="st">&quot;#mybutton&quot;</span>).<span class="at">click</span>(<span class="kw">function</span>()<span class="op">{</span><span class="va">document</span>.<span class="at">location</span> <span class="op">=</span> <span class="st">&quot;@{SomeRouteR}&quot;</span><span class="op">;}</span>)<span class="op">;</span></a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="op">^{</span>addBling<span class="op">}</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<h3 id="julius-javascript">Julius (Javascript)</h3>
+<p>Julius の文字列展開は他の2つとは少し異なります。これは、セキュリティの観点からとても重要なことです。通常、全ての展開された値は妥当な JSON となっているため、XSS 攻撃を防ぐことができます。しかし、<code>rawJS</code> 関数は文字列をダブルクォートで囲まないため、利用する際は気をつけてください。</p>
+<p>信頼できないのであれば、どんな入力に対しても絶対に <code>rawJS</code> 関数を使ってはいけません。例えば、ユーザが任意の入力を行えるフォームで使ってしまったら、それだけで脆弱性が発生します。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="co">-- 型クラスをインポートすることで rawJS 関数がインポートされます</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">import</span> <span class="dt">Text.Julius</span> (<span class="dt">RawJS</span> (..))</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julius"><code class="sourceCode javascript"><a class="sourceLine" id="cb5-1" title="1"><span class="at">$</span>(<span class="kw">function</span>()<span class="op">{</span></a>
+<a class="sourceLine" id="cb5-2" title="2">    <span class="at">$</span>(<span class="st">&quot;section.#{rawJS sectionClass}&quot;</span>).<span class="at">hide</span>()<span class="op">;</span></a>
+<a class="sourceLine" id="cb5-3" title="3">    <span class="at">$</span>(<span class="st">&quot;#mybutton&quot;</span>).<span class="at">click</span>(<span class="kw">function</span>()<span class="op">{</span><span class="va">document</span>.<span class="at">location</span> <span class="op">=</span> <span class="st">&quot;@{SomeRouteR}&quot;</span><span class="op">;}</span>)<span class="op">;</span></a>
+<a class="sourceLine" id="cb5-4" title="4">    <span class="op">^{</span>addBling<span class="op">}</span></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <h2 id="型">型</h2>
 <p>構文に入る前に色々な型を見てみましょう。最初に「型は XSS 攻撃の防止に役立つ」と述べました。例えば、誰かの名前を表示する次のような HTML テンプレートがあったとしましょう。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">&lt;p&gt;</span>Hello, my name is <span class="kw">#{</span>name<span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">&lt;p&gt;</span>Hello, my name is <span class="kw">#{</span>name<span class="kw">}</span></a></code></pre></div>
 <div class="yesod-book-notice">
 <p><code>#{...}</code> はシェイクスピアでは、変数展開を意味します。</p>
 </div>
 <p>さて、<code>name</code> 変数の値を挿入するためにはどうすれば良いと思いますか？さらにそのデータ型は何であるべきでしょうか？よくある方法は <code>Text</code> の値をそのまま挿入することです。しかし、そうすると <code>name</code> の値が次のような場合に問題が起こります。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">'http://nefarious.com/evil.js'</span><span class="kw">&gt;&lt;/script&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">'http://nefarious.com/evil.js'</span><span class="kw">&gt;&lt;/script&gt;</span></a></code></pre></div>
 <p>このとき <code>&lt;</code> が <code>&amp;lt;</code> になるように <code>name</code> の値をエンティティエンコードしたいのですが、どうすれば良いでしょうか。</p>
 <p>すぐに思い浮かぶのは、単に埋め込まれる全てのテキストをエンティティエンコードするという方法です。しかし、もし、別の処理によって既に HTML が生成されていたとしたら何が起こるでしょうか？例えば、 Yesod のウェブサイトのすべての Haskell コードスニペットは適切な <code>span</code> タグで囲むことで色付けされています。仮に、全てをエンティティエスケープしたとすれば、コードスニペットはほとんど読めない状態になってしまうでしょう。</p>
 <p>そういった事態を避けるために <code>Html</code> データ型を使います。<code>Html</code> 型の値を生成するために2種類のAPIがあります。<code>ToMarkup</code> 型クラスは <code>String</code> と <code>Text</code> の値を <code>Html</code> の値に変換する <code>toHtml</code> 関数を提供します。 <code>toHtml</code> 関数は自動的にエンティティエスケープを行います。これは先ほどの <code>name</code> の例で求めていた処理です。また、コードスニペットのような例では <code>preEscapedToMarkup</code> 関数を利用すると良いでしょう。</p>
@@ -257,148 +261,148 @@
 <p>どの方法もそれぞれ問題があります。1つ目の方法はどちらかのURLが変化することでリンク切れになってしまいますし、全ての状況に適しているというわけではありません。例えば RSS や Atom フィードには絶対URLが必要です。2つ目は1つ目の方法よりも変化に対し柔軟ですが、 RSS や Atom の問題は残ったままです。3つ目は今言った問題の全てを解決できますが、ドメイン名が変わるごとに全ての URL を更新する必要が生じます。そんなこと、そう頻繁には起こらないだろうと思うかもしれませんが、開発からステージングそして最終の本番サーバへの移行を考えてみてください。</p>
 <p>しかしより重要なことはそれぞれの方法において、ひとつ非常に大きな問題があるということです。それは、仮にルートを変更したとしてもコンパイラは壊れたリンクに対して警告をしないという点です。誤植が大混乱を招くように、これは最悪な状況だということは言うまでもありません。</p>
 <p>型安全URLの目的は人間の代わりにコンパイラにできる限り多くのチェックを行わせることです。これを可能にするための最初のステップとしては、コンパイラが理解できない単純な文字列から離れ、正しく定義されたデータ型に変更することです。今回の単純なアプリケーションではルートを直和型で表現します。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span></a></code></pre></div>
 <p>テンプレートに /display/time のようなリンクを記述する代わりに <code>Time</code> コンストラクタを利用します。しかし、そうすると HTML はデータ型ではなくテキストでできているため、これらの値をテキストに変換する方法が必要となります。その変換を行う関数をURLレンダリング関数 (URL rendering function) と呼ぶことにしましょう。簡単な例を以下に示します。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">renderMyRoute ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb9-2" title="2">renderMyRoute <span class="dt">Home</span> <span class="fu">=</span> <span class="st">&quot;http://example.com/profile/home&quot;</span></a>
-<a class="sourceLine" id="cb9-3" title="3">renderMyRoute <span class="dt">Time</span> <span class="fu">=</span> <span class="st">&quot;http://example.com/display/time&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="ot">renderMyRoute ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb10-2" title="2">renderMyRoute <span class="dt">Home</span> <span class="fu">=</span> <span class="st">&quot;http://example.com/profile/home&quot;</span></a>
+<a class="sourceLine" id="cb10-3" title="3">renderMyRoute <span class="dt">Time</span> <span class="fu">=</span> <span class="st">&quot;http://example.com/display/time&quot;</span></a></code></pre></div>
 <div class="yesod-book-notice">
 <p>URLレンダリング関数は実際にはこれより少しだけ複雑です。なぜなら、クエリ文字列パラメータを追加し、コンストラクタのレコードを扱い、より賢くドメイン名を処理する必要があるためです。しかし、実際にはそんな事を考えなくても大丈夫です。Yesod はレンダリング関数を自動生成してくれます。唯一指摘すべきこととしてはクエリ文字列を扱うために、型注釈が実際にはもうちょっとだけ複雑になるということです。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">type</span> <span class="dt">Query</span> <span class="fu">=</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)]</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="kw">type</span> <span class="dt">Render</span> url <span class="fu">=</span> url <span class="ot">-&gt;</span> <span class="dt">Query</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="ot">renderMyRoute ::</span> <span class="dt">Render</span> <span class="dt">MyRoute</span></a>
-<a class="sourceLine" id="cb10-4" title="4">renderMyRoute <span class="dt">Home</span> _ <span class="fu">=</span> <span class="fu">...</span></a>
-<a class="sourceLine" id="cb10-5" title="5">renderMyRoute <span class="dt">Time</span> _ <span class="fu">=</span> <span class="fu">...</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">type</span> <span class="dt">Query</span> <span class="fu">=</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)]</a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="kw">type</span> <span class="dt">Render</span> url <span class="fu">=</span> url <span class="ot">-&gt;</span> <span class="dt">Query</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="ot">renderMyRoute ::</span> <span class="dt">Render</span> <span class="dt">MyRoute</span></a>
+<a class="sourceLine" id="cb11-4" title="4">renderMyRoute <span class="dt">Home</span> _ <span class="fu">=</span> <span class="fu">...</span></a>
+<a class="sourceLine" id="cb11-5" title="5">renderMyRoute <span class="dt">Time</span> _ <span class="fu">=</span> <span class="fu">...</span></a></code></pre></div>
 </div>
 <p>これで、レンダリング関数とテンプレートに埋め込まれた型安全URLについて、なんとなくわかったと思います。しかし、正確にはこれらはどうやって上手く動作するのでしょうか？テンプレート言語は <code>Html</code> (<code>CSS</code> や <code>Javascript</code>) の値を直接生成するのではなく、レンダリング関数を引数に取り HTML を作り上げる関数を生成します。このことをより詳細に確認するために Hamlet が背後でどのような処理を行っているか軽く覗いてみましょう。以下のテンプレートを考えます。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Time</span><span class="kw">}&gt;</span>The time</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Time</span><span class="kw">}&gt;</span>The time</a></code></pre></div>
 <p>これは、だいたい次のような Haskell コードに翻訳されます。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">\render <span class="ot">-&gt;</span> <span class="fu">mconcat</span> [<span class="st">&quot;&lt;a href='&quot;</span>, render <span class="dt">Time</span>, <span class="st">&quot;'&gt;The time&lt;/a&gt;&quot;</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">\render <span class="ot">-&gt;</span> <span class="fu">mconcat</span> [<span class="st">&quot;&lt;a href='&quot;</span>, render <span class="dt">Time</span>, <span class="st">&quot;'&gt;The time&lt;/a&gt;&quot;</span>]</a></code></pre></div>
 <h2 id="構文">構文</h2>
 <p>シェイクスピア テンプレート言語はどれも同じ展開構文となっているため、同じ方法で型安全URLを利用できます。各テンプレート言語の構文は対象となる言語 (HTML、CSS、Javascript) によって少しずつ違います。それぞれの言語を順番に見てみましょう。</p>
 <h2 id="hamlet-構文">Hamlet 構文</h2>
 <p>Hamlet はシェイクスピアの中でも最も洗練されたものです。HTML を生成のための構文を提供するだけでなく、条件、ループ、maybe などの基本的な制御構造を備えます。</p>
 <h3 id="タグ">タグ</h3>
 <p>どんな HTML テンプレート言語でも明らかにタグは重要です。Hamlet では、テンプレート言語を使いやすくするためにできる限り既存の HTML 構文に似せています。一番大きな違いはネストの表現に、閉じタグではなくインデントを採用している点です。そのため、次のような HTML は</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">&lt;body&gt;</span></a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="kw">&lt;p&gt;</span>Some paragraph.<span class="kw">&lt;/p&gt;</span></a>
-<a class="sourceLine" id="cb13-3" title="3"><span class="kw">&lt;ul&gt;</span></a>
-<a class="sourceLine" id="cb13-4" title="4"><span class="kw">&lt;li&gt;</span>Item 1<span class="kw">&lt;/li&gt;</span></a>
-<a class="sourceLine" id="cb13-5" title="5"><span class="kw">&lt;li&gt;</span>Item 2<span class="kw">&lt;/li&gt;</span></a>
-<a class="sourceLine" id="cb13-6" title="6"><span class="kw">&lt;/ul&gt;</span></a>
-<a class="sourceLine" id="cb13-7" title="7"><span class="kw">&lt;/body&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="kw">&lt;p&gt;</span>Some paragraph.<span class="kw">&lt;/p&gt;</span></a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="kw">&lt;ul&gt;</span></a>
+<a class="sourceLine" id="cb14-4" title="4"><span class="kw">&lt;li&gt;</span>Item 1<span class="kw">&lt;/li&gt;</span></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="kw">&lt;li&gt;</span>Item 2<span class="kw">&lt;/li&gt;</span></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="kw">&lt;/ul&gt;</span></a>
+<a class="sourceLine" id="cb14-7" title="7"><span class="kw">&lt;/body&gt;</span></a></code></pre></div>
 <p>このような Hamlet コードに変換されます。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">&lt;body&gt;</span></a>
-<a class="sourceLine" id="cb14-2" title="2">    <span class="kw">&lt;p&gt;</span>Some paragraph.</a>
-<a class="sourceLine" id="cb14-3" title="3">    <span class="kw">&lt;ul&gt;</span></a>
-<a class="sourceLine" id="cb14-4" title="4">        <span class="kw">&lt;li&gt;</span>Item 1</a>
-<a class="sourceLine" id="cb14-5" title="5">        <span class="kw">&lt;li&gt;</span>Item 2</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb15-2" title="2">    <span class="kw">&lt;p&gt;</span>Some paragraph.</a>
+<a class="sourceLine" id="cb15-3" title="3">    <span class="kw">&lt;ul&gt;</span></a>
+<a class="sourceLine" id="cb15-4" title="4">        <span class="kw">&lt;li&gt;</span>Item 1</a>
+<a class="sourceLine" id="cb15-5" title="5">        <span class="kw">&lt;li&gt;</span>Item 2</a></code></pre></div>
 <p>一般的に、この表記に一度慣れてしまえば通常の HTML よりわかりやすいのではないでしょうか。ただし、タグ前後の空白の扱いについては注意が必要です。例えば、次のような HTML を生成したいとしましょう。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">&lt;p&gt;</span>Paragraph <span class="kw">&lt;i&gt;</span>italic<span class="kw">&lt;/i&gt;</span> end.<span class="kw">&lt;/p&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">&lt;p&gt;</span>Paragraph <span class="kw">&lt;i&gt;</span>italic<span class="kw">&lt;/i&gt;</span> end.<span class="kw">&lt;/p&gt;</span></a></code></pre></div>
 <p>空白は “Paragraph” の後の部分や “end” の前の部分で保存されていて欲しいです。そのためには、2種類のエスケープ文字を用います。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">&lt;p&gt;</span></a>
-<a class="sourceLine" id="cb16-2" title="2">    Paragraph #</a>
-<a class="sourceLine" id="cb16-3" title="3">    <span class="kw">&lt;i&gt;</span>italic</a>
-<a class="sourceLine" id="cb16-4" title="4">    \ end.</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">&lt;p&gt;</span></a>
+<a class="sourceLine" id="cb17-2" title="2">    Paragraph #</a>
+<a class="sourceLine" id="cb17-3" title="3">    <span class="kw">&lt;i&gt;</span>italic</a>
+<a class="sourceLine" id="cb17-4" title="4">    \ end.</a></code></pre></div>
 <p>空白のエスケープ規則は実にシンプルです。</p>
 <ol type="1">
 <li>もし、行頭の文字が空白でなく、バックスラッシュであれば、そのバックスラッシュは無視されます。(注意: これは、その行における全てのタグが単なるテキストとして処理されてしまうということです)</li>
 <li>もし、行末の文字がハッシュの場合それは無視されます。</li>
 </ol>
 <p>あと、 Hamlet はコンテンツ内のエンティティをエスケープしません。そのため、既存の HTML のコピーがしやすくなります。したがって、上の例は次のように書くこともできます。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">&lt;p&gt;</span>Paragraph <span class="kw">&lt;i&gt;</span>italic&lt;/i&gt; end.</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">&lt;p&gt;</span>Paragraph <span class="kw">&lt;i&gt;</span>italic&lt;/i&gt; end.</a></code></pre></div>
 <p>Hamlet では最初のタグは自動的に閉じられることに注意してください。それに対して内側の “i” タグはそうではありません。どちらの方法もペナルティ無く自由に使うことができるため、好きな方を選択できます。しかし Hamlet において閉じタグを使う唯一の場面は、このようなインラインタグに限られるということを忘れないでください。通常のタグを閉じることはありません。</p>
 <p>この表記で他に注意する点としては、最初のタグより後に出現するタグは ID やクラスについて、特別な処理を行わないということです。例えば、次の Hamlet スニペットは</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">&lt;p </span><span class="er">#firstid</span><span class="kw">&gt;</span>Paragraph <span class="kw">&lt;i </span><span class="er">#secondid</span><span class="kw">&gt;</span>italic&lt;/i&gt; end.</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">&lt;p </span><span class="er">#firstid</span><span class="kw">&gt;</span>Paragraph <span class="kw">&lt;i </span><span class="er">#secondid</span><span class="kw">&gt;</span>italic&lt;/i&gt; end.</a></code></pre></div>
 <p>以下の HTML を生成します。</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">&lt;p</span><span class="ot"> id=</span><span class="st">&quot;firstid&quot;</span><span class="kw">&gt;</span>Paragraph <span class="kw">&lt;i</span><span class="ot"> #secondid</span><span class="kw">&gt;</span>italic<span class="kw">&lt;/i&gt;</span> end.<span class="kw">&lt;/p&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">&lt;p</span><span class="ot"> id=</span><span class="st">&quot;firstid&quot;</span><span class="kw">&gt;</span>Paragraph <span class="kw">&lt;i</span><span class="ot"> #secondid</span><span class="kw">&gt;</span>italic<span class="kw">&lt;/i&gt;</span> end.<span class="kw">&lt;/p&gt;</span></a></code></pre></div>
 <p><code>i</code> タグが単純なテキストとして処理される一方で <code>p</code>タグは自動的に閉じられ、その属性が特別扱いを受ける点に注意してください。</p>
 <h3 id="展開">展開</h3>
 <p>これまでに紹介したものは簡潔な HTML なので何の問題も起こっていませんが、まだ Haskell コードと相互作用できていません。どのようにして変数を受け渡せば良いのでしょうか？それは単純に展開を利用します。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">&lt;head&gt;</span></a>
-<a class="sourceLine" id="cb20-2" title="2">    <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">&lt;head&gt;</span></a>
+<a class="sourceLine" id="cb21-2" title="2">    <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></a></code></pre></div>
 <p>ハッシュの後ろに波括弧のペアが続く表記は変数展開 (<strong><em>variable interpolation</em></strong>) です。上の例では、テンプレートが呼ばれたスコープで <code>title</code> 変数が利用できます。そのことは次のように言い直せます。Hamlet は変数が呼ばれた際に自動的にスコープ内の変数へアクセスします。そのため、特に変数を受け渡す必要はありません。</p>
 <p>展開の中では関数適用、文字列、数値リテラル、修飾付きモジュールを利用することができます。また、処理をまとめるために丸括弧やドルマークを使うこともできます。展開の処理の最後に <code>toHtml</code> 関数が適用されます。これは <code>ToHtml</code> クラスの全てのインスタンスが展開可能だということを意味します。例えば、次のコードを考えてみましょう。</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="co">-- Just ignore the quasiquote stuff for now, and that shamlet thing.</span></a>
-<a class="sourceLine" id="cb21-2" title="2"><span class="co">-- It will be explained later.</span></a>
-<a class="sourceLine" id="cb21-3" title="3"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
-<a class="sourceLine" id="cb21-4" title="4"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (shamlet)</a>
-<a class="sourceLine" id="cb21-5" title="5"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
-<a class="sourceLine" id="cb21-6" title="6"><span class="kw">import</span> <span class="dt">Data.Char</span> (toLower)</a>
-<a class="sourceLine" id="cb21-7" title="7"><span class="kw">import</span> <span class="dt">Data.List</span> (sort)</a>
-<a class="sourceLine" id="cb21-8" title="8"></a>
-<a class="sourceLine" id="cb21-9" title="9"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb21-10" title="10">    {<span class="ot"> name ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb21-11" title="11">    ,<span class="ot"> age  ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb21-12" title="12">    }</a>
-<a class="sourceLine" id="cb21-13" title="13"></a>
-<a class="sourceLine" id="cb21-14" title="14"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb21-15" title="15">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml [shamlet|</a>
-<a class="sourceLine" id="cb21-16" title="16"><span class="kw">&lt;p&gt;</span>Hello, my name is <span class="kw">#{</span>name person<span class="kw">}</span> and I am <span class="kw">#{</span><span class="fu">show</span> <span class="fu">$</span> age person<span class="kw">}</span>.</a>
-<a class="sourceLine" id="cb21-17" title="17"><span class="kw">&lt;p&gt;</span></a>
-<a class="sourceLine" id="cb21-18" title="18">    Let's do some funny stuff with my name: #</a>
-<a class="sourceLine" id="cb21-19" title="19">    <span class="kw">&lt;b&gt;#{</span><span class="fu">sort</span> <span class="fu">$</span> <span class="fu">map</span> <span class="fu">toLower</span> (name person)<span class="kw">}</span></a>
-<a class="sourceLine" id="cb21-20" title="20"><span class="kw">&lt;p&gt;</span>Oh, and in 5 years I'll be <span class="kw">#{</span><span class="fu">show</span> ((<span class="fu">+</span>) <span class="dv">5</span> (age person))<span class="kw">}</span> years old.</a>
-<a class="sourceLine" id="cb21-21" title="21">|]</a>
-<a class="sourceLine" id="cb21-22" title="22">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb21-23" title="23">    person <span class="fu">=</span> <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="dv">26</span></a></code></pre></div>
-<p>目玉機能の型安全URLについてはどうでしょうか？それらはシャープの代わりにアットマーク (@) で始まる点を除けば、あらゆる面で変数展開と同じです。さらにキャレット (^) によって同じ型の別のテンプレートを埋め込むことが可能になります。次のコード例で確認しましょう。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
-<a class="sourceLine" id="cb22-2" title="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb22-3" title="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
-<a class="sourceLine" id="cb22-4" title="4"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
-<a class="sourceLine" id="cb22-5" title="5"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb22-6" title="6"></a>
-<a class="sourceLine" id="cb22-7" title="7"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span></a>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" title="1"><span class="co">-- Just ignore the quasiquote stuff for now, and that shamlet thing.</span></a>
+<a class="sourceLine" id="cb22-2" title="2"><span class="co">-- It will be explained later.</span></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
+<a class="sourceLine" id="cb22-4" title="4"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (shamlet)</a>
+<a class="sourceLine" id="cb22-5" title="5"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
+<a class="sourceLine" id="cb22-6" title="6"><span class="kw">import</span> <span class="dt">Data.Char</span> (toLower)</a>
+<a class="sourceLine" id="cb22-7" title="7"><span class="kw">import</span> <span class="dt">Data.List</span> (sort)</a>
 <a class="sourceLine" id="cb22-8" title="8"></a>
-<a class="sourceLine" id="cb22-9" title="9"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb22-10" title="10">render <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
-<a class="sourceLine" id="cb22-11" title="11"></a>
-<a class="sourceLine" id="cb22-12" title="12"><span class="ot">footer ::</span> <span class="dt">HtmlUrl</span> <span class="dt">MyRoute</span></a>
-<a class="sourceLine" id="cb22-13" title="13">footer <span class="fu">=</span> [hamlet|</a>
-<a class="sourceLine" id="cb22-14" title="14"><span class="kw">&lt;footer&gt;</span></a>
-<a class="sourceLine" id="cb22-15" title="15">    Return to #</a>
-<a class="sourceLine" id="cb22-16" title="16">    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Home</span><span class="kw">}&gt;</span>Homepage</a>
-<a class="sourceLine" id="cb22-17" title="17">    .</a>
-<a class="sourceLine" id="cb22-18" title="18">|]</a>
-<a class="sourceLine" id="cb22-19" title="19"></a>
-<a class="sourceLine" id="cb22-20" title="20"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb22-21" title="21">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml <span class="fu">$</span> [hamlet|</a>
-<a class="sourceLine" id="cb22-22" title="22"><span class="kw">&lt;body&gt;</span></a>
-<a class="sourceLine" id="cb22-23" title="23">    <span class="kw">&lt;p&gt;</span>This is my page.</a>
-<a class="sourceLine" id="cb22-24" title="24">    <span class="kw">^{</span>footer<span class="kw">}</span></a>
-<a class="sourceLine" id="cb22-25" title="25">|] render</a></code></pre></div>
-<p>さらに、クエリ文字列パラメータを受け入れるような URL 展開の変種があます。これは例えばページ番号をつけるようなレスポンスに適しています。<code>@{...}</code> を用いる代わりにクエスチョンマークを加え <code>@?{...}</code> とすることで、クエリ文字列があることを表します。与える値は2要素のタプルでなければなりません。第1要素が型安全URL、第2要素はクエリ文字列パラメータのリストのペアとなります。例えば、次のコードスニペットの例を見てみましょう。</p>
+<a class="sourceLine" id="cb22-9" title="9"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
+<a class="sourceLine" id="cb22-10" title="10">    {<span class="ot"> name ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb22-11" title="11">    ,<span class="ot"> age  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb22-12" title="12">    }</a>
+<a class="sourceLine" id="cb22-13" title="13"></a>
+<a class="sourceLine" id="cb22-14" title="14"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb22-15" title="15">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml [shamlet|</a>
+<a class="sourceLine" id="cb22-16" title="16"><span class="kw">&lt;p&gt;</span>Hello, my name is <span class="kw">#{</span>name person<span class="kw">}</span> and I am <span class="kw">#{</span><span class="fu">show</span> <span class="fu">$</span> age person<span class="kw">}</span>.</a>
+<a class="sourceLine" id="cb22-17" title="17"><span class="kw">&lt;p&gt;</span></a>
+<a class="sourceLine" id="cb22-18" title="18">    Let's do some funny stuff with my name: #</a>
+<a class="sourceLine" id="cb22-19" title="19">    <span class="kw">&lt;b&gt;#{</span><span class="fu">sort</span> <span class="fu">$</span> <span class="fu">map</span> <span class="fu">toLower</span> (name person)<span class="kw">}</span></a>
+<a class="sourceLine" id="cb22-20" title="20"><span class="kw">&lt;p&gt;</span>Oh, and in 5 years I'll be <span class="kw">#{</span><span class="fu">show</span> ((<span class="fu">+</span>) <span class="dv">5</span> (age person))<span class="kw">}</span> years old.</a>
+<a class="sourceLine" id="cb22-21" title="21">|]</a>
+<a class="sourceLine" id="cb22-22" title="22">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb22-23" title="23">    person <span class="fu">=</span> <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="dv">26</span></a></code></pre></div>
+<p>目玉機能の型安全URLについてはどうでしょうか？それらはシャープの代わりにアットマーク (@) で始まる点を除けば、あらゆる面で変数展開と同じです。さらにキャレット (^) によって同じ型の別のテンプレートを埋め込むことが可能になります。次のコード例で確認しましょう。</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
 <a class="sourceLine" id="cb23-2" title="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb23-3" title="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
 <a class="sourceLine" id="cb23-4" title="4"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
-<a class="sourceLine" id="cb23-5" title="5"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>, append, pack)</a>
-<a class="sourceLine" id="cb23-6" title="6"><span class="kw">import</span> <span class="dt">Control.Arrow</span> (second)</a>
-<a class="sourceLine" id="cb23-7" title="7"><span class="kw">import</span> <span class="dt">Network.HTTP.Types</span> (renderQueryText)</a>
-<a class="sourceLine" id="cb23-8" title="8"><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</a>
-<a class="sourceLine" id="cb23-9" title="9"><span class="kw">import</span> <span class="dt">Blaze.ByteString.Builder</span> (toByteString)</a>
-<a class="sourceLine" id="cb23-10" title="10"></a>
-<a class="sourceLine" id="cb23-11" title="11"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">SomePage</span></a>
-<a class="sourceLine" id="cb23-12" title="12"></a>
-<a class="sourceLine" id="cb23-13" title="13"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb23-14" title="14">render <span class="dt">SomePage</span> params <span class="fu">=</span> <span class="st">&quot;/home&quot;</span> <span class="ot">`append`</span></a>
-<a class="sourceLine" id="cb23-15" title="15">    decodeUtf8 (toByteString <span class="fu">$</span> renderQueryText <span class="dt">True</span> (<span class="fu">map</span> (second <span class="dt">Just</span>) params))</a>
-<a class="sourceLine" id="cb23-16" title="16"></a>
-<a class="sourceLine" id="cb23-17" title="17"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb23-18" title="18">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb23-19" title="19">    <span class="kw">let</span> currPage <span class="fu">=</span> <span class="dv">2</span><span class="ot"> ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb23-20" title="20">    <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml <span class="fu">$</span> [hamlet|</a>
-<a class="sourceLine" id="cb23-21" title="21"><span class="kw">&lt;p&gt;</span></a>
-<a class="sourceLine" id="cb23-22" title="22">    You are currently on page <span class="kw">#{</span>currPage<span class="kw">}</span>.</a>
-<a class="sourceLine" id="cb23-23" title="23">    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">@?{(SomePage,</span><span class="kw"> </span><span class="er">[(&quot;page&quot;,</span><span class="ot"> pack </span><span class="er">$</span><span class="ot"> </span><span class="er">show</span><span class="ot"> </span><span class="er">$</span><span class="ot"> </span><span class="er">currPage</span><span class="ot"> </span><span class="er">-</span><span class="ot"> </span><span class="er">1)])}</span><span class="kw">&gt;</span>Previous</a>
-<a class="sourceLine" id="cb23-24" title="24">    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">@?{(SomePage,</span><span class="kw"> </span><span class="er">[(&quot;page&quot;,</span><span class="ot"> pack </span><span class="er">$</span><span class="ot"> </span><span class="er">show</span><span class="ot"> </span><span class="er">$</span><span class="ot"> </span><span class="er">currPage</span><span class="ot"> </span><span class="er">+</span><span class="ot"> </span><span class="er">1)])}</span><span class="kw">&gt;</span>Next</a>
+<a class="sourceLine" id="cb23-5" title="5"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb23-6" title="6"></a>
+<a class="sourceLine" id="cb23-7" title="7"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span></a>
+<a class="sourceLine" id="cb23-8" title="8"></a>
+<a class="sourceLine" id="cb23-9" title="9"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb23-10" title="10">render <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
+<a class="sourceLine" id="cb23-11" title="11"></a>
+<a class="sourceLine" id="cb23-12" title="12"><span class="ot">footer ::</span> <span class="dt">HtmlUrl</span> <span class="dt">MyRoute</span></a>
+<a class="sourceLine" id="cb23-13" title="13">footer <span class="fu">=</span> [hamlet|</a>
+<a class="sourceLine" id="cb23-14" title="14"><span class="kw">&lt;footer&gt;</span></a>
+<a class="sourceLine" id="cb23-15" title="15">    Return to #</a>
+<a class="sourceLine" id="cb23-16" title="16">    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Home</span><span class="kw">}&gt;</span>Homepage</a>
+<a class="sourceLine" id="cb23-17" title="17">    .</a>
+<a class="sourceLine" id="cb23-18" title="18">|]</a>
+<a class="sourceLine" id="cb23-19" title="19"></a>
+<a class="sourceLine" id="cb23-20" title="20"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb23-21" title="21">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml <span class="fu">$</span> [hamlet|</a>
+<a class="sourceLine" id="cb23-22" title="22"><span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb23-23" title="23">    <span class="kw">&lt;p&gt;</span>This is my page.</a>
+<a class="sourceLine" id="cb23-24" title="24">    <span class="kw">^{</span>footer<span class="kw">}</span></a>
 <a class="sourceLine" id="cb23-25" title="25">|] render</a></code></pre></div>
+<p>さらに、クエリ文字列パラメータを受け入れるような URL 展開の変種があます。これは例えばページ番号をつけるようなレスポンスに適しています。<code>@{...}</code> を用いる代わりにクエスチョンマークを加え <code>@?{...}</code> とすることで、クエリ文字列があることを表します。与える値は2要素のタプルでなければなりません。第1要素が型安全URL、第2要素はクエリ文字列パラメータのリストのペアとなります。例えば、次のコードスニペットの例を見てみましょう。</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
+<a class="sourceLine" id="cb24-2" title="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
+<a class="sourceLine" id="cb24-3" title="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
+<a class="sourceLine" id="cb24-4" title="4"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
+<a class="sourceLine" id="cb24-5" title="5"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>, append, pack)</a>
+<a class="sourceLine" id="cb24-6" title="6"><span class="kw">import</span> <span class="dt">Control.Arrow</span> (second)</a>
+<a class="sourceLine" id="cb24-7" title="7"><span class="kw">import</span> <span class="dt">Network.HTTP.Types</span> (renderQueryText)</a>
+<a class="sourceLine" id="cb24-8" title="8"><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</a>
+<a class="sourceLine" id="cb24-9" title="9"><span class="kw">import</span> <span class="dt">Blaze.ByteString.Builder</span> (toByteString)</a>
+<a class="sourceLine" id="cb24-10" title="10"></a>
+<a class="sourceLine" id="cb24-11" title="11"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">SomePage</span></a>
+<a class="sourceLine" id="cb24-12" title="12"></a>
+<a class="sourceLine" id="cb24-13" title="13"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb24-14" title="14">render <span class="dt">SomePage</span> params <span class="fu">=</span> <span class="st">&quot;/home&quot;</span> <span class="ot">`append`</span></a>
+<a class="sourceLine" id="cb24-15" title="15">    decodeUtf8 (toByteString <span class="fu">$</span> renderQueryText <span class="dt">True</span> (<span class="fu">map</span> (second <span class="dt">Just</span>) params))</a>
+<a class="sourceLine" id="cb24-16" title="16"></a>
+<a class="sourceLine" id="cb24-17" title="17"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb24-18" title="18">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb24-19" title="19">    <span class="kw">let</span> currPage <span class="fu">=</span> <span class="dv">2</span><span class="ot"> ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb24-20" title="20">    <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml <span class="fu">$</span> [hamlet|</a>
+<a class="sourceLine" id="cb24-21" title="21"><span class="kw">&lt;p&gt;</span></a>
+<a class="sourceLine" id="cb24-22" title="22">    You are currently on page <span class="kw">#{</span>currPage<span class="kw">}</span>.</a>
+<a class="sourceLine" id="cb24-23" title="23">    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">@?{(SomePage,</span><span class="kw"> </span><span class="er">[(&quot;page&quot;,</span><span class="ot"> pack </span><span class="er">$</span><span class="ot"> </span><span class="er">show</span><span class="ot"> </span><span class="er">$</span><span class="ot"> </span><span class="er">currPage</span><span class="ot"> </span><span class="er">-</span><span class="ot"> </span><span class="er">1)])}</span><span class="kw">&gt;</span>Previous</a>
+<a class="sourceLine" id="cb24-24" title="24">    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">@?{(SomePage,</span><span class="kw"> </span><span class="er">[(&quot;page&quot;,</span><span class="ot"> pack </span><span class="er">$</span><span class="ot"> </span><span class="er">show</span><span class="ot"> </span><span class="er">$</span><span class="ot"> </span><span class="er">currPage</span><span class="ot"> </span><span class="er">+</span><span class="ot"> </span><span class="er">1)])}</span><span class="kw">&gt;</span>Next</a>
+<a class="sourceLine" id="cb24-25" title="25">|] render</a></code></pre></div>
 <p>これは、次のようなHTMLを生成します。</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">&lt;p&gt;</span>You are currently on page 2.</a>
-<a class="sourceLine" id="cb24-2" title="2"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/home?page=1&quot;</span><span class="kw">&gt;</span>Previous<span class="kw">&lt;/a&gt;</span></a>
-<a class="sourceLine" id="cb24-3" title="3"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/home?page=3&quot;</span><span class="kw">&gt;</span>Next<span class="kw">&lt;/a&gt;</span></a>
-<a class="sourceLine" id="cb24-4" title="4"><span class="kw">&lt;/p&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">&lt;p&gt;</span>You are currently on page 2.</a>
+<a class="sourceLine" id="cb25-2" title="2"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/home?page=1&quot;</span><span class="kw">&gt;</span>Previous<span class="kw">&lt;/a&gt;</span></a>
+<a class="sourceLine" id="cb25-3" title="3"><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;/home?page=3&quot;</span><span class="kw">&gt;</span>Next<span class="kw">&lt;/a&gt;</span></a>
+<a class="sourceLine" id="cb25-4" title="4"><span class="kw">&lt;/p&gt;</span></a></code></pre></div>
 <h3 id="属性">属性</h3>
 <p>前の最後の例では “a” タグに href 属性を追加しました。構文について詳しく見てみましょう。</p>
 <ul>
@@ -411,50 +415,50 @@
 </ul>
 <h3 id="条件文">条件文</h3>
 <p>いつかはページ内に何らかのロジックを組み込みたいと思うでしょう。Hamlet の目的はロジックを可能な限り最小にすることで Haskell に大部分を任せることです。そのようなものとして <code>if</code>、 <code>elseif</code>、 <code>else</code> は非常に基本的な論理文です。</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">$if</span> isAdmin</a>
-<a class="sourceLine" id="cb25-2" title="2">    <span class="kw">&lt;p&gt;</span>Welcome to the admin section.</a>
-<a class="sourceLine" id="cb25-3" title="3"><span class="kw">$elseif</span> isLoggedIn</a>
-<a class="sourceLine" id="cb25-4" title="4">    <span class="kw">&lt;p&gt;</span>You are not the administrator.</a>
-<a class="sourceLine" id="cb25-5" title="5"><span class="kw">$else</span></a>
-<a class="sourceLine" id="cb25-6" title="6">    <span class="kw">&lt;p&gt;</span>I don't know who you are. Please log in so I can decide if you get access.</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">$if</span> isAdmin</a>
+<a class="sourceLine" id="cb26-2" title="2">    <span class="kw">&lt;p&gt;</span>Welcome to the admin section.</a>
+<a class="sourceLine" id="cb26-3" title="3"><span class="kw">$elseif</span> isLoggedIn</a>
+<a class="sourceLine" id="cb26-4" title="4">    <span class="kw">&lt;p&gt;</span>You are not the administrator.</a>
+<a class="sourceLine" id="cb26-5" title="5"><span class="kw">$else</span></a>
+<a class="sourceLine" id="cb26-6" title="6">    <span class="kw">&lt;p&gt;</span>I don't know who you are. Please log in so I can decide if you get access.</a></code></pre></div>
 <p>通常の展開と同じ規則が条件文にも当てはまります。</p>
 <h3 id="maybe">Maybe</h3>
 <p>同様に Maybe 値を扱うための特別な記法があります。技術的には <code>if</code>、 <code>isJust</code>、 <code>fromJust</code> を使えば同じ処理を行えます。しかし、<code>maybe</code> を使うと、部分関数を避けることができるので、こちらの方が便利です。</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">$maybe</span> name <span class="ot">&lt;-</span> maybeName</a>
-<a class="sourceLine" id="cb26-2" title="2">    <span class="kw">&lt;p&gt;</span>Your name is <span class="kw">#{</span>name<span class="kw">}</span></a>
-<a class="sourceLine" id="cb26-3" title="3"><span class="kw">$nothing</span></a>
-<a class="sourceLine" id="cb26-4" title="4">    <span class="kw">&lt;p&gt;</span>I don't know your name.</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">$maybe</span> name <span class="ot">&lt;-</span> maybeName</a>
+<a class="sourceLine" id="cb27-2" title="2">    <span class="kw">&lt;p&gt;</span>Your name is <span class="kw">#{</span>name<span class="kw">}</span></a>
+<a class="sourceLine" id="cb27-3" title="3"><span class="kw">$nothing</span></a>
+<a class="sourceLine" id="cb27-4" title="4">    <span class="kw">&lt;p&gt;</span>I don't know your name.</a></code></pre></div>
 <p>単純な識別子に加え、コンストラクタやタプルなど、より複雑な値を左辺に使うことができます。</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">$maybe</span> <span class="dt">Person</span> firstName lastName <span class="ot">&lt;-</span> maybePerson</a>
-<a class="sourceLine" id="cb27-2" title="2">    <span class="kw">&lt;p&gt;</span>Your name is <span class="kw">#{</span>firstName<span class="kw">}</span> <span class="kw">#{</span>lastName<span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">$maybe</span> <span class="dt">Person</span> firstName lastName <span class="ot">&lt;-</span> maybePerson</a>
+<a class="sourceLine" id="cb28-2" title="2">    <span class="kw">&lt;p&gt;</span>Your name is <span class="kw">#{</span>firstName<span class="kw">}</span> <span class="kw">#{</span>lastName<span class="kw">}</span></a></code></pre></div>
 <p>右辺は展開と同じ規則に従い、変数や関数適用などが使えます。</p>
 <h3 id="forall">Forall</h3>
 <p>リストのループについてはどうでしょうか？こんな感じです。</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">$if</span> <span class="fu">null</span> people</a>
-<a class="sourceLine" id="cb28-2" title="2">    <span class="kw">&lt;p&gt;</span>No people.</a>
-<a class="sourceLine" id="cb28-3" title="3"><span class="kw">$else</span></a>
-<a class="sourceLine" id="cb28-4" title="4">    <span class="kw">&lt;ul&gt;</span></a>
-<a class="sourceLine" id="cb28-5" title="5">        <span class="kw">$forall</span> person <span class="ot">&lt;-</span> people</a>
-<a class="sourceLine" id="cb28-6" title="6">            <span class="kw">&lt;li&gt;#{</span>person<span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">$if</span> <span class="fu">null</span> people</a>
+<a class="sourceLine" id="cb29-2" title="2">    <span class="kw">&lt;p&gt;</span>No people.</a>
+<a class="sourceLine" id="cb29-3" title="3"><span class="kw">$else</span></a>
+<a class="sourceLine" id="cb29-4" title="4">    <span class="kw">&lt;ul&gt;</span></a>
+<a class="sourceLine" id="cb29-5" title="5">        <span class="kw">$forall</span> person <span class="ot">&lt;-</span> people</a>
+<a class="sourceLine" id="cb29-6" title="6">            <span class="kw">&lt;li&gt;#{</span>person<span class="kw">}</span></a></code></pre></div>
 <h3 id="case">Case</h3>
 <p>パターンマッチは Haskell の重要な強みの1つです。直和型は多くの現実的な型をきれいにモデル化することができます。また、 <code>case</code> 文を利用すると安全にマッチさせることができます。どれにもマッチしない場合には、コンパイラが警告を出してくれます。Hamlet の case 文も、それと同様の力を持ちます。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">$</span><span class="er">case</span> <span class="er">foo</span></a>
-<a class="sourceLine" id="cb29-2" title="2">    <span class="kw">$</span><span class="er">of</span> <span class="er">Left</span> <span class="er">bar</span></a>
-<a class="sourceLine" id="cb29-3" title="3">        <span class="kw">&lt;p&gt;</span>It was left: <span class="kw">#{</span>bar<span class="kw">}</span></a>
-<a class="sourceLine" id="cb29-4" title="4">    <span class="kw">$</span><span class="er">of</span> <span class="er">Right</span> <span class="er">baz</span></a>
-<a class="sourceLine" id="cb29-5" title="5">        <span class="kw">&lt;p&gt;</span>It was right: <span class="kw">#{</span>baz<span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">$</span><span class="er">case</span> <span class="er">foo</span></a>
+<a class="sourceLine" id="cb30-2" title="2">    <span class="kw">$</span><span class="er">of</span> <span class="er">Left</span> <span class="er">bar</span></a>
+<a class="sourceLine" id="cb30-3" title="3">        <span class="kw">&lt;p&gt;</span>It was left: <span class="kw">#{</span>bar<span class="kw">}</span></a>
+<a class="sourceLine" id="cb30-4" title="4">    <span class="kw">$</span><span class="er">of</span> <span class="er">Right</span> <span class="er">baz</span></a>
+<a class="sourceLine" id="cb30-5" title="5">        <span class="kw">&lt;p&gt;</span>It was right: <span class="kw">#{</span>baz<span class="kw">}</span></a></code></pre></div>
 <h3 id="with">With</h3>
 <p>文を短くするために <code>with</code> を利用します。基本的には長い式に対して、エイリアスを定義するために利用します。</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">$</span><span class="er">with</span> <span class="er">foo</span> <span class="er">&lt;-</span> <span class="er">some</span> <span class="er">very</span> <span class="er">(long</span> <span class="er">ugly)</span> <span class="er">expression</span> <span class="er">that</span> <span class="er">$</span> <span class="er">should</span> <span class="er">only</span> <span class="er">$</span> <span class="er">happen</span> <span class="er">once</span></a>
-<a class="sourceLine" id="cb30-2" title="2">    <span class="kw">&lt;p&gt;</span>But I'm going to use <span class="kw">#{</span>foo<span class="kw">}</span> multiple times. <span class="kw">#{</span>foo<span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">$</span><span class="er">with</span> <span class="er">foo</span> <span class="er">&lt;-</span> <span class="er">some</span> <span class="er">very</span> <span class="er">(long</span> <span class="er">ugly)</span> <span class="er">expression</span> <span class="er">that</span> <span class="er">$</span> <span class="er">should</span> <span class="er">only</span> <span class="er">$</span> <span class="er">happen</span> <span class="er">once</span></a>
+<a class="sourceLine" id="cb31-2" title="2">    <span class="kw">&lt;p&gt;</span>But I'm going to use <span class="kw">#{</span>foo<span class="kw">}</span> multiple times. <span class="kw">#{</span>foo<span class="kw">}</span></a></code></pre></div>
 <h3 id="doctype">Doctype</h3>
 <p>最後はちょっとした糖衣構文の doctype 文です。 <code>dectype</code> は複数の異なるバージョンがサポートされていますが、モダンな Web アプリケーションでは <code>$doctype 5</code> を推奨しています。これは <code>&lt;!DOCTYPE html&gt;</code> を生成します。</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
-<a class="sourceLine" id="cb31-2" title="2"><span class="kw">&lt;html&gt;</span></a>
-<a class="sourceLine" id="cb31-3" title="3">    <span class="kw">&lt;head&gt;</span></a>
-<a class="sourceLine" id="cb31-4" title="4">        <span class="kw">&lt;title&gt;</span>Hamlet is Awesome</a>
-<a class="sourceLine" id="cb31-5" title="5">    <span class="kw">&lt;body&gt;</span></a>
-<a class="sourceLine" id="cb31-6" title="6">        <span class="kw">&lt;p&gt;</span>All done.</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
+<a class="sourceLine" id="cb32-2" title="2"><span class="kw">&lt;html&gt;</span></a>
+<a class="sourceLine" id="cb32-3" title="3">    <span class="kw">&lt;head&gt;</span></a>
+<a class="sourceLine" id="cb32-4" title="4">        <span class="kw">&lt;title&gt;</span>Hamlet is Awesome</a>
+<a class="sourceLine" id="cb32-5" title="5">    <span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb32-6" title="6">        <span class="kw">&lt;p&gt;</span>All done.</a></code></pre></div>
 <div class="yesod-book-notice">
 <p>これよりも古い構文として3つのエクスクラメーション (!!!) が今もサポートされています。時にはこのようなコードを見かけるかもしれません。この形式を削除する予定はありませんが、一般的に <code>doctype</code> による方法がより読みやすいと思います。</p>
 </div>
@@ -467,10 +471,10 @@
 <li>複合的な CSS プロパティはミックスイン (mixin) として作り、複数の宣言で再利用することが可能です。</li>
 </ul>
 <p>CSS ブロックのネストから説明を始めましょう。<code>article</code> 内部の複数のタグで特別なスタイルを適用させたいとします。普通の CSS では次のように書くでしょう。</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode css"><code class="sourceCode css"><a class="sourceLine" id="cb32-1" title="1">article code { <span class="kw">background-color</span>: <span class="cn">grey</span><span class="op">;</span> }</a>
-<a class="sourceLine" id="cb32-2" title="2">article p { <span class="kw">text-indent</span>: <span class="dv">2</span><span class="dt">em</span><span class="op">;</span> }</a>
-<a class="sourceLine" id="cb32-3" title="3">article a { <span class="kw">text-decoration</span>: <span class="dv">none</span><span class="op">;</span> }</a>
-<a class="sourceLine" id="cb32-4" title="4">article a <span class="op">&gt;</span> h1 { <span class="kw">color</span>: <span class="cn">green</span><span class="op">;</span> }</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode css"><code class="sourceCode css"><a class="sourceLine" id="cb33-1" title="1">article code { <span class="kw">background-color</span>: <span class="cn">grey</span><span class="op">;</span> }</a>
+<a class="sourceLine" id="cb33-2" title="2">article p { <span class="kw">text-indent</span>: <span class="dv">2</span><span class="dt">em</span><span class="op">;</span> }</a>
+<a class="sourceLine" id="cb33-3" title="3">article a { <span class="kw">text-decoration</span>: <span class="dv">none</span><span class="op">;</span> }</a>
+<a class="sourceLine" id="cb33-4" title="4">article a <span class="op">&gt;</span> h1 { <span class="kw">color</span>: <span class="cn">green</span><span class="op">;</span> }</a></code></pre></div>
 <p>上記のコードは記述量は少ないですが article を何度も打たなければならないため多少不快ですし、もしそれが何十個もあったらどうでしょうか。世界一悪い事ではないにしても少し嫌です。Lucius はこのような場面で役立ちます。</p>
 <pre class="lucius"><code>article {
     code { background-color: grey; }
@@ -483,32 +487,32 @@
 body { color: #{textcolor} }
 a:link, a:visited { color: #{textcolor} }</code></pre>
 <p>ミックスインは Lucius に比較的最近追加されたものです。アイデアとしてはプロパティの集合を与えるミックスインを宣言して、キャレット展開 (^) を使うことで、そのミックスインをテンプレートに埋め込みます。次の例はミックスインを利用してベンダープレフィックスを扱う方法を示すコードです。</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb35-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
-<a class="sourceLine" id="cb35-2" title="2"><span class="kw">import</span> <span class="dt">Text.Lucius</span></a>
-<a class="sourceLine" id="cb35-3" title="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
-<a class="sourceLine" id="cb35-4" title="4"></a>
-<a class="sourceLine" id="cb35-5" title="5"><span class="co">-- Dummy render function.</span></a>
-<a class="sourceLine" id="cb35-6" title="6">render <span class="fu">=</span> <span class="fu">undefined</span></a>
-<a class="sourceLine" id="cb35-7" title="7"></a>
-<a class="sourceLine" id="cb35-8" title="8"><span class="co">-- Our mixin, which provides a number of vendor prefixes for transitions.</span></a>
-<a class="sourceLine" id="cb35-9" title="9">transition val <span class="fu">=</span></a>
-<a class="sourceLine" id="cb35-10" title="10">    [luciusMixin|</a>
-<a class="sourceLine" id="cb35-11" title="11">        -webkit-transition: #{val};</a>
-<a class="sourceLine" id="cb35-12" title="12">        -moz-transition: #{val};</a>
-<a class="sourceLine" id="cb35-13" title="13">        -ms-transition: #{val};</a>
-<a class="sourceLine" id="cb35-14" title="14">        -o-transition: #{val};</a>
-<a class="sourceLine" id="cb35-15" title="15">        transition: #{val};</a>
-<a class="sourceLine" id="cb35-16" title="16">    |]</a>
-<a class="sourceLine" id="cb35-17" title="17"></a>
-<a class="sourceLine" id="cb35-18" title="18"><span class="co">-- Our actual Lucius template, which uses the mixin.</span></a>
-<a class="sourceLine" id="cb35-19" title="19">myCSS <span class="fu">=</span></a>
-<a class="sourceLine" id="cb35-20" title="20">    [lucius|</a>
-<a class="sourceLine" id="cb35-21" title="21">        .some-class {</a>
-<a class="sourceLine" id="cb35-22" title="22">            ^{transition &quot;all 4s ease&quot;}</a>
-<a class="sourceLine" id="cb35-23" title="23">        }</a>
-<a class="sourceLine" id="cb35-24" title="24">    |]</a>
-<a class="sourceLine" id="cb35-25" title="25"></a>
-<a class="sourceLine" id="cb35-26" title="26">main <span class="fu">=</span> TLIO.putStrLn <span class="fu">$</span> renderCss <span class="fu">$</span> myCSS render</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb36-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
+<a class="sourceLine" id="cb36-2" title="2"><span class="kw">import</span> <span class="dt">Text.Lucius</span></a>
+<a class="sourceLine" id="cb36-3" title="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
+<a class="sourceLine" id="cb36-4" title="4"></a>
+<a class="sourceLine" id="cb36-5" title="5"><span class="co">-- Dummy render function.</span></a>
+<a class="sourceLine" id="cb36-6" title="6">render <span class="fu">=</span> <span class="fu">undefined</span></a>
+<a class="sourceLine" id="cb36-7" title="7"></a>
+<a class="sourceLine" id="cb36-8" title="8"><span class="co">-- Our mixin, which provides a number of vendor prefixes for transitions.</span></a>
+<a class="sourceLine" id="cb36-9" title="9">transition val <span class="fu">=</span></a>
+<a class="sourceLine" id="cb36-10" title="10">    [luciusMixin|</a>
+<a class="sourceLine" id="cb36-11" title="11">        -webkit-transition: #{val};</a>
+<a class="sourceLine" id="cb36-12" title="12">        -moz-transition: #{val};</a>
+<a class="sourceLine" id="cb36-13" title="13">        -ms-transition: #{val};</a>
+<a class="sourceLine" id="cb36-14" title="14">        -o-transition: #{val};</a>
+<a class="sourceLine" id="cb36-15" title="15">        transition: #{val};</a>
+<a class="sourceLine" id="cb36-16" title="16">    |]</a>
+<a class="sourceLine" id="cb36-17" title="17"></a>
+<a class="sourceLine" id="cb36-18" title="18"><span class="co">-- Our actual Lucius template, which uses the mixin.</span></a>
+<a class="sourceLine" id="cb36-19" title="19">myCSS <span class="fu">=</span></a>
+<a class="sourceLine" id="cb36-20" title="20">    [lucius|</a>
+<a class="sourceLine" id="cb36-21" title="21">        .some-class {</a>
+<a class="sourceLine" id="cb36-22" title="22">            ^{transition &quot;all 4s ease&quot;}</a>
+<a class="sourceLine" id="cb36-23" title="23">        }</a>
+<a class="sourceLine" id="cb36-24" title="24">    |]</a>
+<a class="sourceLine" id="cb36-25" title="25"></a>
+<a class="sourceLine" id="cb36-26" title="26">main <span class="fu">=</span> TLIO.putStrLn <span class="fu">$</span> renderCss <span class="fu">$</span> myCSS render</a></code></pre></div>
 <h2 id="cassius-構文">Cassius 構文</h2>
 <p>Cassius と Lucius の違いは空白の扱いだけです。概要の部分で述べたように、処理エンジンは Lucius と同じですが、サブブロックを閉じるための波括弧や行末を表すセミコロンを挿入するための前処理を行います。これは Cassius を書く時に Lucius のすべての機能を使えるということを意味します。以下は簡単な例です。</p>
 <pre class="cassius"><code>#banner
@@ -537,58 +541,58 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 </ul>
 <p>これらは特別な準クォートと Template Haskell 関数であるため、適切な言語拡張を有効にして、正しい構文を使う必要があります。次のコードスニペットでそれぞれの簡単な例を見てみましょう。</p>
 <h3 id="準クォート-1">準クォート</h3>
-<div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb37-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span> <span class="co">-- we're using Text below</span></a>
-<a class="sourceLine" id="cb37-2" title="2"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
-<a class="sourceLine" id="cb37-3" title="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
-<a class="sourceLine" id="cb37-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb37-5" title="5"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
-<a class="sourceLine" id="cb37-6" title="6"></a>
-<a class="sourceLine" id="cb37-7" title="7"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span> <span class="fu">|</span> <span class="dt">Stylesheet</span></a>
-<a class="sourceLine" id="cb37-8" title="8"></a>
-<a class="sourceLine" id="cb37-9" title="9"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb37-10" title="10">render <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
-<a class="sourceLine" id="cb37-11" title="11">render <span class="dt">Time</span> _ <span class="fu">=</span> <span class="st">&quot;/time&quot;</span></a>
-<a class="sourceLine" id="cb37-12" title="12">render <span class="dt">Stylesheet</span> _ <span class="fu">=</span> <span class="st">&quot;/style.css&quot;</span></a>
-<a class="sourceLine" id="cb37-13" title="13"></a>
-<a class="sourceLine" id="cb37-14" title="14"><span class="ot">template ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">HtmlUrl</span> <span class="dt">MyRoute</span></a>
-<a class="sourceLine" id="cb37-15" title="15">template title <span class="fu">=</span> [hamlet|</a>
-<a class="sourceLine" id="cb37-16" title="16"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
-<a class="sourceLine" id="cb37-17" title="17"><span class="kw">&lt;html&gt;</span></a>
-<a class="sourceLine" id="cb37-18" title="18">    <span class="kw">&lt;head&gt;</span></a>
-<a class="sourceLine" id="cb37-19" title="19">        <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></a>
-<a class="sourceLine" id="cb37-20" title="20">        <span class="kw">&lt;link</span><span class="ot"> rel=</span><span class="st">stylesheet</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Stylesheet</span><span class="kw">}&gt;</span></a>
-<a class="sourceLine" id="cb37-21" title="21">    <span class="kw">&lt;body&gt;</span></a>
-<a class="sourceLine" id="cb37-22" title="22">        <span class="kw">&lt;h1&gt;#{</span>title<span class="kw">}</span></a>
-<a class="sourceLine" id="cb37-23" title="23">|]</a>
-<a class="sourceLine" id="cb37-24" title="24"></a>
-<a class="sourceLine" id="cb37-25" title="25"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb37-26" title="26">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml <span class="fu">$</span> template <span class="st">&quot;My Title&quot;</span> render</a></code></pre></div>
-<h3 id="外部ファイル-1">外部ファイル</h3>
 <div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb38-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span> <span class="co">-- we're using Text below</span></a>
-<a class="sourceLine" id="cb38-2" title="2"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
-<a class="sourceLine" id="cb38-3" title="3"><span class="ot">{-# LANGUAGE CPP #-}</span> <span class="co">-- to control production versus debug</span></a>
-<a class="sourceLine" id="cb38-4" title="4"><span class="kw">import</span> <span class="dt">Text.Lucius</span> (<span class="dt">CssUrl</span>, luciusFile, luciusFileReload, renderCss)</a>
-<a class="sourceLine" id="cb38-5" title="5"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb38-6" title="6"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
-<a class="sourceLine" id="cb38-7" title="7"></a>
-<a class="sourceLine" id="cb38-8" title="8"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span> <span class="fu">|</span> <span class="dt">Stylesheet</span></a>
-<a class="sourceLine" id="cb38-9" title="9"></a>
-<a class="sourceLine" id="cb38-10" title="10"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb38-11" title="11">render <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
-<a class="sourceLine" id="cb38-12" title="12">render <span class="dt">Time</span> _ <span class="fu">=</span> <span class="st">&quot;/time&quot;</span></a>
-<a class="sourceLine" id="cb38-13" title="13">render <span class="dt">Stylesheet</span> _ <span class="fu">=</span> <span class="st">&quot;/style.css&quot;</span></a>
-<a class="sourceLine" id="cb38-14" title="14"></a>
-<a class="sourceLine" id="cb38-15" title="15"><span class="ot">template ::</span> <span class="dt">CssUrl</span> <span class="dt">MyRoute</span></a>
-<a class="sourceLine" id="cb38-16" title="16"><span class="ot">#if PRODUCTION</span></a>
-<a class="sourceLine" id="cb38-17" title="17">template <span class="fu">=</span> <span class="fu">$</span>(luciusFile <span class="st">&quot;template.lucius&quot;</span>)</a>
-<a class="sourceLine" id="cb38-18" title="18"><span class="ot">#else</span></a>
-<a class="sourceLine" id="cb38-19" title="19">template <span class="fu">=</span> <span class="fu">$</span>(luciusFileReload <span class="st">&quot;template.lucius&quot;</span>)</a>
-<a class="sourceLine" id="cb38-20" title="20"><span class="ot">#endif</span></a>
-<a class="sourceLine" id="cb38-21" title="21"></a>
-<a class="sourceLine" id="cb38-22" title="22"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb38-23" title="23">main <span class="fu">=</span> TLIO.putStrLn <span class="fu">$</span> renderCss <span class="fu">$</span> template render</a></code></pre></div>
-<div class="sourceCode" id="cb39"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb39-1" title="1"><span class="co">-- @template.lucius</span></a>
-<a class="sourceLine" id="cb39-2" title="2">foo { bar<span class="fu">:</span> baz }</a></code></pre></div>
+<a class="sourceLine" id="cb38-2" title="2"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
+<a class="sourceLine" id="cb38-3" title="3"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrl</span>, hamlet)</a>
+<a class="sourceLine" id="cb38-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb38-5" title="5"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
+<a class="sourceLine" id="cb38-6" title="6"></a>
+<a class="sourceLine" id="cb38-7" title="7"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span> <span class="fu">|</span> <span class="dt">Stylesheet</span></a>
+<a class="sourceLine" id="cb38-8" title="8"></a>
+<a class="sourceLine" id="cb38-9" title="9"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb38-10" title="10">render <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
+<a class="sourceLine" id="cb38-11" title="11">render <span class="dt">Time</span> _ <span class="fu">=</span> <span class="st">&quot;/time&quot;</span></a>
+<a class="sourceLine" id="cb38-12" title="12">render <span class="dt">Stylesheet</span> _ <span class="fu">=</span> <span class="st">&quot;/style.css&quot;</span></a>
+<a class="sourceLine" id="cb38-13" title="13"></a>
+<a class="sourceLine" id="cb38-14" title="14"><span class="ot">template ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">HtmlUrl</span> <span class="dt">MyRoute</span></a>
+<a class="sourceLine" id="cb38-15" title="15">template title <span class="fu">=</span> [hamlet|</a>
+<a class="sourceLine" id="cb38-16" title="16"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
+<a class="sourceLine" id="cb38-17" title="17"><span class="kw">&lt;html&gt;</span></a>
+<a class="sourceLine" id="cb38-18" title="18">    <span class="kw">&lt;head&gt;</span></a>
+<a class="sourceLine" id="cb38-19" title="19">        <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></a>
+<a class="sourceLine" id="cb38-20" title="20">        <span class="kw">&lt;link</span><span class="ot"> rel=</span><span class="st">stylesheet</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Stylesheet</span><span class="kw">}&gt;</span></a>
+<a class="sourceLine" id="cb38-21" title="21">    <span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb38-22" title="22">        <span class="kw">&lt;h1&gt;#{</span>title<span class="kw">}</span></a>
+<a class="sourceLine" id="cb38-23" title="23">|]</a>
+<a class="sourceLine" id="cb38-24" title="24"></a>
+<a class="sourceLine" id="cb38-25" title="25"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb38-26" title="26">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml <span class="fu">$</span> template <span class="st">&quot;My Title&quot;</span> render</a></code></pre></div>
+<h3 id="外部ファイル-1">外部ファイル</h3>
+<div class="sourceCode" id="cb39"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb39-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span> <span class="co">-- we're using Text below</span></a>
+<a class="sourceLine" id="cb39-2" title="2"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
+<a class="sourceLine" id="cb39-3" title="3"><span class="ot">{-# LANGUAGE CPP #-}</span> <span class="co">-- to control production versus debug</span></a>
+<a class="sourceLine" id="cb39-4" title="4"><span class="kw">import</span> <span class="dt">Text.Lucius</span> (<span class="dt">CssUrl</span>, luciusFile, luciusFileReload, renderCss)</a>
+<a class="sourceLine" id="cb39-5" title="5"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb39-6" title="6"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
+<a class="sourceLine" id="cb39-7" title="7"></a>
+<a class="sourceLine" id="cb39-8" title="8"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span> <span class="fu">|</span> <span class="dt">Stylesheet</span></a>
+<a class="sourceLine" id="cb39-9" title="9"></a>
+<a class="sourceLine" id="cb39-10" title="10"><span class="ot">render ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb39-11" title="11">render <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
+<a class="sourceLine" id="cb39-12" title="12">render <span class="dt">Time</span> _ <span class="fu">=</span> <span class="st">&quot;/time&quot;</span></a>
+<a class="sourceLine" id="cb39-13" title="13">render <span class="dt">Stylesheet</span> _ <span class="fu">=</span> <span class="st">&quot;/style.css&quot;</span></a>
+<a class="sourceLine" id="cb39-14" title="14"></a>
+<a class="sourceLine" id="cb39-15" title="15"><span class="ot">template ::</span> <span class="dt">CssUrl</span> <span class="dt">MyRoute</span></a>
+<a class="sourceLine" id="cb39-16" title="16"><span class="ot">#if PRODUCTION</span></a>
+<a class="sourceLine" id="cb39-17" title="17">template <span class="fu">=</span> <span class="fu">$</span>(luciusFile <span class="st">&quot;template.lucius&quot;</span>)</a>
+<a class="sourceLine" id="cb39-18" title="18"><span class="ot">#else</span></a>
+<a class="sourceLine" id="cb39-19" title="19">template <span class="fu">=</span> <span class="fu">$</span>(luciusFileReload <span class="st">&quot;template.lucius&quot;</span>)</a>
+<a class="sourceLine" id="cb39-20" title="20"><span class="ot">#endif</span></a>
+<a class="sourceLine" id="cb39-21" title="21"></a>
+<a class="sourceLine" id="cb39-22" title="22"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb39-23" title="23">main <span class="fu">=</span> TLIO.putStrLn <span class="fu">$</span> renderCss <span class="fu">$</span> template render</a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb40-1" title="1"><span class="co">-- @template.lucius</span></a>
+<a class="sourceLine" id="cb40-2" title="2">foo { bar<span class="fu">:</span> baz }</a></code></pre></div>
 <p>これら関数の命名規則には次のような一貫性があります。</p>
 <table>
 <thead>
@@ -635,86 +639,86 @@ a:link, a:visited { color: #{textcolor} }</code></pre>
 <li>埋め込み (キャレット展開) は <code>HtmlUrl</code> の値を許可しなくなります。ルールとして埋め込み値はテンプレートそれ自体と同じ型を持つ必要があるので、この場合は <code>Html</code> 型でなければなりません。このことは <code>shamlet</code> において埋め込みは (ハッシュを用いた) 通常の変数展開で完全に置き換え可能であることを意味します。</li>
 </ul>
 <p>Hamlet の国際化 (i18) への対応は少々複雑です。Hamlet はメッセージデータ型で i18n をサポートします。それは概念・実装面において型安全URLとかなり類似しています。例として hello と言った後にりんごをいくつ購入したかを述べるアプリケーションを作りたいとしましょう。これらのメッセージをデータ型を使って以下のように表現します。</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb40-1" title="1"><span class="kw">data</span> <span class="dt">Msg</span> <span class="fu">=</span> <span class="dt">Hello</span> <span class="fu">|</span> <span class="dt">Apples</span> <span class="dt">Int</span></a></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb41-1" title="1"><span class="kw">data</span> <span class="dt">Msg</span> <span class="fu">=</span> <span class="dt">Hello</span> <span class="fu">|</span> <span class="dt">Apples</span> <span class="dt">Int</span></a></code></pre></div>
 <p>次に、これを人間が読める形式に変換したいので、レンダリング関数をいくつか定義します。</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb41-1" title="1"><span class="ot">renderEnglish ::</span> <span class="dt">Msg</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb41-2" title="2">renderEnglish <span class="dt">Hello</span> <span class="fu">=</span> <span class="st">&quot;Hello&quot;</span></a>
-<a class="sourceLine" id="cb41-3" title="3">renderEnglish (<span class="dt">Apples</span> <span class="dv">0</span>) <span class="fu">=</span> <span class="st">&quot;You did not buy any apples.&quot;</span></a>
-<a class="sourceLine" id="cb41-4" title="4">renderEnglish (<span class="dt">Apples</span> <span class="dv">1</span>) <span class="fu">=</span> <span class="st">&quot;You bought 1 apple.&quot;</span></a>
-<a class="sourceLine" id="cb41-5" title="5">renderEnglish (<span class="dt">Apples</span> i) <span class="fu">=</span> T.concat [<span class="st">&quot;You bought &quot;</span>, T.pack <span class="fu">$</span> <span class="fu">show</span> i, <span class="st">&quot; apples.&quot;</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb42-1" title="1"><span class="ot">renderEnglish ::</span> <span class="dt">Msg</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb42-2" title="2">renderEnglish <span class="dt">Hello</span> <span class="fu">=</span> <span class="st">&quot;Hello&quot;</span></a>
+<a class="sourceLine" id="cb42-3" title="3">renderEnglish (<span class="dt">Apples</span> <span class="dv">0</span>) <span class="fu">=</span> <span class="st">&quot;You did not buy any apples.&quot;</span></a>
+<a class="sourceLine" id="cb42-4" title="4">renderEnglish (<span class="dt">Apples</span> <span class="dv">1</span>) <span class="fu">=</span> <span class="st">&quot;You bought 1 apple.&quot;</span></a>
+<a class="sourceLine" id="cb42-5" title="5">renderEnglish (<span class="dt">Apples</span> i) <span class="fu">=</span> T.concat [<span class="st">&quot;You bought &quot;</span>, T.pack <span class="fu">$</span> <span class="fu">show</span> i, <span class="st">&quot; apples.&quot;</span>]</a></code></pre></div>
 <p>そして Msg の値を直接テンプレート内で展開するためにアンダースコア展開を使います。</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb42-1" title="1"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
-<a class="sourceLine" id="cb42-2" title="2"><span class="kw">&lt;html&gt;</span></a>
-<a class="sourceLine" id="cb42-3" title="3">    <span class="kw">&lt;head&gt;</span></a>
-<a class="sourceLine" id="cb42-4" title="4">        <span class="kw">&lt;title&gt;</span>i18n</a>
-<a class="sourceLine" id="cb42-5" title="5">    <span class="kw">&lt;body&gt;</span></a>
-<a class="sourceLine" id="cb42-6" title="6">        <span class="kw">&lt;h1&gt;_{</span><span class="dt">Hello</span><span class="kw">}</span></a>
-<a class="sourceLine" id="cb42-7" title="7">        <span class="kw">&lt;p&gt;_{</span><span class="dt">Apples</span> count<span class="kw">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><a class="sourceLine" id="cb43-1" title="1"><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></a>
+<a class="sourceLine" id="cb43-2" title="2"><span class="kw">&lt;html&gt;</span></a>
+<a class="sourceLine" id="cb43-3" title="3">    <span class="kw">&lt;head&gt;</span></a>
+<a class="sourceLine" id="cb43-4" title="4">        <span class="kw">&lt;title&gt;</span>i18n</a>
+<a class="sourceLine" id="cb43-5" title="5">    <span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb43-6" title="6">        <span class="kw">&lt;h1&gt;_{</span><span class="dt">Hello</span><span class="kw">}</span></a>
+<a class="sourceLine" id="cb43-7" title="7">        <span class="kw">&lt;p&gt;_{</span><span class="dt">Apples</span> count<span class="kw">}</span></a></code></pre></div>
 <p>この種のテンプレートは、型安全URLをレンダリング関数に渡した時のように、これらの値を HTML に変換する何らかの方法を必要とします。</p>
 <p>これを表現するために、新しい型シノニムを定義します。</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb43-1" title="1"><span class="kw">type</span> <span class="dt">Render</span> url <span class="fu">=</span> url <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb43-2" title="2"><span class="kw">type</span> <span class="dt">Translate</span> msg <span class="fu">=</span> msg <span class="ot">-&gt;</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb43-3" title="3"><span class="kw">type</span> <span class="dt">HtmlUrlI18n</span> msg url <span class="fu">=</span> <span class="dt">Translate</span> msg <span class="ot">-&gt;</span> <span class="dt">Render</span> url <span class="ot">-&gt;</span> <span class="dt">Html</span></a></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb44-1" title="1"><span class="kw">type</span> <span class="dt">Render</span> url <span class="fu">=</span> url <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb44-2" title="2"><span class="kw">type</span> <span class="dt">Translate</span> msg <span class="fu">=</span> msg <span class="ot">-&gt;</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb44-3" title="3"><span class="kw">type</span> <span class="dt">HtmlUrlI18n</span> msg url <span class="fu">=</span> <span class="dt">Translate</span> msg <span class="ot">-&gt;</span> <span class="dt">Render</span> url <span class="ot">-&gt;</span> <span class="dt">Html</span></a></code></pre></div>
 <p>これによって <code>renderEnglish</code>、 <code>renderSpanish</code>、 <code>renderKlingon</code> をテンプレートに渡すことができ、それはうまく翻訳された出力を生成します (もちろん翻訳機の性能に依存します・・・)。 完全なプログラムは以下のようになります。</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb44-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
-<a class="sourceLine" id="cb44-2" title="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb44-3" title="3"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb44-4" title="4"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span> <span class="kw">as</span> <span class="dt">T</span></a>
-<a class="sourceLine" id="cb44-5" title="5"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrlI18n</span>, ihamlet)</a>
-<a class="sourceLine" id="cb44-6" title="6"><span class="kw">import</span> <span class="dt">Text.Blaze.Html</span> (toHtml)</a>
-<a class="sourceLine" id="cb44-7" title="7"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
-<a class="sourceLine" id="cb44-8" title="8"></a>
-<a class="sourceLine" id="cb44-9" title="9"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span> <span class="fu">|</span> <span class="dt">Stylesheet</span></a>
-<a class="sourceLine" id="cb44-10" title="10"></a>
-<a class="sourceLine" id="cb44-11" title="11"><span class="ot">renderUrl ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb44-12" title="12">renderUrl <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
-<a class="sourceLine" id="cb44-13" title="13">renderUrl <span class="dt">Time</span> _ <span class="fu">=</span> <span class="st">&quot;/time&quot;</span></a>
-<a class="sourceLine" id="cb44-14" title="14">renderUrl <span class="dt">Stylesheet</span> _ <span class="fu">=</span> <span class="st">&quot;/style.css&quot;</span></a>
-<a class="sourceLine" id="cb44-15" title="15"></a>
-<a class="sourceLine" id="cb44-16" title="16"><span class="kw">data</span> <span class="dt">Msg</span> <span class="fu">=</span> <span class="dt">Hello</span> <span class="fu">|</span> <span class="dt">Apples</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb44-17" title="17"></a>
-<a class="sourceLine" id="cb44-18" title="18"><span class="ot">renderEnglish ::</span> <span class="dt">Msg</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb44-19" title="19">renderEnglish <span class="dt">Hello</span> <span class="fu">=</span> <span class="st">&quot;Hello&quot;</span></a>
-<a class="sourceLine" id="cb44-20" title="20">renderEnglish (<span class="dt">Apples</span> <span class="dv">0</span>) <span class="fu">=</span> <span class="st">&quot;You did not buy any apples.&quot;</span></a>
-<a class="sourceLine" id="cb44-21" title="21">renderEnglish (<span class="dt">Apples</span> <span class="dv">1</span>) <span class="fu">=</span> <span class="st">&quot;You bought 1 apple.&quot;</span></a>
-<a class="sourceLine" id="cb44-22" title="22">renderEnglish (<span class="dt">Apples</span> i) <span class="fu">=</span> T.concat [<span class="st">&quot;You bought &quot;</span>, T.pack <span class="fu">$</span> <span class="fu">show</span> i, <span class="st">&quot; apples.&quot;</span>]</a>
-<a class="sourceLine" id="cb44-23" title="23"></a>
-<a class="sourceLine" id="cb44-24" title="24"><span class="ot">template ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">HtmlUrlI18n</span> <span class="dt">Msg</span> <span class="dt">MyRoute</span></a>
-<a class="sourceLine" id="cb44-25" title="25">template count <span class="fu">=</span> [ihamlet|</a>
-<a class="sourceLine" id="cb44-26" title="26">$doctype 5</a>
-<a class="sourceLine" id="cb44-27" title="27">&lt;html&gt;</a>
-<a class="sourceLine" id="cb44-28" title="28">    &lt;head&gt;</a>
-<a class="sourceLine" id="cb44-29" title="29">        &lt;title&gt;i18n</a>
-<a class="sourceLine" id="cb44-30" title="30">    &lt;body&gt;</a>
-<a class="sourceLine" id="cb44-31" title="31">        &lt;h1&gt;_{Hello}</a>
-<a class="sourceLine" id="cb44-32" title="32">        &lt;p&gt;_{Apples count}</a>
-<a class="sourceLine" id="cb44-33" title="33">|]</a>
-<a class="sourceLine" id="cb44-34" title="34"></a>
-<a class="sourceLine" id="cb44-35" title="35"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb44-36" title="36">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml</a>
-<a class="sourceLine" id="cb44-37" title="37">     <span class="fu">$</span> (template <span class="dv">5</span>) (toHtml <span class="fu">.</span> renderEnglish) renderUrl</a></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb45-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></a>
+<a class="sourceLine" id="cb45-2" title="2"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
+<a class="sourceLine" id="cb45-3" title="3"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb45-4" title="4"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span> <span class="kw">as</span> <span class="dt">T</span></a>
+<a class="sourceLine" id="cb45-5" title="5"><span class="kw">import</span> <span class="dt">Text.Hamlet</span> (<span class="dt">HtmlUrlI18n</span>, ihamlet)</a>
+<a class="sourceLine" id="cb45-6" title="6"><span class="kw">import</span> <span class="dt">Text.Blaze.Html</span> (toHtml)</a>
+<a class="sourceLine" id="cb45-7" title="7"><span class="kw">import</span> <span class="dt">Text.Blaze.Html.Renderer.String</span> (renderHtml)</a>
+<a class="sourceLine" id="cb45-8" title="8"></a>
+<a class="sourceLine" id="cb45-9" title="9"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">Home</span> <span class="fu">|</span> <span class="dt">Time</span> <span class="fu">|</span> <span class="dt">Stylesheet</span></a>
+<a class="sourceLine" id="cb45-10" title="10"></a>
+<a class="sourceLine" id="cb45-11" title="11"><span class="ot">renderUrl ::</span> <span class="dt">MyRoute</span> <span class="ot">-&gt;</span> [(<span class="dt">Text</span>, <span class="dt">Text</span>)] <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb45-12" title="12">renderUrl <span class="dt">Home</span> _ <span class="fu">=</span> <span class="st">&quot;/home&quot;</span></a>
+<a class="sourceLine" id="cb45-13" title="13">renderUrl <span class="dt">Time</span> _ <span class="fu">=</span> <span class="st">&quot;/time&quot;</span></a>
+<a class="sourceLine" id="cb45-14" title="14">renderUrl <span class="dt">Stylesheet</span> _ <span class="fu">=</span> <span class="st">&quot;/style.css&quot;</span></a>
+<a class="sourceLine" id="cb45-15" title="15"></a>
+<a class="sourceLine" id="cb45-16" title="16"><span class="kw">data</span> <span class="dt">Msg</span> <span class="fu">=</span> <span class="dt">Hello</span> <span class="fu">|</span> <span class="dt">Apples</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb45-17" title="17"></a>
+<a class="sourceLine" id="cb45-18" title="18"><span class="ot">renderEnglish ::</span> <span class="dt">Msg</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb45-19" title="19">renderEnglish <span class="dt">Hello</span> <span class="fu">=</span> <span class="st">&quot;Hello&quot;</span></a>
+<a class="sourceLine" id="cb45-20" title="20">renderEnglish (<span class="dt">Apples</span> <span class="dv">0</span>) <span class="fu">=</span> <span class="st">&quot;You did not buy any apples.&quot;</span></a>
+<a class="sourceLine" id="cb45-21" title="21">renderEnglish (<span class="dt">Apples</span> <span class="dv">1</span>) <span class="fu">=</span> <span class="st">&quot;You bought 1 apple.&quot;</span></a>
+<a class="sourceLine" id="cb45-22" title="22">renderEnglish (<span class="dt">Apples</span> i) <span class="fu">=</span> T.concat [<span class="st">&quot;You bought &quot;</span>, T.pack <span class="fu">$</span> <span class="fu">show</span> i, <span class="st">&quot; apples.&quot;</span>]</a>
+<a class="sourceLine" id="cb45-23" title="23"></a>
+<a class="sourceLine" id="cb45-24" title="24"><span class="ot">template ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">HtmlUrlI18n</span> <span class="dt">Msg</span> <span class="dt">MyRoute</span></a>
+<a class="sourceLine" id="cb45-25" title="25">template count <span class="fu">=</span> [ihamlet|</a>
+<a class="sourceLine" id="cb45-26" title="26">$doctype 5</a>
+<a class="sourceLine" id="cb45-27" title="27">&lt;html&gt;</a>
+<a class="sourceLine" id="cb45-28" title="28">    &lt;head&gt;</a>
+<a class="sourceLine" id="cb45-29" title="29">        &lt;title&gt;i18n</a>
+<a class="sourceLine" id="cb45-30" title="30">    &lt;body&gt;</a>
+<a class="sourceLine" id="cb45-31" title="31">        &lt;h1&gt;_{Hello}</a>
+<a class="sourceLine" id="cb45-32" title="32">        &lt;p&gt;_{Apples count}</a>
+<a class="sourceLine" id="cb45-33" title="33">|]</a>
+<a class="sourceLine" id="cb45-34" title="34"></a>
+<a class="sourceLine" id="cb45-35" title="35"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb45-36" title="36">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> renderHtml</a>
+<a class="sourceLine" id="cb45-37" title="37">     <span class="fu">$</span> (template <span class="dv">5</span>) (toHtml <span class="fu">.</span> renderEnglish) renderUrl</a></code></pre></div>
 <h2 id="その他のシェイクスピア">その他のシェイクスピア</h2>
 <p>HTML、CSS、Javascript の補助だけでなく、より一般的な利用用途がシェイクスピアには存在します。シェイクスピアのテキストは Ruby や Python のようにスクリプト言語で慣れているような展開された文字列を作るための簡単な方法を提供します。そのため、明らかにこのパッケージの利用用途は Yesod に限定されません。</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb45-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes, OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb45-2" title="2"><span class="kw">import</span> <span class="dt">Text.Shakespeare.Text</span></a>
-<a class="sourceLine" id="cb45-3" title="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
-<a class="sourceLine" id="cb45-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb45-5" title="5"><span class="kw">import</span> <span class="dt">Control.Monad</span> (forM_)</a>
-<a class="sourceLine" id="cb45-6" title="6"></a>
-<a class="sourceLine" id="cb45-7" title="7"><span class="kw">data</span> <span class="dt">Item</span> <span class="fu">=</span> <span class="dt">Item</span></a>
-<a class="sourceLine" id="cb45-8" title="8">    {<span class="ot"> itemName ::</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb45-9" title="9">    ,<span class="ot"> itemQty ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb45-10" title="10">    }</a>
-<a class="sourceLine" id="cb45-11" title="11"></a>
-<a class="sourceLine" id="cb45-12" title="12"><span class="ot">items ::</span> [<span class="dt">Item</span>]</a>
-<a class="sourceLine" id="cb45-13" title="13">items <span class="fu">=</span></a>
-<a class="sourceLine" id="cb45-14" title="14">    [ <span class="dt">Item</span> <span class="st">&quot;apples&quot;</span> <span class="dv">5</span></a>
-<a class="sourceLine" id="cb45-15" title="15">    , <span class="dt">Item</span> <span class="st">&quot;bananas&quot;</span> <span class="dv">10</span></a>
-<a class="sourceLine" id="cb45-16" title="16">    ]</a>
-<a class="sourceLine" id="cb45-17" title="17"></a>
-<a class="sourceLine" id="cb45-18" title="18"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb45-19" title="19">main <span class="fu">=</span> forM_ items <span class="fu">$</span> \item <span class="ot">-&gt;</span> TLIO.putStrLn</a>
-<a class="sourceLine" id="cb45-20" title="20">    [lt|You have #{show $ itemQty item} #{itemName item}.|]</a></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb46-1" title="1"><span class="ot">{-# LANGUAGE QuasiQuotes, OverloadedStrings #-}</span></a>
+<a class="sourceLine" id="cb46-2" title="2"><span class="kw">import</span> <span class="dt">Text.Shakespeare.Text</span></a>
+<a class="sourceLine" id="cb46-3" title="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
+<a class="sourceLine" id="cb46-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
+<a class="sourceLine" id="cb46-5" title="5"><span class="kw">import</span> <span class="dt">Control.Monad</span> (forM_)</a>
+<a class="sourceLine" id="cb46-6" title="6"></a>
+<a class="sourceLine" id="cb46-7" title="7"><span class="kw">data</span> <span class="dt">Item</span> <span class="fu">=</span> <span class="dt">Item</span></a>
+<a class="sourceLine" id="cb46-8" title="8">    {<span class="ot"> itemName ::</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb46-9" title="9">    ,<span class="ot"> itemQty ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb46-10" title="10">    }</a>
+<a class="sourceLine" id="cb46-11" title="11"></a>
+<a class="sourceLine" id="cb46-12" title="12"><span class="ot">items ::</span> [<span class="dt">Item</span>]</a>
+<a class="sourceLine" id="cb46-13" title="13">items <span class="fu">=</span></a>
+<a class="sourceLine" id="cb46-14" title="14">    [ <span class="dt">Item</span> <span class="st">&quot;apples&quot;</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb46-15" title="15">    , <span class="dt">Item</span> <span class="st">&quot;bananas&quot;</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb46-16" title="16">    ]</a>
+<a class="sourceLine" id="cb46-17" title="17"></a>
+<a class="sourceLine" id="cb46-18" title="18"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb46-19" title="19">main <span class="fu">=</span> forM_ items <span class="fu">$</span> \item <span class="ot">-&gt;</span> TLIO.putStrLn</a>
+<a class="sourceLine" id="cb46-20" title="20">    [lt|You have #{show $ itemQty item} #{itemName item}.|]</a></code></pre></div>
 <p>この単純な例におけるポイントを以下に挙げます。</p>
 <ul>
 <li>文字列を表すデータ型には <code>String</code>, 正格 <code>Text</code>, 遅延 <code>Text</code> があることに注意してください。それらは共に全てうまく機能します。</li>
