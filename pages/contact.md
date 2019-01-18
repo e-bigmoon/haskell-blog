@@ -4,7 +4,7 @@ title: Contact
 
 お問い合わせの際は、以下のフォームに内容をご記入ください。
 
-<form name="contact" method="POST" netlify>
+<form name="contact" method="POST" data-netlify="true">
   <p class="input-field">
     <i class="material-icons prefix">account_circle</i>
     <input id="name" type="text" class="validate">
