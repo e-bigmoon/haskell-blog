@@ -2,20 +2,30 @@
 title: Contact
 ---
 
+お問い合わせの際は、以下のフォームに内容をご記入ください。
+
 <form name="contact" method="POST" netlify>
-  <p>
-    <label>なまえ <input type="text" name="name" /></label>
+  <p class="input-field">
+    <i class="material-icons prefix">account_circle</i>
+    <input id="name" type="text" class="validate">
+    <label for="name">なまえ</label>
+  </p>
+  <p class="input-field">
+    <i class="material-icons prefix">mail</i>
+    <input id="mail" type="email" class="validate">
+    <label for="mail">Email</label>
+  </p>
+  <p class="input-field">
+    <i class="material-icons prefix">star</i>
+    <input id="twitter" type="text">
+    <label for="twitter">twitter id (option)</label>
+  </p>
+  <p class="input-field">
+    <i class="material-icons prefix">mode_edit</i>
+    <textarea id="message" class="materialize-textarea"></textarea>
+    <label for="message">自由記入</label>
   </p>
   <p>
-    <label>Email <input type="email" name="email" /></label>
-  </p>
-  <p>
-    <label>twitter id (option) <input type="text" name="twitter" /></label>
-  </p>
-  <p>
-    <label>自由記入: <textarea name="message"></textarea></label>
-  </p>
-  <p>
-    <button type="submit">送信</button>
+    <button type="submit" class="waves-effect waves-light btn">送信</button>
   </p>
 </form>
