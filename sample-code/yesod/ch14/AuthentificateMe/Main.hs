@@ -1,6 +1,3 @@
-#!/usr/bin/env stack
--- stack script --resolver lts-12.17
-
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
@@ -21,11 +18,11 @@ import           Yesod.Auth.OAuth2.Google
 
 -- Replace with Google client ID.
 clientId :: Text
-clientId = "502510483738-1gpgg49rc8nq8papo43la2ibmo45mc67.apps.googleusercontent.com"
+clientId = "Google client ID"
 
 -- Replace with Google secret ID.
 clientSecret :: Text
-clientSecret = "irDV5QUqeXjAPCmyCG_eFcJW"
+clientSecret = "Google secret ID"
 
 data App = App
     { appHttpManager :: Manager
