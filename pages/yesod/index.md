@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2018/11/13
+date: 2019/1/18
 ---
 
 ## Yesod クイックスタートガイド
@@ -46,7 +46,7 @@ $ stack exec -- yesod devel
 
 [http://localhost:3000/](http://localhost:3000/) にアクセスすれば Yesod アプリケーションを体験できます。
 
-## Yesod ブック (@[b0bc26862516cc4d439c63c56e607def62a64621](https://github.com/yesodweb/yesodweb.com-content/commit/b0bc26862516cc4d439c63c56e607def62a64621))
+## Yesod ブック (@262f8c50764d5d5711b26989ea1efd4f4281492f)
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)

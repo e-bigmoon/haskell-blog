@@ -1,6 +1,6 @@
 ---
 title: HLint のヒントを無視する方法
-date: 2018/02/12
+date: 2018/12/26
 ---
 
 ## ヒントを無視する方法
@@ -117,7 +117,7 @@ No hints
 プロジェクト全体で無視したいヒントについては `.hint.yaml` に追記します。
 
 ```yaml
-# .hint.yaml
+# .hlint.yaml
 - ignore: {name: Use fromMaybe}
 - ignore: {name: Use concatMap}
 ```

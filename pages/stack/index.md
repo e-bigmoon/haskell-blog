@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/09/14
+date: 2018/12/30
 ---
 
 <div class="row">
@@ -42,7 +42,8 @@ date: 2018/09/14
 
 ### stack リリース解説
 
-- [stack v1.9.1](/posts/2018/10-22-stack191.html)
+- [stack v1.9.3](/posts/2018/12-10-stack-193.html)
+- [stack v1.9.1](/posts/2018/10-22-stack-191.html)
 - [stack v1.7.1](/posts/2018/05-04-stack171.html)
 - [stack v1.6.5](/posts/2018/02-21-stack165.html)
 - [stack v1.6.3](/posts/2017/12-24-stack163.html)
@@ -106,6 +107,10 @@ date: 2018/09/14
 - [正格性のすべて (翻訳)](/posts/2018/06-25-All-About-Strictness.html)
 - [ContT を使ってコードを綺麗にしよう！](/posts/2018/06-26-cont-param.html)
 - [RecordWildCards と Reader モナド](/posts/2018/08-26-recordwildcards.html)
+- [Haskell 情報収集術](https://qiita.com/waddlaw/items/b7ed253db36c6f8a04fc)
+- [GHC Source Plugin 作ってみた](https://qiita.com/waddlaw/items/65b57517f105fcbbe724)
+- [Monoid と DerivingVia](https://qiita.com/waddlaw/items/f349bd363963d59e9ef5)
+- [RankNTypes と型レベルリストと extensible](https://qiita.com/waddlaw/items/b49e9daa02b2d254fba3)
 
 ## エディタ
 
@@ -137,12 +142,15 @@ date: 2018/09/14
   - [tweag/guides](https://github.com/tweag/guides)
   - [input-output-hk/cardano-sl](https://github.com/input-output-hk/cardano-sl/blob/develop/docs/style-guide.md)
   - [serokell/serokell-util](https://github.com/serokell/serokell-util/blob/master/serokell-style.md)
-- Haskell 情報
+- Haskell 情報収集
   - [Haskell News](http://haskellnews.org/)
   - [Haskell Weekly](https://haskellweekly.news/)
   - [planet haskell](https://planet.haskell.org/)
+  - [Haskell mailing list](http://haskell.1045720.n5.nabble.com/)
 - コミュニティ
   - [Haskell-jp](https://haskell.jp/)
+- 学習
+  - [wikibooks](https://en.wikibooks.org/wiki/Haskell)
 - [その他](etc/links.html)
 
   </div>
