@@ -1,32 +1,27 @@
+#!/usr/bin/env stack
+-- stack script --resolver lts-13.4
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeFamilies          #-}
 import           Data.Default                (def)
-import           Data.Text as T 
-import           LoadEnv
+import           Data.Text                   (Text) 
 import           Network.HTTP.Client.Conduit (Manager, newManager)
-import           Network.HTTP.Client.TLS  (tlsManagerSettings)
-import           Network.Wai.Handler.Warp (runEnv)
-import           System.Environment (getEnv)
 import           Yesod
 import           Yesod.Auth
 import           Yesod.Auth.GoogleEmail2
-import           Yesod.Auth.OAuth2.Google
 
 -- Replace with Google client ID.
 clientId :: Text
-clientId = "Google client ID"
+clientId = ""
 
 -- Replace with Google secret ID.
 clientSecret :: Text
-clientSecret = "Google secret ID"
+clientSecret = ""
 
 data App = App
-    { appHttpManager :: Manager
-    , appAuthPlugins :: [AuthPlugin App]
+    { httpManager :: Manager
     }
 
 mkYesod "App" [parseRoutes|
@@ -46,7 +41,7 @@ instance YesodAuth App where
     loginDest _ = HomeR
     logoutDest _ = HomeR
 
-    authPlugins = appAuthPlugins
+    authPlugins _ = [ authGoogleEmail clientId clientSecret ]
     maybeAuthId = lookupSession "_ID"
 
 instance RenderMessage App FormMessage where
@@ -66,17 +61,7 @@ getHomeR = do
                     <a href=@{AuthR LoginR}>Go to the login page
         |]
 
-mkFoundation :: IO App
-mkFoundation = do
-    loadEnv
-    appHttpManager <- newManager
-    appAuthPlugins <- sequence [loadPlugin oauth2Google "GOOGLE"]
-    return App{..}
-  where
-    loadPlugin f prefix = do
-        clientId <- getEnv $ prefix <> "_CLIENT_ID"
-        clientSecret <- getEnv $ prefix <> "_CLIENT_SECRET"
-        pure $ f (T.pack clientId) (T.pack clientSecret)
-
 main :: IO ()
-main = runEnv 3000 =<< toWaiApp =<< mkFoundation
+main = do
+  man <- newManager
+  warp 3000 $ App man
