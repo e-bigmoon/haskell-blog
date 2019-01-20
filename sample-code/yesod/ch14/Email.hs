@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.17
+-- stack script --resolver lts-13.4
 
 {-# LANGUAGE DeriveDataTypeable         #-}
 {-# LANGUAGE FlexibleContexts           #-}
@@ -12,7 +12,7 @@
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 import           Control.Monad            (join)
-import           Control.Monad.Logger (runNoLoggingT)
+import           Control.Monad.Logger     (runNoLoggingT)
 import           Data.Maybe               (isJust)
 import           Data.Text                (Text, unpack)
 import qualified Data.Text.Lazy.Encoding
@@ -21,8 +21,8 @@ import           Database.Persist.Sqlite
 import           Database.Persist.TH
 import           Network.Mail.Mime
 import           Text.Blaze.Html.Renderer.Utf8 (renderHtml)
-import           Text.Hamlet              (shamlet)
-import           Text.Shakespeare.Text    (stext)
+import           Text.Hamlet                   (shamlet)
+import           Text.Shakespeare.Text         (stext)
 import           Yesod
 import           Yesod.Auth
 import           Yesod.Auth.Email
