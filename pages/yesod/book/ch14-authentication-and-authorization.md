@@ -138,28 +138,25 @@ main = do
 
 ## Email
 
-多くの使用例において, 第3者によるemailの認証で十分である. 時々, ユーザがサイト上でパスワードを作れるようにしたいと思うだろう. scaffoldedサイトは以下の理由で, この設定を含まない:
+多くの場合、メールアドレスの第三者認証で十分でしょう。しかし、たまにはユーザがサイト上でパスワードを作れるようにしたいときもあります。 scaffolded サイトは以下の理由で、この設定を含みません。
 
-- 安全にパスワードを受理するためには, SSL上で実行する必要がある. 多くのユーザはSSL上でサイトを実行していない. 
+- 安全にパスワードを受理するためには、アプリケーションを SSL で実行する必要があります。多くのユーザは SSL を使っていません。
+- email バックエンドは適切にパスワードをソルト付きでハッシュ化していますが、データベースの流出という問題は依然として残ります。さらに、私達は Yesod ユーザが安全なデプロイメント原則に則っていることを想定していません。
+- email を送信するためのシステムが必要になります。最近、多くのウェブサーバはメールサーバが装備しているような、あらゆるスパム防御処置を行う準備ができていないのです。
 
-- emailバックエンドは適切にパスワードにソルトとハッシュ行うが, 欠陥のあるデータベースは依然として問題がある. また, Yesodユーザが安全なデプロイメントプラクティスに則っていることを想定していないのである.
+<div class="yesod-book-notice">
+次の例では、システムに組み込まれた sendmail コマンドを利用します。また、自分のメールサーバを用意することが面倒な場合は Amazon SES を使うこともできます。[mime-mail-ses](https://www.stackage.org/package/mime-mail-ses) と呼ばれるパッケージを使えば次の例の sendmail を置き換えることができます。これは私が良く推奨する方法なので FP Haskell Center や Haskellers.com を含む私の大部分のサイトで利用しています。
+</div>
 
-- emailを送るためのワークシステムが必要である. 最近, 多くのウェブサーバはメールサーバによって用いられているような, あらゆるスパム防御処置を行う準備ができていないのである. 
+これらの問題点を理解した上で、自分のサイトに特化したパスワードでログインさせたいという場合には Yesod の組込バックエンドを利用してください。このバックエンドは、データベースへのパスワードの安全な保存するため、さらには、多くの異なる email をユーザに送信する必要があるため (アカウントの検証や、パスワード修復など) 設定にかなり多くのコードが必要です。
 
-<div class=yesod-book-notice>
-下の例では, システム組込のsendmailコマンドを用いる. もし自分のemailサーバを用いる面倒さを避けたいならば, Amazon SESを用いることができる. [mime-mail-ses](https://www.stackage.org/package/mime-mail-ses)と呼ばれるパッケージが存在し, それは下のemailを送るコードで用いられているように, ちょっとした代わりの方法を与える. これはたいてい私が推奨する方法であり, FP Haskell CenterやHaskellers.comのような私の大部分のサイトでも用いられている.
-<div>
+それでは、email 認証を行うサイトを作って、パスワードを Persistent SQLite データベースに保存してみましょう。
 
-しかし, これらの要望を叶え, 独自のサイトに特化したパスワードログインを持ちたいと想定した時, Yesodは組込のバックエンドを提供する. それは, データベースにパスワードを安全に保管する必要があり, 多くの異なるemailをユーザに送信する必要があるため(アカウントの検証や, パスワード修復など), 設定にかなり多くのコードを要する. 
+<div class="yesod-book-notice">
+メールサーバが無い場合でも、デバック目的のために認証用リンクがコンソールに表示されます。
+</div>
 
-email認証を与えるサイトを作り, パスワードをPersistent SQLiteデータベースに保存してみよう. 
-
-<div class=yesod-book-notice>
-emailサーバを持っていなくても, デバック目的のために, リンクがコンソールに表示される. 
-<div>
-
-
-``` haskell
+```haskell
 {-# LANGUAGE DeriveDataTypeable         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GADTs                      #-}
@@ -170,7 +167,7 @@ emailサーバを持っていなくても, デバック目的のために, リ�
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 import           Control.Monad            (join)
-import           Control.Monad.Logger (runNoLoggingT)
+import           Control.Monad.Logger     (runNoLoggingT)
 import           Data.Maybe               (isJust)
 import           Data.Text                (Text, unpack)
 import qualified Data.Text.Lazy.Encoding
@@ -179,8 +176,8 @@ import           Database.Persist.Sqlite
 import           Database.Persist.TH
 import           Network.Mail.Mime
 import           Text.Blaze.Html.Renderer.Utf8 (renderHtml)
-import           Text.Hamlet              (shamlet)
-import           Text.Shakespeare.Text    (stext)
+import           Text.Hamlet                   (shamlet)
+import           Text.Shakespeare.Text         (stext)
 import           Yesod
 import           Yesod.Auth
 import           Yesod.Auth.Email
@@ -331,9 +328,9 @@ main = runNoLoggingT $ withSqliteConn "email.db3" $ \conn -> liftIO $ do
 
 ## 認可
 
-一旦ユーザを認証すれば, その認証情報を用いて, リクエストを認可できる. Yesodにおける認可は単純であり, 宣言的である: 多くの場合, `authRoute`と`isAuthorized`メソッドをYesod型クラスのインスタンスに追加すればよいだけである. 例を見てみよう.
+一旦ユーザを認証してしまえば、その認証情報を使ってリクエストを認可できます。Yesod における認可は単純かつ宣言的です。多くの場合、`authRoute` と `isAuthorized` メソッドを Yesod 型クラスのインスタンスに追加するだけです。例を見てみましょう。
 
-``` haskell
+```haskell
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
@@ -375,7 +372,7 @@ isAdmin = do
 
 instance YesodAuth App where
     type AuthId App = Text
-    getAuthId = return . Just . credsIdent
+    authenticate = return . Authenticated . credsIdent
 
     loginDest _ = HomeR
     logoutDest _ = HomeR
@@ -424,38 +421,16 @@ main = do
     warp 3000 $ App manager
 ```
 
-`authRoute`はログインページであるべきである, ほとんど常に, `AuthR`, `LoginR`である. `isAuthorized`は2つのパラメータを取る関数である: リクエストされたルートと, リクエストが"write"なリクエストであるかどうか, である. 実際に, `isWriteRequest`を用いることで, writeリクエストが何であるかを変更できるが, 創造的な方法では, RESTful原則に従う: `GET`, `HEAD`, `OPTIONS`, あるいは`TRACE`リクエストを除いて, 全てwriteリクエストである. 
+`authRoute` はログインページにしてください。ほとんどいつも `AuthR LoginR` となります。`isAuthorized` 関数はリクエストされたルートと、リクエストが "write" なリクエストであるかどうかという、2つのパラメータを引数に取ります。また、 `isWriteRequest` を使えば write リクエストの定義を変更できますが、初期値は RESTful 原則に従い `GET`、`HEAD`、`OPTIONS`、`TRACE` リクエスト以外は全て write リクエストとなります。
 
-`isAuthorized`の中身に関し便利な点は, 望む`Handler`コードを何でも実行できることである. これは以下を意味する:
+`isAuthorized` 関数が便利なのは、`Handler` コードを何でも実行できる点にあります。これは以下のようなことを可能にします。
 
-- ファイルシステムにアクセスする(通常のIO)
-
+- ファイルシステムにアクセスする (通常のIO)
 - データベースから値を探す
-
 - 欲しいセッションやリクエスト値を取ってくる
 
-これらの技術を用い, 望むような洗練された認可システムを開発したり, 組織によって用いられてる既存システムに連動させることができる.
+これらのテクニックを使いこなすことで、どんな高度な認可システムも開発可能になります。また、組織内の既存システムに連動させることも可能です。
 
 ## 結論
 
-この章においては, ユーザの認証を行う設定の基礎と, どのように組込の認可関数が, ユーザにとって簡易で, 宣言的な方法を与えるか, について説明した. これらは複雑な概念であるが, Yesodは独自のカスタム化された認可方法を作るための, 根幹を与えるはずである. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+この章では、ユーザ認証のための設定の基礎や、組み込みの認可関数をユーザにとってシンプルで宣言的な方法で提供する方法について説明しました。これらは複雑な概念かつ多くのアプローチがありますが、Yesod は自分自身で独自にカスタマイズした認証/認可方法を作りあげるために必要な構成要素を提供しています。

@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.17
+-- stack script --resolver lts-13.4
 
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
@@ -42,7 +42,7 @@ isAdmin = do
 
 instance YesodAuth App where
     type AuthId App = Text
-    getAuthId = return . Just . credsIdent
+    authenticate = return . Authenticated . credsIdent
 
     loginDest _ = HomeR
     logoutDest _ = HomeR
