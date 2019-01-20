@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.17
+-- stack script --resolver lts-13.4
 
 {-# LANGUAGE DeriveDataTypeable         #-}
 {-# LANGUAGE FlexibleContexts           #-}
@@ -11,18 +11,18 @@
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
-import           Control.Monad            (join)
-import           Control.Monad.Logger (runNoLoggingT)
-import           Data.Maybe               (isJust)
-import           Data.Text                (Text, unpack)
+import           Control.Monad                 (join)
+import           Control.Monad.Logger          (runNoLoggingT)
+import           Data.Maybe                    (isJust)
+import           Data.Text                     (Text, unpack)
 import qualified Data.Text.Lazy.Encoding
-import           Data.Typeable            (Typeable)
+import           Data.Typeable                 (Typeable)
 import           Database.Persist.Sqlite
 import           Database.Persist.TH
 import           Network.Mail.Mime
 import           Text.Blaze.Html.Renderer.Utf8 (renderHtml)
-import           Text.Hamlet              (shamlet)
-import           Text.Shakespeare.Text    (stext)
+import           Text.Hamlet                   (shamlet)
+import           Text.Shakespeare.Text         (stext)
 import           Yesod
 import           Yesod.Auth
 import           Yesod.Auth.Email
@@ -37,7 +37,7 @@ User
     deriving Typeable
 |]
 
-data App = App SqlBackend
+newtype App = App SqlBackend
 
 mkYesod "App" [parseRoutes|
 / HomeR GET
@@ -73,7 +73,7 @@ instance YesodAuth App where
         return $ Authenticated $
             case x of
                 Left (Entity userid _) -> userid -- newly added user
-                Right userid -> userid -- existing user
+                Right userid           -> userid -- existing user
 
 instance YesodAuthPersist App
 
@@ -127,7 +127,7 @@ instance YesodAuthEmail App where
                 |]
             , partHeaders = []
             }
-    getVerifyKey = liftHandler . runDB . fmap (join . fmap userVerkey) . get
+    getVerifyKey = liftHandler . runDB . fmap (userVerkey =<<) . get
     setVerifyKey uid key = liftHandler $ runDB $ update uid [UserVerkey =. Just key]
     verifyAccount uid = liftHandler $ runDB $ do
         mu <- get uid
@@ -136,7 +136,7 @@ instance YesodAuthEmail App where
             Just u -> do
                 update uid [UserVerified =. True]
                 return $ Just uid
-    getPassword = liftHandler . runDB . fmap (join . fmap userPassword) . get
+    getPassword = liftHandler . runDB . fmap (userVerkey =<<) . get
     setPassword uid pass = liftHandler . runDB $ update uid [UserPassword =. Just pass]
     getEmailCreds email = liftHandler $ runDB $ do
         mu <- getBy $ UniqueUser email
