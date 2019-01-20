@@ -36,7 +36,7 @@ instance Yesod App where
 
 instance YesodAuth App where
     type AuthId App = Text
-    getAuthId = return . Just . credsIdent
+    authenticate = return . Authenticated . credsIdent
 
     loginDest _ = HomeR
     logoutDest _ = HomeR
