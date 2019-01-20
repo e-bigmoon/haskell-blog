@@ -46,7 +46,7 @@ $ stack exec -- yesod devel
 
 [http://localhost:3000/](http://localhost:3000/) にアクセスすれば Yesod アプリケーションを体験できます。
 
-## Yesod ブック (@262f8c50764d5d5711b26989ea1efd4f4281492f)
+## Yesod ブック (@76e3e1c075891eae344ba6ec2bc9e16b0c631bdf)
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
