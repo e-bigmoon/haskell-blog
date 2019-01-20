@@ -232,51 +232,48 @@
 <a class="sourceLine" id="cb1-36" title="36"></a>
 <a class="sourceLine" id="cb1-37" title="37"><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb1-38" title="38">    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb1-39" title="39">    getAuthId <span class="fu">=</span> <span class="fu">return</span> <span class="fu">.</span> <span class="dt">Just</span> <span class="fu">.</span> credsIdent</a>
+<a class="sourceLine" id="cb1-39" title="39">    authenticate <span class="fu">=</span> <span class="fu">return</span> <span class="fu">.</span> <span class="dt">Authenticated</span> <span class="fu">.</span> credsIdent</a>
 <a class="sourceLine" id="cb1-40" title="40"></a>
 <a class="sourceLine" id="cb1-41" title="41">    loginDest _ <span class="fu">=</span> <span class="dt">HomeR</span></a>
 <a class="sourceLine" id="cb1-42" title="42">    logoutDest _ <span class="fu">=</span> <span class="dt">HomeR</span></a>
 <a class="sourceLine" id="cb1-43" title="43"></a>
-<a class="sourceLine" id="cb1-44" title="44">    authPlugins _ <span class="fu">=</span></a>
-<a class="sourceLine" id="cb1-45" title="45">        [ authBrowserId def</a>
-<a class="sourceLine" id="cb1-46" title="46">        , authGoogleEmail clientId clientSecret</a>
-<a class="sourceLine" id="cb1-47" title="47">        ]</a>
-<a class="sourceLine" id="cb1-48" title="48"></a>
-<a class="sourceLine" id="cb1-49" title="49">    <span class="co">-- The default maybeAuthId assumes a Persistent database. We're going for a</span></a>
-<a class="sourceLine" id="cb1-50" title="50">    <span class="co">-- simpler AuthId, so we'll just do a direct lookup in the session.</span></a>
-<a class="sourceLine" id="cb1-51" title="51">    maybeAuthId <span class="fu">=</span> lookupSession <span class="st">&quot;_ID&quot;</span></a>
+<a class="sourceLine" id="cb1-44" title="44">    authPlugins _ <span class="fu">=</span> [ authGoogleEmail clientId clientSecret ]</a>
+<a class="sourceLine" id="cb1-45" title="45"></a>
+<a class="sourceLine" id="cb1-46" title="46">    <span class="co">-- The default maybeAuthId assumes a Persistent database. We're going for a</span></a>
+<a class="sourceLine" id="cb1-47" title="47">    <span class="co">-- simpler AuthId, so we'll just do a direct lookup in the session.</span></a>
+<a class="sourceLine" id="cb1-48" title="48">    maybeAuthId <span class="fu">=</span> lookupSession <span class="st">&quot;_ID&quot;</span></a>
+<a class="sourceLine" id="cb1-49" title="49"></a>
+<a class="sourceLine" id="cb1-50" title="50"><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-51" title="51">    renderMessage _ _ <span class="fu">=</span> defaultFormMessage</a>
 <a class="sourceLine" id="cb1-52" title="52"></a>
-<a class="sourceLine" id="cb1-53" title="53"><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-54" title="54">    renderMessage _ _ <span class="fu">=</span> defaultFormMessage</a>
-<a class="sourceLine" id="cb1-55" title="55"></a>
-<a class="sourceLine" id="cb1-56" title="56"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-57" title="57">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-58" title="58">    maid <span class="ot">&lt;-</span> maybeAuthId</a>
-<a class="sourceLine" id="cb1-59" title="59">    defaultLayout</a>
-<a class="sourceLine" id="cb1-60" title="60">        [whamlet|</a>
-<a class="sourceLine" id="cb1-61" title="61">            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></a>
-<a class="sourceLine" id="cb1-62" title="62">            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</a>
+<a class="sourceLine" id="cb1-53" title="53"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb1-54" title="54">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-55" title="55">    maid <span class="ot">&lt;-</span> maybeAuthId</a>
+<a class="sourceLine" id="cb1-56" title="56">    defaultLayout</a>
+<a class="sourceLine" id="cb1-57" title="57">        [whamlet|</a>
+<a class="sourceLine" id="cb1-58" title="58">            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></a>
+<a class="sourceLine" id="cb1-59" title="59">            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</a>
+<a class="sourceLine" id="cb1-60" title="60">                <span class="kw">&lt;p&gt;</span></a>
+<a class="sourceLine" id="cb1-61" title="61">                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</a>
+<a class="sourceLine" id="cb1-62" title="62">            <span class="kw">$nothing</span></a>
 <a class="sourceLine" id="cb1-63" title="63">                <span class="kw">&lt;p&gt;</span></a>
-<a class="sourceLine" id="cb1-64" title="64">                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</a>
-<a class="sourceLine" id="cb1-65" title="65">            <span class="kw">$nothing</span></a>
-<a class="sourceLine" id="cb1-66" title="66">                <span class="kw">&lt;p&gt;</span></a>
-<a class="sourceLine" id="cb1-67" title="67">                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;</span>Go to the login page</a>
-<a class="sourceLine" id="cb1-68" title="68">        |]</a>
-<a class="sourceLine" id="cb1-69" title="69"></a>
-<a class="sourceLine" id="cb1-70" title="70"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-71" title="71">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-72" title="72">    man <span class="ot">&lt;-</span> newManager</a>
-<a class="sourceLine" id="cb1-73" title="73">    warp <span class="dv">3000</span> <span class="fu">$</span> <span class="dt">App</span> man</a></code></pre></div>
+<a class="sourceLine" id="cb1-64" title="64">                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;</span>Go to the login page</a>
+<a class="sourceLine" id="cb1-65" title="65">        |]</a>
+<a class="sourceLine" id="cb1-66" title="66"></a>
+<a class="sourceLine" id="cb1-67" title="67"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb1-68" title="68">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-69" title="69">    man <span class="ot">&lt;-</span> newManager</a>
+<a class="sourceLine" id="cb1-70" title="70">    warp <span class="dv">3000</span> <span class="fu">$</span> <span class="dt">App</span> man</a></code></pre></div>
 <p>ルートの宣言から確認していきましょう。まずは、標準的な <code>HomeR</code> ルートを宣言します。次に、認証サブサイトを設定します。サブサイト宣言には、サブサイトへのパス、ルート名、サブサイト名、サブサイト値を取得するための関数という、4つのパラメータが必要でした。つまり、以下のようになります。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">/</span>auth <span class="dt">AuthR</span> <span class="dt">Auth</span> getAuth</a></code></pre></div>
 <p>ここで <code>getAuth :: MyAuthSite → Auth</code> を用意する必要がありますが、自分でこの関数を書かなくても yesod-auth が自動的に用意してくれます。他のサブサイト (静的ファイルなど) では、サブサイト値に構築設定を記述するため、取得用の関数を用意する必要があります。auth サブサイトでは、これらの設定は別の <code>YesodAuth</code> 型クラスで行います。</p>
 <div class="yesod-book-notice">
 <p>なぜ、サブサイト値を使わないのでしょうか？auth サブサイトに対して与えたい設定はいくつもありますが、レコード型から設定するのは不便でしょう。また、<code>AuthId</code> 関連型を持ちたいので、型クラスの方が自然です。では、なぜ全てのサブサイトで型クラスを用いないのでしょうか？その答えは、型クラスを利用するということは各サイトにつきインスタンスを1つしか定義できないことになります。つまり、異なる静的ファイルを異なるルートから取得できなくなってしまいます。また、サブサイト値はアプリケーションの初期化時にデータを読み込みたいという時に、よりうまく機能します。</p>
 </div>
-<p>では、この <code>YesodAuth</code> インスタンスでは実際に何が起こっているのでしょうか？この型クラスには6つの必須宣言があります。</p>
+<p>では、この <code>YesodAuth</code> インスタンスでは実際に何が起こっているのでしょうか？この型クラスには5つの必須宣言があります。</p>
 <ul>
 <li><code>AuthId</code> は関連型です。これは、ユーザがログインしているかどうか (<code>maybeAuthId</code> または <code>requireAuthId</code> を通して) を尋ねた時に <code>yesod-auth</code> が与えてくれる値です。今回の場合は単純に <code>Text</code> を使いました。後の例では、未加工の識別子 (今回はメールアドレス) を保存します。</li>
-<li><code>getAuthId</code> は実際の <code>AuthId</code> を <code>Creds</code> (credentials) 型から取得します。この型は3つの情報を持ちます。使用されている認証バックエンド (今回の場合は googleemial)、実際の識別子、そして、任意の追加情報のための連想リストです。バックエンドによっては異なる追加情報が必要になります。詳細についてはドキュメントを参照してください。</li>
+<li><code>authenticate</code> は実際の <code>AuthId</code> を <code>Creds</code> (credentials) 型から取得します。この型は3つの情報を持ちます。使用されている認証バックエンド (今回の場合は googleemial)、実際の識別子、そして、任意の追加情報のための連想リストです。バックエンドによっては異なる追加情報が必要になります。詳細についてはドキュメントを参照してください。</li>
 <li><code>loginDest</code> はログインが成功した後のリダイレクト先を設定します。</li>
 <li>同様に、<code>logoutDest</code> はログアウト後のリダイレクト先を設定します。</li>
 <li><code>authPlugins</code> は使用する個々の認証バックエンドリストです。今回の例では、Google OAuth による Google アカウントを使ったユーザ認証を実装しました。</li>
@@ -364,9 +361,9 @@
 <a class="sourceLine" id="cb3-64" title="64">    authPlugins _ <span class="fu">=</span> [authEmail]</a>
 <a class="sourceLine" id="cb3-65" title="65"></a>
 <a class="sourceLine" id="cb3-66" title="66">    <span class="co">-- Need to find the UserId for the given email address.</span></a>
-<a class="sourceLine" id="cb3-67" title="67">    getAuthId creds <span class="fu">=</span> runDB <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-67" title="67">    authenticate creds <span class="fu">=</span> liftHandler <span class="fu">$</span> runDB <span class="fu">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb3-68" title="68">        x <span class="ot">&lt;-</span> insertBy <span class="fu">$</span> <span class="dt">User</span> (credsIdent creds) <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">False</span></a>
-<a class="sourceLine" id="cb3-69" title="69">        <span class="fu">return</span> <span class="fu">$</span> <span class="dt">Just</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb3-69" title="69">        <span class="fu">return</span> <span class="fu">$</span> <span class="dt">Authenticated</span> <span class="fu">$</span>liftHandler <span class="fu">$</span> </a>
 <a class="sourceLine" id="cb3-70" title="70">            <span class="kw">case</span> x <span class="kw">of</span></a>
 <a class="sourceLine" id="cb3-71" title="71">                <span class="dt">Left</span> (<span class="dt">Entity</span> userid _) <span class="ot">-&gt;</span> userid <span class="co">-- newly added user</span></a>
 <a class="sourceLine" id="cb3-72" title="72">                <span class="dt">Right</span> userid <span class="ot">-&gt;</span> userid <span class="co">-- existing user</span></a>
@@ -380,7 +377,7 @@
 <a class="sourceLine" id="cb3-80" title="80">    afterPasswordRoute _ <span class="fu">=</span> <span class="dt">HomeR</span></a>
 <a class="sourceLine" id="cb3-81" title="81"></a>
 <a class="sourceLine" id="cb3-82" title="82">    addUnverified email verkey <span class="fu">=</span></a>
-<a class="sourceLine" id="cb3-83" title="83">        runDB <span class="fu">$</span> insert <span class="fu">$</span> <span class="dt">User</span> email <span class="dt">Nothing</span> (<span class="dt">Just</span> verkey) <span class="dt">False</span></a>
+<a class="sourceLine" id="cb3-83" title="83">        liftHandler <span class="fu">$</span> runDB <span class="fu">$</span> insert <span class="fu">$</span> <span class="dt">User</span> email <span class="dt">Nothing</span> (<span class="dt">Just</span> verkey) <span class="dt">False</span></a>
 <a class="sourceLine" id="cb3-84" title="84"></a>
 <a class="sourceLine" id="cb3-85" title="85">    sendVerifyEmail email _ verurl <span class="fu">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb3-86" title="86">        <span class="co">-- Print out to the console the verification email, for easier</span></a>
@@ -423,18 +420,18 @@
 <a class="sourceLine" id="cb3-123" title="123">                |]</a>
 <a class="sourceLine" id="cb3-124" title="124">            , partHeaders <span class="fu">=</span> []</a>
 <a class="sourceLine" id="cb3-125" title="125">            }</a>
-<a class="sourceLine" id="cb3-126" title="126">    getVerifyKey <span class="fu">=</span> runDB <span class="fu">.</span> <span class="fu">fmap</span> (join <span class="fu">.</span> <span class="fu">fmap</span> userVerkey) <span class="fu">.</span> get</a>
-<a class="sourceLine" id="cb3-127" title="127">    setVerifyKey uid key <span class="fu">=</span> runDB <span class="fu">$</span> update uid [<span class="dt">UserVerkey</span> <span class="fu">=.</span> <span class="dt">Just</span> key]</a>
-<a class="sourceLine" id="cb3-128" title="128">    verifyAccount uid <span class="fu">=</span> runDB <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-126" title="126">    getVerifyKey <span class="fu">=</span> liftHandler <span class="fu">.</span> runDB <span class="fu">.</span> <span class="fu">fmap</span> (join <span class="fu">.</span> <span class="fu">fmap</span> userVerkey) <span class="fu">.</span> get</a>
+<a class="sourceLine" id="cb3-127" title="127">    setVerifyKey uid key <span class="fu">=</span> liftHandler <span class="fu">$</span> runDB <span class="fu">$</span> update uid [<span class="dt">UserVerkey</span> <span class="fu">=.</span> <span class="dt">Just</span> key]</a>
+<a class="sourceLine" id="cb3-128" title="128">    verifyAccount uid <span class="fu">=</span> liftHandler <span class="fu">$</span> runDB <span class="fu">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb3-129" title="129">        mu <span class="ot">&lt;-</span> get uid</a>
 <a class="sourceLine" id="cb3-130" title="130">        <span class="kw">case</span> mu <span class="kw">of</span></a>
 <a class="sourceLine" id="cb3-131" title="131">            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></a>
 <a class="sourceLine" id="cb3-132" title="132">            <span class="dt">Just</span> u <span class="ot">-&gt;</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb3-133" title="133">                update uid [<span class="dt">UserVerified</span> <span class="fu">=.</span> <span class="dt">True</span>]</a>
 <a class="sourceLine" id="cb3-134" title="134">                <span class="fu">return</span> <span class="fu">$</span> <span class="dt">Just</span> uid</a>
-<a class="sourceLine" id="cb3-135" title="135">    getPassword <span class="fu">=</span> runDB <span class="fu">.</span> <span class="fu">fmap</span> (join <span class="fu">.</span> <span class="fu">fmap</span> userPassword) <span class="fu">.</span> get</a>
-<a class="sourceLine" id="cb3-136" title="136">    setPassword uid pass <span class="fu">=</span> runDB <span class="fu">$</span> update uid [<span class="dt">UserPassword</span> <span class="fu">=.</span> <span class="dt">Just</span> pass]</a>
-<a class="sourceLine" id="cb3-137" title="137">    getEmailCreds email <span class="fu">=</span> runDB <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-135" title="135">    getPassword <span class="fu">=</span> liftHandler <span class="fu">.</span> runDB <span class="fu">.</span> <span class="fu">fmap</span> (join <span class="fu">.</span> <span class="fu">fmap</span> userPassword) <span class="fu">.</span> get</a>
+<a class="sourceLine" id="cb3-136" title="136">    setPassword uid pass <span class="fu">=</span> liftHandler <span class="fu">.</span> runDB <span class="fu">$</span> update uid [<span class="dt">UserPassword</span> <span class="fu">=.</span> <span class="dt">Just</span> pass]</a>
+<a class="sourceLine" id="cb3-137" title="137">    getEmailCreds email <span class="fu">=</span> liftHandler <span class="fu">$</span> runDB <span class="fu">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb3-138" title="138">        mu <span class="ot">&lt;-</span> getBy <span class="fu">$</span> <span class="dt">UniqueUser</span> email</a>
 <a class="sourceLine" id="cb3-139" title="139">        <span class="kw">case</span> mu <span class="kw">of</span></a>
 <a class="sourceLine" id="cb3-140" title="140">            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></a>
@@ -445,7 +442,7 @@
 <a class="sourceLine" id="cb3-145" title="145">                , emailCredsVerkey <span class="fu">=</span> userVerkey u</a>
 <a class="sourceLine" id="cb3-146" title="146">                , emailCredsEmail <span class="fu">=</span> email</a>
 <a class="sourceLine" id="cb3-147" title="147">                }</a>
-<a class="sourceLine" id="cb3-148" title="148">    getEmail <span class="fu">=</span> runDB <span class="fu">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> userEmail) <span class="fu">.</span> get</a>
+<a class="sourceLine" id="cb3-148" title="148">    getEmail <span class="fu">=</span> liftHandler <span class="fu">.</span> runDB <span class="fu">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> userEmail) <span class="fu">.</span> get</a>
 <a class="sourceLine" id="cb3-149" title="149"></a>
 <a class="sourceLine" id="cb3-150" title="150"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
 <a class="sourceLine" id="cb3-151" title="151">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
@@ -490,7 +487,7 @@
 <a class="sourceLine" id="cb4-21" title="21">|]</a>
 <a class="sourceLine" id="cb4-22" title="22"></a>
 <a class="sourceLine" id="cb4-23" title="23"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-24" title="24">    authRoute _ <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">AuthR</span> <span class="dt">LoginR</span></a>
+<a class="sourceLine" id="cb4-24" title="24">    authenticate <span class="fu">=</span> <span class="fu">return</span> <span class="fu">.</span> <span class="dt">Authenticated</span> <span class="fu">.</span> credsIdent</a>
 <a class="sourceLine" id="cb4-25" title="25"></a>
 <a class="sourceLine" id="cb4-26" title="26">    <span class="co">-- route name, then a boolean indicating if it's a write request</span></a>
 <a class="sourceLine" id="cb4-27" title="27">    isAuthorized <span class="dt">HomeR</span> <span class="dt">True</span> <span class="fu">=</span> isAdmin</a>
