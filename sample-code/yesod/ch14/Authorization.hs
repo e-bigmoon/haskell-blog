@@ -13,7 +13,7 @@ import           Yesod
 import           Yesod.Auth
 import           Yesod.Auth.Dummy -- just for testing, don't use in real life!!!
 
-data App = App
+newtype App = App
     { httpManager :: Manager
     }
 

@@ -37,7 +37,7 @@ User
     deriving Typeable
 |]
 
-data App = App SqlBackend
+newtype App = App SqlBackend
 
 mkYesod "App" [parseRoutes|
 / HomeR GET
@@ -127,7 +127,7 @@ instance YesodAuthEmail App where
                 |]
             , partHeaders = []
             }
-    getVerifyKey = liftHandler . runDB . fmap (join . fmap userVerkey) . get
+    getVerifyKey = liftHandler . runDB . fmap (userVerkey =<<) . get
     setVerifyKey uid key = liftHandler $ runDB $ update uid [UserVerkey =. Just key]
     verifyAccount uid = liftHandler $ runDB $ do
         mu <- get uid
@@ -136,7 +136,7 @@ instance YesodAuthEmail App where
             Just u -> do
                 update uid [UserVerified =. True]
                 return $ Just uid
-    getPassword = liftHandler . runDB . fmap (join . fmap userPassword) . get
+    getPassword = liftHandler . runDB . fmap (userVerkey =<<) . get
     setPassword uid pass = liftHandler . runDB $ update uid [UserPassword =. Just pass]
     getEmailCreds email = liftHandler $ runDB $ do
         mu <- getBy $ UniqueUser email

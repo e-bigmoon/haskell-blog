@@ -20,7 +20,7 @@ clientId = ""
 clientSecret :: Text
 clientSecret = ""
 
-data App = App
+newtype App = App
     { httpManager :: Manager
     }
 
