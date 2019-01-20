@@ -75,15 +75,12 @@ instance Yesod App where
 
 instance YesodAuth App where
     type AuthId App = Text
-    getAuthId = return . Just . credsIdent
+    authenticate = return . Authenticated . credsIdent
 
     loginDest _ = HomeR
     logoutDest _ = HomeR
 
-    authPlugins _ =
-        [ authBrowserId def
-        , authGoogleEmail clientId clientSecret
-        ]
+    authPlugins _ = [ authGoogleEmail clientId clientSecret ]
 
     -- The default maybeAuthId assumes a Persistent database. We're going for a
     -- simpler AuthId, so we'll just do a direct lookup in the session.
@@ -124,10 +121,10 @@ main = do
 なぜ、サブサイト値を使わないのでしょうか？auth サブサイトに対して与えたい設定はいくつもありますが、レコード型から設定するのは不便でしょう。また、`AuthId` 関連型を持ちたいので、型クラスの方が自然です。では、なぜ全てのサブサイトで型クラスを用いないのでしょうか？その答えは、型クラスを利用するということは各サイトにつきインスタンスを1つしか定義できないことになります。つまり、異なる静的ファイルを異なるルートから取得できなくなってしまいます。また、サブサイト値はアプリケーションの初期化時にデータを読み込みたいという時に、よりうまく機能します。
 </div>
 
-では、この `YesodAuth` インスタンスでは実際に何が起こっているのでしょうか？この型クラスには6つの必須宣言があります。
+では、この `YesodAuth` インスタンスでは実際に何が起こっているのでしょうか？この型クラスには5つの必須宣言があります。
 
 - `AuthId` は関連型です。これは、ユーザがログインしているかどうか (`maybeAuthId` または `requireAuthId` を通して) を尋ねた時に `yesod-auth` が与えてくれる値です。今回の場合は単純に `Text` を使いました。後の例では、未加工の識別子 (今回はメールアドレス) を保存します。
-- `getAuthId` は実際の `AuthId` を `Creds` (credentials) 型から取得します。この型は3つの情報を持ちます。使用されている認証バックエンド (今回の場合は googleemial)、実際の識別子、そして、任意の追加情報のための連想リストです。バックエンドによっては異なる追加情報が必要になります。詳細についてはドキュメントを参照してください。
+- `authenticate` は実際の `AuthId` を `Creds` (credentials) 型から取得します。この型は3つの情報を持ちます。使用されている認証バックエンド (今回の場合は googleemial)、実際の識別子、そして、任意の追加情報のための連想リストです。バックエンドによっては異なる追加情報が必要になります。詳細についてはドキュメントを参照してください。
 - `loginDest` はログインが成功した後のリダイレクト先を設定します。
 - 同様に、`logoutDest` はログアウト後のリダイレクト先を設定します。
 - `authPlugins` は使用する個々の認証バックエンドリストです。今回の例では、Google OAuth による Google アカウントを使ったユーザ認証を実装しました。
@@ -223,9 +220,9 @@ instance YesodAuth App where
     authPlugins _ = [authEmail]
 
     -- Need to find the UserId for the given email address.
-    getAuthId creds = runDB $ do
+    authenticate creds = liftHandler $ runDB $ do
         x <- insertBy $ User (credsIdent creds) Nothing Nothing False
-        return $ Just $
+        return $ Authenticated $liftHandler $ 
             case x of
                 Left (Entity userid _) -> userid -- newly added user
                 Right userid -> userid -- existing user
@@ -239,7 +236,7 @@ instance YesodAuthEmail App where
     afterPasswordRoute _ = HomeR
 
     addUnverified email verkey =
-        runDB $ insert $ User email Nothing (Just verkey) False
+        liftHandler $ runDB $ insert $ User email Nothing (Just verkey) False
 
     sendVerifyEmail email _ verurl = do
         -- Print out to the console the verification email, for easier
@@ -282,18 +279,18 @@ instance YesodAuthEmail App where
                 |]
             , partHeaders = []
             }
-    getVerifyKey = runDB . fmap (join . fmap userVerkey) . get
-    setVerifyKey uid key = runDB $ update uid [UserVerkey =. Just key]
-    verifyAccount uid = runDB $ do
+    getVerifyKey = liftHandler . runDB . fmap (join . fmap userVerkey) . get
+    setVerifyKey uid key = liftHandler $ runDB $ update uid [UserVerkey =. Just key]
+    verifyAccount uid = liftHandler $ runDB $ do
         mu <- get uid
         case mu of
             Nothing -> return Nothing
             Just u -> do
                 update uid [UserVerified =. True]
                 return $ Just uid
-    getPassword = runDB . fmap (join . fmap userPassword) . get
-    setPassword uid pass = runDB $ update uid [UserPassword =. Just pass]
-    getEmailCreds email = runDB $ do
+    getPassword = liftHandler . runDB . fmap (join . fmap userPassword) . get
+    setPassword uid pass = liftHandler . runDB $ update uid [UserPassword =. Just pass]
+    getEmailCreds email = liftHandler $ runDB $ do
         mu <- getBy $ UniqueUser email
         case mu of
             Nothing -> return Nothing
@@ -304,7 +301,7 @@ instance YesodAuthEmail App where
                 , emailCredsVerkey = userVerkey u
                 , emailCredsEmail = email
                 }
-    getEmail = runDB . fmap (fmap userEmail) . get
+    getEmail = liftHandler . runDB . fmap (fmap userEmail) . get
 
 getHomeR :: Handler Html
 getHomeR = do
@@ -354,7 +351,7 @@ mkYesod "App" [parseRoutes|
 |]
 
 instance Yesod App where
-    authRoute _ = Just $ AuthR LoginR
+    authenticate = return . Authenticated . credsIdent
 
     -- route name, then a boolean indicating if it's a write request
     isAuthorized HomeR True = isAdmin
