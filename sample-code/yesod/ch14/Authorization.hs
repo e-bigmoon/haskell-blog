@@ -11,7 +11,7 @@ import           Data.Text            (Text)
 import           Network.HTTP.Conduit (Manager, newManager, tlsManagerSettings)
 import           Yesod
 import           Yesod.Auth
-import           Yesod.Auth.Dummy -- just for testing, don't use in real life!!!
+import           Yesod.Auth.Dummy
 
 newtype App = App
     { httpManager :: Manager
@@ -28,17 +28,17 @@ instance Yesod App where
 
     -- route name, then a boolean indicating if it's a write request
     isAuthorized HomeR True = isAdmin
-    isAuthorized AdminR _ = isAdmin
+    isAuthorized AdminR _   = isAdmin
 
     -- anyone can access other pages
-    isAuthorized _ _ = return Authorized
+    isAuthorized _ _        = return Authorized
 
 isAdmin = do
     mu <- maybeAuthId
     return $ case mu of
-        Nothing -> AuthenticationRequired
+        Nothing      -> AuthenticationRequired
         Just "admin" -> Authorized
-        Just _ -> Unauthorized "You must be an admin"
+        Just _       -> Unauthorized "You must be an admin"
 
 instance YesodAuth App where
     type AuthId App = Text

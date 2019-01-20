@@ -6,7 +6,7 @@
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeFamilies          #-}
 import           Data.Default                (def)
-import           Data.Text                   (Text) 
+import           Data.Text                   (Text)
 import           Network.HTTP.Client.Conduit (Manager, newManager)
 import           Yesod
 import           Yesod.Auth

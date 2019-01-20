@@ -11,12 +11,12 @@
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
-import           Control.Monad            (join)
-import           Control.Monad.Logger     (runNoLoggingT)
-import           Data.Maybe               (isJust)
-import           Data.Text                (Text, unpack)
+import           Control.Monad                 (join)
+import           Control.Monad.Logger          (runNoLoggingT)
+import           Data.Maybe                    (isJust)
+import           Data.Text                     (Text, unpack)
 import qualified Data.Text.Lazy.Encoding
-import           Data.Typeable            (Typeable)
+import           Data.Typeable                 (Typeable)
 import           Database.Persist.Sqlite
 import           Database.Persist.TH
 import           Network.Mail.Mime
@@ -73,7 +73,7 @@ instance YesodAuth App where
         return $ Authenticated $
             case x of
                 Left (Entity userid _) -> userid -- newly added user
-                Right userid -> userid -- existing user
+                Right userid           -> userid -- existing user
 
 instance YesodAuthPersist App
 
