@@ -38,7 +38,7 @@ instance MonadError GenError Handler where
     throwError = throwM
     catchError = catch
 instance MonadCRandom GenError Handler where
-    getCRandom  = wrap crandom
+    getCRandom = wrap crandom
     {-# INLINE getCRandom #-}
     getBytes i = wrap (genBytes i)
     {-# INLINE getBytes #-}

@@ -73,7 +73,7 @@ $ stack exec -- yesod devel
 原文 | 日本語訳 | 補足資料 | 練習問題
 -----|----------|----------|----------
 [RESTful Content](https://www.yesodweb.com/book/restful-content) | [RESTful コンテンツ](book/ch12-restful-content.html) | |
-[Yesod’s Monads](https://www.yesodweb.com/book/yesods-monads) | Yesod’s Monads
+[Yesod’s Monads](https://www.yesodweb.com/book/yesods-monads) | [Yesod のモナドたち](book/ch13-yesods-monads.html)
 [Authentication and Authorization](https://www.yesodweb.com/book/authentication-and-authorization) | [認証と認可](book/ch14-authentication-and-authorization.html)
 [Scaffolding and the Site Template](https://www.yesodweb.com/book/scaffolding-and-the-site-template) | Scaffolding and the Site Template
 [Internationalization](https://www.yesodweb.com/book/internationalization) | Internationalization
