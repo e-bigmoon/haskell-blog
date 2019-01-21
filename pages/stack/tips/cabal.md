@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/01/04
+date: 2019/01/21
 ---
 
 ## stack と cabal
@@ -35,7 +35,7 @@ stack | cabal | 備考
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759)
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 `stack build` | `cabal new-build`
-`stack test` | `cabal new-test`
+`stack test` | `cabal new-test --enable-tests` <br> `cabal new-test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
 `stack repl` | `cabal new-repl`
 `stack clean` | `cabal new-clean`
 `stack run` | `cabal new-run`
