@@ -123,3 +123,21 @@ $ stack exec -- yesod devel
 
 - [fpco/stackage-server](https://github.com/fpco/stackage-server)
 - [ersocon](https://ersocon.net/)
+
+## 関連パッケージ
+
+- [yesod](https://hackage.haskell.org/package/yesod)
+- [yesod-auth](https://hackage.haskell.org/package/yesod-auth)
+- [yesod-auth-hashdb](https://hackage.haskell.org/package/yesod-auth-hashdb)
+- [yesod-auth-oauth2](https://hackage.haskell.org/package/yesod-auth-oauth2)
+- [yesod-core](https://hackage.haskell.org/package/yesod-core)
+- [yesod-form](https://hackage.haskell.org/package/yesod-form)
+- [yesod-markdown](https://hackage.haskell.org/package/yesod-markdown)
+- [yesod-paginator](https://hackage.haskell.org/package/yesod-paginator)
+- [yesod-sitemap](https://hackage.haskell.org/package/yesod-sitemap)
+- [yesod-static](https://hackage.haskell.org/package/yesod-static)
+- [persistent](https://hackage.haskell.org/package/persistent)
+- [persistent-mysql](https://hackage.haskell.org/package/persistent-mysql)
+- [persistent-sqlite](https://hackage.haskell.org/package/persistent-sqlite)
+- [persistent-template](https://hackage.haskell.org/package/persistent-template)
+- [shakespeare](https://hackage.haskell.org/package/shakespeare)
