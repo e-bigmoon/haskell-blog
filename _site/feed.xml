@@ -8,8 +8,100 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2018-12-25T00:00:00Z</updated>
+    <updated>2019-02-02T00:00:00Z</updated>
     <entry>
+    <title>Dual Monoid</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/02-02-dual-monoid.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/02-02-dual-monoid.html</id>
+    <published>2019-02-02T00:00:00Z</published>
+    <updated>2019-02-02T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Dual">Dual</a> 型が定義されています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Dual</span> a <span class="fu">=</span> <span class="dt">Dual</span> {<span class="ot"> getDual ::</span> a }</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> b <span class="fu">=</span> <span class="dt">Dual</span> (b <span class="fu">&lt;&gt;</span> a)</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Dual</span> <span class="fu">mempty</span></a></code></pre></div>
+<p>使い方は簡単。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getDual <span class="fu">$</span> <span class="dt">Dual</span> <span class="st">&quot;aaa&quot;</span> <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> <span class="st">&quot;bbb&quot;</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="st">&quot;bbbaaa&quot;</span></a></code></pre></div>
+<p>いつか使う時もあるかもしれないので、適当な例を作ってみます。</p>
+<!--more-->
+<h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
+<p>Semigroup Law</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">Dual</span> b <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> c)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="fu">=</span> <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> (c <span class="fu">&lt;&gt;</span> b)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="fu">=</span> <span class="dt">Dual</span> ((c <span class="fu">&lt;&gt;</span> b) <span class="fu">&lt;&gt;</span> a)</a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co">-- a, b, c は Semigroup なので</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="fu">=</span> <span class="dt">Dual</span> (c <span class="fu">&lt;&gt;</span> (b <span class="fu">&lt;&gt;</span> a))</a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="fu">=</span> <span class="dt">Dual</span> (b <span class="fu">&lt;&gt;</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> c</a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="fu">=</span> (<span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> c</a></code></pre></div>
+<p>Monoid Law</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a)</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">Dual</span> ((<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="fu">&lt;&gt;</span> a)</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co">-- a は Monoid なので</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="fu">=</span> <span class="dt">Dual</span> a</a>
+<a class="sourceLine" id="cb4-6" title="6"></a>
+<a class="sourceLine" id="cb4-7" title="7">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> a</a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="fu">=</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> a</a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="fu">=</span> <span class="dt">Dual</span> (a <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a))</a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="co">-- a は Monoid なので</span></a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="fu">=</span> <span class="dt">Dual</span> a</a></code></pre></div>
+<h2 id="headmaybe">headMaybe</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">headMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
+<a class="sourceLine" id="cb5-2" title="2">headMaybe <span class="fu">=</span> getLast <span class="fu">.</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">Last</span> <span class="fu">.</span> <span class="fu">pure</span>)</a>
+<a class="sourceLine" id="cb5-3" title="3"></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="co">-- First を使った定義</span></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="ot">headMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
+<a class="sourceLine" id="cb5-6" title="6">headMaybe <span class="fu">=</span> getFirst <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">First</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">ghci<span class="fu">&gt;</span> headMaybe []</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb6-3" title="3"></a>
+<a class="sourceLine" id="cb6-4" title="4">ghci<span class="fu">&gt;</span> headMaybe <span class="st">&quot;abcd&quot;</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="dt">Just</span> <span class="ch">&#39;a&#39;</span></a></code></pre></div>
+<h2 id="lastmaybe">lastMaybe</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">lastMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
+<a class="sourceLine" id="cb7-2" title="2">lastMaybe <span class="fu">=</span> getFirst <span class="fu">.</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">First</span> <span class="fu">.</span> <span class="fu">pure</span>)</a>
+<a class="sourceLine" id="cb7-3" title="3"></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">-- Last を使った定義</span></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="ot">lastMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
+<a class="sourceLine" id="cb7-6" title="6">lastMaybe <span class="fu">=</span> getLast <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Last</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">ghci<span class="fu">&gt;</span> lastMaybe []</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb8-3" title="3"></a>
+<a class="sourceLine" id="cb8-4" title="4">ghci<span class="fu">&gt;</span> lastMaybe <span class="st">&quot;abcd&quot;</span></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="dt">Just</span> <span class="ch">&#39;d&#39;</span></a></code></pre></div>
+<h2 id="last">last</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">last&#39; ::</span> [a] <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb9-2" title="2">last&#39; <span class="fu">=</span> getAlt <span class="fu">.</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">Alt</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">ghci<span class="fu">&gt;</span> <span class="fu">last</span> []</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="fu">***</span> <span class="dt">Exception</span><span class="fu">:</span> user <span class="fu">error</span> (mzero)</a>
+<a class="sourceLine" id="cb10-3" title="3"></a>
+<a class="sourceLine" id="cb10-4" title="4">ghci<span class="fu">&gt;</span> <span class="fu">last</span> <span class="st">&quot;abc&quot;</span></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="ch">&#39;c&#39;</span></a></code></pre></div>
+<h2 id="reverse">reverse</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="ot">rev ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb11-2" title="2">rev <span class="fu">=</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">ghci<span class="fu">&gt;</span> rev [<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">7</span>]</a>
+<a class="sourceLine" id="cb12-2" title="2">[<span class="dv">7</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">5</span>]</a>
+<a class="sourceLine" id="cb12-3" title="3"></a>
+<a class="sourceLine" id="cb12-4" title="4">ghci<span class="fu">&gt;</span> rev <span class="st">&quot;Hello World&quot;</span></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="st">&quot;dlroW olleH&quot;</span></a></code></pre></div>
+<h2 id="foldl">foldl</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="fu">foldl</span><span class="ot"> ::</span> (b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="fu">foldl</span> f z t <span class="fu">=</span> appEndo (getDual (<span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">Endo</span> <span class="fu">.</span> <span class="fu">flip</span> f) t)) z</a></code></pre></div>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://riptutorial.com/haskell/example/2555/folding-a-structure-in-reverse">Folding a structure in reverse</a></li>
+<li><a href="https://medium.com/@sjsyrek/five-minutes-to-monoid-fe6f364d0bba">Five Minutes to Monoid</a></li>
+<li><a href="http://ozark.hendrix.edu/~yorgey/pub/monoid-pearl.pdf">Monoids: Theme and Variations (Functional Pearl)</a></li>
+<li><a href="https://www.stackage.org/haddock/lts-13.5/base-4.12.0.0/Prelude.html#t:Foldable">Foldable</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>cabal build で package.yaml を使う</title>
     <link href="https://haskell.e-bigmoon.com/posts/2018/12-25-cabal-preprocessing.html" />
     <id>https://haskell.e-bigmoon.com/posts/2018/12-25-cabal-preprocessing.html</id>
@@ -2176,92 +2268,6 @@ main = undefined</code></pre>
 <li><code>path</code> や <code>path-io</code> は幽霊型を使って不正な利用をコンパイル時にチェックする</li>
 <li>実際に <code>stack</code> でも利用されているパッケージ</li>
 </ul>
-<p>以上です。</p>]]></summary>
-</entry>
-<entry>
-    <title>二分木の操作 (Haskell Quiz No.16)</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/08-12-quiz-16.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/08-12-quiz-16.html</id>
-    <published>2018-08-12T00:00:00Z</published>
-    <updated>2018-08-12T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="haskell-quiz-no.16">Haskell Quiz No.16</h2>
-<p>難易度: λλ</p>
-<p>以下のような二分木の定義があります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">Tree</span> a</a>
-<a class="sourceLine" id="cb1-2" title="2">  <span class="fu">=</span> <span class="dt">Leaf</span> a</a>
-<a class="sourceLine" id="cb1-3" title="3">  <span class="fu">|</span> <span class="dt">Node</span> (<span class="dt">Tree</span> a) (<span class="dt">Tree</span> a)</a></code></pre></div>
-<p>以下の操作を定義してみましょう！</p>
-<h3 id="部分木を左右反転させた木を返す関数">(1) 部分木を左右反転させた木を返す関数</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">mirror ::</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</a>
-<a class="sourceLine" id="cb2-2" title="2">mirror <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
-<p><img style="width: 45%" src="/images/2018/08-12/mirror_before.svg" alt="mirror 関数適用前"> → <img style="width: 45%" src="/images/2018/08-12/mirror_after.svg" alt="mirror 関数適用後"></p>
-<p>左の木に <strong>mirror</strong> 関数を適用すると、右の木を返します。</p>
-<h3 id="木の高さを計算する関数">(2) 木の高さを計算する関数</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">depth ::</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb3-2" title="2">depth <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
-<p><img style="width: 45%" src="/images/2018/08-12/mirror_before.svg" alt="depth"></p>
-<p><strong>depth</strong> 関数で上記の木の高さを計算すると <strong>3</strong> になります。</p>
-<h3 id="木が平衡かチェックする関数">(3) 木が平衡かチェックする関数</h3>
-<ul>
-<li>平衡の定義: 左右の部分木の高さが高々1しか違わない</li>
-</ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">isBalanced ::</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb4-2" title="2">isBalanced <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
-<p><img style="width: 45%" src="/images/2018/08-12/mirror_before.svg" alt="isBalanced"></p>
-<p>上記の木は <strong>平衡</strong> です。</p>
-<p>さらに <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Prelude.html#t:Functor">Functor</a> と <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Prelude.html#t:Foldable">Foldable</a> のインスタンスを定義してみましょう！(ここでは <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Prelude.html#v:fmap">fmap</a> と <a href="https://www.stackage.org/haddock/lts-12.5/base-4.11.1.0/Prelude.html#v:foldMap">foldMap</a> を定義することにします。)</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">instance</span> <span class="dt">Functor</span> a <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> b</a>
-<a class="sourceLine" id="cb5-3" title="3">  <span class="fu">fmap</span> <span class="fu">=</span> <span class="fu">undefined</span></a>
-<a class="sourceLine" id="cb5-4" title="4"></a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="kw">instance</span> <span class="dt">Foldable</span> a <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-6" title="6"><span class="ot">  foldMap ::</span> <span class="dt">Monoid</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m) <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> m</a>
-<a class="sourceLine" id="cb5-7" title="7">  <span class="fu">foldMap</span> <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
-<p>答えは次回。</p>
-<p>※ 図の作成には <a href="https://mermaidjs.github.io/">mermaid</a>というツールを使っています。</p>
-<h3 id="参考">参考</h3>
-<ul>
-<li>Programming in Haskell (14.2 Foldables and friends)</li>
-<li>関数プログラミング入門 Haskell で学ぶ原理と技法 (8.3.2 木による表現)</li>
-<li><a href="http://www.cis.syr.edu/courses/cis623/p2.html">CIS 623</a></li>
-</ul>
-<!--more-->
-<h2 id="はじめに">はじめに</h2>
-<p><a href="./07-24-quiz-15.html">前回</a>の問題と答えは以下の通りです。</p>
-<h3 id="問題">問題</h3>
-<p>難易度: λ</p>
-<p>葉に<strong>だけ</strong>値を持つような<strong>二分木</strong>を定義してみてください！</p>
-<p>図で書くとこんな感じです。</p>
-<p><img src="/images/2018/07-24/tree.svg" alt="木の図" width="50%"></p>
-<h3 id="こたえ">こたえ</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">data</span> <span class="dt">Tree</span></a>
-<a class="sourceLine" id="cb6-2" title="2">  <span class="fu">=</span> <span class="dt">Leaf</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb6-3" title="3">  <span class="fu">|</span> <span class="dt">Node</span> <span class="dt">Tree</span> <span class="dt">Tree</span></a>
-<a class="sourceLine" id="cb6-4" title="4"></a>
-<a class="sourceLine" id="cb6-5" title="5"><span class="co">-- より一般的な定義</span></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="kw">data</span> <span class="dt">Tree</span> a</a>
-<a class="sourceLine" id="cb6-7" title="7">  <span class="fu">=</span> <span class="dt">Leaf</span> a</a>
-<a class="sourceLine" id="cb6-8" title="8">  <span class="fu">|</span> <span class="dt">Node</span> (<span class="dt">Tree</span> a) (<span class="dt">Tree</span> a)</a></code></pre></div>
-<h3 id="解説">解説</h3>
-<p>この定義を使って図の木を作るとこんな感じになります。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">t ::</span> <span class="dt">Tree</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb7-2" title="2">t <span class="fu">=</span> <span class="dt">Node</span> t1 t3</a>
-<a class="sourceLine" id="cb7-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-4" title="4">    t1 <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Leaf</span> <span class="dv">1</span>) t2</a>
-<a class="sourceLine" id="cb7-5" title="5">    t2 <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Leaf</span> <span class="dv">2</span>) (<span class="dt">Leaf</span> <span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb7-6" title="6">    t3 <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Leaf</span> <span class="dv">4</span>) (<span class="dt">Leaf</span> <span class="dv">5</span>)</a></code></pre></div>
-<p><strong>where</strong> を使わない場合はこんな感じです。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">intTree ::</span> <span class="dt">Tree</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-2" title="2">intTree <span class="fu">=</span></a>
-<a class="sourceLine" id="cb8-3" title="3">  <span class="dt">Node</span></a>
-<a class="sourceLine" id="cb8-4" title="4">    (<span class="dt">Node</span></a>
-<a class="sourceLine" id="cb8-5" title="5">      (<span class="dt">Leaf</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb8-6" title="6">      (<span class="dt">Node</span></a>
-<a class="sourceLine" id="cb8-7" title="7">        (<span class="dt">Leaf</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb8-8" title="8">        (<span class="dt">Leaf</span> <span class="dv">3</span>)))</a>
-<a class="sourceLine" id="cb8-9" title="9">    (<span class="dt">Node</span></a>
-<a class="sourceLine" id="cb8-10" title="10">      (<span class="dt">Leaf</span> <span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb8-11" title="11">      (<span class="dt">Leaf</span> <span class="dv">5</span>))</a></code></pre></div>
 <p>以上です。</p>]]></summary>
 </entry>
 
