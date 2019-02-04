@@ -55,3 +55,8 @@ $ sass -I sass --scss ./css/main.scss ./css/main.css
 ...
 ```
 
+## License
+
+Copyright © 2017–2019 BIGMOON
+
+All rights reserved.
