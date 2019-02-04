@@ -66,14 +66,57 @@ Monoid Law
   Endo f <> (mempty :: Endo a)
 = Endo f <> Endo id
 = Endo (f . id)
--- Category の定義より f . id = f
+-- Category の定義より f . id == f
 = Endo f
 
   (mempty :: Endo a) <> Endo f
 = Endo id <> Endo id
 = Endo (id . f)
--- Category の定義より id . f = f
+-- Category の定義より id . f == f
 = Endo f
+```
+
+### `f . (g . h) == (f . g) . h`
+
+`(.)` の定義
+
+```haskell
+(.) :: (b -> c) -> (a -> b) -> (a -> c)
+f . g = \x -> f (g x)
+```
+
+証明
+
+```haskell
+(LHS)
+  f . (g . h)
+= \x -> f ((g . h) x)
+= \x -> f ((\y -> g (h y)) x)
+= \x -> f (g (h x))
+
+(RHS)
+  (f . g) . h
+= \x -> (f . g) (h x)
+= \x -> (\y -> f (g y)) (h x)
+= \x -> f (g (h x))
+```
+
+### `id . f == f`
+
+`id` の定義
+
+```haskell
+id :: a -> a
+id x = x
+```
+
+証明
+
+```haskell
+  id . f
+= \x -> id (f x)
+= \x -> f x
+= f
 ```
 
 ## 例1) Write Endo パターン
