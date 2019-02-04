@@ -1,7 +1,7 @@
 ---
 title: Endo Monoid
 author: Shinya Yamaguchi
-tags: bigmoon
+tags: bigmoon, monoid
 ---
 
 ## はじめに
@@ -76,7 +76,7 @@ Monoid Law
 = Endo f
 ```
 
-## Yesod
+## 例1) Write Endo パターン
 
 [yesod-core](https://hackage.haskell.org/package/yesod-core) パッケージの [ProvideRep](https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Handler.html#t:ProvidedRep) を扱う関数は `Endo` を利用しています。
 
@@ -97,6 +97,69 @@ data GHState = GHState
     , ghsCacheBy :: !KeyedTypeMap
     , ghsHeaders :: !(Endo [Header])
     }
+```
+
+このような `Writer` と `Endo` を使った実装パターンは [Quick and Easy DSLs with Writer Endo](https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html) で紹介されている `Writer Endo` パターンとして知られているようです。
+
+## 例2) データの更新
+
+こんな感じで設定等を更新する際にも使えるかもしれません。
+
+```haskell
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE OverloadedLabels #-}
+{-# LANGUAGE TypeOperators    #-}
+
+import Control.Lens
+import Data.Extensible
+import Data.Monoid
+
+type Person = Record
+  '[ "name" >: String
+   , "age"  >: Int
+   ]
+
+update :: [Person -> Person] -> Person -> Person
+update fs = appEndo (foldMap Endo fs)
+
+me :: [Person -> Person]
+me =
+  [ (& #name .~ "guchi")
+  , (& #age .~ 20)
+  ]
+
+defaultPerson :: Person
+defaultPerson = #name @= "NONAME"
+             <: #age  @= 0
+             <: nil
+```
+
+実行結果
+
+```haskell
+λ> stack repl --package extensible --package lens EndoExample.hs
+
+ghci> defaultPerson
+name @= "NONAME" <: age @= 0 <: nil
+
+ghci> update me defaultPerson
+name @= "guchi" <: age @= 20 <: nil
+```
+
+## 例3) パターンマッチの実装
+
+僕はあまり `Endo` モノイドを使いこなせていませんが、良い感じに使えたと思える例としては TAPL 11章でレコードパターンを実装する際です。
+
+レコードのパターンマッチは代入の合成で書くことができるので、`Endo` がちょうどぴったり適用できました。
+
+```haskell
+match :: Pattern -> Value -> (Term -> Term)
+match (PtVar _ n) v = subst n v
+match p@(PtRecord fs) v@(TmRecord fs')
+  | isRecordValue v && sameFieldLength p v
+      = appEndo $ foldMap (Endo . uncurry match) $ zip (map snd fs) (map snd fs')
+  | otherwise = error "match: pattern match failure"
+match PtRecord{} _ = error "match: v is not Rrcord"
 ```
 
 ## 参考
