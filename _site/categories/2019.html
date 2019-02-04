@@ -165,6 +165,57 @@
   <ul class="post-list">
     
       <li class="card-panel hoverable">
+        <span class="grey-text right">February  4, 2019</span>
+        <a class="post-link" href="../posts/2019/02-04-endo-monoid.html">Endo Monoid</a>
+
+        <button data-target=".posts/2019/02-04-endo-monoid.md" class="waves-effect waves-light btn modal-trigger" style="padding: 0 1.2rem;">overview
+          <i class="mdi mdi-send right"></i>
+        </button>
+
+        <div id=".posts/2019/02-04-endo-monoid.md" class="modal modal-fixed-footer">
+          <div class="modal-content">
+            <h4>Endo Monoid</h4>
+            <p><h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Endo">Endo</a> 型が定義されています。</p>
+<p><code>Endo</code> という名前は <code>自己準同型 (Endomorphism)</code> に由来します。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Endo</span> a <span class="fu">=</span> <span class="dt">Endo</span> {<span class="ot"> appEndo ::</span> a <span class="ot">-&gt;</span> a }</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> g <span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> g)</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Endo</span> <span class="fu">id</span></a></code></pre></div>
+<p>使い方は簡単。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> f <span class="fu">=</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="fu">+</span><span class="dv">1</span>), (<span class="fu">*</span><span class="dv">2</span>), <span class="fu">negate</span>]</a>
+<a class="sourceLine" id="cb2-2" title="2">ghci<span class="fu">&gt;</span> <span class="fu">print</span> <span class="fu">$</span> appEndo f <span class="dv">5</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="fu">-</span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5">ghci<span class="fu">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="st">&quot;Hello, Haskell!&quot;</span></a></code></pre></div>
+<p><code>appEndo</code> すると関数が出てくるところがポイントですね。2つ目の評価の流れをざっくり追うとこんな感じです。</p>
+<pre class="haskll"><code>  appEndo (Endo (&quot;Hello, &quot; ++) &lt;&gt; Endo (++ &quot;!&quot;)) &quot;Haskell&quot;
+= appEndo (Endo ((&quot;Hello, &quot; ++ ) . (++ &quot;!&quot;))) &quot;Haskell&quot;
+= (&quot;Hello, &quot; ++ ) . (++ &quot;!&quot;) $ &quot;Haskell&quot;
+= &quot;Hello, &quot; ++ (&quot;Haskell&quot; ++ &quot;!&quot;)
+= &quot;Hello, &quot; ++ &quot;Haskell!&quot;
+= &quot;Hello, Haskell!&quot;</code></pre>
+<p><code>appEndo</code> は意外と色んなところで使える便利なモノイドです。</p>
+</p>
+            <div>
+              
+                <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+                <div class="chip">bigmoon, monoid</div>
+              
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="../posts/2019/02-04-endo-monoid.html" class="waves-effect btn-flat grey-text text-darken-4 right">read more</a>
+            <a class="modal-action modal-close waves-effect btn-flat grey-text text-darken-4 left">close</a>
+          </div>
+        </div>
+      </li>
+    
+      <li class="card-panel hoverable">
         <span class="grey-text right">February  2, 2019</span>
         <a class="post-link" href="../posts/2019/02-02-dual-monoid.html">Dual Monoid</a>
 
@@ -192,7 +243,7 @@
             <div>
               
                 <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
-                <div class="chip">bigmoon</div>
+                <div class="chip">bigmoon, monoid</div>
               
             </div>
           </div>
@@ -216,7 +267,7 @@
   <div class="footer-copyright">
 
     <div class="container">
-      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      © 2017-2019 BIGMOON&nbsp;
       Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
       original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
     </div>

@@ -369,7 +369,7 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <ul>
 <li>最初のプログラムは <code>five</code> と <code>Five: 5</code> の両方を表示します。<code>seven</code> は式が評価されないため、表示されません。(出力のバッファリングによっては、これらの値の表示順序が入れ替わるという奇妙な現象が起きることがあります。)</li>
 <li>2つ目のプログラムは <code>five</code> と <code>seven</code> の両方を表示します。なぜなら、バンパターンによってこれらの評価が強制されるからです。しかし、この表示順についてはあなたが期待するものと異なっていたのではないでしょうか。現に、私のシステムでは <code>five</code> が表示される前に <code>seven</code> が表示されました。なぜなら、この場合において GHC は評価順を並び替えることができるからです。</li>
-<li>逆に <code>five `seq` seven `seq` putStrLn (&quot;Five: &quot; ++ show five)</code> としていたら、表示される順序は <code>five</code>, <code>seven</code>, <code>&quot;Five: 5&quot;</code> となっていたでしょう。これはバンパターンが単に <code>seq</code> に変換されるという先ほどの説明でほんの少しだけ嘘をついたからです。しかし、 <code>x `seq` y</code> という式は実際のところ、GHC からすれば <code>x</code> と <code>y</code> のどちらを先に評価したとしても、式の評価が終わった時に <code>x</code> と <code>y</code> の両方が評価されていることが保証されていれば良いのです。</li>
+<li>逆に <code>five `seq` seven `seq` putStrLn ("Five: " ++ show five)</code> としていたら、表示される順序は <code>five</code>, <code>seven</code>, <code>"Five: 5"</code> となっていたでしょう。これはバンパターンが単に <code>seq</code> に変換されるという先ほどの説明でほんの少しだけ嘘をついたからです。しかし、 <code>x `seq` y</code> という式は実際のところ、GHC からすれば <code>x</code> と <code>y</code> のどちらを先に評価したとしても、式の評価が終わった時に <code>x</code> と <code>y</code> の両方が評価されていることが保証されていれば良いのです。</li>
 </ul>
 <p>とはいえ、あたなの式が本当に純粋であれば、<code>x</code> と <code>y</code> の評価がどちらから行われるかということは観測できなかったはずです。純粋では無い <code>trace</code> 関数を利用したからこそ、評価の順序を観測することができたんです。</p>
 <p><strong>質問</strong> もし、全ての <code>add</code> 関数に <code>!</code> をつけたら結果はどう変わるでしょうか？ なぜ <code>!</code> を付けるだけで出力に影響したり (しなかったり) するのでしょうか？</p>
@@ -522,7 +522,7 @@ Linking average ...
 <p>まず最初に、このトピックに関して <a href="https://stackoverflow.com/questions/6872898/haskell-what-is-weak-head-normal-form/6889335#6889335">Stack Overflow に素晴らしい回答があることを</a>示しておきます。</p>
 <p>私たちは値であることを強制し、式を評価することについて話し合ってきましたが、それが実際に何を意味しているのかは全く明らかにしませんでした。まず簡単な例から始めましょう。このプログラムの出力はどうなるでしょうか?</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" title="1">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello World&quot;</span></a></code></pre></div>
-<p>文字列を表示しようとしたときに <code>undefined</code> が原因でエラーになるだろうと予測した方は正解です。このエラーは <code>putStrLn</code> が引数に対して正格であり、また <code>&quot;Hello World&quot;</code> を評価する前に <code>undefined</code> を評価しようとするために起こります。では、少し違う例を試してみましょう:</p>
+<p>文字列を表示しようとしたときに <code>undefined</code> が原因でエラーになるだろうと予測した方は正解です。このエラーは <code>putStrLn</code> が引数に対して正格であり、また <code>"Hello World"</code> を評価する前に <code>undefined</code> を評価しようとするために起こります。では、少し違う例を試してみましょう:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="dt">Just</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello World&quot;</span></a></code></pre></div>
 <p>「評価する」という言葉を、「サンクがない状態の何かになるまで完全に評価する」という意味で取っている人は、今回も <code>undefined</code> についてエラーを吐く、と答えるでしょう。しかし実際は、例外を吐かずにうまく “Hello World” と表示してくれます。一体どうなっているんでしょう?</p>
 <p>実は、<code>seq</code> で強制評価について話しているときは、<em>弱頭部正規形 (weak head normal form) (WHNF)</em> へ評価するという意味で話しています。ほとんどのデータ型において、これは 1つコンストラクタの層を引き剥がす、という意味になります。<code>Just undefined</code> の場合、<code>Just</code> というデータコンストラクタを引き剥がすだけで、その中の <code>undefined</code> に触れることはありません。(すぐ下でこれに対処する別々の方法をお見せします。)</p>
@@ -545,13 +545,13 @@ Linking average ...
 <a class="sourceLine" id="cb23-4" title="4">  <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="fu">error</span> <span class="st">&quot;foo&quot;</span> <span class="ot">`seq`</span> <span class="st">&quot;Goodbye!&quot;</span></a></code></pre></div>
 <p><code>error `seq` ...</code> が問題になると思うかもしれません。最終的に <code>error</code> が例外を吐くんじゃないの? ってね。しかし、<code>error</code> は関数です。<code>error</code> が <code>String</code> の値を引数に与えられるまで、例外が吐かれることも、ボトムの値が返されることもないのです。よって、これを評価してもエラーを生成することはありません。ルールとしては、引数よりも少ない値に適用された関数は、自動的に弱頭部正規形になります。</p>
 <p>同じようなロジックは、<code>(\x -&gt; undefined)</code> にも適用できます。これはラムダ式ですが、型としては全ての引数に値が適用されていない関数です。したがって、このラムダ式が評価されても例外を吐くことはありません。言い換えると、この式はすでに弱頭部正規形になっています。</p>
-<p>しかし、<code>error &quot;foo&quot;</code> は引数が完全に適用された関数です。これはもう関数ではなく、値です。そして弱頭部正規形に評価しようとするときに、例外が爆発して顔面に飛んできます。</p>
+<p>しかし、<code>error "foo"</code> は引数が完全に適用された関数です。これはもう関数ではなく、値です。そして弱頭部正規形に評価しようとするときに、例外が爆発して顔面に飛んできます。</p>
 <p><strong>演習</strong> 次の式は、評価されたときに例外を投げるでしょうか?</p>
 <ul>
 <li><code>(+) undefined</code></li>
 <li><code>Just undefined</code></li>
 <li><code>undefined 5</code></li>
-<li><code>(error &quot;foo&quot; :: Int -&gt; Double)</code></li>
+<li><code>(error "foo" :: Int -&gt; Double)</code></li>
 </ul>
 <h3 id="average-関数を修正する">average 関数を修正する</h3>
 <p>弱頭部正規形を理解したところで、例に戻って最初のバンパターンが、なぜ何もしてくれなかったのか見てみましょう:</p>
@@ -785,19 +785,19 @@ Linking average ...
 <a class="sourceLine" id="cb38-3" title="3"><span class="kw">newtype</span> <span class="dt">Baz</span> <span class="fu">=</span> <span class="dt">Baz</span> <span class="dt">Int</span></a></code></pre></div>
 <p>ゲームをしましょう。以下のコードを <code>main</code> 関数に置いたときの出力を推測してみてください。以下の説明を読む前に、それぞれのケースを頭の中で考えてくださいね。</p>
 <ol type="1">
-<li><code>case undefined of { Foo _ -&gt; putStrLn &quot;Still alive!&quot; }</code></li>
-<li><code>case Foo undefined of { Foo _ -&gt; putStrLn &quot;Still alive!&quot; }</code></li>
-<li><code>case undefined of { Bar _ -&gt; putStrLn &quot;Still alive!&quot; }</code></li>
-<li><code>case Bar undefined of { Bar _ -&gt; putStrLn &quot;Still alive!&quot; }</code></li>
-<li><code>case undefined of { Baz _ -&gt; putStrLn &quot;Still alive!&quot; }</code></li>
-<li><code>case Baz undefined of { Baz _ -&gt; putStrLn &quot;Still alive!&quot; }</code></li>
+<li><code>case undefined of { Foo _ -&gt; putStrLn "Still alive!" }</code></li>
+<li><code>case Foo undefined of { Foo _ -&gt; putStrLn "Still alive!" }</code></li>
+<li><code>case undefined of { Bar _ -&gt; putStrLn "Still alive!" }</code></li>
+<li><code>case Bar undefined of { Bar _ -&gt; putStrLn "Still alive!" }</code></li>
+<li><code>case undefined of { Baz _ -&gt; putStrLn "Still alive!" }</code></li>
+<li><code>case Baz undefined of { Baz _ -&gt; putStrLn "Still alive!" }</code></li>
 </ol>
 <p>ケース (1) は比較的単純ですね。データコンストラクタ (<code>Foo</code>) を1層剥いで、ボトムの値を見つけます。なので、これは例外を投げます。これは (3) にも当てはまります。</p>
 <p>(2) は例外を投げません。<code>Foo</code> データコンストラクタがあって、それはボトムの値を含んでいます。しかし、<code>Foo</code> の中の <code>Int</code> に正格性注釈がないので、<code>Foo</code> を剥いでも <code>Int</code> の強制評価は起こらず、例外が投げられることはありません。これとは対照的に、(4) では正格性注釈があるので、<code>Bar</code> のケースでは例外が投げられます。</p>
 <p><code>newtype</code> はどうでしょう? <code>newtype</code> について知っていることといえば、実行時表現が無いということでしょうか。ということは、<code>Baz</code> データコンストラクタがボトムの余分な層を隠すことは不可能です。つまり、<code>Baz undefined</code> と <code>undefined</code> を区別することはできません。こう考えると、ぱっと見 <code>Bar</code> のようになりそうですが、おもしろいことに、そうではないんです。</p>
-<p><code>Baz</code> コンストラクタを剥がすことが実行時の動作になんら影響がないことはわかりますよね? そもそもそこには存在していないんだから。よって、(5) の中のパターンマッチは何の意味もありません。これは <code>case undefined of { _ -&gt; putStrLn &quot;Still alive!&quot; }</code> と等しくなります。そして <code>undefined</code> について調べることはない (データコンストラクタではなく、ワイルドカードパターンを使っている) ので、例外が投げられることはありません。</p>
+<p><code>Baz</code> コンストラクタを剥がすことが実行時の動作になんら影響がないことはわかりますよね? そもそもそこには存在していないんだから。よって、(5) の中のパターンマッチは何の意味もありません。これは <code>case undefined of { _ -&gt; putStrLn "Still alive!" }</code> と等しくなります。そして <code>undefined</code> について調べることはない (データコンストラクタではなく、ワイルドカードパターンを使っている) ので、例外が投げられることはありません。</p>
 <p>同様に、ケース (6) でも <code>Baz</code> コンストラクタを <code>undefined</code> に適用していますが、実行時表現はないので、これもまた存在しません。なので、ここでも例外が投げられることはありません。</p>
-<p><strong>演習</strong> <code>main = Baz undefined `seq` putStrLn &quot;Still alive!&quot;</code> の出力はどうなるでしょうか? そうなるのはなぜでしょう?</p>
+<p><strong>演習</strong> <code>main = Baz undefined `seq` putStrLn "Still alive!"</code> の出力はどうなるでしょうか? そうなるのはなぜでしょう?</p>
 <h4 id="翻訳者追記-2">翻訳者追記</h4>
 <p>演習の解答例: エラーを吐く。<code>seq</code> によって <code>Baz undefined</code> 、つまり <code>undefined</code> が評価されるため。</p>
 <h3 id="便利な演算子と関数">便利な演算子と関数</h3>
@@ -858,9 +858,9 @@ Linking average ...
 <h3 id="ベクター">ベクター</h3>
 <p><code>Data.Vector</code> の中のベクター (<em>ボックスベクター</em> (<em>boxed vectors</em>)とも) は、スパイン正格です。<code>import qualified Data.Vector as V</code> でインポートしたとして、以下のプログラムの結果はどうなるでしょうか?</p>
 <ol type="1">
-<li><code>main = V.fromList [undefined] `seq` putStrLn &quot;Hello World&quot;</code></li>
-<li><code>main = V.fromList (undefined:undefined) `seq` putStrLn &quot;Hello World&quot;</code></li>
-<li><code>main = V.fromList undefined `seq` putStrLn &quot;Hello World&quot;</code></li>
+<li><code>main = V.fromList [undefined] `seq` putStrLn "Hello World"</code></li>
+<li><code>main = V.fromList (undefined:undefined) `seq` putStrLn "Hello World"</code></li>
+<li><code>main = V.fromList undefined `seq` putStrLn "Hello World"</code></li>
 </ol>
 <p>最初は成功します。ベクターは完全なスパインとして定義されるからです。そのため、ボトムを含んでいるかどうかは無関係です。2番目は失敗します。後続のリストのスパインが undefined だからです。最後の例も (当然) 失敗します。リスト全体が undefined だからです。</p>
 <p>さて、<em>アンボックスベクター</em> (<em>unboxed vectors</em>) についても見てみましょう。推論の都合上、GHC を少し手助けしてやる必要があります。なので、プログラムの先頭に以下のような <code>fromList</code> が定義されているとしましょう。</p>
@@ -870,9 +870,9 @@ Linking average ...
 <a class="sourceLine" id="cb49-4" title="4">fromList <span class="fu">=</span> V.fromList</a></code></pre></div>
 <p>この場合はどうなるでしょうか？</p>
 <ol type="1">
-<li><code>main = fromList [undefined] `seq` putStrLn &quot;Hello World&quot;</code></li>
-<li><code>main = fromList (undefined:undefined) `seq` putStrLn &quot;Hello World&quot;</code></li>
-<li><code>main = fromList undefined `seq` putStrLn &quot;Hello World&quot;</code></li>
+<li><code>main = fromList [undefined] `seq` putStrLn "Hello World"</code></li>
+<li><code>main = fromList (undefined:undefined) `seq` putStrLn "Hello World"</code></li>
+<li><code>main = fromList undefined `seq` putStrLn "Hello World"</code></li>
 </ol>
 <p>ご想像の通り、(2) と (3) はボックスベクターのときと同じ動きをします。しかし、(1) も例外を投げるようになります。これは、アンボックスベクターがスパイン正格なだけではなく、値に対しても正格だからです。storable vector と primitive vector も同じ振る舞いをします。</p>
 <p>残念ながら、私の知る限り、公開されているライブラリに正格なボックスベクターは存在しません。そのようなデータ型はスペースリーク対策に役立つと思うんですが (この記事を書くきっかけになった質問のように)。</p>
@@ -1098,7 +1098,7 @@ Linking average ...
   <div class="footer-copyright">
 
     <div class="container">
-      CopyRight © 2018 BIGMOON All Rights Reserved.&nbsp;
+      © 2017-2019 BIGMOON&nbsp;
       Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
       original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
     </div>
