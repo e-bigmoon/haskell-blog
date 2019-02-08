@@ -168,12 +168,14 @@
       <div class="post-heading">
         <h1 class="post-title">cabal コマンドとの対応表</h1>
         
-        <span>最終更新日: 2019/01/21</span>
+        <span>最終更新日: 2019/02/08</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="stack-と-cabal">stack と cabal</h2>
+        <h2 id="注意点">注意点</h2>
+<p>このページの内容は <code>cabal HEAD</code> を追っているため、最新版の <code>cabal</code> ではまだ利用不可能な内容も含まれる場合があります。</p>
+<h2 id="stack-と-cabal">stack と cabal</h2>
 <pre class="shell"><code>$ stack --numeric-version
 1.9.3
 
@@ -218,6 +220,18 @@ $ cabal --numeric-version
 <li>cabal: <code>compiler</code> が変化した際に、パッケージを新たに全てリビルドする必要がある</li>
 </ul></li>
 </ul>
+<h3 id="個人的な意見">個人的な意見</h3>
+<ul>
+<li>stack はエラーメッセージ等が初心者に優しい (ユーザフレンドリー)</li>
+<li>cabal は stack よりも明らかにビルドが速い</li>
+</ul>
+<h2 id="v1-build-と-v2-build-コマンドの違い">v1-build と v2-build コマンドの違い</h2>
+<ul>
+<li><code>cabal v2-build</code> は <a href="https://cabal.readthedocs.io/en/latest/nix-local-build-overview.html">Nix-style Local Builds</a></li>
+<li><code>cabal build</code> は <code>cabal v1-build</code> のエイリアス</li>
+<li><code>cabal new-build</code> は <code>cabal v2-build</code> のエイリアス</li>
+<li><code>cabal v3.0.0.0</code> からは <code>cabal v2-build</code> が <code>cabal build</code> のエイリアスになる予定 <a href="https://github.com/haskell/cabal/pull/5800">#5800</a></li>
+</ul>
 <h2 id="コマンド対応表">コマンド対応表</h2>
 <table>
 <colgroup>
@@ -236,7 +250,7 @@ $ cabal --numeric-version
 <tr class="odd">
 <td><code>stack init</code></td>
 <td><code>cabal init -n --is-executable</code> <br> <code>cabal init --simple</code> <br> <code>cabal init --lib</code> <br> <code>cabal init --exe</code> <br> <code>cabal init --libandexe</code></td>
-<td><a href="https://github.com/haskell/cabal/pull/5707">#5707</a>, <a href="https://github.com/haskell/cabal/pull/5759">#5759</a></td>
+<td><a href="https://github.com/haskell/cabal/pull/5707">#5707</a>, <a href="https://github.com/haskell/cabal/pull/5759">#5759</a>, <a href="https://github.com/haskell/cabal/pull/5864">#5864</a></td>
 </tr>
 <tr class="even">
 <td><code>stack setup</code></td>
@@ -249,61 +263,66 @@ $ cabal --numeric-version
 <td></td>
 </tr>
 <tr class="even">
+<td><code>stack build --static</code></td>
+<td><code>stack new-build --enable-executable-static</code></td>
+<td><a href="https://github.com/haskell/cabal/pull/5446">#5446</a></td>
+</tr>
+<tr class="odd">
 <td><code>stack test</code></td>
 <td><code>cabal new-test --enable-tests</code> <br> <code>cabal new-test all</code></td>
 <td><a href="https://github.com/haskell/cabal/issues/5079">#5079</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>stack repl</code></td>
 <td><code>cabal new-repl</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>stack clean</code></td>
 <td><code>cabal new-clean</code></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>stack run</code></td>
 <td><code>cabal new-run</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>stack --version</code></td>
 <td><code>cabal --version</code></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>stack --numeric-version</code></td>
 <td><code>cabal --numeric-version</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>stack upgrade</code></td>
 <td><code>cabal new-install cabal-install</code><br><code>cabal new-install cabal-install --overwrite-policy=always</code></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>?</td>
 <td><code>cabal new-haddock</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>?</td>
 <td><code>cabal new-sdist</code></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>?</td>
 <td><code>cabal check</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>?</td>
 <td><code>cabal upload</code> <br> <code>cabal upload --publish</code></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>stack update</code></td>
 <td><code>cabal new-update</code></td>
 <td></td>
@@ -406,6 +425,14 @@ $ cabal new-repl basic</code></pre>
 <a class="sourceLine" id="cb9-4" title="4">  <span class="fu">commit:</span><span class="at"> 7bccd432e2f962d80b2b804fa2a59712e402753c</span></a>
 <a class="sourceLine" id="cb9-5" title="5">  <span class="fu">subdirs:</span></a>
 <a class="sourceLine" id="cb9-6" title="6">  <span class="kw">-</span> cairo</a></code></pre></div>
+<p>複数のパッケージを指定する場合は <code>subdirs</code> に追加するだけで良い。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb10-1" title="1"><span class="co"># stack.yaml</span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="fu">extra-deps:</span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">-</span> <span class="fu">github:</span><span class="at"> gtk2hs/gtk2hs</span></a>
+<a class="sourceLine" id="cb10-4" title="4">  <span class="fu">commit:</span><span class="at"> 7bccd432e2f962d80b2b804fa2a59712e402753c</span></a>
+<a class="sourceLine" id="cb10-5" title="5">  <span class="fu">subdirs:</span></a>
+<a class="sourceLine" id="cb10-6" title="6">  <span class="kw">-</span> cairo</a>
+<a class="sourceLine" id="cb10-7" title="7">  <span class="kw">-</span> gtk</a></code></pre></div>
 <h4 id="cabal-2">cabal</h4>
 <ul>
 <li><a href="https://cabal.readthedocs.io/en/latest/nix-local-build.html#specifying-packages-from-remote-version-control-locations">Specifying Packages from Remote Version Control Locations</a></li>
@@ -419,13 +446,26 @@ source-repository-package
   type: git
   location: https://github.com/fumieval/extensible
   tag: 81ccac73f7480ea66e6008e660972bfee9e83976</code></pre>
-<p>複数パッケージになっている場合は <code>subdir</code> を指定する</p>
+<p>リポジトリにパッケージが複数含まれる場合は <code>subdir</code> を指定する</p>
 <pre class="cabal"><code># cabal.project
 source-repository-package
   type: git
   location: https://github.com/gtk2hs/gtk2hs
   tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
   subdir: cairo</code></pre>
+<p>複数のパッケージを指定する場合は <code>stack</code> の <code>subdirs</code> のような書き方はできないため、<code>source-repository-package</code> を複数記述する。(<a href="https://github.com/haskell/cabal/issues/5472">#5472</a>)</p>
+<pre class="cabal"><code># cabal.project
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: cairo
+  
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: gtk</code></pre>
 <h3 id="プロファイリング">プロファイリング</h3>
 <h4 id="stack-3">stack</h4>
 <pre class="shell"><code>$ stack build --profile</code></pre>
@@ -514,27 +554,27 @@ pkgname == n.*</code></pre>
 <ul>
 <li><a href="https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html">script interpreter + stack script でスクリプティング！</a></li>
 </ul>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb17-2" title="2"></a>
-<a class="sourceLine" id="cb17-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
-<a class="sourceLine" id="cb17-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
-<a class="sourceLine" id="cb17-5" title="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
-<a class="sourceLine" id="cb17-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
-<a class="sourceLine" id="cb17-7" title="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb17-8" title="8"></a>
-<a class="sourceLine" id="cb17-9" title="9"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
-<a class="sourceLine" id="cb17-10" title="10"></a>
-<a class="sourceLine" id="cb17-11" title="11">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb17-12" title="12">/ HomeR GET</a>
-<a class="sourceLine" id="cb17-13" title="13">|]</a>
-<a class="sourceLine" id="cb17-14" title="14"></a>
-<a class="sourceLine" id="cb17-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
-<a class="sourceLine" id="cb17-16" title="16"></a>
-<a class="sourceLine" id="cb17-17" title="17"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb17-18" title="18">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
-<a class="sourceLine" id="cb17-19" title="19"></a>
-<a class="sourceLine" id="cb17-20" title="20"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb17-21" title="21">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<a class="sourceLine" id="cb19-2" title="2"></a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb19-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb19-5" title="5"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb19-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb19-7" title="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb19-8" title="8"></a>
+<a class="sourceLine" id="cb19-9" title="9"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb19-10" title="10"></a>
+<a class="sourceLine" id="cb19-11" title="11">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb19-12" title="12">/ HomeR GET</a>
+<a class="sourceLine" id="cb19-13" title="13">|]</a>
+<a class="sourceLine" id="cb19-14" title="14"></a>
+<a class="sourceLine" id="cb19-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb19-16" title="16"></a>
+<a class="sourceLine" id="cb19-17" title="17"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb19-18" title="18">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
+<a class="sourceLine" id="cb19-19" title="19"></a>
+<a class="sourceLine" id="cb19-20" title="20"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb19-21" title="21">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
 <p>実行方法</p>
 <pre class="shell"><code>$ stack script --resolver lts-13.1 Script.hs</code></pre>
 <h4 id="cabal-5">cabal</h4>
@@ -543,31 +583,31 @@ pkgname == n.*</code></pre>
 <li><a href="https://github.com/haskell/cabal/issues/3843">RFC: Add support for "#! /usr/bin/env cabal #3843</a></li>
 <li><a href="https://github.com/haskell/cabal/pull/5483">Add cabal scripting support #5483</a></li>
 </ul>
-<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="ot">#!/usr/bin/env cabal</span></a>
-<a class="sourceLine" id="cb19-2" title="2"><span class="co">{- cabal:</span></a>
-<a class="sourceLine" id="cb19-3" title="3"><span class="co">build-depends: base   ^&gt;= 4.12</span></a>
-<a class="sourceLine" id="cb19-4" title="4"><span class="co">             , yesod  ^&gt;= 1.6.0</span></a>
-<a class="sourceLine" id="cb19-5" title="5"><span class="co">-}</span></a>
-<a class="sourceLine" id="cb19-6" title="6"></a>
-<a class="sourceLine" id="cb19-7" title="7"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
-<a class="sourceLine" id="cb19-8" title="8"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
-<a class="sourceLine" id="cb19-9" title="9"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
-<a class="sourceLine" id="cb19-10" title="10"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
-<a class="sourceLine" id="cb19-11" title="11"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb19-12" title="12"></a>
-<a class="sourceLine" id="cb19-13" title="13"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
-<a class="sourceLine" id="cb19-14" title="14"></a>
-<a class="sourceLine" id="cb19-15" title="15">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb19-16" title="16">/ HomeR GET</a>
-<a class="sourceLine" id="cb19-17" title="17">|]</a>
-<a class="sourceLine" id="cb19-18" title="18"></a>
-<a class="sourceLine" id="cb19-19" title="19"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
-<a class="sourceLine" id="cb19-20" title="20"></a>
-<a class="sourceLine" id="cb19-21" title="21"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb19-22" title="22">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
-<a class="sourceLine" id="cb19-23" title="23"></a>
-<a class="sourceLine" id="cb19-24" title="24"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb19-25" title="25">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="ot">#!/usr/bin/env cabal</span></a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="co">{- cabal:</span></a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="co">build-depends: base   ^&gt;= 4.12</span></a>
+<a class="sourceLine" id="cb21-4" title="4"><span class="co">             , yesod  ^&gt;= 1.6.0</span></a>
+<a class="sourceLine" id="cb21-5" title="5"><span class="co">-}</span></a>
+<a class="sourceLine" id="cb21-6" title="6"></a>
+<a class="sourceLine" id="cb21-7" title="7"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
+<a class="sourceLine" id="cb21-8" title="8"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
+<a class="sourceLine" id="cb21-9" title="9"><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></a>
+<a class="sourceLine" id="cb21-10" title="10"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
+<a class="sourceLine" id="cb21-11" title="11"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
+<a class="sourceLine" id="cb21-12" title="12"></a>
+<a class="sourceLine" id="cb21-13" title="13"><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="fu">=</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb21-14" title="14"></a>
+<a class="sourceLine" id="cb21-15" title="15">mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</a>
+<a class="sourceLine" id="cb21-16" title="16">/ HomeR GET</a>
+<a class="sourceLine" id="cb21-17" title="17">|]</a>
+<a class="sourceLine" id="cb21-18" title="18"></a>
+<a class="sourceLine" id="cb21-19" title="19"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></a>
+<a class="sourceLine" id="cb21-20" title="20"></a>
+<a class="sourceLine" id="cb21-21" title="21"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
+<a class="sourceLine" id="cb21-22" title="22">getHomeR <span class="fu">=</span> defaultLayout [whamlet|Hello World!|]</a>
+<a class="sourceLine" id="cb21-23" title="23"></a>
+<a class="sourceLine" id="cb21-24" title="24"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb21-25" title="25">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></a></code></pre></div>
 <p>実行方法</p>
 <pre class="shell"><code>$ cabal new-run Script.hs
 $ cabal new-run Script.hs -- --arg1 # 引数有り</code></pre>
