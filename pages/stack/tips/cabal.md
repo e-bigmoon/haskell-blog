@@ -1,7 +1,11 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/01/21
+date: 2019/02/08
 ---
+
+## 注意点
+
+このページの内容は `cabal HEAD` を追っているため、最新版の `cabal` ではまだ利用不可能な内容も含まれる場合があります。
 
 ## stack と cabal
 
@@ -27,14 +31,27 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 - パッケージをリビルドするタイミング
   - stack: `resolver` が変化した際に、パッケージを新たに全てリビルドする必要がある
   - cabal: `compiler` が変化した際に、パッケージを新たに全てリビルドする必要がある
+  
+### 個人的な意見
+
+- stack はエラーメッセージ等が初心者に優しい (ユーザフレンドリー)
+- cabal は stack よりも明らかにビルドが速い
+
+## v1-build と v2-build コマンドの違い
+
+- `cabal v2-build` は [Nix-style Local Builds](https://cabal.readthedocs.io/en/latest/nix-local-build-overview.html)
+- `cabal build` は `cabal v1-build` のエイリアス
+- `cabal new-build` は `cabal v2-build` のエイリアス
+- `cabal v3.0.0.0` からは `cabal v2-build` が `cabal build` のエイリアスになる予定 [#5800](https://github.com/haskell/cabal/pull/5800)
 
 ## コマンド対応表
 
 stack | cabal | 備考
 ------|--------|-------
-`stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759)
+`stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 `stack build` | `cabal new-build`
+ `stack build --static` | `stack new-build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
 `stack test` | `cabal new-test --enable-tests` <br> `cabal new-test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
 `stack repl` | `cabal new-repl`
 `stack clean` | `cabal new-clean`
@@ -154,6 +171,18 @@ extra-deps:
   - cairo
 ```
 
+複数のパッケージを指定する場合は `subdirs` に追加するだけで良い。
+
+```yaml
+# stack.yaml
+extra-deps:
+- github: gtk2hs/gtk2hs
+  commit: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdirs:
+  - cairo
+  - gtk
+```
+
 #### cabal
 
 - [Specifying Packages from Remote Version Control Locations](https://cabal.readthedocs.io/en/latest/nix-local-build.html#specifying-packages-from-remote-version-control-locations)
@@ -168,7 +197,7 @@ source-repository-package
   tag: 81ccac73f7480ea66e6008e660972bfee9e83976
 ```
 
-複数パッケージになっている場合は `subdir` を指定する
+リポジトリにパッケージが複数含まれる場合は `subdir` を指定する
 
 ```cabal
 # cabal.project
@@ -177,6 +206,23 @@ source-repository-package
   location: https://github.com/gtk2hs/gtk2hs
   tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
   subdir: cairo
+```
+
+複数のパッケージを指定する場合は `stack` の `subdirs` のような書き方はできないため、`source-repository-package` を複数記述する。([#5472](https://github.com/haskell/cabal/issues/5472))
+
+```cabal
+# cabal.project
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: cairo
+  
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: gtk
 ```
 
 ### プロファイリング
