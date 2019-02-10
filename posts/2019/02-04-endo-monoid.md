@@ -16,7 +16,7 @@ newtype Endo a = Endo { appEndo :: a -> a }
 instance Semigroup a => Semigroup (Endo a) where
   Endo f <> Endo g = Endo (f . g)
 
-instance Monoid a => Monoid (Dual a) where
+instance Monoid (Endo a) where
   mempty = Endo id
 ```
 
