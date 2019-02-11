@@ -31,7 +31,7 @@ ghci> getFirst (First (Just "hello") <> First Nothing <> First (Just "world"))
 Just "hello"
 ```
 
-常に最初の値を返すような、一見意味の無さそうな `First` モノイドも実は便利に使えたりします。
+常に最初の値を返すという、一見意味の無さそうな `First` モノイドも実は便利に使えたりします。
 
 <!--more-->
 
