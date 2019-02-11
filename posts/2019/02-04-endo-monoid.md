@@ -42,7 +42,7 @@ ghci> appEndo (Endo ("Hello, " ++) <> Endo (++ "!")) "Haskell"
 = "Hello, Haskell!"
 ```
 
-`appEndo` は意外と色んなところで使える便利なモノイドです。
+`Endo` は意外と色んなところで使える便利なモノイドです。
 
 <!--more-->
 
