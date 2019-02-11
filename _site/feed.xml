@@ -8,8 +8,123 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-02-04T00:00:00Z</updated>
+    <updated>2019-02-11T00:00:00Z</updated>
     <entry>
+    <title>Lambdabot for Slack</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/02-11-lambdabot.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/02-11-lambdabot.html</id>
+    <published>2019-02-11T00:00:00Z</published>
+    <updated>2019-02-11T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>最近 slack で <a href="https://github.com/lambdabot/lambdabot">Lambdabot</a> というツールを知りました。こいつを導入するとこんな事ができます。</p>
+<figure>
+<img src="/images/2019/02-11/1.png" alt="Lambdabot と遊んでいる図" /><figcaption>Lambdabot と遊んでいる図</figcaption>
+</figure>
+<p>実務で本格的に使えるものではありませんが、入れてみると楽しいですよ。(カスタマイズして改良すれば、かなり使えるかもしれない)</p>
+<!--more-->
+<h2 id="lambdabot-の導入">Lambdabot の導入</h2>
+<p>導入はとても簡単で slack app から Lambdabot をインストールするだけです！</p>
+<figure>
+<img src="/images/2019/02-11/2.png" alt="Slack app で検索" /><figcaption>Slack app で検索</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/3.png" alt="Lambdabot のインストール画面" /><figcaption>Lambdabot のインストール画面</figcaption>
+</figure>
+<p>検索するのが面倒な人は <a href="https://lambdabot.brianmckenna.org/slack/install.html">Add Lambdabot to Slack</a> の App ボタンからもインストール可能です。</p>
+<p>アプリのソースコード等は <a href="https://github.com/markandrus/slack-lambdabot">markandrus/slack-lambdabot</a> にありますので、気になる方はこちらもご参照ください。</p>
+<p>自分でビルドしてホスティングする場合は fork の <a href="https://github.com/ezoerner/slack-lambdabot">ezoerner/slack-lambdabot</a> の方が良いかもしれません。(要検証)</p>
+<h2 id="lambdabot-for-slack-でできること">Lambdabot for Slack でできること</h2>
+<p>どうやら本家の Lambdabot の機能全てが使えるわけではないようです。</p>
+<p>また、利用可能な機能のうち <code>type</code> や <code>hoogle</code>等はちゃんと使えるようですが、<code>run</code> や <code>check</code> などは結果がおかしい場合があります。</p>
+<h3 id="hoogle">hoogle</h3>
+<p>どうやら結果は3件しか返さないようです。</p>
+<figure>
+<img src="/images/2019/02-11/hoogle-1.png" alt="関数名で検索" /><figcaption>関数名で検索</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/hoogle-2.png" alt="型名で検索" /><figcaption>型名で検索</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/hoogle-3.png" alt="型で検索 (型変数有り)" /><figcaption>型で検索 (型変数有り)</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/hoogle-4.png" alt="型で検索 (型変数無し)" /><figcaption>型で検索 (型変数無し)</figcaption>
+</figure>
+<h3 id="type">type</h3>
+<p>どのパッケージが含まれているかわかりませんが、lens の演算子を試したところだめでした。</p>
+<figure>
+<img src="/images/2019/02-11/type-1.png" alt="関数" /><figcaption>関数</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/type-2.png" alt="メソッド" /><figcaption>メソッド</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/type-3.png" alt="複雑な式" /><figcaption>複雑な式</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/type-4.png" alt="演算子" /><figcaption>演算子</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/type-5.png" alt="セクション" /><figcaption>セクション</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/type-6.png" alt="エラー" /><figcaption>エラー</figcaption>
+</figure>
+<h3 id="run">run</h3>
+<p>式を実行することができるようですが、全然動かないです。</p>
+<figure>
+<img src="/images/2019/02-11/run-1.png" alt="print はエラー" /><figcaption>print はエラー</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/run-2.png" alt="奇跡的に動いた例" /><figcaption>奇跡的に動いた例</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/run-3.png" alt="文字列を含む場合にはエラーになる" /><figcaption>文字列を含む場合にはエラーになる</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/run-4.png" alt="無限リストは適当に打ち切り" /><figcaption>無限リストは適当に打ち切り</figcaption>
+</figure>
+<h3 id="check">check</h3>
+<p>QuickCheck も実行可能ですが、上手く行く例が作れません・・・。</p>
+<figure>
+<img src="/images/2019/02-11/check-1.png" alt="実行時間の制約に引っかかってるっぽい" /><figcaption>実行時間の制約に引っかかってるっぽい</figcaption>
+</figure>
+<h3 id="free">free</h3>
+<p>たぶん実装は <a href="https://github.com/lambdabot/lambdabot/blob/0b26cb6ca0e0389bcff68d360c18775a787c9d52/lambdabot-haskell-plugins/src/Lambdabot/Plugin/Haskell/Free/FreeTheorem.hs">FreeTheorem.hs</a> です。</p>
+<p>良くわからないので解説できません。実行結果だけ貼っておきます。</p>
+<figure>
+<img src="/images/2019/02-11/free-1.png" alt="reverse" /><figcaption>reverse</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/free-2.png" alt="const" /><figcaption>const</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/free-3.png" alt="id" /><figcaption>id</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/free-4.png" alt="flip" /><figcaption>flip</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/free-5.png" alt="filter" /><figcaption>filter</figcaption>
+</figure>
+<h3 id="pl">pl</h3>
+<p>ポイントフリーにしてくれます。また fusion もいくつか可能っぽいです。</p>
+<figure>
+<img src="/images/2019/02-11/pl-1.png" alt="ポイントフリー化1" /><figcaption>ポイントフリー化1</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/pl-2.png" alt="ポイントフリー化2" /><figcaption>ポイントフリー化2</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/pl-3.png" alt="f . id = id" /><figcaption>f . id = id</figcaption>
+</figure>
+<figure>
+<img src="/images/2019/02-11/pl-4.png" alt="map f . map g = map (f . g)" /><figcaption>map f . map g = map (f . g)</figcaption>
+</figure>
+<h2 id="終わりに">終わりに</h2>
+<p>ちゃんと作り込んだら結構使えそうな気がします。</p>]]></summary>
+</entry>
+<entry>
     <title>Endo Monoid</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html</id>
@@ -2008,124 +2123,6 @@ CallStack (from -prof):
 <p><code>extra-deps</code> の構文は従来の <code>stack</code> でも使えるので、今から対応しておいても問題ないと思います。</p>
 <p>以上です。</p>
 <!--more-->]]></summary>
-</entry>
-<entry>
-    <title>RecordWildCards と Reader モナド</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/08-26-recordwildcards.html</id>
-    <published>2018-08-26T00:00:00Z</published>
-    <updated>2018-08-26T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><code>Twitter</code> で <code>RecordWildCards</code> の話が流れて来たので <code>Reader</code> モナドと組み合わせた例を1つご紹介します。</p>
-<p>この書き方は <span class="citation" data-cites="fumieval">@fumieval</span> さんが使っていてカッコイイ書き方だなぁと思った記憶があります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
-<a class="sourceLine" id="cb1-2" title="2"></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb1-5" title="5">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-6" title="6">  }</a>
-<a class="sourceLine" id="cb1-7" title="7"></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="ot">func ::</span> <span class="dt">Reader</span> <span class="dt">Person</span> ()</a>
-<a class="sourceLine" id="cb1-9" title="9">func <span class="fu">=</span> ask <span class="fu">&gt;&gt;=</span> \<span class="dt">Person</span> {<span class="fu">..</span>} <span class="ot">-&gt;</span> <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-10" title="10">  <span class="fu">...</span> <span class="co">-- personName, personAge という名前でそのまま値を利用できる</span></a></code></pre></div>
-<p><code>RecordWildCards</code> に関しては既に色んな方が記事にしてくれているので、そちらをご参照ください。</p>
-<ul>
-<li><a href="https://haskell.jp/blog/posts/2018/about-ghc-exts-1.html">GHC拡張ノック(Part 1)</a></li>
-<li><a href="http://rf0444.hatenablog.jp/entry/20120617/1339910411">Haskellの言語拡張たち 2</a></li>
-<li><a href="http://fumieval.hatenablog.com/entry/2016/12/18/181540">波打たせるものの正体(エクステンシブル・タングル)</a></li>
-<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#record-wildcards">GHC user guide 10.5.5. Record wildcards</a></li>
-</ul>
-<!--more-->
-<h2 id="具体例">具体例</h2>
-<p>あまり良い例が思いつかなかったのですが、 <code>Env</code> に必要な情報を持たせておけば任意のタイミングで利用できて便利です。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="co">-- stack script --resolver lts-12.7</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
-<a class="sourceLine" id="cb2-5" title="5"></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="kw">import</span>           <span class="dt">Control.Monad.Trans.Reader</span></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="kw">import</span>           <span class="dt">Data.IORef</span></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="kw">import</span>           <span class="dt">Data.Time.LocalTime</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="kw">import</span>           <span class="dt">Path</span></a>
-<a class="sourceLine" id="cb2-11" title="11"></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="kw">data</span> <span class="dt">Env</span> <span class="fu">=</span> <span class="dt">Env</span></a>
-<a class="sourceLine" id="cb2-13" title="13">  {<span class="ot"> envCounter  ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-14" title="14">  ,<span class="ot"> envLogPath  ::</span> <span class="dt">Path</span> <span class="dt">Rel</span> <span class="dt">File</span></a>
-<a class="sourceLine" id="cb2-15" title="15">  ,<span class="ot"> envUserName ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb2-16" title="16">  }</a>
-<a class="sourceLine" id="cb2-17" title="17"></a>
-<a class="sourceLine" id="cb2-18" title="18"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-19" title="19">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-20" title="20">  counter <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></a>
-<a class="sourceLine" id="cb2-21" title="21">  <span class="kw">let</span> env <span class="fu">=</span> <span class="dt">Env</span></a>
-<a class="sourceLine" id="cb2-22" title="22">        { envCounter  <span class="fu">=</span> counter</a>
-<a class="sourceLine" id="cb2-23" title="23">        , envLogPath  <span class="fu">=</span> <span class="fu">$</span>(mkRelFile <span class="st">&quot;./output.log&quot;</span>)</a>
-<a class="sourceLine" id="cb2-24" title="24">        , envUserName <span class="fu">=</span> <span class="st">&quot;wado&quot;</span></a>
-<a class="sourceLine" id="cb2-25" title="25">        }</a>
-<a class="sourceLine" id="cb2-26" title="26"></a>
-<a class="sourceLine" id="cb2-27" title="27">  runReaderT (access <span class="fu">&gt;&gt;</span> access <span class="fu">&gt;&gt;</span> access) env</a>
-<a class="sourceLine" id="cb2-28" title="28"></a>
-<a class="sourceLine" id="cb2-29" title="29">  n <span class="ot">&lt;-</span> readIORef counter</a>
-<a class="sourceLine" id="cb2-30" title="30">  <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="fu">mconcat</span> [<span class="st">&quot;counter = &quot;</span>, <span class="fu">show</span> n]</a>
-<a class="sourceLine" id="cb2-31" title="31"></a>
-<a class="sourceLine" id="cb2-32" title="32"><span class="ot">access ::</span> <span class="dt">ReaderT</span> <span class="dt">Env</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-33" title="33">access <span class="fu">=</span> ask <span class="fu">&gt;&gt;=</span> \<span class="dt">Env</span> {<span class="fu">..</span>} <span class="ot">-&gt;</span> liftIO <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-34" title="34">  modifyIORef envCounter (<span class="fu">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb2-35" title="35">  now <span class="ot">&lt;-</span> getZonedTime</a>
-<a class="sourceLine" id="cb2-36" title="36">  <span class="fu">appendFile</span> (toFilePath envLogPath)</a>
-<a class="sourceLine" id="cb2-37" title="37">    <span class="fu">$</span> <span class="fu">mconcat</span> [envUserName, <span class="st">&quot;: &quot;</span>, <span class="st">&quot;access&quot;</span>, <span class="st">&quot; (&quot;</span>, <span class="fu">show</span> now, <span class="st">&quot;)&quot;</span>, <span class="st">&quot;\n&quot;</span>]</a>
-<a class="sourceLine" id="cb2-38" title="38">  <span class="fu">return</span> ()</a></code></pre></div>
-<h3 id="実行結果">実行結果</h3>
-<pre class="shell"><code>$ ./Sample.hs
-counter = 3
-
-$ cat ./output.log
-wado: access (2018-08-26 14:04:07.132813451 JST)
-wado: access (2018-08-26 14:04:07.133330363 JST)
-wado: access (2018-08-26 14:04:07.133389916 JST)</code></pre>
-<h2 id="missing-fields-警告">missing-fields 警告</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></a>
-<a class="sourceLine" id="cb4-2" title="2"></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb4-4" title="4">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb4-5" title="5">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb4-6" title="6">  } <span class="kw">deriving</span> <span class="dt">Show</span></a>
-<a class="sourceLine" id="cb4-7" title="7"></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="ot">f ::</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb4-9" title="9">f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
-<a class="sourceLine" id="cb4-10" title="10">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-11" title="11">    personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span></a></code></pre></div>
-<p>上記のようにフィールドが全て初期化されていないコードはコンパイル時に <code>missing-fields</code> 警告が出ます。</p>
-<p>この警告を無視すると実行時エラーになる可能性があります。無視せずにしっかり修正しましょう。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">warning<span class="fu">:</span> [<span class="fu">-</span><span class="dt">Wmissing</span><span class="fu">-</span>fields]</a>
-<a class="sourceLine" id="cb5-2" title="2">    • <span class="dt">Fields</span> <span class="kw">of</span> ‘<span class="dt">Person</span>’ <span class="fu">not</span> initialised<span class="fu">:</span> personAge</a>
-<a class="sourceLine" id="cb5-3" title="3">    • <span class="dt">In</span> the expression<span class="fu">:</span> <span class="dt">Person</span> {<span class="fu">..</span>}</a>
-<a class="sourceLine" id="cb5-4" title="4">      <span class="dt">In</span> an equation for ‘f’<span class="fu">:</span></a>
-<a class="sourceLine" id="cb5-5" title="5">          f <span class="fu">=</span> <span class="dt">Person</span> {<span class="fu">..</span>}</a>
-<a class="sourceLine" id="cb5-6" title="6">            <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-7" title="7">                personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span></a>
-<a class="sourceLine" id="cb5-8" title="8">   <span class="fu">|</span></a>
-<a class="sourceLine" id="cb5-9" title="9"><span class="dv">46</span> <span class="fu">|</span> f <span class="fu">=</span> <span class="dt">Person</span> { <span class="fu">..</span> }</a>
-<a class="sourceLine" id="cb5-10" title="10">   <span class="fu">|</span></a></code></pre></div>
-<p>ちなみに、通常のレコード構文でもフィールドが部分的にしか初期化されていない場合は、同様の警告がでます。(<span class="citation" data-cites="fumieval">@fumieval</span> さん、ご指摘ありがとうございます)</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">data</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb6-2" title="2">  {<span class="ot"> personName ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb6-3" title="3">  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb6-4" title="4">  } <span class="kw">deriving</span> <span class="dt">Show</span></a>
-<a class="sourceLine" id="cb6-5" title="5"></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="ot">f ::</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb6-7" title="7">f <span class="fu">=</span> <span class="dt">Person</span> { personName <span class="fu">=</span> <span class="st">&quot;bigmoon&quot;</span> }</a></code></pre></div>
-<ul>
-<li><a href="https://ghc.haskell.org/trac/ghc/ticket/5334">record wildcards: field not initialised reported as type error</a></li>
-</ul>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li>RecordWildCards 言語拡張は現実世界ではとても便利 (レコードのフィールドがかなり沢山あったりするので)</li>
-<li>Reader とかと組み合わせるとオシャレ</li>
-<li>GHC の <code>missing-fields</code> 警告は絶対に無視しない (実行時エラーが発生する可能性がある)</li>
-</ul>
-<p>以上です。</p>]]></summary>
 </entry>
 
 </feed>
