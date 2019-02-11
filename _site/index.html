@@ -197,6 +197,51 @@
       </li>
     
       <li class="card-panel hoverable">
+        <span class="grey-text right">February 11, 2019</span>
+        <a class="post-link" href="./posts/2019/02-11-first-monoid.html">First Monoid</a>
+
+        <button data-target=".posts/2019/02-11-first-monoid.md" class="waves-effect waves-light btn modal-trigger" style="padding: 0 1.2rem;">overview
+          <i class="mdi mdi-send right"></i>
+        </button>
+
+        <div id=".posts/2019/02-11-first-monoid.md" class="modal modal-fixed-footer">
+          <div class="modal-content">
+            <h4>First Monoid</h4>
+            <p><h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:First">First</a> 型が定義されています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="fu">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> <span class="dt">Maybe</span> a }</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">First</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">First</span> <span class="dt">Nothing</span> <span class="fu">&lt;&gt;</span> b <span class="fu">=</span> b</a>
+<a class="sourceLine" id="cb1-5" title="5">  a             <span class="fu">&lt;&gt;</span> _ <span class="fu">=</span> a</a>
+<a class="sourceLine" id="cb1-6" title="6"></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">First</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-8" title="8">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">First</span> <span class="dt">Nothing</span></a></code></pre></div>
+<p><code>First</code> モノイドは <code>Endo</code> や <code>Dual</code> モノイドとは定義の雰囲気が少し違いますね。</p>
+<ul>
+<li><code>getFirst :: a</code> ではなく <code>getFirst :: Maybe a</code> となっている</li>
+<li>インスタンス宣言にクラス制約が必要無い</li>
+</ul>
+<p>使い方は簡単。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getFirst (<span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="fu">&lt;&gt;</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></a></code></pre></div>
+<p>常に最初の値を返すという、一見意味の無さそうな <code>First</code> モノイドも実は便利に使えたりします。</p>
+</p>
+            <div>
+              
+                <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+                <div class="chip">bigmoon, monoid</div>
+              
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="./posts/2019/02-11-first-monoid.html" class="waves-effect btn-flat grey-text text-darken-4 right">read more</a>
+            <a class="modal-action modal-close waves-effect btn-flat grey-text text-darken-4 left">close</a>
+          </div>
+        </div>
+      </li>
+    
+      <li class="card-panel hoverable">
         <span class="grey-text right">February  4, 2019</span>
         <a class="post-link" href="./posts/2019/02-04-endo-monoid.html">Endo Monoid</a>
 
@@ -231,7 +276,7 @@
 = &quot;Hello, &quot; ++ (&quot;Haskell&quot; ++ &quot;!&quot;)
 = &quot;Hello, &quot; ++ &quot;Haskell!&quot;
 = &quot;Hello, Haskell!&quot;</code></pre>
-<p><code>appEndo</code> は意外と色んなところで使える便利なモノイドです。</p>
+<p><code>Endo</code> は意外と色んなところで使える便利なモノイドです。</p>
 </p>
             <div>
               
