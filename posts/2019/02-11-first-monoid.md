@@ -51,7 +51,7 @@ Just "hello"
 = First c
 ```
 
-### Case (2) (a == Nothing, b == Just b)
+### Case (2) (a == Nothing, b == Just b')
 
 ```haskell
   First a <> (First b <> First c)
@@ -65,7 +65,7 @@ Just "hello"
 = First b
 ```
 
-### Case (3) (a == Just a, b == Nothing)
+### Case (3) (a == Just a', b == Nothing)
 
 ```haskell
   First a <> (First b <> First c)
@@ -78,7 +78,7 @@ Just "hello"
 = First a
 ```
 
-### Case (4) (a == Just a, b == Just b)
+### Case (4) (a == Just a', b == Just b')
 
 ```haskell
   First a <> (First b <> First c)
@@ -104,7 +104,7 @@ Just "hello"
 = First a
 ```
 
-### Case (2) (a = Just a)
+### Case (2) (a = Just a')
 
 ```haskell
   First a <> mempty
