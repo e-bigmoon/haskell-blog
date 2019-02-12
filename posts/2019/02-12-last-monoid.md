@@ -169,7 +169,7 @@ main = do
     Right opt -> print opt
 ```
 
-`defaultPartialOptions` でオプションの初期値を用意しておきます。ここで指定されなかったフィールドの値はオプションで必ず指定しなければなりません。今回の例では `oOutputPath` が必須オプションになっています。
+`defaultPartialOptions` でオプションの初期値を用意しておきます。ここで指定されなかったフィールドの値はオプションで必ず指定しなければなりません。今回の例では `poOutputPath` が必須オプションになっています。
 
 また `Last` モノイドが効いている部分は `defaultPartialOptions <> options` です。`mempty = Last Nothing` となるため、期待通りの動作が得られます。
 
@@ -185,25 +185,25 @@ Missing output path
 # 必須オプションの -o のみ指定 (他はデフォルト値)
 $ stack run ex3 -- -o "oDir"
 Options
-  { oInputPath = "input"
+  { oInputPath  = "input"
   , oOutputPath = "oDir"
-  , oLogLevel = Nothing
+  , oLogLevel   = Nothing
   }
 
 # 必須オプションの -o と -i を指定
 $ stack run ex3 -- -o "oDir" -i "myDir"
 Options
-  { oInputPath = "myDir"
+  { oInputPath  = "myDir"
   , oOutputPath = "oDir"
-  , oLogLevel = Nothing
+  , oLogLevel   = Nothing
   }
 
 # オプションを全部指定
 $ stack run ex3 -- -o "oDir" -i "myDir" -l 10
 Options
-  { oInputPath = "myDir"
+  { oInputPath  = "myDir"
   , oOutputPath = "oDir"
-  , oLogLevel = Just 10
+  , oLogLevel   = Just 10
   }
 ```
 
