@@ -173,6 +173,8 @@ main = do
 
 また `Last` モノイドが効いている部分は `defaultPartialOptions <> options` です。`mempty = Last Nothing` となるため、期待通りの動作が得られます。
 
+デフォルト値の無いオプションが省略された場合にエラーメッセージが表示される理由としては `lastToEither` で `getLast` した際に `Nothing` となるためです。
+
 ### 実行結果
 
 実行結果は見やすく整形しています。
