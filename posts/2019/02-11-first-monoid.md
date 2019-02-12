@@ -65,20 +65,7 @@ Just "hello"
 = First b
 ```
 
-### Case (3) (a == Just a', b == Nothing)
-
-```haskell
-  First a <> (First b <> First c)
-= First a
-```
-
-```haskell
-  (First a <> First b) <> First c
-= First a <> First c
-= First a
-```
-
-### Case (4) (a == Just a', b == Just b')
+### Case (3) (a == Just a')
 
 ```haskell
   First a <> (First b <> First c)
