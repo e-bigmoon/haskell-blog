@@ -21,7 +21,10 @@ instance Monoid a => Monoid (Dual a) where
 使い方は簡単。
 
 ```haskell
-ghci> getDual $ Dual "aaa" <> Dual "bbb"
+ghci> getDual $ Dual "aaa" <> mempty <> Dual "bbb"
+"bbbaaa"
+
+ghci> getDual $ foldMap Dual ["aaa", "bbb"]
 "bbbaaa"
 ```
 

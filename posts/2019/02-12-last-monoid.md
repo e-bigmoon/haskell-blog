@@ -12,8 +12,8 @@ tags: bigmoon, monoid
 newtype Last a = Last { getLast :: Maybe a }
 
 instance Semigroup (Last a) where
-  a <> Last Nothing  = a
-  _ <> b             = b
+  a <> Last Nothing = a
+  _ <> b            = b
 
 instance Monoid (Last a) where
   mempty = Last Nothing
@@ -24,7 +24,10 @@ instance Monoid (Last a) where
 使い方は簡単。
 
 ```haskell
-ghci> getLast (Last (Just "hello") <> Last Nothing <> Last (Just "world"))
+ghci> getLast (Last (Just "hello") <> mempty <> Last (Just "world"))
+Just "world"
+
+ghci> getLast $ foldMap Last [Just "hello", Nothing, Just "world"]
 Just "world"
 ```
 
@@ -114,9 +117,9 @@ import Data.Monoid
 import Options.Applicative
 
 data Options = Options
-  { oInputPath    :: FilePath
-  , oOutputPath   :: FilePath
-  , oLogLevel     :: Maybe Int
+  { oInputPath  :: FilePath
+  , oOutputPath :: FilePath
+  , oLogLevel   :: Maybe Int
   } deriving (Show, Eq)
 
 data PartialOptions = PartialOptions
