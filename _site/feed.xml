@@ -8,8 +8,124 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-02-12T00:00:00Z</updated>
+    <updated>2019-02-13T00:00:00Z</updated>
     <entry>
+    <title>Sum Monoid</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid.html</id>
+    <published>2019-02-13T00:00:00Z</published>
+    <updated>2019-02-13T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Sum">Sum</a> 型が定義されています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> b)</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span></a></code></pre></div>
+<p>使い方は簡単。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getSum (<span class="dt">Sum</span> <span class="dv">1</span> <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span> <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span>)</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="dv">3</span></a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getSum <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Sum</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="dv">55</span></a></code></pre></div>
+<!--more-->
+<h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
+<p>Semigroup Law</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">Sum</span> b <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> c)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="fu">=</span> <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> (b <span class="fu">+</span> c)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> (b <span class="fu">+</span> c))</a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co">-- (+) の結合律より</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="fu">=</span> <span class="dt">Sum</span> ((a <span class="fu">+</span> b) <span class="fu">+</span> c)</a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> c</a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="fu">=</span> (<span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> c</a></code></pre></div>
+<p>Monoid Law</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="fu">=</span> <span class="dt">Sum</span> a</a>
+<a class="sourceLine" id="cb4-5" title="5"></a>
+<a class="sourceLine" id="cb4-6" title="6">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> a</a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span> <span class="fu">+</span> <span class="dt">Sum</span> a</a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="fu">=</span> <span class="dt">Sum</span> (<span class="dv">0</span> <span class="fu">+</span> a)</a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="fu">=</span> <span class="dt">Sum</span> a</a></code></pre></div>
+<h2 id="newtype-を使って定義する理由">newtype を使って定義する理由</h2>
+<p>わざわざ <code>Sum</code> という新しい型を作ってインスタンスを定義しなくても、<code>Int</code> を使って直接 <code>Semigroup</code> と <code>Monoid</code> のインスタンスを定義すれば良いんじゃないか？と普通は思います。</p>
+<p>実際に以下の定義は問題なく動きます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Int</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-2" title="2">  (<span class="fu">&lt;&gt;</span>) <span class="fu">=</span> (<span class="fu">+</span>)</a>
+<a class="sourceLine" id="cb5-3" title="3"></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Int</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-5" title="5">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dv">0</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">ghci<span class="fu">&gt;</span> <span class="dv">1</span> <span class="fu">&lt;&gt;</span> <span class="dv">2</span> <span class="fu">&lt;&gt;</span><span class="ot"> mempty ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="dv">3</span></a>
+<a class="sourceLine" id="cb6-3" title="3"></a>
+<a class="sourceLine" id="cb6-4" title="4">ghci<span class="fu">&gt;</span> <span class="fu">mconcat</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]<span class="ot"> ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="dv">55</span></a></code></pre></div>
+<p>しかし、足し算と同様に掛け算もモノイドとして定義したいと思う人もいるでしょう。</p>
+<p>この時 <code>Int</code> は既に <code>Semigroup</code>, <code>Monoid</code> のインスタンス定義があるため、同じファイルに以下のように定義することはできません。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Int</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-2" title="2">  (<span class="fu">&lt;&gt;</span>) <span class="fu">=</span> (<span class="fu">*</span>)</a>
+<a class="sourceLine" id="cb7-3" title="3"></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Int</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb7-5" title="5">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dv">1</span></a></code></pre></div>
+<p>この問題を解決する方法はいくつかありますが、このような例では <code>newtype</code> が適切ということです。</p>
+<h2 id="law-の自動チェック-quickcheck-classes">Law の自動チェック (quickcheck-classes)</h2>
+<p><a href="https://hackage.haskell.org/package/quickcheck-classes">quickcheck-classes</a> を使って <code>Semigroup law</code> と <code>Monoid law</code> がちゃんと法則を満たすかどうかチェックしてみます。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Arbitrary</span>)</a>
+<a class="sourceLine" id="cb8-4" title="4"></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-6" title="6">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> b)</a>
+<a class="sourceLine" id="cb8-7" title="7"></a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-9" title="9">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span></a></code></pre></div>
+<p><code>Eq</code>, <code>Show</code>, <code>Arbitrary</code> が無いとチェックできないので <code>derive</code> しています。</p>
+<p>実行はめっちゃ簡単で、<code>lawsCheck</code> 関数と <code>semigroupLaws</code> や <code>monoidLaws</code> などのチェックしたい則に対応する関数を使うだけです。</p>
+<pre class="shell"><code>&gt; import Test.QuickCheck.Classes
+&gt; import Data.Proxy
+
+&gt; lawsCheck (semigroupLaws (Proxy :: Proxy (Sum Int)))
+Semigroup: Associative +++ OK, passed 100 tests.
+Semigroup: Concatenation +++ OK, passed 100 tests.
+Semigroup: Times +++ OK, passed 100 tests; 99 discarded.
+
+&gt; lawsCheck (monoidLaws (Proxy :: Proxy (Sum Int)))
+Monoid: Associative +++ OK, passed 100 tests.
+Monoid: Left Identity +++ OK, passed 100 tests.
+Monoid: Right Identity +++ OK, passed 100 tests.
+Monoid: Concatenation +++ OK, passed 100 tests.</code></pre>
+<p>参考までに <code>mempty</code> の定義が Law を満たさない場合の例も載せておきます。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-2" title="2">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">1</span></a></code></pre></div>
+<pre class="shell"><code>&gt; import Test.QuickCheck.Classes
+&gt; import Data.Proxy
+
+&gt; lawsCheck (semigroupLaws (Proxy :: Proxy (Sum Int)))
+Semigroup: Associative +++ OK, passed 100 tests.
+Semigroup: Concatenation +++ OK, passed 100 tests.
+Semigroup: Times +++ OK, passed 100 tests; 113 discarded.
+
+&gt; lawsCheck (monoidLaws (Proxy :: Proxy (Sum Int)))
+Monoid: Associative +++ OK, passed 100 tests.
+Monoid: Left Identity *** Failed! Falsifiable (after 1 test):
+  Description: mappend mempty a = a
+  a = Sum {getSum = 0}
+  mappend mempty a = Sum {getSum = 1}
+Monoid: Right Identity *** Failed! Falsifiable (after 1 test):
+  Description: mappend a mempty = a
+  a = Sum {getSum = 0}
+  mappend a mempty = Sum {getSum = 1}
+Monoid: Concatenation +++ OK, passed 100 tests.</code></pre>
+<p>こんな感じでモノイドの左単位元則 (Left Identity law) と右単位元則 (Right Identity law) が満たされていないことを教えてくれます。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://people.cs.kuleuven.be/~tom.schrijvers/Research/talks/lhug4.pdf">Lists and Other Monoids</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>Last Monoid</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/02-12-last-monoid.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/02-12-last-monoid.html</id>
@@ -20,15 +136,18 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Last</span> a <span class="fu">=</span> <span class="dt">Last</span> {<span class="ot"> getLast ::</span> <span class="dt">Maybe</span> a }</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">Last</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span>  <span class="fu">=</span> a</a>
-<a class="sourceLine" id="cb1-5" title="5">  _ <span class="fu">&lt;&gt;</span> b             <span class="fu">=</span> b</a>
+<a class="sourceLine" id="cb1-4" title="4">  a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span> <span class="fu">=</span> a</a>
+<a class="sourceLine" id="cb1-5" title="5">  _ <span class="fu">&lt;&gt;</span> b            <span class="fu">=</span> b</a>
 <a class="sourceLine" id="cb1-6" title="6"></a>
 <a class="sourceLine" id="cb1-7" title="7"><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Last</span> a) <span class="kw">where</span></a>
 <a class="sourceLine" id="cb1-8" title="8">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a></code></pre></div>
 <p><code>Last</code> モノイドは <code>First</code> モノイドとほとんど同じですが、<code>&lt;&gt;</code> で結合した時に最後の値を返すという部分が異なります。</p>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getLast (<span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span> <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="dt">Just</span> <span class="st">&quot;world&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getLast (<span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="dt">Just</span> <span class="st">&quot;world&quot;</span></a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getLast <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Last</span> [<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="st">&quot;world&quot;</span>]</a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="dt">Just</span> <span class="st">&quot;world&quot;</span></a></code></pre></div>
 <!--more-->
 <h2 id="semigroup-law-の確認">Semigroup law の確認</h2>
 <h3 id="case-1-b-nothing-c-nothing">Case (1) (b == Nothing, c == Nothing)</h3>
@@ -78,9 +197,9 @@
 <a class="sourceLine" id="cb11-5" title="5"><span class="kw">import</span> <span class="dt">Options.Applicative</span></a>
 <a class="sourceLine" id="cb11-6" title="6"></a>
 <a class="sourceLine" id="cb11-7" title="7"><span class="kw">data</span> <span class="dt">Options</span> <span class="fu">=</span> <span class="dt">Options</span></a>
-<a class="sourceLine" id="cb11-8" title="8">  {<span class="ot"> oInputPath    ::</span> <span class="dt">FilePath</span></a>
-<a class="sourceLine" id="cb11-9" title="9">  ,<span class="ot"> oOutputPath   ::</span> <span class="dt">FilePath</span></a>
-<a class="sourceLine" id="cb11-10" title="10">  ,<span class="ot"> oLogLevel     ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb11-8" title="8">  {<span class="ot"> oInputPath  ::</span> <span class="dt">FilePath</span></a>
+<a class="sourceLine" id="cb11-9" title="9">  ,<span class="ot"> oOutputPath ::</span> <span class="dt">FilePath</span></a>
+<a class="sourceLine" id="cb11-10" title="10">  ,<span class="ot"> oLogLevel   ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb11-11" title="11">  } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</a>
 <a class="sourceLine" id="cb11-12" title="12"></a>
 <a class="sourceLine" id="cb11-13" title="13"><span class="kw">data</span> <span class="dt">PartialOptions</span> <span class="fu">=</span> <span class="dt">PartialOptions</span></a>
@@ -307,8 +426,11 @@ Options
 <li>インスタンス宣言にクラス制約が必要無い</li>
 </ul>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getFirst (<span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="fu">&lt;&gt;</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getFirst (<span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getFirst <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">First</span> [<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="st">&quot;world&quot;</span>]</a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></a></code></pre></div>
 <p>常に最初の値を返すという、一見意味の無さそうな <code>First</code> モノイドも実は便利に使えたりします。</p>
 <!--more-->
 <h2 id="semigroup-law-の確認">Semigroup law の確認</h2>
@@ -477,8 +599,11 @@ PartialOptions
 <a class="sourceLine" id="cb2-2" title="2">ghci<span class="fu">&gt;</span> <span class="fu">print</span> <span class="fu">$</span> appEndo f <span class="dv">5</span></a>
 <a class="sourceLine" id="cb2-3" title="3"><span class="fu">-</span><span class="dv">9</span></a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
-<a class="sourceLine" id="cb2-5" title="5">ghci<span class="fu">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="st">&quot;Hello, Haskell!&quot;</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-5" title="5">ghci<span class="fu">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>) <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="st">&quot;Hello, Haskell!&quot;</span></a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8">ghci<span class="fu">&gt;</span> (appEndo <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>), <span class="fu">id</span>, (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)]) <span class="st">&quot;Haskell&quot;</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="st">&quot;Hello, Haskell!&quot;</span></a></code></pre></div>
 <p><code>appEndo</code> すると関数が出てくるところがポイントですね。2つ目の評価の流れをざっくり追うとこんな感じです。</p>
 <pre class="haskll"><code>  appEndo (Endo (&quot;Hello, &quot; ++) &lt;&gt; Endo (++ &quot;!&quot;)) &quot;Haskell&quot;
 = appEndo (Endo ((&quot;Hello, &quot; ++ ) . (++ &quot;!&quot;))) &quot;Haskell&quot;
@@ -618,8 +743,11 @@ PartialOptions
 <a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></a>
 <a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Dual</span> <span class="fu">mempty</span></a></code></pre></div>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getDual <span class="fu">$</span> <span class="dt">Dual</span> <span class="st">&quot;aaa&quot;</span> <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> <span class="st">&quot;bbb&quot;</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="st">&quot;bbbaaa&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getDual <span class="fu">$</span> <span class="dt">Dual</span> <span class="st">&quot;aaa&quot;</span> <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> <span class="st">&quot;bbb&quot;</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="st">&quot;bbbaaa&quot;</span></a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getDual <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Dual</span> [<span class="st">&quot;aaa&quot;</span>, <span class="st">&quot;bbb&quot;</span>]</a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="st">&quot;bbbaaa&quot;</span></a></code></pre></div>
 <p>いつか使う時もあるかもしれないので、適当な例を作ってみます。</p>
 <!--more-->
 <h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
@@ -1826,415 +1954,6 @@ Installing internal library internal-foo in /home/guchi/Desktop/stack-191-workin
 <li>Fix invalid “While building Setup.hs” when Cabal calls fail. See: <a href="https://github.com/commercialhaskell/stack/issues/3934">#3934</a></li>
 <li><code>stack upload</code> signs the package by default, as documented. <code>--no-signature</code> turns the signing off. <a href="https://github.com/commercialhaskell/stack/issues/3739">#3739</a></li>
 </ul>]]></summary>
-</entry>
-<entry>
-    <title>time パッケージの使い方</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/09-17-time-package.html</id>
-    <published>2018-09-17T00:00:00Z</published>
-    <updated>2018-09-17T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>Haskell で時間や日付を扱う際に良く利用されるのは <a href="https://www.stackage.org/lts-12.9/package/time">time</a> パッケージです。</p>
-<p>このパッケージが使いやすいかどうかは人それぞれですが、使い方を知っておくと便利なのでよく使いそうな関数を簡単に解説しようと思います。</p>
-<p>これからの例は以下のコマンドを実行していると仮定して話を進めます。</p>
-<pre class="shell"><code>$ stack repl --package time --resolver lts-12.9
-$ import Data.Time</code></pre>
-<!--more-->
-<h2 id="time-パッケージのモジュール構造">Time パッケージのモジュール構造</h2>
-<p>基本的には <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time.html">Data.Time</a> を import して使います。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">import</span> <span class="dt">Data.Time</span></a></code></pre></div>
-<p>Data.Time は以下のモジュールを再エクスポートしています。</p>
-<table>
-<thead>
-<tr class="header">
-<th>モジュール名</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html">Data.Time.Calendar</a></td>
-<td>日付</td>
-</tr>
-<tr class="even">
-<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html">Data.Time.Clock</a></td>
-<td>全然使わないので良くわからない</td>
-</tr>
-<tr class="odd">
-<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-LocalTime.html">Data.Time.LocalTime</a></td>
-<td>日本の現在時刻を取得など</td>
-</tr>
-<tr class="even">
-<td><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html">Data.Time.Format</a></td>
-<td>出力の整形</td>
-</tr>
-</tbody>
-</table>
-<h3 id="rio-を利用している場合">rio を利用している場合</h3>
-<p><a href="https://www.stackage.org/lts-12.9/package/rio">rio</a> を利用している場合は <a href="https://www.stackage.org/haddock/lts-12.9/rio-0.1.5.0/RIO-Time.html">RIO.Time</a> を import します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">RIO.Time</span></a></code></pre></div>
-<h2 id="data.time.localtime">Data.Time.LocalTime</h2>
-<p>現在時刻を取得する場合にこのモジュールを使います。現在時刻を取得したいからと言って <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:getCurrentTime">getCurrentTime</a> を利用すると日本時間にならないので注意してください。</p>
-<h3 id="getzonedtime">getZonedTime</h3>
-<p>システムのタイムゾーンに応じた現在時刻を返します。</p>
-<pre class="shell"><code>&gt; :t getZonedTime
-getZonedTime :: IO ZonedTime
-
-&gt; getZonedTime
-2018-09-17 13:41:05.512522063 JST</code></pre>
-<h3 id="getcurrenttimezone">getCurrentTimeZone</h3>
-<p>システムのタイムゾーンを取得します。このタイムゾーンに基づいて <code>getZonedTime</code> が計算されます。</p>
-<pre class="shell"><code>&gt; :t getCurrentTimeZone
-getCurrentTimeZone :: IO TimeZone
-
-&gt; getCurrentTimeZone
-JST</code></pre>
-<h3 id="zonedtimetoutc">zonedTimeToUTC</h3>
-<p><code>ZonedTime</code> を <code>UTCTime</code> に変換するために使います。</p>
-<pre class="shell"><code>&gt; :t zonedTimeToUTC
-zonedTimeToUTC :: ZonedTime -&gt; UTCTime
-
-&gt; zonedTimeToUTC &lt;$&gt; getZonedTime
-2018-09-17 04:41:27.907476307 UTC</code></pre>
-<h3 id="utctozonedtime">utcToZonedTime</h3>
-<p><code>zonedTimeToUTC</code> の逆で <code>UTCTime</code> を <code>ZonedTime</code> に変換する関数です。タイムゾーンのための引数を余分に取ります。</p>
-<pre class="shell"><code>&gt; :t utcToZonedTime
-utcToZonedTime :: TimeZone -&gt; UTCTime -&gt; ZonedTime
-
-&gt; utcToZonedTime &lt;$&gt; getCurrentTimeZone &lt;*&gt; getCurrentTime
-2018-09-17 13:41:37.955641567 JST</code></pre>
-<h2 id="日後の時間を計算するには">1日後の時間を計算するには？</h2>
-<p>ここで、取得した時間の1日後を計算してみましょう。</p>
-<p>そのためには Data.Time.Clock で定義されている <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:addUTCTime">addUTCTime</a> を使います。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">addUTCTime ::</span> <span class="dt">NominalDiffTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span></a></code></pre></div>
-<p>第一引数に <code>NominalDiffTime</code> という謎の型を取りますが、<code>nominalDay</code> の実装を見れば <code>60 * 60 * 24</code> っぽいことがわかるので、そんな感じで値を作ります。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">nominalDay ::</span> <span class="dt">NominalDiffTime</span></a>
-<a class="sourceLine" id="cb9-2" title="2">nominalDay <span class="fu">=</span> <span class="dv">86400</span></a></code></pre></div>
-<p>ちなみに、上記の実装でなぜ <code>NominalDiffTime</code> の値になるかと言うと、<code>NominalDiffTime</code> は <code>Num</code> クラスのインスタンスになっているため、自動的に <code>fromInteger</code> が呼ばれて変換されるという仕組みです。</p>
-<p>実際に試してみましょう。1日後を計算してみます。</p>
-<pre class="shell"><code>&gt; t = addUTCTime nominalDay . zonedTimeToUTC &lt;$&gt; getZonedTime
-2018-09-17 10:32:56.880362453 UTC
-
-&gt; getZonedTime
-2018-09-17 13:49:09.279378323 JST
-
-&gt; utcToZonedTime &lt;$&gt; getCurrentTimeZone &lt;*&gt; t
-2018-09-18 13:49:16.211737218 JST</code></pre>
-<p>同様に1時間後も計算してみましょう。</p>
-<pre class="shell"><code>&gt; t = addUTCTime (60 * 60) . zonedTimeToUTC &lt;$&gt; getZonedTime
-
-&gt; getZonedTime
-2018-09-17 13:49:33.169797528 JST
-
-&gt; t
-2018-09-17 05:49:36.757498845 UTC
-
-&gt; utcToZonedTime &lt;$&gt; getCurrentTimeZone &lt;*&gt; t
-2018-09-17 14:49:40.930944714 JST</code></pre>
-<p>上手くいってますね！</p>
-<h2 id="data.time.localtime-1">Data.Time.LocalTime</h2>
-<p>時刻の取得・計算ができたら、あとは整形して出力するだけです！</p>
-<p>Data.Time.LocalTime モジュールの関数を使って出力を整形してみましょう！</p>
-<h3 id="formattime">formatTime</h3>
-<p><a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:formatTime">formatTime</a> 関数の使い方がわかれば、任意の形式で出力できるようになります。</p>
-<pre class="shell"><code>&gt; :t formatTime
-formatTime :: FormatTime t =&gt; TimeLocale -&gt; String -&gt; t -&gt; String</code></pre>
-<p>ここで <code>FormatTime t</code> の <code>t</code> は <code>UTCTime</code> や <code>ZonedTime</code>、<code>Day</code> などの型が使えます。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">ZonedTime</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span>   <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb13-3" title="3"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Day</span>       <span class="ot">-&gt;</span> <span class="dt">String</span></a></code></pre></div>
-<p>型に応じて第三引数が変わるということです。</p>
-<p>実際に使えばすぐに慣れます。(第一引数の値は <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:defaultTimeLocale">defaultTimeLocale</a> を指定しておけば良いのですが、自分でカスタマイズしたものを使うこともあります)</p>
-<p>第二引数がフォーマット文字列なので、空文字列を与えれば当然結果も空になります。</p>
-<pre class="shell"><code>&gt; formatTime defaultTimeLocale &quot;&quot; &lt;$&gt; getZonedTime
-&quot;&quot;</code></pre>
-<p>フォーマットの指定方法については <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:formatTime">haddock</a> を参照してください。</p>
-<pre class="shell"><code>&gt; formatTime defaultTimeLocale &quot;%D&quot; &lt;$&gt; getZonedTime
-&quot;09/17/18&quot;
-
-&gt; formatTime defaultTimeLocale &quot;%F&quot; &lt;$&gt; getZonedTime
-&quot;2018-09-17&quot;
-
-&gt; formatTime defaultTimeLocale &quot;%x&quot; &lt;$&gt; getZonedTime
-&quot;09/17/18&quot;
-
-&gt; formatTime defaultTimeLocale &quot;%Y/%m/%d-%T&quot; &lt;$&gt; getZonedTime
-&quot;2018/09/17-13:52:21&quot;
-
-&gt; formatTime defaultTimeLocale rfc822DateFormat &lt;$&gt; getZonedTime
-&quot;Sun, 16 Sep 2018 19:53:10 JST&quot;
-
-&gt; formatTime defaultTimeLocale (iso8601DateFormat Nothing) &lt;$&gt; getZonedTime
-&quot;2018-09-16&quot;</code></pre>
-<h2 id="文字列をパーズして-zonedtime-や-day-の値を作る">文字列をパーズして ZonedTime や Day の値を作る</h2>
-<p>ここまでは現在時刻を元に時刻の計算や出力結果の整形を行いました。</p>
-<p>しかし、実際のプログラムでは文字列をパーズして <code>ZonedTime</code> や <code>Day</code> の値に変換したいこともあるでしょう。そのような場合は <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:parseTimeM">parseTimeM</a> を使うと便利です。</p>
-<pre class="shell"><code>&gt; :t parseTimeM
-parseTimeM
-  :: (Monad m, ParseTime t) =&gt;
-     Bool -&gt; TimeLocale -&gt; String -&gt; String -&gt; m t</code></pre>
-<p>型がわかりづらいですが、具体的にはこんな型で利用することができます。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Day</span></a>
-<a class="sourceLine" id="cb17-2" title="2"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">ZonedTime</span></a>
-<a class="sourceLine" id="cb17-3" title="3"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Day</span></a>
-<a class="sourceLine" id="cb17-4" title="4"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">ZonedTime</span></a></code></pre></div>
-<ul>
-<li>第一引数は <strong>空白</strong> を許容するかどうかのフラグです (True だと空白OK)</li>
-<li>第二引数は気にせず <strong>defaultTimeLocale</strong> を指定しておきましょう</li>
-<li>第三引数は <strong>パーズで利用するフォーマット</strong> を指定します</li>
-<li>第四引数は <strong>入力の文字列</strong> です</li>
-</ul>
-<h3 id="具体例">具体例</h3>
-<p>実際にいくつか使ってみましょう。以下の通り <code>%F</code> は <code>YYYY-MM-DD</code> の書式になります。</p>
-<pre class="shell"><code>&gt; formatTime defaultTimeLocale &quot;%F&quot; &lt;$&gt; getZonedTime
-&quot;2018-09-17&quot;</code></pre>
-<p>モナドを <code>IO</code> や <code>Maybe</code> などに変化させた基本的な例。</p>
-<pre class="shell"><code>&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: IO ZonedTime
-2018-09-17 00:00:00 +0000
-
-&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: Maybe ZonedTime
-Just 2018-09-17 00:00:00 +0000</code></pre>
-<p>第一引数を変化させて、入力文字列の空白の有無について確認する例。</p>
-<pre class="shell"><code>&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot; 2018-09-17 &quot; :: IO ZonedTime
-2018-09-17 00:00:00 +0000
-
-&gt; parseTimeM False defaultTimeLocale &quot;%F&quot; &quot; 2018-09-17 &quot; :: IO ZonedTime
-*** Exception: user error (parseTimeM: no parse of &quot;2018-09-17 &quot;)</code></pre>
-<p>入力文字列とパーズの書式がマッチしない例</p>
-<pre class="shell"><code>&gt; parseTimeM False defaultTimeLocale &quot;%x&quot; &quot; 2018-09-17 &quot; :: IO ZonedTime
-*** Exception: user error (parseTimeM: no parse of &quot; 2018-09-17 &quot;)</code></pre>
-<p>Day 型の値をとしてパーズする例</p>
-<pre class="shell"><code>&gt; parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: IO Day
-2018-09-17</code></pre>
-<p>このようにして日付を取得できれば、今回は説明していませんが <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html">Data.Time.Calendar</a> の <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html#v:addDays">addDays</a> 関数などを使って日付の計算を行うこともできるようになります。</p>
-<pre class="shell"><code>&gt; d = parseTimeM True defaultTimeLocale &quot;%F&quot; &quot;2018-09-17&quot; :: IO Day
-
-&gt; addDays 1 &lt;$&gt; d
-2018-09-18
-
-&gt; addDays 35 &lt;$&gt; d
-2018-10-22</code></pre>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li>time パッケージを使うと時刻や日付の計算ができる</li>
-<li>現在の<strong>日本</strong>時間を取得した場合は <strong>getCurrentTime</strong> ではなく、<strong>getZonedTime</strong> を使う</li>
-<li>整形には <strong>formatTime</strong> を使う</li>
-<li>文字列から <strong>ZonedTime</strong> や <strong>Day</strong> に変換する際は <strong>parseTimeM</strong> を使う</li>
-</ul>
-<p>Haskell入門の <strong>7.7 日付・時刻を扱う</strong> にも3ページほど <strong>time</strong> パッケージの解説があるので、気になる人はそちらも確認してみると良いかもしれません。</p>
-<p>以上です。</p>
-<h2 id="おまけ">おまけ</h2>
-<p><code>getZonedTime</code> に対して <code>formatTime defaultTimeLocale &lt;フォーマット文字&gt;</code> の対応表です。</p>
-<pre class="shell"><code>&gt; getZonedTime
-2018-09-17 14:44:52.052040178 JST</code></pre>
-<div class="narrow-table">
-<table>
-<thead>
-<tr class="header">
-<th>文字</th>
-<th>出力結果</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>%-z</code></td>
-<td><code>+900</code></td>
-</tr>
-<tr class="even">
-<td><code>%_z</code></td>
-<td><code>+ 900</code></td>
-</tr>
-<tr class="odd">
-<td><code>%0z</code></td>
-<td><code>+0900</code></td>
-</tr>
-<tr class="even">
-<td><code>%^z</code></td>
-<td><code>+0900</code></td>
-</tr>
-<tr class="odd">
-<td><code>%#z</code></td>
-<td><code>+0900</code></td>
-</tr>
-<tr class="even">
-<td><code>%8z</code></td>
-<td><code>+00000900</code></td>
-</tr>
-<tr class="odd">
-<td><code>%_12z</code></td>
-<td><code>+         900</code></td>
-</tr>
-<tr class="even">
-<td><code>%%</code></td>
-<td><code>%</code></td>
-</tr>
-<tr class="odd">
-<td><code>%t</code></td>
-<td><code>\t</code></td>
-</tr>
-<tr class="even">
-<td><code>%n</code></td>
-<td><code>\n</code></td>
-</tr>
-<tr class="odd">
-<td><code>%z</code></td>
-<td><code>+0900</code></td>
-</tr>
-<tr class="even">
-<td><code>%Z</code></td>
-<td><code>JST</code></td>
-</tr>
-<tr class="odd">
-<td><code>%c</code></td>
-<td><code>Mon Sep 17 14:39:34 JST 2018</code></td>
-</tr>
-<tr class="even">
-<td><code>%R</code></td>
-<td><code>14:39</code></td>
-</tr>
-<tr class="odd">
-<td><code>%T</code></td>
-<td><code>14:40:12</code></td>
-</tr>
-<tr class="even">
-<td><code>%X</code></td>
-<td><code>14:40:31</code></td>
-</tr>
-<tr class="odd">
-<td><code>%r</code></td>
-<td><code>02:40:55 PM</code></td>
-</tr>
-<tr class="even">
-<td><code>%P</code></td>
-<td><code>pm</code></td>
-</tr>
-<tr class="odd">
-<td><code>%p</code></td>
-<td><code>PM</code></td>
-</tr>
-<tr class="even">
-<td><code>%H</code></td>
-<td><code>14</code></td>
-</tr>
-<tr class="odd">
-<td><code>%k</code></td>
-<td><code>14</code></td>
-</tr>
-<tr class="even">
-<td><code>%I</code></td>
-<td><code>02</code></td>
-</tr>
-<tr class="odd">
-<td><code>%l</code></td>
-<td><code>2</code></td>
-</tr>
-<tr class="even">
-<td><code>%M</code></td>
-<td><code>43</code></td>
-</tr>
-<tr class="odd">
-<td><code>%S</code></td>
-<td><code>49</code></td>
-</tr>
-<tr class="even">
-<td><code>%q</code></td>
-<td><code>903244678000</code></td>
-</tr>
-<tr class="odd">
-<td><code>%Q</code></td>
-<td><code>.28084722</code></td>
-</tr>
-<tr class="even">
-<td><code>%s</code></td>
-<td><code>1537163079</code></td>
-</tr>
-<tr class="odd">
-<td><code>%D</code></td>
-<td><code>09/17/18</code></td>
-</tr>
-<tr class="even">
-<td><code>%F</code></td>
-<td><code>2018-09-17</code></td>
-</tr>
-<tr class="odd">
-<td><code>%x</code></td>
-<td><code>09/17/18</code></td>
-</tr>
-<tr class="even">
-<td><code>%Y</code></td>
-<td><code>2018</code></td>
-</tr>
-<tr class="odd">
-<td><code>%y</code></td>
-<td><code>18</code></td>
-</tr>
-<tr class="even">
-<td><code>%C</code></td>
-<td><code>20</code></td>
-</tr>
-<tr class="odd">
-<td><code>%B</code></td>
-<td><code>September</code></td>
-</tr>
-<tr class="even">
-<td><code>%b</code></td>
-<td><code>Sep</code></td>
-</tr>
-<tr class="odd">
-<td><code>%h</code></td>
-<td><code>Sep</code></td>
-</tr>
-<tr class="even">
-<td><code>%m</code></td>
-<td><code>09</code></td>
-</tr>
-<tr class="odd">
-<td><code>%d</code></td>
-<td><code>17</code></td>
-</tr>
-<tr class="even">
-<td><code>%e</code></td>
-<td><code>17</code></td>
-</tr>
-<tr class="odd">
-<td><code>%j</code></td>
-<td><code>260</code></td>
-</tr>
-<tr class="even">
-<td><code>%f</code></td>
-<td><code>20</code></td>
-</tr>
-<tr class="odd">
-<td><code>%V</code></td>
-<td><code>38</code></td>
-</tr>
-<tr class="even">
-<td><code>%u</code></td>
-<td><code>1</code></td>
-</tr>
-<tr class="odd">
-<td><code>%a</code></td>
-<td><code>Mon</code></td>
-</tr>
-<tr class="even">
-<td><code>%A</code></td>
-<td><code>Monday</code></td>
-</tr>
-<tr class="odd">
-<td><code>%U</code></td>
-<td><code>37</code></td>
-</tr>
-<tr class="even">
-<td><code>%w</code></td>
-<td><code>1</code></td>
-</tr>
-<tr class="odd">
-<td><code>%W</code></td>
-<td><code>38</code></td>
-</tr>
-</tbody>
-</table>
-</div>]]></summary>
 </entry>
 
 </feed>
