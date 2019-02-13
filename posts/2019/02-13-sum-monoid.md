@@ -96,7 +96,7 @@ instance Monoid Int where
 
 ## Law の自動チェック (quickcheck-classes)
 
-`Sum` モノイドは書くことが無いので [quickcheck-classes](https://hackage.haskell.org/package/quickcheck-classes) を使って `Semigroup law` と `Monoid law` がちゃんと法則を満たすかどうかチェックしてみます。
+[quickcheck-classes](https://hackage.haskell.org/package/quickcheck-classes) を使って `Semigroup law` と `Monoid law` がちゃんと法則を満たすかどうかチェックしてみます。
 
 ```haskell
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
