@@ -24,7 +24,10 @@ instance Monoid (Last a) where
 使い方は簡単。
 
 ```haskell
-ghci> getLast (Last (Just "hello") <> Last Nothing <> Last (Just "world"))
+ghci> getLast (Last (Just "hello") <> mempty <> Last (Just "world"))
+Just "world"
+
+ghci> getLast $ foldMap Last [Just "hello", Nothing, Just "world"]
 Just "world"
 ```
 

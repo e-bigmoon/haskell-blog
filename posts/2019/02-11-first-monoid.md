@@ -27,7 +27,10 @@ instance Monoid (First a) where
 使い方は簡単。
 
 ```haskell
-ghci> getFirst (First (Just "hello") <> First Nothing <> First (Just "world"))
+ghci> getFirst (First (Just "hello") <> mempty <> First (Just "world"))
+Just "hello"
+
+ghci> getFirst $ foldMap First [Just "hello", Nothing, Just "world"]
 Just "hello"
 ```
 

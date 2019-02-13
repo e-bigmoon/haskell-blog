@@ -27,7 +27,10 @@ ghci> f = foldMap Endo [(+1), (*2), negate]
 ghci> print $ appEndo f 5
 -9
 
-ghci> appEndo (Endo ("Hello, " ++) <> Endo (++ "!")) "Haskell"
+ghci> appEndo (Endo ("Hello, " ++) <> mempty <> Endo (++ "!")) "Haskell"
+"Hello, Haskell!"
+
+ghci> (appEndo $ foldMap Endo [("Hello, " ++), id, (++ "!")]) "Haskell"
 "Hello, Haskell!"
 ```
 
