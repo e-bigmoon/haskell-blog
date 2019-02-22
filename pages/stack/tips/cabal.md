@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/02/08
+date: 2019/02/22
 ---
 
 ## 注意点
@@ -49,11 +49,11 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 stack | cabal | 備考
 ------|--------|-------
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
-`stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 `stack build` | `cabal new-build`
- `stack build --static` | `stack new-build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
+`stack build --static` | `stack new-build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
 `stack test` | `cabal new-test --enable-tests` <br> `cabal new-test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
-`stack repl` | `cabal new-repl`
+`stack repl` <br> `stack ghci` | `cabal new-repl`
+`stack repl --package <pkg1> <pkg2>` | `cabal new-repl --build-dep <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
 `stack clean` | `cabal new-clean`
 `stack run` | `cabal new-run`
 `stack --version` | `cabal --version`
@@ -63,13 +63,16 @@ stack | cabal | 備考
  ? | `cabal new-sdist`
  ? | `cabal check`
  ? | `cabal upload` <br> `cabal upload --publish`
- `stack update` | `cabal new-update`
+`stack update` | `cabal new-update`
 
 ### どちらか一方にしかないコマンドやオプション
 
 stack | cabal | 備考
 ------|--------|-------
 `stack build --file-watch` | [#5252](https://github.com/haskell/cabal/issues/5252)
+- | `cabal format` | [#2460](https://github.com/haskell/cabal/issues/2460), [#5306](https://github.com/haskell/cabal/issues/5306), [#5734](https://github.com/haskell/cabal/issues/5734)
+`stack path` | [#3850](https://github.com/haskell/cabal/issues/3850), [#4661](https://github.com/haskell/cabal/issues/4661) |
+`stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 
 ## 設定ファイル等のパス対応表 (初期値)
 
@@ -370,6 +373,10 @@ main = warp 3000 HelloWorld
 $ cabal new-run Script.hs
 $ cabal new-run Script.hs -- --arg1 # 引数有り
 ```
+
+## 便利ツール
+
+- [cabal-plan list-bins](http://hackage.haskell.org/package/cabal-plan)
 
 ## 参考
 

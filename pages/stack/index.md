@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2018/12/30
+date: 2019/02/22
 ---
 
 <div class="row">
@@ -107,10 +107,10 @@ date: 2018/12/30
 - [正格性のすべて (翻訳)](/posts/2018/06-25-All-About-Strictness.html)
 - [ContT を使ってコードを綺麗にしよう！](/posts/2018/06-26-cont-param.html)
 - [RecordWildCards と Reader モナド](/posts/2018/08-26-recordwildcards.html)
-- [Haskell 情報収集術](https://qiita.com/waddlaw/items/b7ed253db36c6f8a04fc)
-- [GHC Source Plugin 作ってみた](https://qiita.com/waddlaw/items/65b57517f105fcbbe724)
-- [Monoid と DerivingVia](https://qiita.com/waddlaw/items/f349bd363963d59e9ef5)
-- [RankNTypes と型レベルリストと extensible](https://qiita.com/waddlaw/items/b49e9daa02b2d254fba3)
+- [Haskell 情報収集術 - Qiita](https://qiita.com/waddlaw/items/b7ed253db36c6f8a04fc)
+- [GHC Source Plugin 作ってみた - Qiita](https://qiita.com/waddlaw/items/65b57517f105fcbbe724)
+- [Monoid と DerivingVia - Qiita](https://qiita.com/waddlaw/items/f349bd363963d59e9ef5)
+- [RankNTypes と型レベルリストと extensible - Qiita](https://qiita.com/waddlaw/items/b49e9daa02b2d254fba3)
 
 ## エディタ
 
@@ -128,7 +128,8 @@ date: 2018/12/30
   - [Glasgow Haskell Compiler User's Guide](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/)
   - [GHC Developer Wiki](https://ghc.haskell.org/trac/ghc/)
   - [ghc-proposals/ghc-proposals](https://github.com/ghc-proposals/ghc-proposals)
-  - [Mirror of the Glasgow Haskell Compiler](https://github.com/ghc/ghc)
+  - [Glasgow Haskell Compiler - GitLab](https://gitlab.haskell.org/ghc/ghc)
+  - [Glasgow Haskell Compiler - GitHub](https://github.com/ghc/ghc)
 - パッケージ
   - [Hackage](https://hackage.haskell.org/)
   - [Stackage](https://www.stackage.org/)
@@ -136,21 +137,23 @@ date: 2018/12/30
   - [Hackage Matrix Builder 3rd](https://matrix.hackage.haskell.org/)
   - [hdiff](http://hdiff.luite.com/)
 - 型検索
-  - [Hayoo!](http://hayoo.fh-wedel.de/)
-  - [Hoogle](https://www.haskell.org/hoogle/)
+  - [Hoogle](https://hoogle.haskell.org/)
 - スタイルガイド
   - [tweag/guides](https://github.com/tweag/guides)
   - [input-output-hk/cardano-sl](https://github.com/input-output-hk/cardano-sl/blob/develop/docs/style-guide.md)
   - [serokell/serokell-util](https://github.com/serokell/serokell-util/blob/master/serokell-style.md)
+  - [kowainik](https://kowainik.github.io/posts/2019-02-06-style-guide)
 - Haskell 情報収集
   - [Haskell News](http://haskellnews.org/)
   - [Haskell Weekly](https://haskellweekly.news/)
   - [planet haskell](https://planet.haskell.org/)
   - [Haskell mailing list](http://haskell.1045720.n5.nabble.com/)
+  - [r/haskell/ - reddit](https://www.reddit.com/r/haskell/)
 - コミュニティ
   - [Haskell-jp](https://haskell.jp/)
 - 学習
   - [wikibooks](https://en.wikibooks.org/wiki/Haskell)
+  - [FP Complete's Haskell Homepage](https://haskell.fpcomplete.com/)
 - [その他](etc/links.html)
 
   </div>
