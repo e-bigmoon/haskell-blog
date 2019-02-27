@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2019/01/21
+date: 2019/02/27
 ---
 
 ## Yesod クイックスタートガイド
@@ -75,7 +75,7 @@ $ stack exec -- yesod devel
 [RESTful Content](https://www.yesodweb.com/book/restful-content) | [RESTful コンテンツ](book/ch12-restful-content.html) | |
 [Yesod’s Monads](https://www.yesodweb.com/book/yesods-monads) | [Yesod のモナドたち](book/ch13-yesods-monads.html)
 [Authentication and Authorization](https://www.yesodweb.com/book/authentication-and-authorization) | [認証と認可](book/ch14-authentication-and-authorization.html)
-[Scaffolding and the Site Template](https://www.yesodweb.com/book/scaffolding-and-the-site-template) | Scaffolding and the Site Template
+[Scaffolding and the Site Template](https://www.yesodweb.com/book/scaffolding-and-the-site-template) | [Scaffolding とサイトテンプレート](book/ch15-scaffolding-and-the-site-template.html)
 [Internationalization](https://www.yesodweb.com/book/internationalization) | Internationalization
 [Creating a Subsite](https://www.yesodweb.com/book/creating-a-subsite) | [Creating a Subsite](book/ch17-creating-a-subsite.html)
 [Understanding a Request](https://www.yesodweb.com/book/understanding-request) | Understanding a Request
