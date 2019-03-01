@@ -120,7 +120,7 @@ scaffolded サイトは完全に cabal 化された Haskell パッケージと�
 
 最後の3つのステップを自動化するために `stack exec -- yesod add-handler`コマンドを利用することもできます。
 
-### widgetFile
+## widgetFile
 
 ページ特有の CSS や Javascript を含めたいと思うことは非常に一般的です。ただし、Hamlet ファイルを参照する度に対応する Lucius や Julius ファイルの管理を自分で行いたくは無いでしょう。そのため、サイトテンプレートは `widgetFile` 関数を提供しています。
 
@@ -141,7 +141,7 @@ Yesod は以下のファイルを探します。
 このような動作になっているため、もしアプリケーションを `yesod devel` で起動し、その後に、新しいファイル (例えば `templates/homepage.julius`) を作成した場合、`widgetFile` を呼んでいるファイルが再コンパイルされるまで、このファイルは含まれません。このような場合 `yesod devel` を再コンパイルさせるために、そのファイルを強制的に保存する必要があります。
 </div>
 
-### defautLayout
+## defautLayout
 
 まず最初にカスタマイズしたもいものの1つはサイトの見栄えです。レイアウトは2つのファイルに分割されます。
 
@@ -150,7 +150,7 @@ Yesod は以下のファイルを探します。
 
 また、default-layout は `widgetFile` 関数で処理されるので、`default-layout.*` という名前の Lucius、Cassius、Julius ファイルも自動的に含まれます。
 
-### 静的ファイル
+## 静的ファイル
 
 scaffolded サイトは自動的に静的ファイルサブサイトを含みます。現在のビルド中に更新されないファイルを配信するために最適化されています。これは、次のことを意味します。
 
