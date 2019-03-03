@@ -2,7 +2,7 @@
 title: Megaparsec tutorial from IH book
 author: Mark Karpov
 translator: Wataru Yamada
-tags: fpcomplete
+tags: megaparsec, package, 翻訳
 ---
 
 Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/megaparsec/megaparsec.html)
@@ -51,7 +51,7 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 
 - [parsec](https://hackage.haskell.org/package/parsec) は長い間 Haskellの「デフォルト」のパーサライブラリでした。このライブラリは、エラーメッセージの品質に焦点を当てていると言われています。ただし、テストカバレッジは良くなく、現在メンテナンスモードになっています。
 
-- [attoparsec](https://hackage.haskell.org/package/attoparsec) は、パフォーマンスを重視した堅牢で高速なパーサライブラリです。このリストの中で、インクリメンタルパーサを完全にサポートしているのはこれだけです。欠点はエラーメッセージの質が悪いこと、モナド変換子として使用できないこと、および入力ストリームとして使用できる型の組み合わせが限られていることです。
+- [attoparsec](https://hackage.haskell.org/package/attoparsec) は、パフォーマンスを重視した堅牢で高速なパーサライブラリです。このリストの中で、インクリメンタルパージングを完全にサポートしているのはこれだけです。欠点はエラーメッセージの質が悪いこと、モナド変換子として使用できないこと、および入力ストリームとして使用できる型の組み合わせが限られていることです。
 
 - [trifecta](https://hackage.haskell.org/package/trifecta) は優れたエラーメッセージを特徴としていますが、あまり文書化されておらず、理解するのが難しいです。 `String` と `ByteString` はそのままではパースできますが、`Text` はパースできません。
 
@@ -63,7 +63,7 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 
 ## ParsecT と Parsec モナド
 
-`ParsecT`は、主要なパーサモナド変換子であり、`megaparsec` の中心的なデータ型です。 
+`ParsecT`は、主要なパーサモナド変換子であり、`megaparsec` の中心的なデータ型です。
 `ParsecT e s m a` は、次のようにパラメータ化されています。
 
 - `e` はエラーメッセージのカスタムコンポーネントの型です。もし私たちが何もカスタムを望まないのであれば（そして今のところ私たちはしません）、 `Data.Void` モジュールの `Void` を使うだけです。
@@ -82,24 +82,24 @@ type Parsec e s a = ParsecT e s Identity a
 
 `Parsec` は、単なる `ParsecT`の変換子を使わないバージョンです。
 
-`megaparsec` のモナド変換子と MTL のモナド変換子およびクラスの間の類推もできます。
-確かに、`MonadState` や `MonadReader` などの型クラスと目的が似ている `MonadParsec` 型クラスもあります。
+`megaparsec` のモナド変換子と MTL のモナド変換子およびクラスの間の類似点を示すこともできます。
+確かに、`MonadState` や `MonadReader` などの型クラスと目的が似ている `MonadParsec` 型クラスがあります。
 後で `MonadParsec` に戻り、詳細について説明します。
 
-型シノニムと言えば、 `megaparsec` を使ってパーサーを書くことを始める最も良い方法はあなたのパーサーのためにカスタムした型シノニムを定義することです。
+カスタムした型シノニムを定義することは `megaparsec` を使ってパーサを書くことを始める最も良い方法です。
 これは次の2つの理由から良い考えです。
 
 - あなたのパーサモナドとして `Parser` があれば、`Parser Int` のようなトップレベルのシグネチャを追加することがより簡単になります。シグネチャがないと、`e` のようなものが曖昧になることがよくあります。これはライブラリの多相APIの反面です。
 
-- すべての型変数を固定して具象型を操作すると、GHCの最適化が大幅に向上します。パーサーが多相性を保っている場合、GHCは最適化の観点からそれほど多くのことはできません。`megaparsec` APIは多相ですが、エンドユーザーは具体的にパーサモナドの型を固定することが予想されます。そのため、インライン展開と、ほとんどの関数の定義がいわゆるインターフェイスファイルにまとめられているという事実により、GHCは非常に効率的な非多態性コードを生成できます。
+- すべての型変数を具体的な方に固定して操作すると、GHCの最適化が大幅に向上します。パーサーが多相性を保っている場合、GHCは最適化の観点からそれほど多くのことはできません。`megaparsec` APIは多相ですが、エンドユーザーは具体的にパーサモナドの型を固定することが予想されます。そのため、インライン展開と、ほとんどの関数の定義がインターフェイスファイルと呼ばれるファイルに出力されているという事実により、GHCは非常に効率的な非多相的なコードを生成できます。
 
 次のように型シノニム（通常は `Parser` と呼ばれる）を定義しましょう。
 
 ```haskell
 ype Parser = Parsec Void Text
 --                   ^    ^
---                   |    |
--- Custom error component Type of input stream
+--                   |    ┗━━━━┓
+-- カスタムエラーコンポーネント  入力ストリームの型
 ```
 
 カスタムパースエラーを扱い始めるまでは、この章で `Parser`が表示されているときは、この型を想定してください。
@@ -116,7 +116,7 @@ ype Parser = Parsec Void Text
 `megaparsec` のパーサへの入力として使用されるために
 サポートすべき関数を抽象化したものです。
 
-簡素化されたバージョンの `Stream` は、次のようになります。
+シンプルにしたバージョンの `Stream` は、次のようになります。
 
 ```haskell
 class Stream s where
