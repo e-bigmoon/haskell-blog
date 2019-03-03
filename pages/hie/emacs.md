@@ -1,6 +1,6 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2018/08/17
+date: 2019/03/03
 ---
 
 ## 実行環境
@@ -8,8 +8,8 @@ date: 2018/08/17
 | 環境  | バージョン   |
 |:-----:|:-------------|
 | OS    | Ubuntu 17.10 |
-| Stack |        1.7.1 |
-| HIE   |      0.2.2.0 |
+| Stack |        1.9.3 |
+| HIE   |      0.6.0.0 |
 | Emacs |         26.1 |
 
 ## 導入手順
@@ -27,7 +27,7 @@ date: 2018/08/17
 ```sh
 $ stack upgrade
 $ stack install cabal-install
-$ sudo apt install libicu-dev libtinfo-dev
+$ sudo apt install libicu-dev libtinfo-dev libgmp-dev
 ```
 
 準備ができたらHIEをリポジトリからクローンしてインストールしましょう。
