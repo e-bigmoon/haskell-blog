@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/02/22
+date: 2019/03/03
 ---
 
 ## 注意点
@@ -290,6 +290,27 @@ pkgname == n.*
 - ワイルドカードは `Cabal 1.6` から利用可能
 - `^>=` は `Cabal 2.0` から利用可能 (キャレット)
 - `foo == 1.0.*` は `foo-1` にはマッチしないので注意 (`^>=` の利用を推奨)
+
+### 集合記法
+
+- Cabal 3.0 から使える
+- `==` と `^>=` 演算子が対応している
+- [caret operator accepts a set of versions #5906](https://github.com/haskell/cabal/pull/5906)
+
+```
+tested-with: GHC == 8.6.3, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2,
+             GHC == 7.10.3, GHC == 7.8.4, GHC == 7.6.3, GHC == 7.4.2
+
+build-depends: network ^>= 2.6.3.6 || ^>= 2.7.0.2 || ^>= 2.8.0.0 || ^>= 3.0.1.0
+```
+
+こんな感じで書き直せる
+
+```
+tested-with: GHC == { 8.6.3, 8.4.4, 8.2.2, 8.0.2, 7.10.3, 7.8.4, 7.6.3, 7.4.2 }
+
+build-depends: network ^>= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }
+```
 
 ### cabal.project.local の設定
 

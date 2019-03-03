@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2019/03/01
+date: 2019/03/03
 ---
 
 ## Yesod クイックスタートガイド
@@ -46,7 +46,7 @@ $ stack exec -- yesod devel
 
 [http://localhost:3000/](http://localhost:3000/) にアクセスすれば Yesod アプリケーションを体験できます。
 
-## Yesod ブック (@5ba44e120d7a4bf7bd3f5b3df9edc5a7f5428834)
+## Yesod ブック (@b65624cacd67b919a4333e44308396df27bf85e6)
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
@@ -62,7 +62,7 @@ $ stack exec -- yesod devel
 [Shakespearean Templates](https://www.yesodweb.com/book/shakespearean-templates) | [シェイクスピア テンプレート](book/ch04-shakespearen-templates.html) | [スライド](https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing) | [練習問題](exercise/ch04/)
 [Widgets](https://www.yesodweb.com/book/widgets) | [ウィジェット](book/ch05-widgets.html) | [スライド](https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing) | [練習問題](exercise/ch05/)
 [Yesod Typeclass](https://www.yesodweb.com/book/yesod-typeclass) | [Yesod 型クラス](book/ch06-yesod-typeclass.html) | [スライド](https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing)
-[Routing and Handlers](https://www.yesodweb.com/book/routing-and-handlers) | [Routing and Handlers](book/ch07-routing-and-handlers.html) | [スライド](https://docs.google.com/presentation/d/1asqcwxIfDoligvqMWD3aKW7Q0oFRH9KqfXKyvNxk52U/edit?usp=sharing) | [練習問題](exercise/ch07/)
+[Routing and Handlers](https://www.yesodweb.com/book/routing-and-handlers) | [ルーティングとハンドラ](book/ch07-routing-and-handlers.html) | [スライド](https://docs.google.com/presentation/d/1asqcwxIfDoligvqMWD3aKW7Q0oFRH9KqfXKyvNxk52U/edit?usp=sharing) | [練習問題](exercise/ch07/)
 [Forms](https://www.yesodweb.com/book/forms) | [Forms](book/ch08-forms.html) | [スライド](https://docs.google.com/presentation/d/1S8kPog8pK0iyx7DpjRQGO_6hgn3vDoCyI_WYz2IzaJo/edit?usp=sharing) | [練習問題](exercise/ch08/) |  |
 [Sessions](https://www.yesodweb.com/book/sessions) | [Sessions](book/ch09-sessions.html) | | |  |
 [Persistent](https://www.yesodweb.com/book/persistent) | [Persistent](book/ch10-persistent.html) | [ノート](contents/resume/ch10_r.md) | |  |
