@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Routing and Handlers</title>
+  <title>ルーティングとハンドラ</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../yesod/book/ch07-routing-and-handlers.html">
-  <link rel="alternate" type="application/atom+xml" title="Routing and Handlers" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="ルーティングとハンドラ" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Routing and Handlers" />
+  <meta property="og:title" content="ルーティングとハンドラ" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/yesod/book/ch07-routing-and-handlers.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Routing and Handlers" />
+  <meta property="og:site_name" content="ルーティングとハンドラ" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -166,108 +166,118 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">Routing and Handlers</h1>
+        <h1 class="post-title">ルーティングとハンドラ</h1>
         
-        <span>最終更新日: 2018/04/07</span>
+        <span>最終更新日: 2019/03/03</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="routing-and-handlers">Routing and Handlers</h2>
-<p>Yesod をモデル-ビュー-コントローラフレームワークとして見れば、ルーティングとハンドラはコントローラに対応します。 次の2つは他のウェブ開発環境において利用される2つのルーティング方法です。</p>
+        <p>Yesod をモデル・ビュー・コントローラフレームワークとして見れば、ルーティングとハンドラはコントローラに対応します。また、他の Web 開発環境で採用されている2つの異なるルーティング方法があります。</p>
 <ul>
-<li>名称に基づいてディスパッチする方法。例えば PHP や ASP はこの方法で動作します</li>
-<li>正規表現に基づいたルートのパースを行うような、中央ルート処理関数を持つ方法。Django や Rails はこの方法を採用しています。</li>
+<li>ファイル名でディスパッチする方法。例えば PHP や ASP などで利用されています。</li>
+<li>正規表現を使ってルートをパースする中央集権的なルーティング関数を用意する方法。Django や Rails はこの方法を採用しています。</li>
 </ul>
-<p>Yesod は原則的には後者の技術に近いのですが、実際には大きな違いが存在するします。 Yesod は正規表現を利用する代わりに、ルートの断片に基づいてマッチングを行います。 また片方向のルート-ハンドラのマッピングを使う代わりに, Yesod は中間データ型 (ルートデータ型, あるいは型安全URLと呼ばれる) と 双方向の変換関数を生成します。</p>
-<p>このようなより発展的なシステムを手動でコーディングすることは、冗長でありかつエラーを起こしやすいです。</p>
-<p>そのため Yesod はルートに特化したドメイン特化言語 (DSL) を定義し、この DSL を Haskell コードに変換するためのテンプレート Haskell 関数を提供します。 この章ではルーティング宣言に関する構文を説明し、コード生成がどのように行われるかを確認します。 そして、ルーティングとハンドラ間の相互作用について説明します。</p>
-<h2 id="route-syntax">Route Syntax</h2>
-<p>Yesod のアプローチはルート宣言を既存の構文に無理やり埋め込むのではなく、ルートのためだけに設計された簡潔な構文を利用することです。 これは、コードの読み書きを簡単にするだけでなく Yesod の経験が全く無い場合でも、アプリケーションのサイトマップのように、十分に理解しやすいという利点があります。</p>
-<p>この構文の基本的な例は以下の通りです。</p>
+<p>Yesod の仕組み的には Django や Rails と近いのですが、実際にはかなり違います。Yesod は正規表現の代わりに、ルートの断片のマッチを使います。また、単方向のルートとハンドラのマッピングを使うのではなく、Yesod は (ルートデータ型や型安全URLと呼ばれる) 中間データ型と双方向の変換関数を生成します。</p>
+<p>このような、発展的なシステムのコーディングは人間が行うと非常に退屈な作業であり、エラーを含みやすいものです。そのため Yesod はルートに特化したドメイン特化言語 (DSL) を定義し、この DSL を Haskell コードに変換するためのテンプレート Haskell 関数を提供します。この章ではルーティング宣言に関する構文を説明し、コード生成がどのように行われるかを確認します。そして、ルーティングとハンドラ間の相互作用について説明します。</p>
+<h2 id="ルート構文">ルート構文</h2>
+<p>Yesod のアプローチはルート宣言を既存の構文に無理やり組み込むのではなく、ルートのために設計されたシンプルな構文を利用することです。この手法の良い点は、コードが書きやすくなるだけではなく、Yesod の経験が全く無い場合でも、アプリケーションのサイトマップのように、十分に理解しやすいという点です。</p>
+<p>基本的な構文は以下のようになります。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">/</span>             <span class="dt">HomeR</span>     <span class="dt">GET</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="fu">/</span>blog         <span class="dt">BlogR</span>     <span class="dt">GET</span> <span class="dt">POST</span></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="fu">/</span>blog<span class="fu">/#</span><span class="dt">BlogId</span> <span class="dt">BlogPostR</span> <span class="dt">GET</span> <span class="dt">POST</span></a>
 <a class="sourceLine" id="cb1-4" title="4"></a>
 <a class="sourceLine" id="cb1-5" title="5"><span class="fu">/</span>static       <span class="dt">StaticR</span>   <span class="dt">Static</span> getStatic</a></code></pre></div>
-<p>これから、ルート宣言において何が起こっているかについて詳細を完全に説明します。</p>
-<h3 id="pieces">Pieces</h3>
-<p>Yesod がリクエストを得たときに最初に行うことの1つは、リクエストされたパスを断片に分割することです。 断片は全てのフォワードスラッシュ部分でトークン化されます。 例えば以下のようにです。</p>
+<p>このルート宣言で行われる処理の完全な詳細は以降の節で説明します。</p>
+<h3 id="断片">断片</h3>
+<p>Yesod がリクエストを受け取った時に最初に行うことの1つは、リクエストされたパスを断片に分割することです。この断片は全てのフォワードスラッシュによってトークン化されます。例えば以下のようにです。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">toPieces <span class="st">&quot;/&quot;</span> <span class="fu">=</span> []</a>
 <a class="sourceLine" id="cb2-2" title="2">toPieces <span class="st">&quot;/foo/bar/baz/&quot;</span> <span class="fu">=</span> [<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span>, <span class="st">&quot;baz&quot;</span>, <span class="st">&quot;&quot;</span>]</a></code></pre></div>
-<p>末尾スラッシュや2重スラッシュ (“/foo//bar//”) のような問題のある状況が起こり得ることに気づくでしょう。 Yesod は正規化された URL を持つことを推奨します。 もしユーザが末尾スラッシュあるいは2重スラッシュ付きでURLをリクエストすれば、それらは自動的に正規化された URL にリダイレクトされます。 その結果、1つのリソースにつき1つの URL だけ持つことが保証されるため、検索順位に良い影響を与えます。</p>
-<p>これが意味することは、URL の正確な構造に悩む必要がないということです。 パス断片を安全なものとして考えることができ、Yesod が自動的にスラッシュの挿入を制御し、問題の生じ得る文字をエスケープしてくれます。</p>
-<p>ところでどのようにパスが断片に分割され再結合されるか詳細な制御方法について知りたい場合は Yesod 型クラスの章における <code>cleanPath</code> や <code>joinPath</code> メソッドを再確認してみると良いでしょう。</p>
-<h3 id="types-of-pieces">Types of Pieces</h3>
-<p>ルートを宣言する場合、処理に当たって3種類の型が存在します。</p>
-<h4 id="static">Static</h4>
-<p>これは URL と正確に一致する必要のある通常の文字列です。</p>
-<h4 id="dynamic-single">Dynamic Single</h4>
-<p>これは単一の断片 (2つのスラッシュの間の) ですが、ユーザが入力した値を表し、ページリクエストに対し付属的なユーザ入力を受け取るための主要な方法です。 これらの断片は hash (#) で始まり、そのあとにデータ型が続き、それは <code>PathPiece</code> のインスタンスでなければなりません。</p>
-<h4 id="dynamic-multi">Dynamic multi</h4>
-<p>Dynamic Single と同じですが、URL 断片を複数受け取ることができます。 また、リソースパターンでは常に断片が最後に来る必要があります。 それはデータ型に続いてアスタリスク (*) を 指定し、さらにデータ型は <code>PathMultiPiece</code> のインスタンスでなければなりません。 複数の断片は他の2つと比べて少し変わっていますが、静的表現のファイル構造や任意の階層を持つ wiki のような機能を実装するためにとても重要です。</p>
-<p>Yesod 1.4 から dynamic multi を指定するために <code>+</code> が追加されました。 これは、C プロセッサでは <code>/*</code> 文字を組み合わせることで混乱が生じ得るため、とても重要です。</p>
-<p>これから一度は書くような標準的なリソースパターンを見てみましょう。 一番簡単なものは、アプリケーションルートを <code>/</code> にするものです。同じように FAQ を <code>/page/faq</code> としたりする場合もあるでしょう。</p>
-<p>例えばフィボナッチウェブサイトを作りたいと思ったら URL を <code>/fib/#Int</code> のように構築するでしょう。 しかし、これにはちょっとした問題があります。 我々はマイナスの値やゼロがアプリケーションに入力されたくありません。 幸運なことに型システムはこれをしっかりと防いでくれます。</p>
-<pre class="haskekkl"><code>newtype Natural = Natural Int
-instance PathPiece Natural where
-    toPathPiece (Natural i) = T.pack $ show i
-    fromPathPiece s =
-        case reads $ T.unpack s of
-            (i, &quot;&quot;):_
-                | i &lt; 1 -&gt; Nothing
-                | otherwise -&gt; Just $ Natural i
-            [] -&gt; Nothing</code></pre>
-<p>1行目は不適切な入力を避けるために Int 型を単純な nwetype ラッパーで定義する。</p>
-<p><code>PathPiece</code> は2つのメソッドをもつ型クラスであることがわかります。 <code>toPathPiece</code> は <code>Text</code> に変換する以上のことは何も行いません。 <code>fromPathPiece</code> は <code>Text</code> をデータ型に変換しよう試みますが、この変換が不可能な場合は <code>Nothing</code> を返します。 このデータ型を使うことでハンドラ関数に自然数のみが与えられることを保証することができるため、型システムを使って境界問題に対抗することが可能となりました。</p>
-<p>現実世界のアプリケーションにおいては、内部的にアプリケーション上有効でない　<code>Natural</code>　値を決して偶然的に作らないよう保証したいでしょう。 そのようにするためには <a href="https://wiki.haskell.org/Smart_constructors">smart constructors</a> のような方法があります。 今回の例の目的とは少し違うので、コードに余分な情報を加えないことにします。</p>
-<p><code>PathMultiPiece</code> を定義することも同じくらい簡単です。 例えば、少なくとも2つ以上の階層をもつ Wiki を作りたいので、次のようなデータ型を定義しましょう。</p>
+<p>URLの最後に付けるトレイリングスラッシュや2重スラッシュ (“/foo//bar//”) のような問題のある状況が起こり得ることに気づくでしょう。Yesod は正規化された URL を持つことを推奨します。もしユーザがトレイリングスラッシュあるいは2重スラッシュ付きでURLをリクエストすれば、それらは自動的に正規化された URL にリダイレクトされます。その結果、1つのリソースにつき1つの URL ということが保証されるため、検索順位に良い影響を与えます。</p>
+<p>これが意味することは、URL の正確な構造に悩む必要がないということです。パス断片を安全なものとして考えることができ、Yesod は自動的にスラッシュの挿入を制御し、問題のある文字をエスケープしてくれます。</p>
+<p>ところで、どのようにパスが断片に分割され再結合されるかについての詳細な制御方法を知りたい場合は Yesod 型クラスの章の <code>cleanPath</code> や <code>joinPath</code> メソッドを再確認してみると良いでしょう。</p>
+<h3 id="断片の種類">断片の種類</h3>
+<p>ルートを宣言する時は断片の表現方法を次の3つの種類から好きなものを選びます。</p>
+<h4 id="スタティック">スタティック</h4>
+<p>これはただの文字列表現です。URL と正確に一致する必要があります。</p>
+<h4 id="ダイナミックシングル">ダイナミックシングル</h4>
+<p>これは (2つのスラッシュ間の) 単一の断片ですが、ユーザが送信した値を表します。ページリクエストで追加のユーザ入力を受け取るためによく使います。ダイナミックシングルはハッシュ (#) で始まり、そのあとにデータ型が続きます。また、このデータ型は <code>PathPiece</code> 型クラスのインスタンスでなければなりません。</p>
+<h4 id="ダイナミックマルチ">ダイナミックマルチ</h4>
+<p>ダイナミックシングルとほとんど同じですが、URL 断片を複数受け取ることができます。また、この断片は必ずリソースパターンの最後に出現しなければなりません。ダイナミックマルチはアスタリスク (*) から始まり、その後にデータ型が続きます。また、このデータ型は <code>PathMultiPiece</code> のインスタンスでなければなりません。この方法は他の2つと比べて少し変わっていますが、ファイル構造や任意の階層を持つ wiki などの静的ツリー表現のような機能を実装するためにとても重要です。</p>
+<div class="yesod-book-notice">
+<p>Yesod 1.4 からダイナミックマルチを指定する方法に <code>+</code> が追加されました。この方法は C プロセッサが <code>/*</code> 文字の組み合わせによっておかしくなってしまう場合などで有効です。</p>
+</div>
+<p>まずは、標準的なリソースパターンを見てみましょう。一番簡単なものは、アプリケーションルートを <code>/</code> にするものです。同じように FAQ を <code>/page/faq</code> としたりする場合もあるでしょう。</p>
+<p>例えばフィボナッチウェブサイトを作りたいと思ったら URL を <code>/fib/#Int</code> のようにするでしょう。しかし、これにはちょっとした問題があります。マイナスの値やゼロをアプリケーションに通したくはありません。幸運なことに型システムはこれをしっかりと防いでくれます。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">newtype</span> <span class="dt">Natural</span> <span class="fu">=</span> <span class="dt">Natural</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb3-2" title="2">    <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Read</span>)</a>
+<a class="sourceLine" id="cb3-3" title="3"></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="kw">instance</span> <span class="dt">PathPiece</span> <span class="dt">Natural</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-5" title="5">    toPathPiece (<span class="dt">Natural</span> i) <span class="fu">=</span> T.pack <span class="fu">$</span> <span class="fu">show</span> i</a>
+<a class="sourceLine" id="cb3-6" title="6">    fromPathPiece s <span class="fu">=</span></a>
+<a class="sourceLine" id="cb3-7" title="7">        <span class="kw">case</span> <span class="fu">reads</span> <span class="fu">$</span> T.unpack s <span class="kw">of</span></a>
+<a class="sourceLine" id="cb3-8" title="8">            (i, <span class="st">&quot;&quot;</span>)<span class="fu">:</span>_</a>
+<a class="sourceLine" id="cb3-9" title="9">                <span class="fu">|</span> i <span class="fu">&lt;</span> <span class="dv">1</span> <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb3-10" title="10">                <span class="fu">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Natural</span> i</a>
+<a class="sourceLine" id="cb3-11" title="11">            [] <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a></code></pre></div>
+<p>このコードを説明すると、1行目は不適切な入力を避けるために、Int に対して newtype を使って Natural 型を定義します。また、<code>PathPiece</code> は2つのメソッドをもつ型クラスだということがわかります。<code>toPathPiece</code> は <code>Text</code> に変換する以上のことは何も行いません。<code>fromPathPiece</code> は <code>Text</code> からデータ型への変換を行いますが、この変換に失敗した場合は <code>Nothing</code> を返します。この <code>Natural</code> 型を使えば、ハンドラ関数に自然数のみが与えられることを保証するため、型システムを使って境界問題に対処できます。</p>
+<div class="yesod-book-notice">
+<p>現実世界のアプリケーションにおいては、アプリケーション内で有効ではない <code>Natural</code> 値を絶対に作れないことを保証したいでしょう。そのようにするためには <a href="https://wiki.haskell.org/Smart_constructors">smart constructors</a> のような方法があります。ただ、今回の例の目的とは少し違うので、ここでは説明しません。</p>
+</div>
+<p><code>PathMultiPiece</code> も同じくらい簡単に定義できます。例えば、少なくとも2つ以上の階層をもつ Wiki を作りたいので、次のようなデータ型を定義しましょう。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">Page</span> <span class="fu">=</span> <span class="dt">Page</span> <span class="dt">Text</span> <span class="dt">Text</span> [<span class="dt">Text</span>] <span class="co">-- 2 or more</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="kw">instance</span> <span class="dt">PathMultiPiece</span> <span class="dt">Page</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-3" title="3">    toPathMultiPiece (<span class="dt">Page</span> x y z) <span class="fu">=</span> x <span class="fu">:</span> y <span class="fu">:</span> z</a>
-<a class="sourceLine" id="cb4-4" title="4">    fromPathMultiPiece (x<span class="fu">:</span>y<span class="fu">:</span>z) <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Page</span> x y z</a>
-<a class="sourceLine" id="cb4-5" title="5">    fromPathMultiPiece _ <span class="fu">=</span> <span class="dt">Nothing</span></a></code></pre></div>
-<h3 id="overlap-checking">Overlap checking</h3>
-<p>Yesod はどの2つのルートも互いに重複する可能性のないことを標準で保証している。 そこで例えば次のようなルートを考えてみましょう。</p>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Read</span>)</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="kw">instance</span> <span class="dt">PathMultiPiece</span> <span class="dt">Page</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-5" title="5">    toPathMultiPiece (<span class="dt">Page</span> x y z) <span class="fu">=</span> x <span class="fu">:</span> y <span class="fu">:</span> z</a>
+<a class="sourceLine" id="cb4-6" title="6">    fromPathMultiPiece (x<span class="fu">:</span>y<span class="fu">:</span>z) <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Page</span> x y z</a>
+<a class="sourceLine" id="cb4-7" title="7">    fromPathMultiPiece _ <span class="fu">=</span> <span class="dt">Nothing</span></a></code></pre></div>
+<h3 id="オーバーラップチェック">オーバーラップチェック</h3>
+<p>Yesod はデフォルトで、どの2つのルートも互いに重なり合う可能性がないことを保証しています。そこで例えば次のようなルートを考えてみましょう。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">/</span>foo<span class="fu">/</span>bar   <span class="dt">Foo1R</span> <span class="dt">GET</span></a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="fu">/</span>foo<span class="fu">/#</span><span class="dt">Text</span> <span class="dt">Foo2R</span> <span class="dt">GET</span></a></code></pre></div>
-<p><code>/foo/bar</code> が両方のルートに一致してしまうため、このルート宣言は重複しているものとして拒否されます。 しかし、重複を許したいと思うような2つのケースがあります。</p>
+<p>このルート宣言は <code>/foo/bar</code> が両方のルートに一致してしまうため、オーバーラップしているものとして拒否されます。しかし、オーバーラップを許可したい時があります。</p>
 <ol type="1">
-<li>データ型の定義から重複が決して起こらないことがわかっている場合。例えば、上の <code>Text</code> を <code>Int</code> で置き換えたとすると、存在するルートで重複するものが無いことはすぐにわかる。しかし、Yesod は今のところそのような分析はできません。</li>
-<li>アプリケーションがどのように作動するかについて特別な知識を持っているため、そのような状況が決して起こらないとわかっているとき。例えば、 <code>Foo2R</code> ルートがパラメータ<code>bar</code> を受け取ることが絶対にできない場合などです。</li>
+<li>データ型の定義からオーバーラップが絶対発生しないとわかっている場合。例えば、上の <code>Text</code> を <code>Int</code> で置き換えたとすると、オーバーラップするルートが存在しないことはすぐにわかります。しかし、Yesod は今のところそのような分析はできません。</li>
+<li>アプリケーションがどのように作動するかについて特別な情報を持っているため、そのような状況が絶対に発生しないとわかっている場合。例えば、<code>Foo2R</code> ルートの引数で <code>bar</code> を受け取ることが絶対に無いといった感じです。</li>
 </ol>
-<p>エクスクラメーションマークをルートの始まりに追加することで重複チェックをオフにすることができます。 例えば次のコードは問題なく Yesod で動作します。</p>
+<p>オーバーラップチェックをオフにするためには、エクスクラメーションマークをルートの始まりに追加します。例えば、次のコードは問題なく Yesod で動作します。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">/</span>foo<span class="fu">/</span>bar    <span class="dt">Foo1R</span> <span class="dt">GET</span></a>
 <a class="sourceLine" id="cb6-2" title="2"><span class="fu">!/</span>foo<span class="fu">/#</span><span class="dt">Int</span>  <span class="dt">Foo2R</span> <span class="dt">GET</span></a>
 <a class="sourceLine" id="cb6-3" title="3"><span class="fu">!/</span>foo<span class="fu">/#</span><span class="dt">Text</span> <span class="dt">Foo3R</span> <span class="dt">GET</span></a></code></pre></div>
-<p><code>#</code>、 <code>*</code>、<code>+</code> 文字の後のように、エクスクラメーションマークをどのパス断片の始めに置いても大丈夫ですが、新しい構文のほうが目的が明確なためより好まれます。</p>
-<p>重複するルートが生ずる問題はわかりにくさです。 上の例では <code>foo/bar</code> は <code>Foo1R</code> と <code>Foo3R</code> のどちらにルーティングするべきでしょうか？ また <code>/foo/42</code> は <code>Foo2R</code> と <code>Foo3R</code> のどちらにルーティングするべきでしょうか？ Yesod の規則は単純で、最初のルートが優先されます。</p>
-<h3 id="resource-name">Resource name</h3>
-<p>それぞれのリソースパターンは関連した名前を持っています。 その名前はアプリケーションと結びついた型安全URLデータ型のためのコンストラクタとなるため、大文字で始まらなければなりません。 慣習として、これらのリソース名はすべて大文字の R としています。 これは強要するものは何もなく、それは単に共通の小技みたいなものです。</p>
-<p>コンストラクタの正確な定義はそれが結びついているリソースパターンに依存しています。 単一断片あるいは複数断片で用いられるどのデータ型であっても、それがデータ型の引数となります。 これはアプリケーションにおいて型安全 URL 値と有効な URL の間における1対1の関係があります。</p>
-<p>これは、すべての値が機能するページであることを意味するのではなく、単に有効な可能性のある URL であることを意味します。 例えば <code>PersonR "Michael"</code> という値はデータベースに Michael がなければ有効なページにはたどり着かないでしょう。</p>
-<p>ここで実例を挙げましょう。 <code>PersonR</code> という名前の <code>/person/#Text</code>、 <code>YearR</code> という名前の <code>/year/#Int</code>、 <code>FaqR</code> という名前の <code>/page/faq</code> というリソースパターンがあれば、だいたい次のようなルートデータ型になるであろう.</p>
+<div class="yesod-book-notice">
+<p>エクスクラメーションマークを置く場所は <code>#</code>、<code>*</code>、<code>+</code> 文字の後でも良いですし、どのパス断片の始めに置いても大丈夫です。ただ、新しい構文のほうが目的が明確なためより好まれます。</p>
+</div>
+<p>オーバーラッピングルートを利用するとルートが曖昧になってしまうという問題が発生します。上記の例において <code>/foo/bar</code> は <code>Foo1R</code> と <code>Foo3R</code> のどちらにルーティングするべきでしょうか？また <code>/foo/42</code> は <code>Foo2R</code> と <code>Foo3R</code> のどちらにルーティングするべきでしょうか？Yesod では、最初のルートが優先されるという単純なルールになっています。</p>
+<h3 id="リソース名">リソース名</h3>
+<p>それぞれのリソースパターンは自身と結びつけるための名前を持っています。その名前はアプリケーションの型安全URLデータ型のコンストラクタとなるため、大文字で始まらなければなりません。慣習として、これらのリソース名はすべて大文字の R で終わります。このルールを強制するものは何もなく、わかりやすいのでみんな使っているだけです。</p>
+<p>コンストラクタの正確な定義はそれが結びついているリソースパターンに依存しています。パターンの断片がダイナミックシングルであっても、ダイナミックマルチであっても、どちらもパターンで指定された型がコンストラクタの引数の型になります。これはアプリケーションにおいて型安全URLの値と有効な URL の間に1対1の対応があるということを意味します。</p>
+<div class="yesod-book-notice">
+<p>これは、すべての値に対してページが存在するという意味するのではなく、潜在的には有効な URL だという意味です。例えば <code>PersonR "Michael"</code> という値はデータベースに Michael がなければ有効なページにはたどり着かないでしょう。</p>
+</div>
+<p>より実用的な例として、<code>PersonR</code> という名前の <code>/person/#Text</code>、<code>YearR</code> という名前の <code>/year/#Int</code>、<code>FaqR</code> という名前の <code>/page/faq</code> というリソースパターンがあるとすれば、ルートデータ型はおおよそ以下のようになるでしょう。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">data</span> <span class="dt">MyRoute</span> <span class="fu">=</span> <span class="dt">PersonR</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb7-2" title="2">             <span class="fu">|</span> <span class="dt">YearR</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb7-3" title="3">             <span class="fu">|</span> <span class="dt">FaqR</span></a></code></pre></div>
-<p>ユーザが <code>year/2009</code> をリクエストすれば Yesod はそれを <code>YearR 2009</code> に変換します。 <code>person/Michael</code> は <code>PersonR "Michael"</code> となり、 <code>page/faq</code> は <code>FaqR</code> なります。 一方で <code>/year/two-thousand-nine</code>、 <code>/person/michael/snoyman</code>、 <code>/page/FAQ</code> はコードを見なくても404エラーになることがわかります。</p>
-<h3 id="handler-specification">Handler specification</h3>
-<p>リソースを宣言する際の最終問題はそれらがどのように処理されるかです。 Yesod には次の3つの選択肢があります。</p>
+<p>もし、ユーザが <code>/year/2009</code> をリクエストすれば Yesod はそれを <code>YearR 2009</code> という値に変換します。同様に <code>/person/Michael</code> は <code>PersonR "Michael"</code> となり、 <code>/page/faq</code> は <code>FaqR</code> なります。一方で <code>/year/two-thousand-nine</code>、<code>/person/michael/snoyman</code>、<code>/page/FAQ</code> は変換されず、404エラーになります。</p>
+<h3 id="ハンドラの仕様">ハンドラの仕様</h3>
+<p>最後に、リソースを宣言する際にそれらがどのように処理されるかということについて説明します。Yesod には次の3つの選択肢があります。</p>
 <ul>
-<li>与えられたルートにおけるすべてのリクエストメソッドのためのシングルハンドラ関数</li>
-<li>与えられたルートにおけるそれぞれのリクエストメソッドのためのセパレートハンドラ関数。その他のリクエストメソッドは 405 Method Not Allowed を返す</li>
+<li>ルートに対して、すべてのリクエストメソッドを処理するシングルハンドラ関数</li>
+<li>ルートに対して、それぞれのリクエストメソッドを処理するセパレートハンドラ関数。その他のリクエストメソッドの場合は 405 Method Not Allowed を生成します。</li>
 <li>サブサイトに受け流す</li>
 </ul>
-<p>はじめの2つは簡単に使えます。 シングルハンドラ関数は <code>/page/faq FaqR</code> のようなリソースパターンとリソース名が1行で書かれています。 この場合、ハンドラ関数は <code>handleFaqR</code> と命名されなければなりません。</p>
-<p>それぞれのリクエストメソッドに対応するためのセパレートハンドラも同じ書き方ですが、リクエストメソッドのリストが必要になります。 例えば <code>/person/#String PersonR GET POST DELETE</code> というようにです。 この場合、 <code>getPersonR</code>、<code>postPersonR</code>、 <code>deletePersonR</code> という3つのハンドラ関数を定義する必要があります。</p>
-<p>サブサイトは非常に素晴らしいのですが Yesod のかなり複雑な話題です。 サブサイトの書き方については後にしますが、それらを使うことはそれほど難しくありません。 最も一般的なサブサイトは静的サブサイトで、それはアプリケーションのために静的ファイルを提供します。 <code>/static</code> から静的ファイルを受け取るためには次のようなリソース行が必要となります。</p>
+<p>はじめの2つは簡単に使えます。シングルハンドラ関数は <code>/page/faq FaqR</code> のようなリソースパターンとリソース名だけが1行に書かれています。この場合、ハンドラ関数は <code>handleFaqR</code> と命名しなければなりません。</p>
+<p>それぞれのリクエストメソッドに対応するためのセパレートハンドラも同じ書き方ですが、リクエストメソッドのリストが必要になります。このリクエストメソッドは必ず全ての文字が大文字でなければなりません。例えば <code>/person/#String PersonR GET POST DELETE</code> というようにです。この場合、<code>getPersonR</code>、<code>postPersonR</code> <code>deletePersonR</code> という3つのハンドラ関数を定義する必要があります。</p>
+<p>サブサイトはとても便利な機能ですが、 Yesod ではかなり複雑な話題です。サブサイトの書き方については後にしますが、それらを使うことはそれほど難しくありません。最も一般的なサブサイトは静的サブサイトで、アプリケーションのために静的ファイルを配信します。<code>/static</code> から静的ファイルを受け取るためには次のようなリソース行が必要となります。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">/</span>static <span class="dt">StaticR</span> <span class="dt">Static</span> getStatic</a></code></pre></div>
-<p>この行では <code>/static</code> は単にURL構造のどこから静的ファイルを受け取るかということを言っています。 static という言葉自体には何も魔法の力はなく <code>/my/nondynamic/files</code> などに簡単に変更できます。</p>
-<p>次の単語である <code>StaticR</code> はリソース名です。 次の2つの単語はサブサイトを使っていることを指定するものです。 <code>Static</code> はサブサイトのファウンデーションデータ型で、 <code>getStatic</code> はマスターファウンデーションデータ型から <code>Static</code> 値を取り出すための関数です。</p>
-<p>今はサブサイトの詳細にはあまり深入りしないようにしましょう。 scaffolded サイトの章で、静的サブサイトについての詳細を確認します。</p>
-<h2 id="dispatch">Dispatch</h2>
-<p>一度ルートを特定すれば Yesod は URL ディスパッチに関するあらゆる厄介な詳細を引き受けてくれます。 そのためには、確実に適切なハンドラ関数を与えていさえすれば良いのです。 サブサイトのルートに関してはハンドラ関数を書く必要はありませんが、他の2つに関しては書く必要があります。 命名規則については既に説明しました (<code>MyHandlerR GET</code> は <code>getMyHandlerR</code>、 <code>MyOtherHandlerR</code> は <code>handleMyOtherHandlerR</code> となる)。 これで書く必要のある関数が分かったので、次は型注釈がどのようになるべきかについて理解していきましょう。</p>
-<h3 id="return-type">Return Type</h3>
+<p>この行では <code>/static</code> は単にURL構造のどこから静的ファイルを受け取るかということを言っています。static という言葉自体には何も魔法の力はなく <code>/my/nondynamic/files</code> などに簡単に変更できます。</p>
+<p>次の <code>StaticR</code> という単語はリソース名を表します。さらに、その次の2つの単語はサブサイトを使うということを表します。<code>Static</code> はサブサイトのファウンデーションデータ型で、<code>getStatic</code> はマスターファウンデーションデータ型の値から <code>Static</code> 値を取り出すための関数です。</p>
+<p>今はサブサイトの詳細にはあまり深入りしないようにしましょう。scaffolded サイトの章で、静的サブサイトについての詳細を確認します。</p>
+<h2 id="ディスパッチ">ディスパッチ</h2>
+<p>一度ルートを指定すれば Yesod は URL ディスパッチに関する厄介な詳細をすべて引き受けてくれます。そのためには、確実に適切なハンドラ関数を与えていさえすれば良いのです。サブサイトのルートに関してはハンドラ関数を書く必要はありませんが、他の2つに関しては書く必要があります。命名規則については既に説明しました (<code>MyHandlerR GET</code> は <code>getMyHandlerR</code>、 <code>MyOtherHandlerR</code> は <code>handleMyOtherHandlerR</code> となる)。</p>
+<p>ここまでで、どんな関数を書けば良いかわかったので、次は型注釈がどのようになるべきかについて理解していきましょう。</p>
+<h3 id="戻り値の型">戻り値の型</h3>
 <p>簡単なハンドラ関数を見てみましょう。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">mkYesod <span class="st">&quot;Simple&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb9-2" title="2">/ HomeR GET</a>
@@ -275,24 +285,24 @@ instance PathPiece Natural where
 <a class="sourceLine" id="cb9-4" title="4"></a>
 <a class="sourceLine" id="cb9-5" title="5"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
 <a class="sourceLine" id="cb9-6" title="6">getHomeR <span class="fu">=</span> defaultLayout [whamlet|<span class="kw">&lt;h1&gt;</span>This is simple|]</a></code></pre></div>
-<p>この戻り値の型には2つの要素 <code>Handler</code>、 <code>Html</code> があります。 これらについてより詳細に分析してみましょう。</p>
-<h4 id="handler-monad">Handler monad</h4>
-<p><code>widget</code> 型のように <code>Handler</code> データ型は Yesod のどのライブラリにおいても定義されていません。 代わりにライブラリはデータ型を与えます。</p>
+<p>この戻り値の型には2つの要素 <code>Handler</code>、<code>Html</code> があります。これらについてより詳細に分析してみましょう。</p>
+<h4 id="ハンドラモナド">ハンドラモナド</h4>
+<p><code>Widget</code> 型のように <code>Handler</code> データ型は Yesod ライブラリのどこにも定義されていません。代わりにライブラリには以下のデータ型があります。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">data</span> <span class="dt">HandlerT</span> site m a</a></code></pre></div>
-<p><code>WidgetT</code> と同様に3つの引数を持ちます。 <code>m</code>はベースモナド、 <code>a</code>はモナド値、 <code>site</code> はファウンデーションデータ型です。 各アプリケーションは <code>site</code> をそのアプリケーションのファウンデーションデータ型、 <code>m</code> を <code>IO</code> というような <code>Handler</code> シノニムを定義します。 もしファウンデーションが <code>MyApp</code> であれば、つまり次のようになるでしょう。</p>
+<p><code>WidgetT</code> と同様に3つの引数を持ちます。<code>m</code> はベースモナド、<code>a</code> はモナド値、<code>site</code> はファウンデーションデータ型です。各アプリケーションは <code>site</code> をそのアプリケーションのファウンデーションデータ型、<code>m</code> を <code>IO</code> に制限した <code>Handler</code> シノニムを定義します。もし仮に、アプリケーションのファウンデーションが <code>MyApp</code> であれば、つまり次のようになるでしょう。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">type</span> <span class="dt">Handler</span> <span class="fu">=</span> <span class="dt">HandlerT</span> <span class="dt">MyApp</span> <span class="dt">IO</span></a></code></pre></div>
-<p>サブサイトを書く時に下地のモナドを変更することがありますが、そうでない場合は <code>IO</code> を使います。</p>
-<p><code>HandlerT</code> モナドはユーザリクエスト情報 (例: クエリ文字列パラメータ) へのアクセス方法の提供や、レスポンス (例: レスポンスのヘッダ) を変更できるようにしたり、他にも多くのことができます。 Yesod ソースコードの大半がこのモナドとなっているでしょう。</p>
-<p>さらに <code>MonadHandler</code> と呼ばれる型クラスがあります。 <code>HandlerT</code> と <code>WidgetT</code> はこの型クラスのインスタンスとなっているため、両方のモナドでは共通の関数が数多く使われています。 もし API 文章の中に <code>MonadHandler</code> があれば、その関数は <code>Handler</code> 関数で使うことができる関数だということを思い出してください。</p>
-<h3 id="html">Html</h3>
-<p>この型について驚くべきことは何もありません。 この関数は <code>Html</code> データ型で表される HTML コンテンツを返します。 しかし、それが HTML レスポンスのみしか返せないのであれば Yesod は明らかに役に立ちません。 CSS、Javascript、JSON、画像、そしてより多くのものをレスポンスとして返したいのです。 その際、どんなデータ型を返してあげれば良いのだろうか？という疑問が生じると思います。</p>
-<p>レスポンスを生成するためには、2つの情報を知る必要があります。 それはコンテンツタイプ (例えば <code>text/html</code>、 <code>image/png</code>) と、バイト列へのシリアライズ化の方法です。 これは <code>TypedContent</code> データ型で表現されます。</p>
+<p>サブサイトを書く時にベースモナドを変更することがありますが、それ以外では <code>IO</code> を使います。</p>
+<p><code>HandlerT</code> モナドはユーザリクエストに関する情報 (例: クエリ文字列パラメータ) へのアクセス方法の提供や、レスポンス (例: レスポンスのヘッダ) の変更など、他にも多くのことができます。Yesod ソースコードの大半がこのモナドとなっているでしょう。</p>
+<p>さらに <code>MonadHandler</code> と呼ばれる型クラスがあります。<code>HandlerT</code> と <code>WidgetT</code> はこの型クラスのインスタンスとなっているため、両方のモナドでは共通の関数が数多く使われています。 もし API ドキュメントの中に <code>MonadHandler</code> があれば、その関数は <code>Handler</code> 関数で使うことができる関数だということを思い出してください。</p>
+<h4 id="html">Html</h4>
+<p>この型について驚くようなことは何もありません。この関数は <code>Html</code> データ型で表される HTML コンテンツを返します。しかし、それが HTML レスポンスのみしか返せないのであれば Yesod は明らかに役に立ちません。CSS、Javascript、JSON、画像、そしてより多くのものをレスポンスとして返したいのです。その際、どんなデータ型を返してあげれば良いのだろうか？という疑問が生じると思います。</p>
+<p>レスポンスを生成するためには、2つの情報を知る必要があります。それはコンテンツタイプ (例えば <code>text/html</code> や <code>image/png</code>) と、バイト列へのシリアライズ化の方法です。これは <code>TypedContent</code> データ型で表現されます。</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">data</span> <span class="dt">TypedContent</span> <span class="fu">=</span> <span class="dt">TypedContent</span> <span class="fu">!</span><span class="dt">ContentType</span> <span class="fu">!</span><span class="dt">Content</span></a></code></pre></div>
-<p>また任意のデータ型を <code>TypedContent</code> に変換できる型クラスがあります。</p>
+<p>また任意のデータ型を <code>TypedContent</code> に変換するための型クラスがあります。</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">class</span> <span class="dt">ToTypedContent</span> a <span class="kw">where</span></a>
 <a class="sourceLine" id="cb13-2" title="2"><span class="ot">    toTypedContent ::</span> a <span class="ot">-&gt;</span> <span class="dt">TypedContent</span></a></code></pre></div>
-<p><code>Html</code>、<code>Value</code> (JSON を表す。aeson パッケージが提供している)、<code>Text</code>、 <code>()</code> (空レスポンスを表す) など、よく利用する多くのデータ型は、この型クラスのインスタンスになっています。</p>
-<h2 id="arguments">Arguments</h2>
+<p><code>Html</code>、<code>Value</code> (JSON を表す。aeson パッケージが提供している)、<code>Text</code>、<code>()</code> (空レスポンスを表す) など、よく利用する多くのデータ型は、この型クラスのインスタンスになっています。</p>
+<h3 id="引数">引数</h3>
 <p>先ほどの例に戻りましょう。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1">mkYesod <span class="st">&quot;Simple&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb14-2" title="2">/ HomeR GET</a>
@@ -300,7 +310,7 @@ instance PathPiece Natural where
 <a class="sourceLine" id="cb14-4" title="4"></a>
 <a class="sourceLine" id="cb14-5" title="5"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
 <a class="sourceLine" id="cb14-6" title="6">getHomeR <span class="fu">=</span> defaultLayout [whamlet|<span class="kw">&lt;h1&gt;</span>This is simple|]</a></code></pre></div>
-<p>あらゆるルートがこの <code>HomeR</code> ほど単純ではありません。 例えば、前に見た <code>PersonR</code> のルートをもう一度確認してみましょう。 person の名前はハンドラ関数に渡す必要があります。 このやり方は率直でとてもわかりやすいものです。 以下に例を示します。</p>
+<p>あらゆるルートがこの <code>HomeR</code> ほど単純ではありません。例えば、前に見た <code>PersonR</code> のルートをもう一度確認してみましょう。人物の名前をハンドラ関数に渡す必要があります。このやり方は率直でとてもわかりやすいものです。以下に例を示します。</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb15-2" title="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
 <a class="sourceLine" id="cb15-3" title="3"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
@@ -332,58 +342,61 @@ instance PathPiece Natural where
 <a class="sourceLine" id="cb15-29" title="29"></a>
 <a class="sourceLine" id="cb15-30" title="30"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb15-31" title="31">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
-<p>引数は各ルートで dynamic pieces の型の値を指定された順番で持ちます。 また、 戻り値として <code>Html</code> と <code>Text</code> のどちらも利用可能なことに注意してください。</p>
-<h2 id="the-handler-functions">The Handler functions</h2>
-<p>大部分のコードは <code>Handler</code> モナドにあるため、それをより理解するために時間を費やすことは重要です。 この章の残りでは <code>Handler</code> モナドにある最も一般的な関数について手短に紹介します。 セッション関数についてはセッションの章で解説するため、今回は特に説明しません。</p>
-<h3 id="application-information">Application Information</h3>
-<p>アプリケーション全体の情報を返し、個々のリクエストについては何の情報も返さない関数が数多くあります。 それらをいくつか紹介します。</p>
+<p>各ルートの引数は指定された並び順のダイナミックな断片の型になります。また、 戻り値として <code>Html</code> と <code>Text</code> のどちらも利用可能なことに注意してください。</p>
+<h2 id="ハンドラ関数">ハンドラ関数</h2>
+<p>コードのほとんどは <code>Handler</code> モナドに書くのでとても重要です。より深く理解するためにもう少し時間を費やしましょう。この章の残りでは <code>Handler</code> モナドでよく使う関数について簡単に紹介したいと思います。セッション関数についてはセッションの章で解説するため、今回は特に説明しません。</p>
+<h3 id="アプリケーション情報">アプリケーション情報</h3>
+<p>アプリケーション全体の情報を返し、個々のリクエストについては何の情報もあたえない関数が数多くあります。それらをいくつか紹介します。</p>
 <h4 id="getyesod">getYesod</h4>
-<p>アプリケーションのファウンデーション値を返します。 もし, ファウンデーションに設定値を保存していれば、この関数を多用することになるでしょう。 (一応 <code>Control.Monad.Reader</code> の <code>ask</code> を使うこともできる。 <code>getYesod</code> は単にその型を特殊化したものです。)</p>
+<p>アプリケーションのファウンデーション値を返します。もし, ファウンデーションに設定値を保存していれば、この関数を多用することになるでしょう。(一応 <code>Control.Monad.Reader</code> の <code>ask</code> を使うこともできます。<code>getYesod</code> は単にその型を制限したエイリアスです。)</p>
 <h4 id="geturlrender">getUrlRender</h4>
-<p>URLレンダリング関数を返し、それは型安全URLを <code>Text</code> に変換します。 Hamlet を使えば Yesod が代わりにこの関数を呼び出してくれますが、直接呼び出す必要もたまにはあります。</p>
+<p>型安全URLを <code>Text</code> に変換する URLレンダリング関数を返します。Hamlet を使えば Yesod が代わりにこの関数を呼び出してくれますが、直接呼び出す必要もたまにはあります。</p>
 <h4 id="geturlrenderparams">getUrlRenderParams</h4>
-<p><code>getUrlRender</code> の異なるバージョンです。 型安全 URL とクエリ文字列パラメータのリストを <code>Text</code> に変換します。 この関数は必要なすべてのパーセントエンコーディングを行います。</p>
+<p><code>getUrlRender</code> の亜種です。型安全URLとクエリ文字列パラメータのリストを <code>Text</code> に変換します。この関数は必要なすべてのパーセントエンコーディングを行います。</p>
 <h3 id="リクエスト情報">リクエスト情報</h3>
-<p>現在のリクエストで欲しい情報はリクエストされたパス、クエリ文字列パラメータ、そして <code>POST</code> されたフォームデータが一般的です。 リクエエストされたパスは既に説明したようにルーティングで取り扱われます。 他の2つはフォームモジュールを使って適切に取り扱います。</p>
-<p>また、時々データを生の形で得る必要があります。 このために Yesod では <code>YesodRequest</code> データ型とそれを回収するための <code>getRequest</code> 関数が使えます。 これにより GET パラメーターの完全なリスト、クッキー、優先言語へのアクセスが可能になります。 さらに <code>lookupGetParam</code>、 <code>lookupCookie</code>、 <code>language</code> のような探索のための便利な関数があります。 POST パラメータへの生アクセスに関しては <code>runRequestBody</code> を利用しましょう。 リクエストヘッダのようにさらに多くの生データが必要な場合 <code>waiRequest</code> を使って Web Application Interface(WAI) リクエスト値にアクセスできます。 より詳細については付録の WAI を参照してください。</p>
-<h3 id="short-circuiting">Short Circuiting</h3>
-<p>即座にハンドラ関数の処理を終了し、結果をユーザに返します。</p>
+<p>現在のリクエストで欲しい情報は、リクエストされたパス、クエリ文字列パラメータ、そして <code>POST</code> されたフォームデータが一般的です。リクエストされたパスは既に説明したようにルーティングで取り扱われます。他の2つはフォームモジュールを使って適切に取り扱います。</p>
+<p>また、時々データを raw 形式で取得したいときがあります。この目的のために Yesod には <code>YesodRequest</code> データ型とリクエストを回収するための <code>getRequest</code> 関数があります。この関数により GET パラメーターの完全なリスト、クッキー、優先言語へのアクセスが可能になります。さらに <code>lookupGetParam</code>、<code>lookupCookie</code>、<code>languages</code> のような検索用の便利な関数があります。POST パラメータへの raw アクセスに関しては <code>runRequestBody</code> を利用しましょう。</p>
+<p>リクエストヘッダのようにさらに多くの raw データが必要な場合 <code>waiRequest</code> を使ってウェブアプリケーションインタフェース (WAI) リクエスト値にアクセスできます。詳細については付録の WAI を参照してください。</p>
+<h3 id="ショート">ショート</h3>
+<p>ハンドラ関数の処理を即座に終了し、結果をユーザに返します。</p>
 <h4 id="redirect">redirect</h4>
-<p>リダイレクトレスポンスをユーザ (303レスポンス) に送ります。 違うレスポンスコード (例えば、パーマネント301リダイレクト) にしたい場合は <code>redirectionWith</code> を利用します。</p>
-<p>Yesod は HTTP/1.1 クライアントには 303 レスポンス、そして HTTP/1.0 クライアントには 302 レスポンスを返します。 このひどい実装は HTTP の仕様によるものです。</p>
+<p>リダイレクトレスポンスをユーザ (303レスポンス) に送ります。違うレスポンスコード (例えば、永続的な301リダイレクト) にしたい場合は <code>redirectWith</code> を利用します。</p>
+<div class="yesod-book-notice">
+<p>Yesod は HTTP/1.1 クライアントには 303 レスポンス、そして HTTP/1.0 クライアントには 302 レスポンスを返します。このひどい実装は HTTP の仕様によるものです。</p>
+</div>
 <h4 id="notfound">notFound</h4>
-<p>404 レスポンスを返します。 ユーザが存在しないデータベース値をリクエストした場合によく利用します。</p>
+<p>404 レスポンスを返します。存在しないデータベース値をユーザがリクエストした場合などで便利です。</p>
 <h4 id="permissiondenied">permissionDenied</h4>
 <p>特定のエラーメッセージとともに403レスポンスを返します。</p>
 <h4 id="invalidargs">invalidArgs</h4>
 <p>有効でない引数のリストと一緒に400レスポンスを返します。</p>
 <h4 id="sendfile">sendFile</h4>
-<p>特定のコンテンツ型を持つファイルシステムからファイルを送信します。 これは下地の WAI ハンドラがこれを <code>sendfile</code> システムコールに最適化できるため、静的ファイルを送る方法として好まれます。 静的ファイルを送るための <code>readFile</code> は必要ありません。</p>
+<p>指定されたコンテンツタイプでファイルシステムからファイルを送信します。これは下地の WAI ハンドラが <code>sendfile</code> システムコールに最適化できるため、静的ファイルを送る方法として好まれます。静的ファイルを送るために <code>readFile</code> を使う必要はありません。</p>
 <h4 id="sendresponse">sendResponse</h4>
-<p>200ステータスコードと共に通常のレスポンスを返します。 即座にレスポンスが返るため、深くネストしたコードから抜け出す必要があるときに便利です。 また <code>ToTypedContent</code> の任意のインスタンスが利用できます。</p>
+<p>200ステータスコードと共に通常のレスポンスを返します。即座にレスポンスが返るため、深くネストしたコードから抜け出す必要があるときに便利です。また <code>ToTypedContent</code> の任意のインスタンスが利用できます。</p>
 <h4 id="sendwairesponse">sendWaiResponse</h4>
-<p>低レベルにおいて生の WAI レスポンスを送りたい場合に利用します。 これはストリーミングレスポンスやサーバーが送るイベントのような技術を作りたい場合に利用します。</p>
-<h3 id="response-headers">Response Headers</h3>
+<p>低レベルにおいて raw WAI レスポンスを送りたい場合に利用します。これはストリーミングレスポンスやサーバーが送るイベントのような技術を作るときに便利です。</p>
+<h3 id="レスポンスヘッダ">レスポンスヘッダ</h3>
 <h4 id="setcookie">setCookie</h4>
-<p>クライアントにクッキーをセットします。 この関数は有効期限を取る代わりに、分単位でクッキーの期間を取ります。 次のリクエストまでは <code>lookupCookie</code> を使っても、このクッキーは見えないことを覚えておいてください。</p>
-<h4 id="deletcookie">deletCookie</h4>
-<p>クライアントにクッキーを消去するように伝えます。 これもまた <code>lookupCookie</code> を使っても、次のリクエストまで変更は反映されません。</p>
-<h4 id="setheader-現在は-addheader">setHeader (現在は addHeader)</h4>
-<p>任意のレスポンスヘッダを設定する。</p>
+<p>クライアントにクッキーをセットします。この関数は有効期限を指定する代わりに、分単位でクッキーの持続時間を指定します。次のリクエストまでは <code>lookupCookie</code> を使っても、このクッキーは見えないことを覚えておいてください。</p>
+<h4 id="deletecookie">deleteCookie</h4>
+<p>クライアントにクッキーを消去するように伝えます。これもまた <code>lookupCookie</code> を使っても、次のリクエストまで変更は反映されません。</p>
+<h4 id="addheader">addHeader</h4>
+<p>任意のレスポンスヘッダを設定します。</p>
 <h4 id="setlanguage">setLanguage</h4>
-<p>ユーザの優先言語を設定する。 これは <code>language</code> 関数の結果として出現する。</p>
+<p>ユーザの優先言語を設定します。設定した内容は <code>languages</code> 関数の結果として現れます。</p>
 <h4 id="cacheseconds">cacheSeconds</h4>
-<p>何秒間このレスポンスをキャッシュするかを制御する Cache−Control ヘッダを設定します。 これは <a href="http://www.varnish-cache.org/">vanish on your server</a> を用いている場合に特に利用価値があります。</p>
+<p>何秒間このレスポンスをキャッシュするかを制御する Cache−Control ヘッダを設定します。これは <a href="http://www.varnish-cache.org/">vanish on your server</a> を利用している場合に特に便利です。</p>
 <h4 id="neverexpires">neverExpires</h4>
-<p>Expires ヘッダを2037年に設定します。 これはリクエストパスがそれと関連したハッシュ値を持っている場合のように、有効期限が決して切れないコンテンツと共に用いられます。</p>
+<p>Expires ヘッダを2037年に設定します。これはリクエストパスがそれと関連したハッシュ値を持っている場合のように、有効期限が決して切れないコンテンツと共に用いられます。</p>
 <h4 id="alreadyexpired">alreadyExpired</h4>
 <p>Expires ヘッダを過去に設定します。</p>
 <h4 id="expiresat">expiresAt</h4>
-<p>Expires ヘッダを特定の日/時間に設定します。</p>
-<h2 id="io-and-debugging">I/O and debugging</h2>
-<p><code>HeaderT</code> と <code>WidgetT</code> モナドトランスフォーマは両方とも多くの型クラスのインスタンスとなっています。 ここで重要な型クラスは <code>MonadIO</code> と <code>MonadLogger</code> です。 <code>MonadIO</code> によってファイルからの読み込みのようなハンドラ内における任意の <code>IO</code> アクションが可能となります。 使い方としては、呼び出しの先頭に <code>liftIO</code> を追加するだけで良いです。</p>
-<p><code>MonadLogger</code> は内蔵されたログシステムを追加します。 どのメッセージがログに記録されるか、どこにログが記録されるかを含み、システムをカスタマイズするための多くの方法があります。 デフォルトではログは標準出力、開発においてはすべてのメッセージ、製品版においては警告とエラーがログに記録されます。</p>
-<p>しばしばログを行ってるとき、ソースコードのどこでログが行われているか知りたいかもしれません。 このために <code>MonadLogger</code> は自動的にソースコードの位置をログメッセージに挿入するいくつもの便利なテンプレート Haskell 関数を提供しています。 これらの関数は <code>$logDebug</code>、 <code>$logInfo</code>、 <code>$logWarn</code>、 <code>$logError</code> です。 これらの関数を理解する例を見て見ましょう。</p>
+<p>Expires ヘッダを指定した日時に設定します。</p>
+<h2 id="入出力とデバッグ">入出力とデバッグ</h2>
+<p><code>HandlerT</code> と <code>WidgetT</code> モナドトランスフォーマーは両方とも多くの型クラスのインスタンスになっています。ここで重要な型クラスは <code>MonadIO</code> と <code>MonadLogger</code> です。<code>MonadIO</code> はファイルからの読み込みのようなハンドラ内における任意の <code>IO</code> アクションが可能となります。使い方は、呼び出しの先頭に <code>liftIO</code> を追加するだけです。</p>
+<p><code>MonadLogger</code> は組み込みのロギングシステムを追加します。どのメッセージがログに記録されるか、どこにログが記録されるかを含み、システムをカスタマイズするための多くの方法があります。デフォルトではログは標準出力、開発においてはすべてのメッセージ、製品版においては警告とエラーがログに記録されます。</p>
+<p>ログ取得時に、ソースコードのどこでログが行われているか知りたい時があります。このために <code>MonadLogger</code> は自動的にソースコードの位置をログメッセージに挿入するいくつもの便利なテンプレート Haskell 関数を提供しています。これらの関数は <code>$logDebug</code>、<code>$logInfo</code>、<code>$logWarn</code>、<code>$logError</code> です。これらの関数を使った例を見てみましょう。</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb16-2" title="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
 <a class="sourceLine" id="cb16-3" title="3"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
@@ -395,8 +408,8 @@ instance PathPiece Natural where
 <a class="sourceLine" id="cb16-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb16-10" title="10"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb16-11" title="11">    <span class="co">-- This function controls which messages are logged</span></a>
-<a class="sourceLine" id="cb16-12" title="12">    shouldLogIO <span class="dt">App</span> src level <span class="fu">=</span> <span class="fu">return</span> <span class="fu">$</span></a>
-<a class="sourceLine" id="cb16-13" title="13">        <span class="dt">True</span> <span class="co">-- good for development</span></a>
+<a class="sourceLine" id="cb16-12" title="12">    shouldLogIO <span class="dt">App</span> src level <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-13" title="13">        <span class="fu">return</span> <span class="dt">True</span> <span class="co">-- good for development</span></a>
 <a class="sourceLine" id="cb16-14" title="14">        <span class="co">-- level == LevelWarn || level == LevelError -- good for production</span></a>
 <a class="sourceLine" id="cb16-15" title="15"></a>
 <a class="sourceLine" id="cb16-16" title="16">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
@@ -409,7 +422,7 @@ instance PathPiece Natural where
 <a class="sourceLine" id="cb16-23" title="23">    edata <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> try <span class="fu">$</span> <span class="fu">readFile</span> <span class="st">&quot;datafile.txt&quot;</span></a>
 <a class="sourceLine" id="cb16-24" title="24">    <span class="kw">case</span><span class="ot"> edata ::</span> <span class="dt">Either</span> <span class="dt">IOException</span> <span class="dt">String</span> <span class="kw">of</span></a>
 <a class="sourceLine" id="cb16-25" title="25">        <span class="dt">Left</span> e <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb16-26" title="26">            <span class="fu">$</span>logError <span class="fu">$</span> <span class="st">&quot;Could not read datafile.txt&quot;</span></a>
+<a class="sourceLine" id="cb16-26" title="26">            <span class="fu">$</span>logError <span class="st">&quot;Could not read datafile.txt&quot;</span></a>
 <a class="sourceLine" id="cb16-27" title="27">            defaultLayout [whamlet|An error occurred|]</a>
 <a class="sourceLine" id="cb16-28" title="28">        <span class="dt">Right</span> str <span class="ot">-&gt;</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb16-29" title="29">            <span class="fu">$</span>logInfo <span class="st">&quot;Reading of data file succeeded&quot;</span></a>
@@ -424,13 +437,13 @@ instance PathPiece Natural where
 <a class="sourceLine" id="cb16-38" title="38"></a>
 <a class="sourceLine" id="cb16-39" title="39"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb16-40" title="40">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
-<h2 id="query-string-and-hash-hragments">Query string and hash hragments</h2>
-<p><code>redirect</code> のように URL のようなものに対して機能するいくつもの関数を見てきました。 これらの関数はすべて型安全 URL と共に機能しますが、他にはどのようなものと機能するのでしょうか？ <code>RedirectUrl</code> と呼ばれる型クラスがあり、それはある型をテキスト形式の URL に変換するメソッドを備えます。 これは型安全URL、テキスト形式のURL、そして2つの特別なインスタンスを含みます。</p>
+<h2 id="クエリ文字列とハッシュフラグメント">クエリ文字列とハッシュフラグメント</h2>
+<p><code>redirect</code> のような URL っぽいものに対して機能するいくつもの関数を見てきました。これらの関数はすべて型安全URLで機能しますが、他にはどのようなものと機能するのでしょうか？<code>RedirectUrl</code> と呼ばれる型クラスは、ある型をテキスト形式の URL に変換するメソッドを備えます。これは型安全URL、テキスト形式のURL、そしてさらに2つの特別なインスタンスが定義されています。。</p>
 <ol type="1">
 <li>URLとクエリ文字列パラメータのキー/値ペアのリストのタプル</li>
-<li>ハッシュ断片を URL の最後に追加するために使われる <code>Fragment</code> データ型</li>
+<li>ハッシュフラグメントを URL の最後に追加するときに使う <code>Fragment</code> データ型</li>
 </ol>
-<p>これら2つのインスタンスによって、付加的な情報を型安全URLに加えることができます。 これらがどのように使われるかについて、例を見てみましょう。</p>
+<p>これら2つのインスタンスによって、追加の情報を型安全URLに加えることができます。どうやって利用するか、例を見てみましょう。</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb17-2" title="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
 <a class="sourceLine" id="cb17-3" title="3"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
@@ -471,11 +484,21 @@ instance PathPiece Natural where
 <a class="sourceLine" id="cb17-38" title="38"></a>
 <a class="sourceLine" id="cb17-39" title="39"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb17-40" title="40">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
-<p>もちろん Hamletテンプレートにおいてはハッシュを直接 URL の後に追加できるのでこれは多くの場合不要です。</p>
+<p>もちろん以下のように Hamlet テンプレート内でハッシュを直接 URL の後に追加できるのでこれは多くの場合不要です。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="fu">&lt;</span>a href<span class="fu">=@</span>{<span class="dt">Link1R</span>}<span class="fu">#</span>somehash<span class="fu">&gt;</span><span class="dt">Link</span> to hash</a></code></pre></div>
-<h2 id="summary">Summary</h2>
-<p>ルーティングとディスパッチは間違いなく Yesod のコアです。 型安全URLはここから定義され、大部分のコードは <code>Handler</code> モナド内部に記述されます。 この章では Yesod において最も重要な中心的概念について説明しました。 したがって、それを適切に理解することが重要です。</p>
-<p>この章ではまた、後に扱ういくつものより複雑な Yesod に関するトピックについても触れました。 しかし、ここまでで学んだ知識だけでもかなり洗練されたウェブアプリケーションを書くことが可能なはずです。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>ルーティングとディスパッチは間違いなく Yesod の心臓部です。型安全URLはここで定義され、大部分のコードは <code>Handler</code> モナド内部に記述します。この章では Yesod において最も重要な中心的概念について説明しました。これらをを適切に理解することが重要です。</p>
+<p>この章ではまた、後に扱ういくつものより複雑な Yesod に関するトピックについても触れました。しかし、ここまでで学んだ知識だけでもかなり洗練されたウェブアプリケーションを書くことが可能なはずです。</p>
+<h2 id="本書のコード">本書のコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch07/Example01.hs">Example01.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch07/Example02.hs">Example02.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch07/Example03.hs">Example03.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch07/Example04.hs">Example04.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch07/Example05.hs">Example05.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch07/Example06.hs">Example06.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch07/Example07.hs">Example07.hs</a></li>
+</ul>
       </article>
 
       <div class="pager">
@@ -491,7 +514,7 @@ instance PathPiece Natural where
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Routing and Handlers&url=https://haskell.e-bigmoon.com/yesod/book/ch07-routing-and-handlers.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=ルーティングとハンドラ&url=https://haskell.e-bigmoon.com/yesod/book/ch07-routing-and-handlers.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/ch07-routing-and-handlers.html"><i class="mdi mdi-facebook white-text"></i></a>
