@@ -106,7 +106,7 @@ language_extensions:
 
 ## ワンライナー
 
-haskell-jp slack からの引用です。
+haskell-jp slack から借用しました。ありがとうございます！
 
 ### 指定したディレクトリ以下に対して再帰的に適用する。
 
