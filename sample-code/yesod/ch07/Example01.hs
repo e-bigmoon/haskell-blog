@@ -4,7 +4,6 @@
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE ViewPatterns      #-}
 import           Yesod
 
 import qualified Data.Text as T (pack, unpack)

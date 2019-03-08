@@ -4,10 +4,9 @@
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE ViewPatterns      #-}
 import           Yesod
 
-import Data.Text (Text)
+import           Data.Text (Text)
 
 data Simple = Simple
 
