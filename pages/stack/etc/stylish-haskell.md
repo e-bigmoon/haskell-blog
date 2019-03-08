@@ -86,7 +86,7 @@ default-extensions:
 
 このように指定するということは、ソースコード上からは上記の言語拡張を削除すると思います。
 
-その結果、**stylish-haskell** 言語拡張を認識できずにエラーを返してしまいます。
+その結果、**stylish-haskell** は言語拡張を認識できずに、以下のようなエラーを返してしまいます。
 
 ```shell
 $ stylish-haskell app/Main.hs
