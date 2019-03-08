@@ -246,7 +246,7 @@
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb3-2" title="2"></a>
 <a class="sourceLine" id="cb3-3" title="3"><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb3-4" title="4">tshow <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-4" title="4">tshow <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></a></code></pre></div>
 <p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <strong>tshow</strong> に直すようにヒントを出させることです。</p>
 <p>まだヒントを追加していないため、当然ながら現時点では <code>pack . show</code> というコードが使われていたとしても何も起こりません。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="co">-- src/Lib.hs</span></a>
@@ -255,7 +255,7 @@
 <a class="sourceLine" id="cb4-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb4-5" title="5"></a>
 <a class="sourceLine" id="cb4-6" title="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb4-7" title="7">intToText <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-7" title="7">intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>それでは <code>.hlint.yaml</code> に <code>tshow = pack . show</code> を検出するためのヒントを追記しましょう。</p>
@@ -274,7 +274,7 @@ Why not:
 <p>無事に <strong>Error</strong> として <strong>tshow</strong> のためのヒントが表示されました！</p>
 <p>ヒントの修正方法は、先程定義した <strong>intToText</strong> 関数の実装をヒント通りに書き換えるだけです。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb8-2" title="2">intToText <span class="fu">=</span> tshow</a></code></pre></div>
+<a class="sourceLine" id="cb8-2" title="2">intToText <span class="ot">=</span> tshow</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <h2 id="ヒントの定義方法について">ヒントの定義方法について</h2>
@@ -287,10 +287,10 @@ No hints</code></pre>
 <a class="sourceLine" id="cb11-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb11-5" title="5"></a>
 <a class="sourceLine" id="cb11-6" title="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb11-7" title="7">intToText <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a>
+<a class="sourceLine" id="cb11-7" title="7">intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></a>
 <a class="sourceLine" id="cb11-8" title="8"></a>
 <a class="sourceLine" id="cb11-9" title="9"><span class="ot">intToText2  ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb11-10" title="10">intToText2 x <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">$</span> <span class="fu">show</span> x</a></code></pre></div>
+<a class="sourceLine" id="cb11-10" title="10">intToText2 x <span class="ot">=</span> <span class="fu">pack</span> <span class="op">$</span> <span class="fu">show</span> x</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:6:13: Error: Use tshow
 Found:

@@ -17,71 +17,71 @@
     <updated>2019-02-13T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
 <p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Sum">Sum</a> 型が定義されています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="ot">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> b)</a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> b)</a>
 <a class="sourceLine" id="cb1-5" title="5"></a>
 <a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">0</span></a></code></pre></div>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getSum (<span class="dt">Sum</span> <span class="dv">1</span> <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span> <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span>)</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="op">&gt;</span> getSum (<span class="dt">Sum</span> <span class="dv">1</span> <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span> <span class="op">&lt;&gt;</span> <span class="fu">mempty</span>)</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="dv">3</span></a>
 <a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getSum <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Sum</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="op">&gt;</span> getSum <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Sum</span> [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>]</a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="dv">55</span></a></code></pre></div>
 <!--more-->
 <h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
 <p>Semigroup Law</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">Sum</span> b <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> c)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="fu">=</span> <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> (b <span class="fu">+</span> c)</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> (b <span class="fu">+</span> c))</a>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> (<span class="dt">Sum</span> b <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> c)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="ot">=</span> <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> (b <span class="op">+</span> c)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> (b <span class="op">+</span> c))</a>
 <a class="sourceLine" id="cb3-4" title="4"><span class="co">-- (+) の結合律より</span></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="fu">=</span> <span class="dt">Sum</span> ((a <span class="fu">+</span> b) <span class="fu">+</span> c)</a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> c</a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="fu">=</span> (<span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> c</a></code></pre></div>
+<a class="sourceLine" id="cb3-5" title="5"><span class="ot">=</span> <span class="dt">Sum</span> ((a <span class="op">+</span> b) <span class="op">+</span> c)</a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> c</a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="ot">=</span> (<span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> c</a></code></pre></div>
 <p>Monoid Law</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a)</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="fu">=</span> <span class="dt">Sum</span> a</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">=</span> <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="ot">=</span> <span class="dt">Sum</span> a</a>
 <a class="sourceLine" id="cb4-5" title="5"></a>
-<a class="sourceLine" id="cb4-6" title="6">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> a</a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span> <span class="fu">+</span> <span class="dt">Sum</span> a</a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="fu">=</span> <span class="dt">Sum</span> (<span class="dv">0</span> <span class="fu">+</span> a)</a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="fu">=</span> <span class="dt">Sum</span> a</a></code></pre></div>
+<a class="sourceLine" id="cb4-6" title="6">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> a</a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">0</span> <span class="op">+</span> <span class="dt">Sum</span> a</a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="ot">=</span> <span class="dt">Sum</span> (<span class="dv">0</span> <span class="op">+</span> a)</a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="ot">=</span> <span class="dt">Sum</span> a</a></code></pre></div>
 <h2 id="newtype-を使って定義する理由">newtype を使って定義する理由</h2>
 <p>わざわざ <code>Sum</code> という新しい型を作ってインスタンスを定義しなくても、<code>Int</code> を使って直接 <code>Semigroup</code> と <code>Monoid</code> のインスタンスを定義すれば良いんじゃないか？と普通は思います。</p>
 <p>実際に以下の定義は問題なく動きます。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Int</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-2" title="2">  (<span class="fu">&lt;&gt;</span>) <span class="fu">=</span> (<span class="fu">+</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2">  (<span class="op">&lt;&gt;</span>) <span class="ot">=</span> (<span class="op">+</span>)</a>
 <a class="sourceLine" id="cb5-3" title="3"></a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Int</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-5" title="5">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dv">0</span></a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">ghci<span class="fu">&gt;</span> <span class="dv">1</span> <span class="fu">&lt;&gt;</span> <span class="dv">2</span> <span class="fu">&lt;&gt;</span><span class="ot"> mempty ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-5" title="5">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dv">0</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">ghci<span class="op">&gt;</span> <span class="dv">1</span> <span class="op">&lt;&gt;</span> <span class="dv">2</span> <span class="op">&lt;&gt;</span><span class="ot"> mempty ::</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb6-2" title="2"><span class="dv">3</span></a>
 <a class="sourceLine" id="cb6-3" title="3"></a>
-<a class="sourceLine" id="cb6-4" title="4">ghci<span class="fu">&gt;</span> <span class="fu">mconcat</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]<span class="ot"> ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb6-4" title="4">ghci<span class="op">&gt;</span> <span class="fu">mconcat</span> [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>]<span class="ot"> ::</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb6-5" title="5"><span class="dv">55</span></a></code></pre></div>
 <p>しかし、足し算と同様に掛け算もモノイドとして定義したいと思う人もいるでしょう。</p>
 <p>この時 <code>Int</code> は既に <code>Semigroup</code>, <code>Monoid</code> のインスタンス定義があるため、同じファイルに以下のように定義することはできません。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Int</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-2" title="2">  (<span class="fu">&lt;&gt;</span>) <span class="fu">=</span> (<span class="fu">*</span>)</a>
+<a class="sourceLine" id="cb7-2" title="2">  (<span class="op">&lt;&gt;</span>) <span class="ot">=</span> (<span class="op">*</span>)</a>
 <a class="sourceLine" id="cb7-3" title="3"></a>
 <a class="sourceLine" id="cb7-4" title="4"><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Int</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-5" title="5">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dv">1</span></a></code></pre></div>
+<a class="sourceLine" id="cb7-5" title="5">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dv">1</span></a></code></pre></div>
 <p>この問題を解決する方法はいくつかありますが、このような例では <code>newtype</code> が適切ということです。</p>
 <h2 id="law-の自動チェック-quickcheck-classes">Law の自動チェック (quickcheck-classes)</h2>
 <p><a href="https://hackage.haskell.org/package/quickcheck-classes">quickcheck-classes</a> を使って <code>Semigroup law</code> と <code>Monoid law</code> がちゃんと法則を満たすかどうかチェックしてみます。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="fu">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="ot">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</a>
 <a class="sourceLine" id="cb8-3" title="3">  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Arbitrary</span>)</a>
 <a class="sourceLine" id="cb8-4" title="4"></a>
 <a class="sourceLine" id="cb8-5" title="5"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-6" title="6">  <span class="dt">Sum</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="fu">=</span> <span class="dt">Sum</span> (a <span class="fu">+</span> b)</a>
+<a class="sourceLine" id="cb8-6" title="6">  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> b)</a>
 <a class="sourceLine" id="cb8-7" title="7"></a>
 <a class="sourceLine" id="cb8-8" title="8"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-9" title="9">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">0</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-9" title="9">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">0</span></a></code></pre></div>
 <p><code>Eq</code>, <code>Show</code>, <code>Arbitrary</code> が無いとチェックできないので <code>derive</code> しています。</p>
 <p>実行はめっちゃ簡単で、<code>lawsCheck</code> 関数と <code>semigroupLaws</code> や <code>monoidLaws</code> などのチェックしたい則に対応する関数を使うだけです。</p>
 <pre class="shell"><code>&gt; import Test.QuickCheck.Classes
@@ -99,7 +99,7 @@ Monoid: Right Identity +++ OK, passed 100 tests.
 Monoid: Concatenation +++ OK, passed 100 tests.</code></pre>
 <p>参考までに <code>mempty</code> の定義が Law を満たさない場合の例も載せておきます。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb10-2" title="2">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Sum</span> <span class="dv">1</span></a></code></pre></div>
+<a class="sourceLine" id="cb10-2" title="2">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">1</span></a></code></pre></div>
 <pre class="shell"><code>&gt; import Test.QuickCheck.Classes
 &gt; import Data.Proxy
 
@@ -133,59 +133,59 @@ Monoid: Concatenation +++ OK, passed 100 tests.</code></pre>
     <updated>2019-02-12T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
 <p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Last">Last</a> 型が定義されています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Last</span> a <span class="fu">=</span> <span class="dt">Last</span> {<span class="ot"> getLast ::</span> <span class="dt">Maybe</span> a }</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Last</span> a <span class="ot">=</span> <span class="dt">Last</span> {<span class="ot"> getLast ::</span> <span class="dt">Maybe</span> a }</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">Last</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span> <span class="fu">=</span> a</a>
-<a class="sourceLine" id="cb1-5" title="5">  _ <span class="fu">&lt;&gt;</span> b            <span class="fu">=</span> b</a>
+<a class="sourceLine" id="cb1-4" title="4">  a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span> <span class="ot">=</span> a</a>
+<a class="sourceLine" id="cb1-5" title="5">  _ <span class="op">&lt;&gt;</span> b            <span class="ot">=</span> b</a>
 <a class="sourceLine" id="cb1-6" title="6"></a>
 <a class="sourceLine" id="cb1-7" title="7"><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Last</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-8" title="8">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-8" title="8">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a></code></pre></div>
 <p><code>Last</code> モノイドは <code>First</code> モノイドとほとんど同じですが、<code>&lt;&gt;</code> で結合した時に最後の値を返すという部分が異なります。</p>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getLast (<span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="op">&gt;</span> getLast (<span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Last</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="dt">Just</span> <span class="st">&quot;world&quot;</span></a>
 <a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getLast <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Last</span> [<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="st">&quot;world&quot;</span>]</a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="op">&gt;</span> getLast <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Last</span> [<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="st">&quot;world&quot;</span>]</a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="dt">Just</span> <span class="st">&quot;world&quot;</span></a></code></pre></div>
 <!--more-->
 <h2 id="semigroup-law-の確認">Semigroup law の確認</h2>
 <h3 id="case-1-b-nothing-c-nothing">Case (1) (b == Nothing, c == Nothing)</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">Last</span> b <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> c)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> b</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="fu">=</span> <span class="dt">Last</span> a</a></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  (<span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> c</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> b</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">Last</span> a</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> (<span class="dt">Last</span> b <span class="op">&lt;&gt;</span> <span class="dt">Last</span> c)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> b</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ot">=</span> <span class="dt">Last</span> a</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  (<span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Last</span> c</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> b</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">=</span> <span class="dt">Last</span> a</a></code></pre></div>
 <h3 id="case-2-b-just-b-c-nothing">Case (2) (b == Just b’, c == Nothing)</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">Last</span> b <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> c)</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> b</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="fu">=</span> <span class="dt">Last</span> b</a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">  (<span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> c</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> b</a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="fu">=</span> <span class="dt">Last</span> b</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> (<span class="dt">Last</span> b <span class="op">&lt;&gt;</span> <span class="dt">Last</span> c)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> b</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="ot">=</span> <span class="dt">Last</span> b</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">  (<span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Last</span> c</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> b</a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="ot">=</span> <span class="dt">Last</span> b</a></code></pre></div>
 <h3 id="case-3-c-just-c">Case (3) (c == Just c’)</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1">  <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">Last</span> b <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> c)</a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> c</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="fu">=</span> <span class="dt">Last</span> c</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">  (<span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> c</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> c</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1">  <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> (<span class="dt">Last</span> b <span class="op">&lt;&gt;</span> <span class="dt">Last</span> c)</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> c</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="ot">=</span> <span class="dt">Last</span> c</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">  (<span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Last</span> c</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> c</a></code></pre></div>
 <h2 id="monoid-law">Monoid Law</h2>
 <h3 id="case-1-a-nothing">Case (1) (a = Nothing)</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="fu">=</span> <span class="dt">Last</span> a</a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="ot">=</span> <span class="dt">Last</span> a</a>
 <a class="sourceLine" id="cb9-4" title="4"></a>
-<a class="sourceLine" id="cb9-5" title="5">  <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> a</a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="fu">=</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="fu">=</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-5" title="5">  <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Last</span> a</a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="ot">=</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="ot">=</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a></code></pre></div>
 <h3 id="case-2-a-just-a">Case (2) (a = Just a’)</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">  <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="fu">=</span> <span class="dt">Last</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="fu">=</span> <span class="dt">Last</span> a</a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">  <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="ot">=</span> <span class="dt">Last</span> a <span class="op">&lt;&gt;</span> <span class="dt">Last</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="ot">=</span> <span class="dt">Last</span> a</a>
 <a class="sourceLine" id="cb10-4" title="4"></a>
-<a class="sourceLine" id="cb10-5" title="5">  <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Last</span> a</a>
-<a class="sourceLine" id="cb10-6" title="6"><span class="fu">=</span> <span class="dt">Last</span> a</a></code></pre></div>
+<a class="sourceLine" id="cb10-5" title="5">  <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Last</span> a</a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="ot">=</span> <span class="dt">Last</span> a</a></code></pre></div>
 <h2 id="具体例-partial-options-monoid">具体例: Partial Options Monoid</h2>
 <p>コマンドライン引数によりオプションを受け取り、指定されなかったオプションの値に対してはデフォルト値を利用するという場面で <code>Last</code> モノイドが活用できそうです。</p>
 <h3 id="コード">コード</h3>
@@ -196,58 +196,58 @@ Monoid: Concatenation +++ OK, passed 100 tests.</code></pre>
 <a class="sourceLine" id="cb11-4" title="4"><span class="kw">import</span> <span class="dt">Data.Monoid</span></a>
 <a class="sourceLine" id="cb11-5" title="5"><span class="kw">import</span> <span class="dt">Options.Applicative</span></a>
 <a class="sourceLine" id="cb11-6" title="6"></a>
-<a class="sourceLine" id="cb11-7" title="7"><span class="kw">data</span> <span class="dt">Options</span> <span class="fu">=</span> <span class="dt">Options</span></a>
+<a class="sourceLine" id="cb11-7" title="7"><span class="kw">data</span> <span class="dt">Options</span> <span class="ot">=</span> <span class="dt">Options</span></a>
 <a class="sourceLine" id="cb11-8" title="8">  {<span class="ot"> oInputPath  ::</span> <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb11-9" title="9">  ,<span class="ot"> oOutputPath ::</span> <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb11-10" title="10">  ,<span class="ot"> oLogLevel   ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb11-11" title="11">  } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</a>
 <a class="sourceLine" id="cb11-12" title="12"></a>
-<a class="sourceLine" id="cb11-13" title="13"><span class="kw">data</span> <span class="dt">PartialOptions</span> <span class="fu">=</span> <span class="dt">PartialOptions</span></a>
+<a class="sourceLine" id="cb11-13" title="13"><span class="kw">data</span> <span class="dt">PartialOptions</span> <span class="ot">=</span> <span class="dt">PartialOptions</span></a>
 <a class="sourceLine" id="cb11-14" title="14">  {<span class="ot"> poInputPath  ::</span> <span class="dt">Last</span> <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb11-15" title="15">  ,<span class="ot"> poOutputPath ::</span> <span class="dt">Last</span> <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb11-16" title="16">  ,<span class="ot"> poLogLevel   ::</span> <span class="dt">Last</span> (<span class="dt">Maybe</span> <span class="dt">Int</span>)</a>
 <a class="sourceLine" id="cb11-17" title="17">  } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</a>
 <a class="sourceLine" id="cb11-18" title="18"></a>
 <a class="sourceLine" id="cb11-19" title="19"><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">PartialOptions</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-20" title="20">  x <span class="fu">&lt;&gt;</span> y <span class="fu">=</span></a>
+<a class="sourceLine" id="cb11-20" title="20">  x <span class="op">&lt;&gt;</span> y <span class="ot">=</span></a>
 <a class="sourceLine" id="cb11-21" title="21">    <span class="dt">PartialOptions</span></a>
-<a class="sourceLine" id="cb11-22" title="22">      { poInputPath  <span class="fu">=</span> poInputPath  x <span class="fu">&lt;&gt;</span> poInputPath  y</a>
-<a class="sourceLine" id="cb11-23" title="23">      , poOutputPath <span class="fu">=</span> poOutputPath x <span class="fu">&lt;&gt;</span> poOutputPath y</a>
-<a class="sourceLine" id="cb11-24" title="24">      , poLogLevel   <span class="fu">=</span> poLogLevel   x <span class="fu">&lt;&gt;</span> poLogLevel   y</a>
+<a class="sourceLine" id="cb11-22" title="22">      { poInputPath  <span class="ot">=</span> poInputPath  x <span class="op">&lt;&gt;</span> poInputPath  y</a>
+<a class="sourceLine" id="cb11-23" title="23">      , poOutputPath <span class="ot">=</span> poOutputPath x <span class="op">&lt;&gt;</span> poOutputPath y</a>
+<a class="sourceLine" id="cb11-24" title="24">      , poLogLevel   <span class="ot">=</span> poLogLevel   x <span class="op">&lt;&gt;</span> poLogLevel   y</a>
 <a class="sourceLine" id="cb11-25" title="25">      }</a>
 <a class="sourceLine" id="cb11-26" title="26"></a>
 <a class="sourceLine" id="cb11-27" title="27"><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">PartialOptions</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-28" title="28">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">PartialOptions</span> <span class="fu">mempty</span> <span class="fu">mempty</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb11-28" title="28">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">PartialOptions</span> <span class="fu">mempty</span> <span class="fu">mempty</span> <span class="fu">mempty</span></a>
 <a class="sourceLine" id="cb11-29" title="29"></a>
 <a class="sourceLine" id="cb11-30" title="30"><span class="ot">defaultPartialOptions ::</span> <span class="dt">PartialOptions</span></a>
-<a class="sourceLine" id="cb11-31" title="31">defaultPartialOptions <span class="fu">=</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb11-32" title="32">  { poInputPath  <span class="fu">=</span> <span class="fu">pure</span> <span class="st">&quot;input&quot;</span></a>
-<a class="sourceLine" id="cb11-33" title="33">  , poLogLevel   <span class="fu">=</span> <span class="fu">pure</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb11-31" title="31">defaultPartialOptions <span class="ot">=</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb11-32" title="32">  { poInputPath  <span class="ot">=</span> <span class="fu">pure</span> <span class="st">&quot;input&quot;</span></a>
+<a class="sourceLine" id="cb11-33" title="33">  , poLogLevel   <span class="ot">=</span> <span class="fu">pure</span> <span class="dt">Nothing</span></a>
 <a class="sourceLine" id="cb11-34" title="34">  }</a>
 <a class="sourceLine" id="cb11-35" title="35"></a>
 <a class="sourceLine" id="cb11-36" title="36"><span class="ot">lastOption ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> (<span class="dt">Last</span> a)</a>
-<a class="sourceLine" id="cb11-37" title="37">lastOption <span class="fu">=</span> <span class="fu">fmap</span> <span class="dt">Last</span> <span class="fu">.</span> optional</a>
+<a class="sourceLine" id="cb11-37" title="37">lastOption <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">Last</span> <span class="op">.</span> optional</a>
 <a class="sourceLine" id="cb11-38" title="38"></a>
 <a class="sourceLine" id="cb11-39" title="39"><span class="ot">partialOptionsParser ::</span> <span class="dt">Parser</span> <span class="dt">PartialOptions</span></a>
-<a class="sourceLine" id="cb11-40" title="40">partialOptionsParser <span class="fu">=</span> <span class="dt">PartialOptions</span></a>
-<a class="sourceLine" id="cb11-41" title="41">  <span class="fu">&lt;$&gt;</span> lastOption (strOption (short <span class="ch">&#39;i&#39;</span>))</a>
-<a class="sourceLine" id="cb11-42" title="42">  <span class="fu">&lt;*&gt;</span> lastOption (strOption (short <span class="ch">&#39;o&#39;</span>))</a>
-<a class="sourceLine" id="cb11-43" title="43">  <span class="fu">&lt;*&gt;</span> lastOption (<span class="dt">Just</span> <span class="fu">&lt;$&gt;</span> option auto (short <span class="ch">&#39;l&#39;</span>))</a>
+<a class="sourceLine" id="cb11-40" title="40">partialOptionsParser <span class="ot">=</span> <span class="dt">PartialOptions</span></a>
+<a class="sourceLine" id="cb11-41" title="41">  <span class="op">&lt;$&gt;</span> lastOption (strOption (short <span class="ch">&#39;i&#39;</span>))</a>
+<a class="sourceLine" id="cb11-42" title="42">  <span class="op">&lt;*&gt;</span> lastOption (strOption (short <span class="ch">&#39;o&#39;</span>))</a>
+<a class="sourceLine" id="cb11-43" title="43">  <span class="op">&lt;*&gt;</span> lastOption (<span class="dt">Just</span> <span class="op">&lt;$&gt;</span> option auto (short <span class="ch">&#39;l&#39;</span>))</a>
 <a class="sourceLine" id="cb11-44" title="44"></a>
 <a class="sourceLine" id="cb11-45" title="45"><span class="ot">lastToEither ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Last</span> a <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> a</a>
-<a class="sourceLine" id="cb11-46" title="46">lastToEither errMsg <span class="fu">=</span> <span class="fu">maybe</span> (<span class="dt">Left</span> errMsg) <span class="dt">Right</span> <span class="fu">.</span> getLast</a>
+<a class="sourceLine" id="cb11-46" title="46">lastToEither errMsg <span class="ot">=</span> <span class="fu">maybe</span> (<span class="dt">Left</span> errMsg) <span class="dt">Right</span> <span class="op">.</span> getLast</a>
 <a class="sourceLine" id="cb11-47" title="47"></a>
 <a class="sourceLine" id="cb11-48" title="48"><span class="ot">mkOptions ::</span> <span class="dt">PartialOptions</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">String</span> <span class="dt">Options</span></a>
-<a class="sourceLine" id="cb11-49" title="49">mkOptions <span class="dt">PartialOptions</span> {<span class="fu">..</span>} <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb11-49" title="49">mkOptions <span class="dt">PartialOptions</span> {<span class="op">..</span>} <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb11-50" title="50">  oInputPath  <span class="ot">&lt;-</span> lastToEither <span class="st">&quot;Missing input path&quot;</span>  poInputPath</a>
 <a class="sourceLine" id="cb11-51" title="51">  oOutputPath <span class="ot">&lt;-</span> lastToEither <span class="st">&quot;Missing output path&quot;</span> poOutputPath</a>
 <a class="sourceLine" id="cb11-52" title="52">  oLogLevel   <span class="ot">&lt;-</span> lastToEither <span class="st">&quot;Missing loglevel&quot;</span>    poLogLevel</a>
-<a class="sourceLine" id="cb11-53" title="53">  <span class="fu">return</span> <span class="dt">Options</span> {<span class="fu">..</span>}</a>
+<a class="sourceLine" id="cb11-53" title="53">  <span class="fu">return</span> <span class="dt">Options</span> {<span class="op">..</span>}</a>
 <a class="sourceLine" id="cb11-54" title="54"></a>
 <a class="sourceLine" id="cb11-55" title="55"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb11-56" title="56">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb11-57" title="57">  options <span class="ot">&lt;-</span> execParser <span class="fu">$</span> info partialOptionsParser <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb11-58" title="58">  <span class="kw">case</span> mkOptions (defaultPartialOptions <span class="fu">&lt;&gt;</span> options) <span class="kw">of</span></a>
+<a class="sourceLine" id="cb11-56" title="56">main <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb11-57" title="57">  options <span class="ot">&lt;-</span> execParser <span class="op">$</span> info partialOptionsParser <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb11-58" title="58">  <span class="kw">case</span> mkOptions (defaultPartialOptions <span class="op">&lt;&gt;</span> options) <span class="kw">of</span></a>
 <a class="sourceLine" id="cb11-59" title="59">    <span class="dt">Left</span>  msg <span class="ot">-&gt;</span> <span class="fu">putStrLn</span> msg</a>
 <a class="sourceLine" id="cb11-60" title="60">    <span class="dt">Right</span> opt <span class="ot">-&gt;</span> <span class="fu">print</span> opt</a></code></pre></div>
 <p><code>defaultPartialOptions</code> でオプションの初期値を用意しておきます。ここで指定されなかったフィールドの値はオプションで必ず指定しなければなりません。今回の例では <code>poOutputPath</code> が必須オプションになっています。</p>
@@ -412,93 +412,93 @@ Options
     <updated>2019-02-11T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
 <p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:First">First</a> 型が定義されています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="fu">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> <span class="dt">Maybe</span> a }</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> <span class="dt">Maybe</span> a }</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">First</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">First</span> <span class="dt">Nothing</span> <span class="fu">&lt;&gt;</span> b <span class="fu">=</span> b</a>
-<a class="sourceLine" id="cb1-5" title="5">  a             <span class="fu">&lt;&gt;</span> _ <span class="fu">=</span> a</a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">First</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> b <span class="ot">=</span> b</a>
+<a class="sourceLine" id="cb1-5" title="5">  a             <span class="op">&lt;&gt;</span> _ <span class="ot">=</span> a</a>
 <a class="sourceLine" id="cb1-6" title="6"></a>
 <a class="sourceLine" id="cb1-7" title="7"><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">First</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-8" title="8">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">First</span> <span class="dt">Nothing</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-8" title="8">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">First</span> <span class="dt">Nothing</span></a></code></pre></div>
 <p><code>First</code> モノイドは <code>Endo</code> や <code>Dual</code> モノイドとは定義の雰囲気が少し違いますね。</p>
 <ul>
 <li><code>getFirst :: a</code> ではなく <code>getFirst :: Maybe a</code> となっている</li>
 <li>インスタンス宣言にクラス制約が必要無い</li>
 </ul>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getFirst (<span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="op">&gt;</span> getFirst (<span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></a>
 <a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getFirst <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">First</span> [<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="st">&quot;world&quot;</span>]</a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="op">&gt;</span> getFirst <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">First</span> [<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="st">&quot;world&quot;</span>]</a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></a></code></pre></div>
 <p>常に最初の値を返すという、一見意味の無さそうな <code>First</code> モノイドも実は便利に使えたりします。</p>
 <!--more-->
 <h2 id="semigroup-law-の確認">Semigroup law の確認</h2>
 <h3 id="case-1-a-nothing-b-nothing">Case (1) (a == Nothing, b == Nothing)</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="fu">=</span> <span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="fu">=</span> <span class="dt">First</span> c</a></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  (<span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="dt">First</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">First</span> c</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ot">=</span> <span class="dt">First</span> c</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">=</span> <span class="dt">First</span> c</a></code></pre></div>
 <h3 id="case-2-a-nothing-b-just-b">Case (2) (a == Nothing, b == Just b’)</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c)</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="fu">=</span> <span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="fu">=</span> <span class="dt">First</span> b</a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">  (<span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="dt">First</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="fu">=</span> <span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="fu">=</span> <span class="dt">First</span> b</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="ot">=</span> <span class="dt">First</span> b</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="ot">=</span> <span class="dt">First</span> b</a></code></pre></div>
 <h3 id="case-3-a-just-a">Case (3) (a == Just a’)</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c)</a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="fu">=</span> <span class="dt">First</span> a</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">  (<span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="dt">First</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="fu">=</span> <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="fu">=</span> <span class="dt">First</span> a</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="ot">=</span> <span class="dt">First</span> a</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="ot">=</span> <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="ot">=</span> <span class="dt">First</span> a</a></code></pre></div>
 <h2 id="monoid-law">Monoid Law</h2>
 <h3 id="case-1-a-nothing">Case (1) (a = Nothing)</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="fu">=</span> <span class="dt">First</span> a</a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="ot">=</span> <span class="dt">First</span> a</a>
 <a class="sourceLine" id="cb9-3" title="3"></a>
-<a class="sourceLine" id="cb9-4" title="4">  <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> a</a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="fu">=</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> a</a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="fu">=</span> <span class="dt">First</span> a</a></code></pre></div>
+<a class="sourceLine" id="cb9-4" title="4">  <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="ot">=</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="ot">=</span> <span class="dt">First</span> a</a></code></pre></div>
 <h3 id="case-2-a-just-a">Case (2) (a = Just a’)</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="fu">=</span> <span class="dt">First</span> a</a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="ot">=</span> <span class="dt">First</span> a</a>
 <a class="sourceLine" id="cb10-3" title="3"></a>
-<a class="sourceLine" id="cb10-4" title="4">  <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> a</a>
-<a class="sourceLine" id="cb10-5" title="5"><span class="fu">=</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> a</a>
-<a class="sourceLine" id="cb10-6" title="6"><span class="fu">=</span> <span class="dt">First</span> a</a></code></pre></div>
+<a class="sourceLine" id="cb10-4" title="4">  <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="ot">=</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="ot">=</span> <span class="dt">First</span> a</a></code></pre></div>
 <h2 id="なぜ-getfirst-a-にしないのか">なぜ getFirst :: a にしないのか？</h2>
 <p>普通は他のモノイド同様に以下のように定義したくなりますよね。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="fu">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> a }</a>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> a }</a>
 <a class="sourceLine" id="cb11-2" title="2"></a>
 <a class="sourceLine" id="cb11-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">First</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-4" title="4">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> _ <span class="fu">=</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb11-4" title="4">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> _ <span class="ot">=</span> <span class="dt">First</span> a</a>
 <a class="sourceLine" id="cb11-5" title="5"></a>
 <a class="sourceLine" id="cb11-6" title="6"><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">First</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">First</span> <span class="fu">mempty</span></a></code></pre></div>
+<a class="sourceLine" id="cb11-7" title="7">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">First</span> <span class="fu">mempty</span></a></code></pre></div>
 <p>ではなぜこのような定義にしないのでしょうか？</p>
 <p>答えは、<code>Monoid law</code> を満たさないからです。実際に確認してみましょう。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span></a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="fu">=</span> <span class="dt">First</span> a</a>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="ot">=</span> <span class="dt">First</span> a</a>
 <a class="sourceLine" id="cb12-3" title="3"></a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> a</a>
-<a class="sourceLine" id="cb12-5" title="5"><span class="fu">=</span> <span class="dt">First</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">First</span> a</a>
-<a class="sourceLine" id="cb12-6" title="6"><span class="fu">=</span> <span class="dt">First</span> <span class="fu">mempty</span></a></code></pre></div>
+<a class="sourceLine" id="cb12-4" title="4"><span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="ot">=</span> <span class="dt">First</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</a>
+<a class="sourceLine" id="cb12-6" title="6"><span class="ot">=</span> <span class="dt">First</span> <span class="fu">mempty</span></a></code></pre></div>
 <p>このように成り立ちません。ちなみに <code>Semigroup law</code> は満たします。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">  <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">First</span> b <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c)</a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="fu">=</span> <span class="dt">First</span> a</a>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="ot">=</span> <span class="dt">First</span> a</a>
 <a class="sourceLine" id="cb13-3" title="3"></a>
-<a class="sourceLine" id="cb13-4" title="4">  (<span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="dt">First</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb13-5" title="5"><span class="fu">=</span> <span class="dt">First</span> a <span class="fu">&lt;&gt;</span> <span class="dt">First</span> c</a>
-<a class="sourceLine" id="cb13-6" title="6"><span class="fu">=</span> <span class="dt">First</span> a</a></code></pre></div>
+<a class="sourceLine" id="cb13-4" title="4">  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="ot">=</span> <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="ot">=</span> <span class="dt">First</span> a</a></code></pre></div>
 <p>つまり、Semigroup からモノイドにするために <code>Maybe</code> でラップしてあると考えて差し支えないと思います。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="co">-- Semigroup</span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="fu">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> a }</a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> a }</a>
 <a class="sourceLine" id="cb14-3" title="3"></a>
 <a class="sourceLine" id="cb14-4" title="4"><span class="co">-- Semigroup, Monoid</span></a>
-<a class="sourceLine" id="cb14-5" title="5"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="fu">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> <span class="dt">Maybe</span> a }</a></code></pre></div>
+<a class="sourceLine" id="cb14-5" title="5"><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> <span class="dt">Maybe</span> a }</a></code></pre></div>
 <h2 id="具体例-コマンドラインパーサー">具体例: コマンドラインパーサー</h2>
 <p>僕が <code>First</code> モノイドの存在を認識したのは <code>stack</code> のコードで <a href="https://www.stackage.org/haddock/lts-13.6/stack-1.9.3/Stack-Types-Config.html#t:ConfigMonoid">ConfigMonoid</a> というデータ型があり、その設定値に <code>First Bool</code> などの型が使われているという場面でした。</p>
 <h3 id="コード">コード</h3>
@@ -508,31 +508,31 @@ Options
 <a class="sourceLine" id="cb15-3" title="3"><span class="kw">import</span> <span class="dt">Data.Monoid</span></a>
 <a class="sourceLine" id="cb15-4" title="4"><span class="kw">import</span> <span class="dt">Options.Applicative</span></a>
 <a class="sourceLine" id="cb15-5" title="5"></a>
-<a class="sourceLine" id="cb15-6" title="6"><span class="kw">data</span> <span class="dt">PartialOptions</span> <span class="fu">=</span> <span class="dt">PartialOptions</span></a>
+<a class="sourceLine" id="cb15-6" title="6"><span class="kw">data</span> <span class="dt">PartialOptions</span> <span class="ot">=</span> <span class="dt">PartialOptions</span></a>
 <a class="sourceLine" id="cb15-7" title="7">  {<span class="ot"> poInputPath  ::</span> <span class="dt">First</span> <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb15-8" title="8">  ,<span class="ot"> poOutputPath ::</span> <span class="dt">Last</span>  <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb15-9" title="9">  } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</a>
 <a class="sourceLine" id="cb15-10" title="10"></a>
 <a class="sourceLine" id="cb15-11" title="11"><span class="ot">partialOptionsParser ::</span> <span class="dt">Parser</span> <span class="dt">PartialOptions</span></a>
-<a class="sourceLine" id="cb15-12" title="12">partialOptionsParser <span class="fu">=</span> toPartialOptions</a>
-<a class="sourceLine" id="cb15-13" title="13">  <span class="fu">&lt;$&gt;</span> many (optFilePathP <span class="ch">&#39;i&#39;</span>)</a>
-<a class="sourceLine" id="cb15-14" title="14">  <span class="fu">&lt;*&gt;</span> many (optFilePathP <span class="ch">&#39;o&#39;</span>)</a>
+<a class="sourceLine" id="cb15-12" title="12">partialOptionsParser <span class="ot">=</span> toPartialOptions</a>
+<a class="sourceLine" id="cb15-13" title="13">  <span class="op">&lt;$&gt;</span> many (optFilePathP <span class="ch">&#39;i&#39;</span>)</a>
+<a class="sourceLine" id="cb15-14" title="14">  <span class="op">&lt;*&gt;</span> many (optFilePathP <span class="ch">&#39;o&#39;</span>)</a>
 <a class="sourceLine" id="cb15-15" title="15">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb15-16" title="16">    toPartialOptions input output <span class="fu">=</span></a>
+<a class="sourceLine" id="cb15-16" title="16">    toPartialOptions input output <span class="ot">=</span></a>
 <a class="sourceLine" id="cb15-17" title="17">      <span class="dt">PartialOptions</span></a>
-<a class="sourceLine" id="cb15-18" title="18">        { poInputPath  <span class="fu">=</span> lift input</a>
-<a class="sourceLine" id="cb15-19" title="19">        , poOutputPath <span class="fu">=</span> lift output</a>
+<a class="sourceLine" id="cb15-18" title="18">        { poInputPath  <span class="ot">=</span> lift input</a>
+<a class="sourceLine" id="cb15-19" title="19">        , poOutputPath <span class="ot">=</span> lift output</a>
 <a class="sourceLine" id="cb15-20" title="20">        }</a>
 <a class="sourceLine" id="cb15-21" title="21"></a>
 <a class="sourceLine" id="cb15-22" title="22"><span class="ot">lift ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monoid</span> (f a), <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> f a</a>
-<a class="sourceLine" id="cb15-23" title="23">lift <span class="fu">=</span> <span class="fu">foldMap</span> <span class="fu">pure</span></a>
+<a class="sourceLine" id="cb15-23" title="23">lift <span class="ot">=</span> <span class="fu">foldMap</span> <span class="fu">pure</span></a>
 <a class="sourceLine" id="cb15-24" title="24"></a>
 <a class="sourceLine" id="cb15-25" title="25"><span class="ot">optFilePathP ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> <span class="dt">FilePath</span></a>
-<a class="sourceLine" id="cb15-26" title="26">optFilePathP <span class="fu">=</span> strOption <span class="fu">.</span> short</a>
+<a class="sourceLine" id="cb15-26" title="26">optFilePathP <span class="ot">=</span> strOption <span class="op">.</span> short</a>
 <a class="sourceLine" id="cb15-27" title="27"></a>
 <a class="sourceLine" id="cb15-28" title="28"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb15-29" title="29">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb15-30" title="30">  options <span class="ot">&lt;-</span> execParser <span class="fu">$</span> info partialOptionsParser <span class="fu">mempty</span> </a>
+<a class="sourceLine" id="cb15-29" title="29">main <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb15-30" title="30">  options <span class="ot">&lt;-</span> execParser <span class="op">$</span> info partialOptionsParser <span class="fu">mempty</span> </a>
 <a class="sourceLine" id="cb15-31" title="31">  <span class="fu">print</span> options</a></code></pre></div>
 <h3 id="実行結果">実行結果</h3>
 <p>実行すると何が起きているかわかります。(手動で改行等を入れて見やすくしています)</p>
@@ -587,22 +587,22 @@ PartialOptions
     <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
 <p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Endo">Endo</a> 型が定義されています。</p>
 <p><code>Endo</code> という名前は <code>自己準同型 (Endomorphism)</code> に由来します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Endo</span> a <span class="fu">=</span> <span class="dt">Endo</span> {<span class="ot"> appEndo ::</span> a <span class="ot">-&gt;</span> a }</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Endo</span> a <span class="ot">=</span> <span class="dt">Endo</span> {<span class="ot"> appEndo ::</span> a <span class="ot">-&gt;</span> a }</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> g <span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> g)</a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g <span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g)</a>
 <a class="sourceLine" id="cb1-5" title="5"></a>
 <a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Endo</span> <span class="fu">id</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span></a></code></pre></div>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> f <span class="fu">=</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="fu">+</span><span class="dv">1</span>), (<span class="fu">*</span><span class="dv">2</span>), <span class="fu">negate</span>]</a>
-<a class="sourceLine" id="cb2-2" title="2">ghci<span class="fu">&gt;</span> <span class="fu">print</span> <span class="fu">$</span> appEndo f <span class="dv">5</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="fu">-</span><span class="dv">9</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="op">+</span><span class="dv">1</span>), (<span class="op">*</span><span class="dv">2</span>), <span class="fu">negate</span>]</a>
+<a class="sourceLine" id="cb2-2" title="2">ghci<span class="op">&gt;</span> <span class="fu">print</span> <span class="op">$</span> appEndo f <span class="dv">5</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="op">-</span><span class="dv">9</span></a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
-<a class="sourceLine" id="cb2-5" title="5">ghci<span class="fu">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>) <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></a>
+<a class="sourceLine" id="cb2-5" title="5">ghci<span class="op">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>) <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></a>
 <a class="sourceLine" id="cb2-6" title="6"><span class="st">&quot;Hello, Haskell!&quot;</span></a>
 <a class="sourceLine" id="cb2-7" title="7"></a>
-<a class="sourceLine" id="cb2-8" title="8">ghci<span class="fu">&gt;</span> (appEndo <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>), <span class="fu">id</span>, (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)]) <span class="st">&quot;Haskell&quot;</span></a>
+<a class="sourceLine" id="cb2-8" title="8">ghci<span class="op">&gt;</span> (appEndo <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>), <span class="fu">id</span>, (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)]) <span class="st">&quot;Haskell&quot;</span></a>
 <a class="sourceLine" id="cb2-9" title="9"><span class="st">&quot;Hello, Haskell!&quot;</span></a></code></pre></div>
 <p><code>appEndo</code> すると関数が出てくるところがポイントですね。2つ目の評価の流れをざっくり追うとこんな感じです。</p>
 <pre class="haskll"><code>  appEndo (Endo (&quot;Hello, &quot; ++) &lt;&gt; Endo (++ &quot;!&quot;)) &quot;Haskell&quot;
@@ -615,63 +615,63 @@ PartialOptions
 <!--more-->
 <h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
 <p>Semigroup Law</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> (<span class="dt">Endo</span> g <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> h)</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> (g <span class="fu">.</span> h)</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> (g <span class="fu">.</span> h))</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="dt">Endo</span> g <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (g <span class="op">.</span> h)</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> (g <span class="op">.</span> h))</a>
 <a class="sourceLine" id="cb4-4" title="4"><span class="co">-- Category の定義より f . (g . h) == (f . g) . h</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="fu">=</span> <span class="dt">Endo</span> ((f <span class="fu">.</span> g) <span class="fu">.</span> h)</a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> g) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> h</a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="fu">=</span> (<span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> g) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> h</a></code></pre></div>
+<a class="sourceLine" id="cb4-5" title="5"><span class="ot">=</span> <span class="dt">Endo</span> ((f <span class="op">.</span> g) <span class="op">.</span> h)</a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="ot">=</span> (<span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</a></code></pre></div>
 <p>Monoid Law</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a)</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="fu">=</span> <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> <span class="fu">id</span>)</a>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> <span class="fu">id</span>)</a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="co">-- Category の定義より f . id == f</span></a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="fu">=</span> <span class="dt">Endo</span> f</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="ot">=</span> <span class="dt">Endo</span> f</a>
 <a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> f</a>
-<a class="sourceLine" id="cb5-8" title="8"><span class="fu">=</span> <span class="dt">Endo</span> <span class="fu">id</span> <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb5-9" title="9"><span class="fu">=</span> <span class="dt">Endo</span> (<span class="fu">id</span> <span class="fu">.</span> f)</a>
+<a class="sourceLine" id="cb5-7" title="7">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> f</a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="ot">=</span> <span class="dt">Endo</span> (<span class="fu">id</span> <span class="op">.</span> f)</a>
 <a class="sourceLine" id="cb5-10" title="10"><span class="co">-- Category の定義より id . f == f</span></a>
-<a class="sourceLine" id="cb5-11" title="11"><span class="fu">=</span> <span class="dt">Endo</span> f</a></code></pre></div>
+<a class="sourceLine" id="cb5-11" title="11"><span class="ot">=</span> <span class="dt">Endo</span> f</a></code></pre></div>
 <h3 id="f-.-g-.-h-f-.-g-.-h"><code>f . (g . h) == (f . g) . h</code></h3>
 <p><code>(.)</code> の定義</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a>
-<a class="sourceLine" id="cb6-2" title="2">f <span class="fu">.</span> g <span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g x)</a></code></pre></div>
+<a class="sourceLine" id="cb6-2" title="2">f <span class="op">.</span> g <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g x)</a></code></pre></div>
 <p>証明</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1">(<span class="dt">LHS</span>)</a>
-<a class="sourceLine" id="cb7-2" title="2">  f <span class="fu">.</span> (g <span class="fu">.</span> h)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f ((g <span class="fu">.</span> h) x)</a>
-<a class="sourceLine" id="cb7-4" title="4"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f ((\y <span class="ot">-&gt;</span> g (h y)) x)</a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a>
+<a class="sourceLine" id="cb7-2" title="2">  f <span class="op">.</span> (g <span class="op">.</span> h)</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((g <span class="op">.</span> h) x)</a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((\y <span class="ot">-&gt;</span> g (h y)) x)</a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a>
 <a class="sourceLine" id="cb7-6" title="6"></a>
 <a class="sourceLine" id="cb7-7" title="7">(<span class="dt">RHS</span>)</a>
-<a class="sourceLine" id="cb7-8" title="8">  (f <span class="fu">.</span> g) <span class="fu">.</span> h</a>
-<a class="sourceLine" id="cb7-9" title="9"><span class="fu">=</span> \x <span class="ot">-&gt;</span> (f <span class="fu">.</span> g) (h x)</a>
-<a class="sourceLine" id="cb7-10" title="10"><span class="fu">=</span> \x <span class="ot">-&gt;</span> (\y <span class="ot">-&gt;</span> f (g y)) (h x)</a>
-<a class="sourceLine" id="cb7-11" title="11"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a></code></pre></div>
+<a class="sourceLine" id="cb7-8" title="8">  (f <span class="op">.</span> g) <span class="op">.</span> h</a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="ot">=</span> \x <span class="ot">-&gt;</span> (f <span class="op">.</span> g) (h x)</a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="ot">=</span> \x <span class="ot">-&gt;</span> (\y <span class="ot">-&gt;</span> f (g y)) (h x)</a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a></code></pre></div>
 <h3 id="id-.-f-f"><code>id . f == f</code></h3>
 <p><code>id</code> の定義</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">id</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="fu">id</span> x <span class="fu">=</span> x</a></code></pre></div>
+<a class="sourceLine" id="cb8-2" title="2"><span class="fu">id</span> x <span class="ot">=</span> x</a></code></pre></div>
 <p>証明</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="fu">id</span> <span class="fu">.</span> f</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="fu">=</span> \x <span class="ot">-&gt;</span> <span class="fu">id</span> (f x)</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f x</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="fu">=</span> f</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="fu">id</span> <span class="op">.</span> f</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="fu">id</span> (f x)</a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f x</a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="ot">=</span> f</a></code></pre></div>
 <h2 id="例1-write-endo-パターン">例1) Write Endo パターン</h2>
 <p><a href="https://hackage.haskell.org/package/yesod-core">yesod-core</a> パッケージの <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Handler.html#t:ProvidedRep">ProvideRep</a> を扱う関数は <code>Endo</code> を利用しています。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="ot">selectRep ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) () <span class="ot">-&gt;</span> m <span class="dt">TypedContent</span></a>
 <a class="sourceLine" id="cb10-2" title="2"><span class="ot">provideRep ::</span> (<span class="dt">Monad</span> m, <span class="dt">HasContentType</span> a) <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</a>
 <a class="sourceLine" id="cb10-3" title="3"><span class="ot">provideRepType ::</span> (<span class="dt">Monad</span> m, <span class="dt">ToContent</span> a) <span class="ot">=&gt;</span> <span class="dt">ContentType</span> <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</a></code></pre></div>
 <p>また <code>Yesod</code> には <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Types.html#t:GHState">GHState</a> 型がありますが、そこでも <code>Endo</code> を使っています。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">data</span> <span class="dt">GHState</span> <span class="fu">=</span> <span class="dt">GHState</span></a>
-<a class="sourceLine" id="cb11-2" title="2">    {<span class="ot"> ghsSession ::</span> <span class="fu">!</span><span class="dt">SessionMap</span></a>
-<a class="sourceLine" id="cb11-3" title="3">    ,<span class="ot"> ghsRBC     ::</span> <span class="fu">!</span>(<span class="dt">Maybe</span> <span class="dt">RequestBodyContents</span>)</a>
-<a class="sourceLine" id="cb11-4" title="4">    ,<span class="ot"> ghsIdent   ::</span> <span class="fu">!</span><span class="dt">Int</span></a>
-<a class="sourceLine" id="cb11-5" title="5">    ,<span class="ot"> ghsCache   ::</span> <span class="fu">!</span><span class="dt">TypeMap</span></a>
-<a class="sourceLine" id="cb11-6" title="6">    ,<span class="ot"> ghsCacheBy ::</span> <span class="fu">!</span><span class="dt">KeyedTypeMap</span></a>
-<a class="sourceLine" id="cb11-7" title="7">    ,<span class="ot"> ghsHeaders ::</span> <span class="fu">!</span>(<span class="dt">Endo</span> [<span class="dt">Header</span>])</a>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">data</span> <span class="dt">GHState</span> <span class="ot">=</span> <span class="dt">GHState</span></a>
+<a class="sourceLine" id="cb11-2" title="2">    {<span class="ot"> ghsSession ::</span> <span class="op">!</span><span class="dt">SessionMap</span></a>
+<a class="sourceLine" id="cb11-3" title="3">    ,<span class="ot"> ghsRBC     ::</span> <span class="op">!</span>(<span class="dt">Maybe</span> <span class="dt">RequestBodyContents</span>)</a>
+<a class="sourceLine" id="cb11-4" title="4">    ,<span class="ot"> ghsIdent   ::</span> <span class="op">!</span><span class="dt">Int</span></a>
+<a class="sourceLine" id="cb11-5" title="5">    ,<span class="ot"> ghsCache   ::</span> <span class="op">!</span><span class="dt">TypeMap</span></a>
+<a class="sourceLine" id="cb11-6" title="6">    ,<span class="ot"> ghsCacheBy ::</span> <span class="op">!</span><span class="dt">KeyedTypeMap</span></a>
+<a class="sourceLine" id="cb11-7" title="7">    ,<span class="ot"> ghsHeaders ::</span> <span class="op">!</span>(<span class="dt">Endo</span> [<span class="dt">Header</span>])</a>
 <a class="sourceLine" id="cb11-8" title="8">    }</a></code></pre></div>
 <p>このような <code>Writer</code> と <code>Endo</code> を使った実装パターンは <a href="https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html">Quick and Easy DSLs with Writer Endo</a> で紹介されている <code>Writer Endo</code> パターンとして知られているようです。</p>
 <h2 id="例2-データの更新">例2) データの更新</h2>
@@ -684,42 +684,42 @@ PartialOptions
 <a class="sourceLine" id="cb12-6" title="6"><span class="kw">import</span> <span class="dt">Data.Extensible</span></a>
 <a class="sourceLine" id="cb12-7" title="7"><span class="kw">import</span> <span class="dt">Data.Monoid</span></a>
 <a class="sourceLine" id="cb12-8" title="8"></a>
-<a class="sourceLine" id="cb12-9" title="9"><span class="kw">type</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Record</span></a>
-<a class="sourceLine" id="cb12-10" title="10">  &#39;[ <span class="st">&quot;name&quot;</span> <span class="fu">&gt;:</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb12-11" title="11">   , <span class="st">&quot;age&quot;</span>  <span class="fu">&gt;:</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb12-9" title="9"><span class="kw">type</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Record</span></a>
+<a class="sourceLine" id="cb12-10" title="10">  &#39;[ <span class="st">&quot;name&quot;</span> <span class="op">&gt;:</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb12-11" title="11">   , <span class="st">&quot;age&quot;</span>  <span class="op">&gt;:</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb12-12" title="12">   ]</a>
 <a class="sourceLine" id="cb12-13" title="13"></a>
 <a class="sourceLine" id="cb12-14" title="14"><span class="ot">update ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>] <span class="ot">-&gt;</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb12-15" title="15">update fs <span class="fu">=</span> appEndo (<span class="fu">foldMap</span> <span class="dt">Endo</span> fs)</a>
+<a class="sourceLine" id="cb12-15" title="15">update fs <span class="ot">=</span> appEndo (<span class="fu">foldMap</span> <span class="dt">Endo</span> fs)</a>
 <a class="sourceLine" id="cb12-16" title="16"></a>
 <a class="sourceLine" id="cb12-17" title="17"><span class="ot">me ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>]</a>
-<a class="sourceLine" id="cb12-18" title="18">me <span class="fu">=</span></a>
-<a class="sourceLine" id="cb12-19" title="19">  [ (<span class="fu">&amp;</span> <span class="fu">#</span>name <span class="fu">.~</span> <span class="st">&quot;guchi&quot;</span>)</a>
-<a class="sourceLine" id="cb12-20" title="20">  , (<span class="fu">&amp;</span> <span class="fu">#</span>age <span class="fu">.~</span> <span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb12-18" title="18">me <span class="ot">=</span></a>
+<a class="sourceLine" id="cb12-19" title="19">  [ (<span class="op">&amp;</span> <span class="op">#</span>name <span class="op">.~</span> <span class="st">&quot;guchi&quot;</span>)</a>
+<a class="sourceLine" id="cb12-20" title="20">  , (<span class="op">&amp;</span> <span class="op">#</span>age <span class="op">.~</span> <span class="dv">20</span>)</a>
 <a class="sourceLine" id="cb12-21" title="21">  ]</a>
 <a class="sourceLine" id="cb12-22" title="22"></a>
 <a class="sourceLine" id="cb12-23" title="23"><span class="ot">defaultPerson ::</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb12-24" title="24">defaultPerson <span class="fu">=</span> <span class="fu">#</span>name <span class="fu">@=</span> <span class="st">&quot;NONAME&quot;</span></a>
-<a class="sourceLine" id="cb12-25" title="25">             <span class="fu">&lt;:</span> <span class="fu">#</span>age  <span class="fu">@=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb12-26" title="26">             <span class="fu">&lt;:</span> nil</a></code></pre></div>
+<a class="sourceLine" id="cb12-24" title="24">defaultPerson <span class="ot">=</span> <span class="op">#</span>name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span></a>
+<a class="sourceLine" id="cb12-25" title="25">             <span class="op">&lt;:</span> <span class="op">#</span>age  <span class="op">@=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb12-26" title="26">             <span class="op">&lt;:</span> nil</a></code></pre></div>
 <p>実行結果</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">λ<span class="fu">&gt;</span> stack repl <span class="co">--package extensible --package lens EndoExample.hs</span></a>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">λ<span class="op">&gt;</span> stack repl <span class="co">--package extensible --package lens EndoExample.hs</span></a>
 <a class="sourceLine" id="cb13-2" title="2"></a>
-<a class="sourceLine" id="cb13-3" title="3">ghci<span class="fu">&gt;</span> defaultPerson</a>
-<a class="sourceLine" id="cb13-4" title="4">name <span class="fu">@=</span> <span class="st">&quot;NONAME&quot;</span> <span class="fu">&lt;:</span> age <span class="fu">@=</span> <span class="dv">0</span> <span class="fu">&lt;:</span> nil</a>
+<a class="sourceLine" id="cb13-3" title="3">ghci<span class="op">&gt;</span> defaultPerson</a>
+<a class="sourceLine" id="cb13-4" title="4">name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">0</span> <span class="op">&lt;:</span> nil</a>
 <a class="sourceLine" id="cb13-5" title="5"></a>
-<a class="sourceLine" id="cb13-6" title="6">ghci<span class="fu">&gt;</span> update me defaultPerson</a>
-<a class="sourceLine" id="cb13-7" title="7">name <span class="fu">@=</span> <span class="st">&quot;guchi&quot;</span> <span class="fu">&lt;:</span> age <span class="fu">@=</span> <span class="dv">20</span> <span class="fu">&lt;:</span> nil</a></code></pre></div>
+<a class="sourceLine" id="cb13-6" title="6">ghci<span class="op">&gt;</span> update me defaultPerson</a>
+<a class="sourceLine" id="cb13-7" title="7">name <span class="op">@=</span> <span class="st">&quot;guchi&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">20</span> <span class="op">&lt;:</span> nil</a></code></pre></div>
 <h2 id="例3-パターンマッチの実装">例3) パターンマッチの実装</h2>
 <p>僕はあまり <code>Endo</code> モノイドを使いこなせていませんが、良い感じに使えたと思える例としては TAPL 11章でレコードパターンを実装する際です。</p>
 <p>レコードのパターンマッチは代入の合成で書くことができるので、<code>Endo</code> がちょうどぴったり適用できました。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="ot">match ::</span> <span class="dt">Pattern</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> (<span class="dt">Term</span> <span class="ot">-&gt;</span> <span class="dt">Term</span>)</a>
-<a class="sourceLine" id="cb14-2" title="2">match (<span class="dt">PtVar</span> _ n) v <span class="fu">=</span> subst n v</a>
-<a class="sourceLine" id="cb14-3" title="3">match p<span class="fu">@</span>(<span class="dt">PtRecord</span> fs) v<span class="fu">@</span>(<span class="dt">TmRecord</span> fs&#39;)</a>
-<a class="sourceLine" id="cb14-4" title="4">  <span class="fu">|</span> isRecordValue v <span class="fu">&amp;&amp;</span> sameFieldLength p v</a>
-<a class="sourceLine" id="cb14-5" title="5">      <span class="fu">=</span> appEndo <span class="fu">$</span> <span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="fu">.</span> <span class="fu">uncurry</span> match) <span class="fu">$</span> <span class="fu">zip</span> (<span class="fu">map</span> <span class="fu">snd</span> fs) (<span class="fu">map</span> <span class="fu">snd</span> fs&#39;)</a>
-<a class="sourceLine" id="cb14-6" title="6">  <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;match: pattern match failure&quot;</span></a>
-<a class="sourceLine" id="cb14-7" title="7">match <span class="dt">PtRecord</span>{} _ <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;match: v is not Rrcord&quot;</span></a></code></pre></div>
+<a class="sourceLine" id="cb14-2" title="2">match (<span class="dt">PtVar</span> _ n) v <span class="ot">=</span> subst n v</a>
+<a class="sourceLine" id="cb14-3" title="3">match p<span class="op">@</span>(<span class="dt">PtRecord</span> fs) v<span class="op">@</span>(<span class="dt">TmRecord</span> fs&#39;)</a>
+<a class="sourceLine" id="cb14-4" title="4">  <span class="op">|</span> isRecordValue v <span class="op">&amp;&amp;</span> sameFieldLength p v</a>
+<a class="sourceLine" id="cb14-5" title="5">      <span class="ot">=</span> appEndo <span class="op">$</span> <span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="op">.</span> <span class="fu">uncurry</span> match) <span class="op">$</span> <span class="fu">zip</span> (<span class="fu">map</span> <span class="fu">snd</span> fs) (<span class="fu">map</span> <span class="fu">snd</span> fs&#39;)</a>
+<a class="sourceLine" id="cb14-6" title="6">  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: pattern match failure&quot;</span></a>
+<a class="sourceLine" id="cb14-7" title="7">match <span class="dt">PtRecord</span>{} _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: v is not Rrcord&quot;</span></a></code></pre></div>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://www.schoolofhaskell.com/user/mgsloan/monoids-tour">Monoids Tour</a></li>
@@ -735,85 +735,85 @@ PartialOptions
     <updated>2019-02-02T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
 <p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Dual">Dual</a> 型が定義されています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Dual</span> a <span class="fu">=</span> <span class="dt">Dual</span> {<span class="ot"> getDual ::</span> a }</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Dual</span> a <span class="ot">=</span> <span class="dt">Dual</span> {<span class="ot"> getDual ::</span> a }</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> b <span class="fu">=</span> <span class="dt">Dual</span> (b <span class="fu">&lt;&gt;</span> a)</a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> b <span class="ot">=</span> <span class="dt">Dual</span> (b <span class="op">&lt;&gt;</span> a)</a>
 <a class="sourceLine" id="cb1-5" title="5"></a>
 <a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Dual</span> <span class="fu">mempty</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Dual</span> <span class="fu">mempty</span></a></code></pre></div>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> getDual <span class="fu">$</span> <span class="dt">Dual</span> <span class="st">&quot;aaa&quot;</span> <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> <span class="st">&quot;bbb&quot;</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="op">&gt;</span> getDual <span class="op">$</span> <span class="dt">Dual</span> <span class="st">&quot;aaa&quot;</span> <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> <span class="st">&quot;bbb&quot;</span></a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="st">&quot;bbbaaa&quot;</span></a>
 <a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">ghci<span class="fu">&gt;</span> getDual <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Dual</span> [<span class="st">&quot;aaa&quot;</span>, <span class="st">&quot;bbb&quot;</span>]</a>
+<a class="sourceLine" id="cb2-4" title="4">ghci<span class="op">&gt;</span> getDual <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Dual</span> [<span class="st">&quot;aaa&quot;</span>, <span class="st">&quot;bbb&quot;</span>]</a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="st">&quot;bbbaaa&quot;</span></a></code></pre></div>
 <p>いつか使う時もあるかもしれないので、適当な例を作ってみます。</p>
 <!--more-->
 <h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
 <p>Semigroup Law</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> (<span class="dt">Dual</span> b <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> c)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="fu">=</span> <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> (c <span class="fu">&lt;&gt;</span> b)</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="fu">=</span> <span class="dt">Dual</span> ((c <span class="fu">&lt;&gt;</span> b) <span class="fu">&lt;&gt;</span> a)</a>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> (<span class="dt">Dual</span> b <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> c)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="ot">=</span> <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> (c <span class="op">&lt;&gt;</span> b)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="ot">=</span> <span class="dt">Dual</span> ((c <span class="op">&lt;&gt;</span> b) <span class="op">&lt;&gt;</span> a)</a>
 <a class="sourceLine" id="cb3-4" title="4"><span class="co">-- a, b, c は Semigroup なので</span></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="fu">=</span> <span class="dt">Dual</span> (c <span class="fu">&lt;&gt;</span> (b <span class="fu">&lt;&gt;</span> a))</a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="fu">=</span> <span class="dt">Dual</span> (b <span class="fu">&lt;&gt;</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> c</a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="fu">=</span> (<span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> b) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> c</a></code></pre></div>
+<a class="sourceLine" id="cb3-5" title="5"><span class="ot">=</span> <span class="dt">Dual</span> (c <span class="op">&lt;&gt;</span> (b <span class="op">&lt;&gt;</span> a))</a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="ot">=</span> <span class="dt">Dual</span> (b <span class="op">&lt;&gt;</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> c</a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="ot">=</span> (<span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> c</a></code></pre></div>
 <p>Monoid Law</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a)</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">Dual</span> a <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a)</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">Dual</span> ((<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="fu">&lt;&gt;</span> a)</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">=</span> <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a)</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">=</span> <span class="dt">Dual</span> ((<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="op">&lt;&gt;</span> a)</a>
 <a class="sourceLine" id="cb4-4" title="4"><span class="co">-- a は Monoid なので</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="fu">=</span> <span class="dt">Dual</span> a</a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="ot">=</span> <span class="dt">Dual</span> a</a>
 <a class="sourceLine" id="cb4-6" title="6"></a>
-<a class="sourceLine" id="cb4-7" title="7">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> a</a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="fu">=</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Dual</span> a</a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="fu">=</span> <span class="dt">Dual</span> (a <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a))</a>
+<a class="sourceLine" id="cb4-7" title="7">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> a</a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="ot">=</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> a</a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="ot">=</span> <span class="dt">Dual</span> (a <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a))</a>
 <a class="sourceLine" id="cb4-10" title="10"><span class="co">-- a は Monoid なので</span></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="fu">=</span> <span class="dt">Dual</span> a</a></code></pre></div>
+<a class="sourceLine" id="cb4-11" title="11"><span class="ot">=</span> <span class="dt">Dual</span> a</a></code></pre></div>
 <h2 id="headmaybe">headMaybe</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">headMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
-<a class="sourceLine" id="cb5-2" title="2">headMaybe <span class="fu">=</span> getLast <span class="fu">.</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">Last</span> <span class="fu">.</span> <span class="fu">pure</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2">headMaybe <span class="ot">=</span> getLast <span class="op">.</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">Last</span> <span class="op">.</span> <span class="fu">pure</span>)</a>
 <a class="sourceLine" id="cb5-3" title="3"></a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="co">-- First を使った定義</span></a>
 <a class="sourceLine" id="cb5-5" title="5"><span class="ot">headMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
-<a class="sourceLine" id="cb5-6" title="6">headMaybe <span class="fu">=</span> getFirst <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">First</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">ghci<span class="fu">&gt;</span> headMaybe []</a>
+<a class="sourceLine" id="cb5-6" title="6">headMaybe <span class="ot">=</span> getFirst <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">First</span> <span class="op">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">ghci<span class="op">&gt;</span> headMaybe []</a>
 <a class="sourceLine" id="cb6-2" title="2"><span class="dt">Nothing</span></a>
 <a class="sourceLine" id="cb6-3" title="3"></a>
-<a class="sourceLine" id="cb6-4" title="4">ghci<span class="fu">&gt;</span> headMaybe <span class="st">&quot;abcd&quot;</span></a>
+<a class="sourceLine" id="cb6-4" title="4">ghci<span class="op">&gt;</span> headMaybe <span class="st">&quot;abcd&quot;</span></a>
 <a class="sourceLine" id="cb6-5" title="5"><span class="dt">Just</span> <span class="ch">&#39;a&#39;</span></a></code></pre></div>
 <h2 id="lastmaybe">lastMaybe</h2>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">lastMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
-<a class="sourceLine" id="cb7-2" title="2">lastMaybe <span class="fu">=</span> getFirst <span class="fu">.</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">First</span> <span class="fu">.</span> <span class="fu">pure</span>)</a>
+<a class="sourceLine" id="cb7-2" title="2">lastMaybe <span class="ot">=</span> getFirst <span class="op">.</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">First</span> <span class="op">.</span> <span class="fu">pure</span>)</a>
 <a class="sourceLine" id="cb7-3" title="3"></a>
 <a class="sourceLine" id="cb7-4" title="4"><span class="co">-- Last を使った定義</span></a>
 <a class="sourceLine" id="cb7-5" title="5"><span class="ot">lastMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</a>
-<a class="sourceLine" id="cb7-6" title="6">lastMaybe <span class="fu">=</span> getLast <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Last</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">ghci<span class="fu">&gt;</span> lastMaybe []</a>
+<a class="sourceLine" id="cb7-6" title="6">lastMaybe <span class="ot">=</span> getLast <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Last</span> <span class="op">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">ghci<span class="op">&gt;</span> lastMaybe []</a>
 <a class="sourceLine" id="cb8-2" title="2"><span class="dt">Nothing</span></a>
 <a class="sourceLine" id="cb8-3" title="3"></a>
-<a class="sourceLine" id="cb8-4" title="4">ghci<span class="fu">&gt;</span> lastMaybe <span class="st">&quot;abcd&quot;</span></a>
+<a class="sourceLine" id="cb8-4" title="4">ghci<span class="op">&gt;</span> lastMaybe <span class="st">&quot;abcd&quot;</span></a>
 <a class="sourceLine" id="cb8-5" title="5"><span class="dt">Just</span> <span class="ch">&#39;d&#39;</span></a></code></pre></div>
 <h2 id="last">last</h2>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">last&#39; ::</span> [a] <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb9-2" title="2">last&#39; <span class="fu">=</span> getAlt <span class="fu">.</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">Alt</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">ghci<span class="fu">&gt;</span> <span class="fu">last</span> []</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="fu">***</span> <span class="dt">Exception</span><span class="fu">:</span> user <span class="fu">error</span> (mzero)</a>
+<a class="sourceLine" id="cb9-2" title="2">last&#39; <span class="ot">=</span> getAlt <span class="op">.</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">Alt</span> <span class="op">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">ghci<span class="op">&gt;</span> <span class="fu">last</span> []</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="op">***</span> <span class="dt">Exception</span><span class="op">:</span> user <span class="fu">error</span> (mzero)</a>
 <a class="sourceLine" id="cb10-3" title="3"></a>
-<a class="sourceLine" id="cb10-4" title="4">ghci<span class="fu">&gt;</span> <span class="fu">last</span> <span class="st">&quot;abc&quot;</span></a>
+<a class="sourceLine" id="cb10-4" title="4">ghci<span class="op">&gt;</span> <span class="fu">last</span> <span class="st">&quot;abc&quot;</span></a>
 <a class="sourceLine" id="cb10-5" title="5"><span class="ch">&#39;c&#39;</span></a></code></pre></div>
 <h2 id="reverse">reverse</h2>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="ot">rev ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb11-2" title="2">rev <span class="fu">=</span> getDual <span class="fu">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="fu">pure</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">ghci<span class="fu">&gt;</span> rev [<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">7</span>]</a>
+<a class="sourceLine" id="cb11-2" title="2">rev <span class="ot">=</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="fu">pure</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1">ghci<span class="op">&gt;</span> rev [<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">7</span>]</a>
 <a class="sourceLine" id="cb12-2" title="2">[<span class="dv">7</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">5</span>]</a>
 <a class="sourceLine" id="cb12-3" title="3"></a>
-<a class="sourceLine" id="cb12-4" title="4">ghci<span class="fu">&gt;</span> rev <span class="st">&quot;Hello World&quot;</span></a>
+<a class="sourceLine" id="cb12-4" title="4">ghci<span class="op">&gt;</span> rev <span class="st">&quot;Hello World&quot;</span></a>
 <a class="sourceLine" id="cb12-5" title="5"><span class="st">&quot;dlroW olleH&quot;</span></a></code></pre></div>
 <h2 id="foldl">foldl</h2>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="fu">foldl</span><span class="ot"> ::</span> (b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="fu">foldl</span> f z t <span class="fu">=</span> appEndo (getDual (<span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="fu">.</span> <span class="dt">Endo</span> <span class="fu">.</span> <span class="fu">flip</span> f) t)) z</a></code></pre></div>
+<a class="sourceLine" id="cb13-2" title="2"><span class="fu">foldl</span> f z t <span class="ot">=</span> appEndo (getDual (<span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">Endo</span> <span class="op">.</span> <span class="fu">flip</span> f) t)) z</a></code></pre></div>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://riptutorial.com/haskell/example/2555/folding-a-structure-in-reverse">Folding a structure in reverse</a></li>
@@ -832,19 +832,19 @@ PartialOptions
 <p>最近少しずつ <code>cabal</code> を使うようになりました。</p>
 <p>そのため、<code>stack</code> と <code>cabal</code> のどちらを使ってもビルドできるようにプロジェクトを修正していたのですが、<code>cabal</code> ファイルの取り扱いが難しかったのでメモ程度に残しておきます。</p>
 <p>方針としては <code>cabal</code> コマンドの実行時にフックを仕掛けて <code>hpack</code> を使って <code>package.yaml</code> から <code>cabal</code> ファイルを生成しようという感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">$</span> cabal <span class="co">--numeric-version</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="fl">2.4</span><span class="fu">.</span><span class="fl">1.0</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="op">$</span> cabal <span class="co">--numeric-version</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="fl">2.4</span><span class="op">.</span><span class="fl">1.0</span></a></code></pre></div>
 <!--more-->
 <h2 id="setup.hs-は何のためにあるのか">Setup.hs は何のためにあるのか？</h2>
 <p><code>stack</code> を使ってプロジェクトを作ると <code>Setup.hs</code> が以下の内容で自動的に生成されると思います。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb2-2" title="2">main <span class="fu">=</span> defaultMain</a></code></pre></div>
+<a class="sourceLine" id="cb2-2" title="2">main <span class="ot">=</span> defaultMain</a></code></pre></div>
 <p>今まで特に使わなくても困らなかったので、気にせずに放置していましたが、このファイルが今回の主役になります。</p>
 <p><code>cabal</code> には <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-type">build-type</a> という設定項目があり、この値はデフォルトでは <code>Simple</code> か <code>Custom</code> のどちらかに自動的に推論されます。(他にも <code>Configure</code>, <code>Make</code> などもあります。詳しくはドキュメントを参照してください)</p>
 <h3 id="simple">Simple</h3>
 <p><code>build-type</code> に <code>Simple</code> を指定した場合、<code>cabal</code> は <code>Setup.hs</code> に以下の内容が記述されているものとして処理を進めます。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb3-2" title="2">main <span class="fu">=</span> defaultMain</a></code></pre></div>
+<a class="sourceLine" id="cb3-2" title="2">main <span class="ot">=</span> defaultMain</a></code></pre></div>
 <p>そのため <code>Setup.hs</code> を削除しても問題なくビルド可能です。</p>
 <h3 id="custom">Custom</h3>
 <p><code>build-type</code> に <code>Custom</code> を指定した場合、<code>Setup.hs</code> の内容をユーザが自由に書き換えることができます。</p>
@@ -853,7 +853,7 @@ PartialOptions
 <p>詳しいドキュメントは <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#more-complex-packages">3.3.8. More complex packages</a> を参照ください。</p>
 <h3 id="userhooks">UserHooks</h3>
 <p><code>defaultMainWithHooks</code> に渡す <a href="https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#t:UserHooks">UserHooks</a> 型はこんな感じで定義されています。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="fu">=</span> <span class="dt">UserHooks</span> {</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="ot">=</span> <span class="dt">UserHooks</span> {</a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="ot">    runTests ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
 <a class="sourceLine" id="cb4-3" title="3"><span class="ot">    readDesc ::</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> <span class="dt">GenericPackageDescription</span>),</a>
 <a class="sourceLine" id="cb4-4" title="4"><span class="ot">    hookedPreProcessors ::</span> [ <span class="dt">PPSuffixHandler</span> ],</a>
@@ -930,14 +930,14 @@ PartialOptions
 <a class="sourceLine" id="cb5-6" title="6"><span class="kw">import</span> <span class="dt">Hpack</span></a>
 <a class="sourceLine" id="cb5-7" title="7"></a>
 <a class="sourceLine" id="cb5-8" title="8"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-9" title="9">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb5-10" title="10">  <span class="kw">let</span> myHook <span class="fu">=</span> simpleUserHooks {</a>
-<a class="sourceLine" id="cb5-11" title="11">    preBuild <span class="fu">=</span> pbHpack</a>
+<a class="sourceLine" id="cb5-9" title="9">main <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-10" title="10">  <span class="kw">let</span> myHook <span class="ot">=</span> simpleUserHooks {</a>
+<a class="sourceLine" id="cb5-11" title="11">    preBuild <span class="ot">=</span> pbHpack</a>
 <a class="sourceLine" id="cb5-12" title="12">  }</a>
 <a class="sourceLine" id="cb5-13" title="13">  defaultMainWithHooks myHook</a>
 <a class="sourceLine" id="cb5-14" title="14"></a>
 <a class="sourceLine" id="cb5-15" title="15"><span class="ot">pbHpack ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span></a>
-<a class="sourceLine" id="cb5-16" title="16">pbHpack _ _ <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-16" title="16">pbHpack _ _ <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb5-17" title="17">  hpack <span class="dt">Verbose</span> defaultOptions</a>
 <a class="sourceLine" id="cb5-18" title="18">  <span class="fu">return</span> emptyHookedBuildInfo</a></code></pre></div>
 <p><a href="https://www.stackage.org/package/hpack">hpack</a> パッケージの関数をそのまま使ってます。</p>
@@ -967,7 +967,7 @@ $ cabal new-build</code></pre>
 <a class="sourceLine" id="cb9-4" title="4"><span class="kw">import</span> <span class="dt">Hpack</span></a>
 <a class="sourceLine" id="cb9-5" title="5"></a>
 <a class="sourceLine" id="cb9-6" title="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-7" title="7">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-7" title="7">main <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb9-8" title="8">  hpack <span class="dt">Verbose</span> defaultOptions</a>
 <a class="sourceLine" id="cb9-9" title="9">  defaultMain</a></code></pre></div>
 <p>これだと、あんまり上手くいきません。</p>
@@ -1066,7 +1066,7 @@ version: 0.0</code></pre>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">import</span> <span class="dt">Data.List.Split</span> (split, startsWithOneOf)</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="ot">splitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb1-4" title="4">splitCC  <span class="fu">=</span> <span class="fu">unwords</span> <span class="fu">.</span> split (startsWithOneOf [<span class="ch">&#39;A&#39;</span><span class="fu">..</span><span class="ch">&#39;Z&#39;</span>])</a></code></pre></div>
+<a class="sourceLine" id="cb1-4" title="4">splitCC  <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</a></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>ghci&gt; splitCC &quot;CamelCase&quot;
 &quot;Camel Case&quot;</code></pre>
@@ -1077,15 +1077,15 @@ version: 0.0</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Data.Char</span> (isUpper, isSpace)</a>
 <a class="sourceLine" id="cb3-2" title="2"></a>
 <a class="sourceLine" id="cb3-3" title="3"><span class="ot">foldSplitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb3-4" title="4">foldSplitCC <span class="fu">=</span> fmt <span class="fu">.</span> <span class="fu">foldr</span> go []</a>
+<a class="sourceLine" id="cb3-4" title="4">foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go []</a>
 <a class="sourceLine" id="cb3-5" title="5">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb3-6" title="6">    go c acc</a>
-<a class="sourceLine" id="cb3-7" title="7">      <span class="fu">|</span> <span class="fu">isUpper</span> c <span class="fu">=</span> <span class="ch">&#39; &#39;</span><span class="fu">:</span>c<span class="fu">:</span>acc</a>
-<a class="sourceLine" id="cb3-8" title="8">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> c<span class="fu">:</span>acc</a>
+<a class="sourceLine" id="cb3-7" title="7">      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">&#39; &#39;</span><span class="op">:</span>c<span class="op">:</span>acc</a>
+<a class="sourceLine" id="cb3-8" title="8">      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</a>
 <a class="sourceLine" id="cb3-9" title="9">    fmt cs</a>
-<a class="sourceLine" id="cb3-10" title="10">      <span class="fu">|</span> <span class="fu">null</span> cs <span class="fu">=</span> cs</a>
-<a class="sourceLine" id="cb3-11" title="11">      <span class="fu">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="fu">=</span> <span class="fu">tail</span> cs</a>
-<a class="sourceLine" id="cb3-12" title="12">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> cs</a></code></pre></div>
+<a class="sourceLine" id="cb3-10" title="10">      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</a>
+<a class="sourceLine" id="cb3-11" title="11">      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</a>
+<a class="sourceLine" id="cb3-12" title="12">      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</a></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>ghci&gt; foldSplitCC &quot;CamelCase&quot;
 &quot;Camel Case&quot;</code></pre>
@@ -1097,18 +1097,18 @@ version: 0.0</code></pre>
 <a class="sourceLine" id="cb5-4" title="4"></a>
 <a class="sourceLine" id="cb5-5" title="5"><span class="kw">import</span> <span class="dt">SplitCC</span></a>
 <a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7"><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="fu">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</a>
 <a class="sourceLine" id="cb5-8" title="8">  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
 <a class="sourceLine" id="cb5-9" title="9"></a>
 <a class="sourceLine" id="cb5-10" title="10"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-11" title="11">  arbitrary <span class="fu">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="fu">$</span> listOf <span class="fu">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="fu">..</span><span class="ch">&#39;z&#39;</span>]<span class="fu">++</span>[<span class="ch">&#39;A&#39;</span><span class="fu">..</span><span class="ch">&#39;Z&#39;</span>])</a>
+<a class="sourceLine" id="cb5-11" title="11">  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</a>
 <a class="sourceLine" id="cb5-12" title="12"></a>
 <a class="sourceLine" id="cb5-13" title="13"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-14" title="14">main <span class="fu">=</span> quickCheck prop_split</a>
+<a class="sourceLine" id="cb5-14" title="14">main <span class="ot">=</span> quickCheck prop_split</a>
 <a class="sourceLine" id="cb5-15" title="15"></a>
 <a class="sourceLine" id="cb5-16" title="16"><span class="ot">prop_split ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb5-17" title="17">prop_split xs <span class="fu">=</span> splitCC xs&#39; <span class="fu">==</span> foldSplitCC xs&#39;</a>
-<a class="sourceLine" id="cb5-18" title="18">  <span class="kw">where</span> xs&#39; <span class="fu">=</span> getString xs</a></code></pre></div>
+<a class="sourceLine" id="cb5-17" title="17">prop_split xs <span class="ot">=</span> splitCC xs&#39; <span class="op">==</span> foldSplitCC xs&#39;</a>
+<a class="sourceLine" id="cb5-18" title="18">  <span class="kw">where</span> xs&#39; <span class="ot">=</span> getString xs</a></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>$ stack test
 splitcc-0.1.0.0: test (suite: splitcc-test)
@@ -1126,28 +1126,28 @@ splitcc-0.1.0.0: Test suite splitcc-test passed</code></pre>
 <a class="sourceLine" id="cb7-6" title="6"><span class="kw">import</span> <span class="dt">SplitCC</span></a>
 <a class="sourceLine" id="cb7-7" title="7"></a>
 <a class="sourceLine" id="cb7-8" title="8"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb7-9" title="9">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb7-10" title="10">  <span class="kw">let</span> conf <span class="fu">=</span> defaultConfig { displayMode <span class="fu">=</span> <span class="dt">Condensed</span> }</a>
-<a class="sourceLine" id="cb7-11" title="11">  sampleData1 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">10</span> charGen</a>
-<a class="sourceLine" id="cb7-12" title="12">  sampleData2 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">1000</span> charGen</a>
-<a class="sourceLine" id="cb7-13" title="13">  sampleData3 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">100000</span> charGen</a>
-<a class="sourceLine" id="cb7-14" title="14">  sampleData4 <span class="ot">&lt;-</span> generate <span class="fu">$</span> vectorOf <span class="dv">1000000</span> charGen</a>
+<a class="sourceLine" id="cb7-9" title="9">main <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-10" title="10">  <span class="kw">let</span> conf <span class="ot">=</span> defaultConfig { displayMode <span class="ot">=</span> <span class="dt">Condensed</span> }</a>
+<a class="sourceLine" id="cb7-11" title="11">  sampleData1 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">10</span> charGen</a>
+<a class="sourceLine" id="cb7-12" title="12">  sampleData2 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000</span> charGen</a>
+<a class="sourceLine" id="cb7-13" title="13">  sampleData3 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">100000</span> charGen</a>
+<a class="sourceLine" id="cb7-14" title="14">  sampleData4 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000000</span> charGen</a>
 <a class="sourceLine" id="cb7-15" title="15"></a>
 <a class="sourceLine" id="cb7-16" title="16">  defaultMainWith conf</a>
-<a class="sourceLine" id="cb7-17" title="17">    [ bgroup <span class="st">&quot;splitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="fu">$</span> nf splitCC sampleData1</a>
-<a class="sourceLine" id="cb7-18" title="18">                       , bench <span class="st">&quot;1000&quot;</span>    <span class="fu">$</span> nf splitCC sampleData2</a>
-<a class="sourceLine" id="cb7-19" title="19">                       , bench <span class="st">&quot;100000&quot;</span>  <span class="fu">$</span> nf splitCC sampleData3</a>
-<a class="sourceLine" id="cb7-20" title="20">                       , bench <span class="st">&quot;1000000&quot;</span> <span class="fu">$</span> nf splitCC sampleData4</a>
+<a class="sourceLine" id="cb7-17" title="17">    [ bgroup <span class="st">&quot;splitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf splitCC sampleData1</a>
+<a class="sourceLine" id="cb7-18" title="18">                       , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf splitCC sampleData2</a>
+<a class="sourceLine" id="cb7-19" title="19">                       , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf splitCC sampleData3</a>
+<a class="sourceLine" id="cb7-20" title="20">                       , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf splitCC sampleData4</a>
 <a class="sourceLine" id="cb7-21" title="21">                       ]</a>
-<a class="sourceLine" id="cb7-22" title="22">    , bgroup <span class="st">&quot;foldSplitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="fu">$</span> nf foldSplitCC sampleData1</a>
-<a class="sourceLine" id="cb7-23" title="23">                           , bench <span class="st">&quot;1000&quot;</span>    <span class="fu">$</span> nf foldSplitCC sampleData2</a>
-<a class="sourceLine" id="cb7-24" title="24">                           , bench <span class="st">&quot;100000&quot;</span>  <span class="fu">$</span> nf foldSplitCC sampleData3</a>
-<a class="sourceLine" id="cb7-25" title="25">                           , bench <span class="st">&quot;1000000&quot;</span> <span class="fu">$</span> nf foldSplitCC sampleData4</a>
+<a class="sourceLine" id="cb7-22" title="22">    , bgroup <span class="st">&quot;foldSplitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf foldSplitCC sampleData1</a>
+<a class="sourceLine" id="cb7-23" title="23">                           , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf foldSplitCC sampleData2</a>
+<a class="sourceLine" id="cb7-24" title="24">                           , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf foldSplitCC sampleData3</a>
+<a class="sourceLine" id="cb7-25" title="25">                           , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf foldSplitCC sampleData4</a>
 <a class="sourceLine" id="cb7-26" title="26">                           ]</a>
 <a class="sourceLine" id="cb7-27" title="27">    ]</a>
 <a class="sourceLine" id="cb7-28" title="28"></a>
 <a class="sourceLine" id="cb7-29" title="29"><span class="ot">charGen ::</span> <span class="dt">Gen</span> <span class="dt">Char</span></a>
-<a class="sourceLine" id="cb7-30" title="30">charGen <span class="fu">=</span> elements ([<span class="ch">&#39;a&#39;</span><span class="fu">..</span><span class="ch">&#39;z&#39;</span>]<span class="fu">++</span>[<span class="ch">&#39;A&#39;</span><span class="fu">..</span><span class="ch">&#39;Z&#39;</span>])</a></code></pre></div>
+<a class="sourceLine" id="cb7-30" title="30">charGen <span class="ot">=</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</a></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>$ stack bench
 Benchmark splitcc-bench: RUNNING...
@@ -1179,27 +1179,27 @@ Benchmark splitcc-bench: FINISH</code></pre>
 <a class="sourceLine" id="cb9-14" title="14"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
 <a class="sourceLine" id="cb9-15" title="15"></a>
 <a class="sourceLine" id="cb9-16" title="16"><span class="ot">splitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb9-17" title="17">splitCC <span class="fu">=</span> <span class="fu">unwords</span> <span class="fu">.</span> split (startsWithOneOf [<span class="ch">&#39;A&#39;</span><span class="fu">..</span><span class="ch">&#39;Z&#39;</span>]) <span class="fu">.</span> getString</a>
+<a class="sourceLine" id="cb9-17" title="17">splitCC <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>]) <span class="op">.</span> getString</a>
 <a class="sourceLine" id="cb9-18" title="18"></a>
 <a class="sourceLine" id="cb9-19" title="19"><span class="ot">foldSplitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb9-20" title="20">foldSplitCC <span class="fu">=</span> fmt <span class="fu">.</span> <span class="fu">foldr</span> go [] <span class="fu">.</span> getString</a>
+<a class="sourceLine" id="cb9-20" title="20">foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go [] <span class="op">.</span> getString</a>
 <a class="sourceLine" id="cb9-21" title="21">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb9-22" title="22">    go c acc</a>
-<a class="sourceLine" id="cb9-23" title="23">      <span class="fu">|</span> <span class="fu">isUpper</span> c <span class="fu">=</span> <span class="ch">&#39; &#39;</span><span class="fu">:</span>c<span class="fu">:</span>acc</a>
-<a class="sourceLine" id="cb9-24" title="24">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> c<span class="fu">:</span>acc</a>
+<a class="sourceLine" id="cb9-23" title="23">      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">&#39; &#39;</span><span class="op">:</span>c<span class="op">:</span>acc</a>
+<a class="sourceLine" id="cb9-24" title="24">      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</a>
 <a class="sourceLine" id="cb9-25" title="25">    fmt cs</a>
-<a class="sourceLine" id="cb9-26" title="26">      <span class="fu">|</span> <span class="fu">null</span> cs <span class="fu">=</span> cs</a>
-<a class="sourceLine" id="cb9-27" title="27">      <span class="fu">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="fu">=</span> <span class="fu">tail</span> cs</a>
-<a class="sourceLine" id="cb9-28" title="28">      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> cs</a>
+<a class="sourceLine" id="cb9-26" title="26">      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</a>
+<a class="sourceLine" id="cb9-27" title="27">      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</a>
+<a class="sourceLine" id="cb9-28" title="28">      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</a>
 <a class="sourceLine" id="cb9-29" title="29"></a>
 <a class="sourceLine" id="cb9-30" title="30"><span class="ot">ts ::</span> <span class="dt">TestSuite</span></a>
-<a class="sourceLine" id="cb9-31" title="31">ts  <span class="fu">=</span> def { _dataOpts <span class="fu">=</span> <span class="dt">Gen</span> <span class="dv">0</span> <span class="dv">10000</span> <span class="dv">200000</span> }</a>
+<a class="sourceLine" id="cb9-31" title="31">ts  <span class="ot">=</span> def { _dataOpts <span class="ot">=</span> <span class="dt">Gen</span> <span class="dv">0</span> <span class="dv">10000</span> <span class="dv">200000</span> }</a>
 <a class="sourceLine" id="cb9-32" title="32"></a>
-<a class="sourceLine" id="cb9-33" title="33"><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="fu">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</a>
+<a class="sourceLine" id="cb9-33" title="33"><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</a>
 <a class="sourceLine" id="cb9-34" title="34">  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">NFData</span>)</a>
 <a class="sourceLine" id="cb9-35" title="35"></a>
 <a class="sourceLine" id="cb9-36" title="36"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb9-37" title="37">  arbitrary <span class="fu">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="fu">$</span> listOf <span class="fu">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="fu">..</span><span class="ch">&#39;z&#39;</span>]<span class="fu">++</span>[<span class="ch">&#39;A&#39;</span><span class="fu">..</span><span class="ch">&#39;Z&#39;</span>])</a></code></pre></div>
+<a class="sourceLine" id="cb9-37" title="37">  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</a></code></pre></div>
 <ul>
 <li>AutoBench を利用する際、デフォルトの設定では、入力の型は <code>NFData</code> 型クラスのインスタンスになっている必要があります。</li>
 </ul>
@@ -1333,9 +1333,9 @@ Benchmark splitcc-bench: FINISH</code></pre>
 <blockquote>
 <p>MyString を定義するのが面倒な場合は以下のようにすると良いよ</p>
 </blockquote>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">prop_split <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb13-2" title="2">  xs <span class="ot">&lt;-</span> listOf <span class="fu">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="fu">..</span><span class="ch">&#39;z&#39;</span>]<span class="fu">++</span>[<span class="ch">&#39;A&#39;</span><span class="fu">..</span><span class="ch">&#39;Z&#39;</span>])</a>
-<a class="sourceLine" id="cb13-3" title="3">  <span class="fu">return</span> <span class="fu">$</span> splitCC xs <span class="fu">==</span> foldSplitCC xs</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">prop_split <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb13-2" title="2">  xs <span class="ot">&lt;-</span> listOf <span class="op">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</a>
+<a class="sourceLine" id="cb13-3" title="3">  <span class="fu">return</span> <span class="op">$</span> splitCC xs <span class="op">==</span> foldSplitCC xs</a></code></pre></div>
 <blockquote>
 <p><code>splitCC ≥ foldSplitCC (1.00)</code> っていうのはどういう意味</p>
 </blockquote>

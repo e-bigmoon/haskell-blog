@@ -295,9 +295,9 @@ No hints</code></pre>
 <a class="sourceLine" id="cb8-2" title="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb8-3" title="3"></a>
 <a class="sourceLine" id="cb8-4" title="4"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb8-5" title="5">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-6" title="6">  <span class="kw">let</span> x1 <span class="fu">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
-<a class="sourceLine" id="cb8-7" title="7">      x2 <span class="fu">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
+<a class="sourceLine" id="cb8-5" title="5">someFunc <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb8-6" title="6">  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</a>
+<a class="sourceLine" id="cb8-7" title="7">      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
 <a class="sourceLine" id="cb8-8" title="8">  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
 <p>上記のコードは以下のようなヒントを2つ提案してくれます。</p>
 <pre class="shell"><code>$ hlint .
@@ -400,7 +400,7 @@ Why not:
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb14-2" title="2"></a>
 <a class="sourceLine" id="cb14-3" title="3"><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb14-4" title="4">tshow <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a></code></pre></div>
+<a class="sourceLine" id="cb14-4" title="4">tshow <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></a></code></pre></div>
 <p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <code>tshow</code> に直すようにヒントを出させることです。まだヒントを追加していないため、当然ながら現時点では <code>pack . show</code> というコードが使われていたとしても何も起こりません。</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="co">-- src/Lib.hs</span></a>
 <a class="sourceLine" id="cb15-2" title="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
@@ -408,7 +408,7 @@ Why not:
 <a class="sourceLine" id="cb15-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb15-5" title="5"></a>
 <a class="sourceLine" id="cb15-6" title="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb15-7" title="7">intToText <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a></code></pre></div>
+<a class="sourceLine" id="cb15-7" title="7">intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>それでは <code>.hlint.yaml</code> に <code>tshow = pack . show</code> を検出するためのヒントを追記しましょう。以下の1行を追記するだけです。</p>
@@ -426,7 +426,7 @@ Why not:
 <p>無事に <code>Error</code> として <code>tshow</code> のためのヒントが表示されました！</p>
 <p>ヒントの修正方法は、先程定義した <code>intToText</code> 関数の実装をヒント通りに書き換えるだけです。</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb19-2" title="2">intToText <span class="fu">=</span> tshow</a></code></pre></div>
+<a class="sourceLine" id="cb19-2" title="2">intToText <span class="ot">=</span> tshow</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <h3 id="ヒントの定義方法について">ヒントの定義方法について</h3>
@@ -439,10 +439,10 @@ No hints</code></pre>
 <a class="sourceLine" id="cb22-4" title="4"><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</a>
 <a class="sourceLine" id="cb22-5" title="5"></a>
 <a class="sourceLine" id="cb22-6" title="6"><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb22-7" title="7">intToText <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">.</span> <span class="fu">show</span></a>
+<a class="sourceLine" id="cb22-7" title="7">intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></a>
 <a class="sourceLine" id="cb22-8" title="8"></a>
 <a class="sourceLine" id="cb22-9" title="9"><span class="ot">intToText2  ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb22-10" title="10">intToText2 x <span class="fu">=</span> <span class="fu">pack</span> <span class="fu">$</span> <span class="fu">show</span> x</a></code></pre></div>
+<a class="sourceLine" id="cb22-10" title="10">intToText2 x <span class="ot">=</span> <span class="fu">pack</span> <span class="op">$</span> <span class="fu">show</span> x</a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:6:13: Error: Use tshow
 Found:
@@ -468,7 +468,7 @@ No hints</code></pre>
 <p>では、以下の関数を追加してみましょう。このように型レベルで設計して、実装を <code>undefined</code> にしておくことは良くあります。</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" title="1"><span class="co">-- src/Lib.hs</span></a>
 <a class="sourceLine" id="cb26-2" title="2"><span class="ot">doubleToText ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb26-3" title="3">doubleToText <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
+<a class="sourceLine" id="cb26-3" title="3">doubleToText <span class="ot">=</span> <span class="fu">undefined</span></a></code></pre></div>
 <p>忘れずに実装してしまえば問題無いのですが、たまには忘れることもあります。しかし、<code>HLint</code> があれば安心です。</p>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:18:16: Warning: Avoid restricted function
@@ -494,9 +494,9 @@ Note: may break the code
 <a class="sourceLine" id="cb29-2" title="2"><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb29-3" title="3"></a>
 <a class="sourceLine" id="cb29-4" title="4"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb29-5" title="5">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb29-6" title="6">  <span class="kw">let</span> x1 <span class="fu">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
-<a class="sourceLine" id="cb29-7" title="7">      x2 <span class="fu">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
+<a class="sourceLine" id="cb29-5" title="5">someFunc <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb29-6" title="6">  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</a>
+<a class="sourceLine" id="cb29-7" title="7">      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
 <a class="sourceLine" id="cb29-8" title="8">  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:6:12: Warning: Use concatMap
@@ -524,9 +524,9 @@ Why not:
 <a class="sourceLine" id="cb31-3" title="3"></a>
 <a class="sourceLine" id="cb31-4" title="4"><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></a>
 <a class="sourceLine" id="cb31-5" title="5"><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb31-6" title="6">someFunc <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb31-7" title="7">  <span class="kw">let</span> x1 <span class="fu">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="fu">..</span> <span class="ch">'z'</span>])</a>
-<a class="sourceLine" id="cb31-8" title="8">      x2 <span class="fu">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
+<a class="sourceLine" id="cb31-6" title="6">someFunc <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb31-7" title="7">  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</a>
+<a class="sourceLine" id="cb31-8" title="8">      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></a>
 <a class="sourceLine" id="cb31-9" title="9">  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></a></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>

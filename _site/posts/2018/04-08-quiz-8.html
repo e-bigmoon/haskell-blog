@@ -236,13 +236,13 @@ main = pr" />
         <h2 id="haskell-quiz-no.8">Haskell Quiz No.8</h2>
 <p>難易度: λλλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
 <a class="sourceLine" id="cb1-4" title="4"></a>
 <a class="sourceLine" id="cb1-5" title="5"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-6" title="6">main <span class="fu">=</span> <span class="fu">print</span> <span class="fu">$</span> runConduitPure <span class="fu">$</span> <span class="fu">return</span> () <span class="fu">.|</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mapM_</span> leftover [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</a>
+<a class="sourceLine" id="cb1-6" title="6">main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> runConduitPure <span class="op">$</span> <span class="fu">return</span> () <span class="op">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mapM_</span> leftover [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>]</a>
 <a class="sourceLine" id="cb1-8" title="8">  sinkList</a></code></pre></div>
 <p>答えは<a href="07-06-quiz-9.html">次回</a>。</p>
 <!--more-->
@@ -250,24 +250,24 @@ main = pr" />
 <p><a href="./04-07-quiz-7.html">前回</a>の問題と答えは以下の通りです。</p>
 <h3 id="問題">問題</h3>
 <p>難易度: λλ</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
 <a class="sourceLine" id="cb2-3" title="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
-<a class="sourceLine" id="cb2-6" title="6">myTakeWhileC f <span class="fu">=</span> loop</a>
+<a class="sourceLine" id="cb2-6" title="6">myTakeWhileC f <span class="ot">=</span> loop</a>
 <a class="sourceLine" id="cb2-7" title="7">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-8" title="8">    loop <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-8" title="8">    loop <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb2-9" title="9">      mx <span class="ot">&lt;-</span> await</a>
 <a class="sourceLine" id="cb2-10" title="10">      <span class="kw">case</span> mx <span class="kw">of</span></a>
 <a class="sourceLine" id="cb2-11" title="11">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a>
 <a class="sourceLine" id="cb2-12" title="12">        <span class="dt">Just</span> x</a>
-<a class="sourceLine" id="cb2-13" title="13">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
-<a class="sourceLine" id="cb2-14" title="14">          <span class="fu">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a>
+<a class="sourceLine" id="cb2-13" title="13">          <span class="op">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="op">&gt;&gt;</span> loop</a>
+<a class="sourceLine" id="cb2-14" title="14">          <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a>
 <a class="sourceLine" id="cb2-15" title="15"></a>
 <a class="sourceLine" id="cb2-16" title="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-17" title="17">main <span class="fu">=</span> <span class="fu">print</span> <span class="fu">$</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-18" title="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="fu">&lt;=</span> <span class="dv">5</span>) <span class="fu">.|</span> sinkList</a>
+<a class="sourceLine" id="cb2-17" title="17">main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> runConduitPure <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-18" title="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="op">&lt;=</span> <span class="dv">5</span>) <span class="op">.|</span> sinkList</a>
 <a class="sourceLine" id="cb2-19" title="19">  y <span class="ot">&lt;-</span> sinkList</a>
 <a class="sourceLine" id="cb2-20" title="20">  <span class="fu">return</span> (x, y)</a></code></pre></div>
 <h3 id="こたえ">こたえ</h3>
@@ -296,39 +296,39 @@ main = pr" />
 <div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">sourceFile ::</span> <span class="dt">MonadResource</span> m</a>
 <a class="sourceLine" id="cb4-2" title="2">           <span class="ot">=&gt;</span> <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb4-3" title="3">           <span class="ot">-&gt;</span> <span class="dt">ConduitT</span> i <span class="dt">S.ByteString</span> m ()</a>
-<a class="sourceLine" id="cb4-4" title="4">sourceFile fp <span class="fu">=</span></a>
+<a class="sourceLine" id="cb4-4" title="4">sourceFile fp <span class="ot">=</span></a>
 <a class="sourceLine" id="cb4-5" title="5">    bracketP</a>
 <a class="sourceLine" id="cb4-6" title="6">        (FR.openFile fp)</a>
 <a class="sourceLine" id="cb4-7" title="7">         FR.closeFile</a>
 <a class="sourceLine" id="cb4-8" title="8">         loop</a>
 <a class="sourceLine" id="cb4-9" title="9">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-10" title="10">    loop h <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-11" title="11">        bs <span class="ot">&lt;-</span> liftIO <span class="fu">$</span> FR.readChunk h</a>
-<a class="sourceLine" id="cb4-12" title="12">        unless (S.null bs) <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-10" title="10">    loop h <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-11" title="11">        bs <span class="ot">&lt;-</span> liftIO <span class="op">$</span> FR.readChunk h</a>
+<a class="sourceLine" id="cb4-12" title="12">        unless (S.null bs) <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb4-13" title="13">            yield bs</a>
 <a class="sourceLine" id="cb4-14" title="14">            loop h</a></code></pre></div>
 <p>この <a href="https://www.stackage.org/haddock/lts-11.9/streaming-commons-0.1.19/src/Data.Streaming.FileRead.html#readChunk">readChunk</a> 関数の defaultChunkSize が実際のチャンクサイズです。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">readChunk ::</span> <span class="dt">ReadHandle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">S.ByteString</span></a>
-<a class="sourceLine" id="cb5-2" title="2">readChunk (<span class="dt">ReadHandle</span> h) <span class="fu">=</span> S.hGetSome h defaultChunkSize</a></code></pre></div>
+<a class="sourceLine" id="cb5-2" title="2">readChunk (<span class="dt">ReadHandle</span> h) <span class="ot">=</span> S.hGetSome h defaultChunkSize</a></code></pre></div>
 <p><a href="https://github.com/haskell/bytestring/blob/master/Data/ByteString/Lazy/Internal.hs#L198">defaultChunkSize</a> の定義は以下のとおりです。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="co">-- | The chunk size used for I\/O. Currently set to 32k, less the memory management overhead</span></a>
 <a class="sourceLine" id="cb6-2" title="2"><span class="ot">defaultChunkSize ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb6-3" title="3">defaultChunkSize <span class="fu">=</span> <span class="dv">32</span> <span class="fu">*</span> k <span class="fu">-</span> chunkOverhead</a>
-<a class="sourceLine" id="cb6-4" title="4">   <span class="kw">where</span> k <span class="fu">=</span> <span class="dv">1024</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-3" title="3">defaultChunkSize <span class="ot">=</span> <span class="dv">32</span> <span class="op">*</span> k <span class="op">-</span> chunkOverhead</a>
+<a class="sourceLine" id="cb6-4" title="4">   <span class="kw">where</span> k <span class="ot">=</span> <span class="dv">1024</span></a></code></pre></div>
 <p>このため、<strong>sourceFile</strong> を利用した場合は <strong>32kbyte</strong> のチャンクサイズでデータが流れるということになります。</p>
 <h3 id="解説">解説</h3>
 <p>今回の問題は <code>[1,2,3,4,5],[7,8,9,10]</code> ではなく <code>[1,2,3,4,5],[6,7,8,9,10]</code> と思った人もいるのではないでしょうか？</p>
 <p>では何故このような動作になってしまうのか、それは <code>myTakeWhileC</code> 関数に秘密があります。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
-<a class="sourceLine" id="cb7-2" title="2">myTakeWhileC f <span class="fu">=</span> loop</a>
+<a class="sourceLine" id="cb7-2" title="2">myTakeWhileC f <span class="ot">=</span> loop</a>
 <a class="sourceLine" id="cb7-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-4" title="4">    loop <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb7-4" title="4">    loop <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb7-5" title="5">      mx <span class="ot">&lt;-</span> await</a>
 <a class="sourceLine" id="cb7-6" title="6">      <span class="kw">case</span> mx <span class="kw">of</span></a>
 <a class="sourceLine" id="cb7-7" title="7">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a>
 <a class="sourceLine" id="cb7-8" title="8">        <span class="dt">Just</span> x</a>
-<a class="sourceLine" id="cb7-9" title="9">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
-<a class="sourceLine" id="cb7-10" title="10">          <span class="fu">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a></code></pre></div>
+<a class="sourceLine" id="cb7-9" title="9">          <span class="op">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="op">&gt;&gt;</span> loop</a>
+<a class="sourceLine" id="cb7-10" title="10">          <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a></code></pre></div>
 <p>この関数を理解するためには、以下の2点を抑えておけば十分です。</p>
 <ul>
 <li><code>await</code> は上流のパイプに対して、値をチャンクサイズで1つ要求する関数です。(チャンクサイズは型 (より正確に言えば <strong>Source</strong>) によって違います。リストであれば要素1つですが、<code>ByteString</code> (<strong>sourceFile</strong> を利用した場合) であれば <strong>1byte</strong> や <strong>1文字</strong> ではなく！ <strong>32kbyte</strong>になります。)</li>

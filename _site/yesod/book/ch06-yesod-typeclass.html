@@ -191,7 +191,7 @@
 <p>ドメイン名はユーザのリクエストから得られると思うかもしれませんが、それ以外にもポート番号についても知る必要もあります。そして、例えポート番号をリクエストから取得できたとしても、HTTP または HTTPS のどちらを利用すれば良いのでしょうか？さらにそれを知ったとしても、このような方法はユーザがどのようにリクエストを送信したかに応じて異なる URL が生成されることを意味します。例えば、ユーザが <code>"example.com"</code> と <code>"www.example.com"</code> にアクセスしたとき、両者で異なる URL が生成されてしまいます。サーチエンジン最適化の観点で考えると、ひとつの正規化された URL に統一したいでしょう。</p>
 <p>最後に Yesod はアプリケーションをどこにホストしているかについて何の仮定もありません。例えば、大部分は静的なサイト (<a href="http://static.example.com/">http://static.example.com/</a>) ですが、 /wiki/ に Yesod 製の Wiki を作りたいとしましょう。このとき、サブパスがどこからホストされているかについて、アプリケーションが決定するための信頼できる方法はありません。なので、様々な予測をするのではなく、Yesod にアプリケーションのルートを教えます。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">MyWiki</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-2" title="2">    approot <span class="fu">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://static.example.com/wiki&quot;</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-2" title="2">    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://static.example.com/wiki&quot;</span></a></code></pre></div>
 <p>末尾のスラッシュがないことに注意してください。Yesod が <code>SomePathR</code> の URL を構成するときは、まず <code>SomePathR</code> が相対パス <code>/some/path</code> であるということを計算し、それを <code>approot</code> に付け加えます。その結果 <code>http://static.example.com/wiki/some/path</code> ができあがります。</p>
 <p><code>approot</code> のデフォルト値は <code>ApprootRelative</code> です。これは本質的には “何の接頭辞も加えない” ということを意味するため、生成される URL は <code>/some/path</code> になります。これは、アプリケーション内リンクの一般的なケースとドメインのルートにホストされたアプリケーションにおいては正しく機能します。しかし、 (電子メールを送る場合のような) 絶対 URL が必要となる場合は <code>ApprootStatic</code> を利用するべきでしょう。</p>
 <p><code>ApprootStatic</code> コンストラクタに加え <code>ApprootMaster</code> と <code>ApprootRequest</code> コンストラクタも利用可能です。<code>ApprootMaster</code> は <code>approot</code> をファウンデーション値から決定します。このコンストラクタを使えば、例えば、<code>approot</code> を設定ファイルから読み込むことができます。<code>ApprootRequest</code> は <code>approot</code> を決めるための追加的なリクエスト値を利用できるため、ユーザが最初にサイトに対してどんなリクエストをしたかによって、異なるドメイン名にすることができます。</p>
@@ -232,7 +232,7 @@
 <a class="sourceLine" id="cb3-11" title="11"><span class="kw">import</span>           <span class="dt">Network.HTTP.Types</span>                 (encodePath)</a>
 <a class="sourceLine" id="cb3-12" title="12"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
 <a class="sourceLine" id="cb3-13" title="13"></a>
-<a class="sourceLine" id="cb3-14" title="14"><span class="kw">data</span> <span class="dt">Slash</span> <span class="fu">=</span> <span class="dt">Slash</span></a>
+<a class="sourceLine" id="cb3-14" title="14"><span class="kw">data</span> <span class="dt">Slash</span> <span class="ot">=</span> <span class="dt">Slash</span></a>
 <a class="sourceLine" id="cb3-15" title="15"></a>
 <a class="sourceLine" id="cb3-16" title="16">mkYesod <span class="st">&quot;Slash&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb3-17" title="17">/ RootR GET</a>
@@ -240,27 +240,27 @@
 <a class="sourceLine" id="cb3-19" title="19">|]</a>
 <a class="sourceLine" id="cb3-20" title="20"></a>
 <a class="sourceLine" id="cb3-21" title="21"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Slash</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-22" title="22">    joinPath _ ar pieces' qs' <span class="fu">=</span></a>
+<a class="sourceLine" id="cb3-22" title="22">    joinPath _ ar pieces' qs' <span class="ot">=</span></a>
 <a class="sourceLine" id="cb3-23" title="23">        fromText ar <span class="ot">`mappend`</span> encodePath pieces qs</a>
 <a class="sourceLine" id="cb3-24" title="24">      <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-25" title="25">        qs <span class="fu">=</span> <span class="fu">map</span> (TE.encodeUtf8 <span class="fu">***</span> go) qs'</a>
-<a class="sourceLine" id="cb3-26" title="26">        go <span class="st">&quot;&quot;</span> <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb3-27" title="27">        go x <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> TE.encodeUtf8 x</a>
-<a class="sourceLine" id="cb3-28" title="28">        pieces <span class="fu">=</span> pieces' <span class="fu">++</span> [<span class="st">&quot;&quot;</span>]</a>
+<a class="sourceLine" id="cb3-25" title="25">        qs <span class="ot">=</span> <span class="fu">map</span> (TE.encodeUtf8 <span class="op">***</span> go) qs'</a>
+<a class="sourceLine" id="cb3-26" title="26">        go <span class="st">&quot;&quot;</span> <span class="ot">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb3-27" title="27">        go x <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> TE.encodeUtf8 x</a>
+<a class="sourceLine" id="cb3-28" title="28">        pieces <span class="ot">=</span> pieces' <span class="op">++</span> [<span class="st">&quot;&quot;</span>]</a>
 <a class="sourceLine" id="cb3-29" title="29"></a>
 <a class="sourceLine" id="cb3-30" title="30">    <span class="co">-- We want to keep canonical URLs. Therefore, if the URL is missing a</span></a>
 <a class="sourceLine" id="cb3-31" title="31">    <span class="co">-- trailing slash, redirect. But the empty set of pieces always stays the</span></a>
 <a class="sourceLine" id="cb3-32" title="32">    <span class="co">-- same.</span></a>
-<a class="sourceLine" id="cb3-33" title="33">    cleanPath _ [] <span class="fu">=</span> <span class="dt">Right</span> []</a>
+<a class="sourceLine" id="cb3-33" title="33">    cleanPath _ [] <span class="ot">=</span> <span class="dt">Right</span> []</a>
 <a class="sourceLine" id="cb3-34" title="34">    cleanPath _ s</a>
-<a class="sourceLine" id="cb3-35" title="35">        <span class="fu">|</span> <span class="fu">dropWhile</span> (<span class="fu">not</span> <span class="fu">.</span> T.null) s <span class="fu">==</span> [<span class="st">&quot;&quot;</span>] <span class="fu">=</span> <span class="co">-- the only empty string is the last one</span></a>
-<a class="sourceLine" id="cb3-36" title="36">            <span class="dt">Right</span> <span class="fu">$</span> <span class="fu">init</span> s</a>
+<a class="sourceLine" id="cb3-35" title="35">        <span class="op">|</span> <span class="fu">dropWhile</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s <span class="op">==</span> [<span class="st">&quot;&quot;</span>] <span class="ot">=</span> <span class="co">-- the only empty string is the last one</span></a>
+<a class="sourceLine" id="cb3-36" title="36">            <span class="dt">Right</span> <span class="op">$</span> <span class="fu">init</span> s</a>
 <a class="sourceLine" id="cb3-37" title="37">        <span class="co">-- Since joinPath will append the missing trailing slash, we simply</span></a>
 <a class="sourceLine" id="cb3-38" title="38">        <span class="co">-- remove empty pieces.</span></a>
-<a class="sourceLine" id="cb3-39" title="39">        <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="dt">Left</span> <span class="fu">$</span> <span class="fu">filter</span> (<span class="fu">not</span> <span class="fu">.</span> T.null) s</a>
+<a class="sourceLine" id="cb3-39" title="39">        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Left</span> <span class="op">$</span> <span class="fu">filter</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s</a>
 <a class="sourceLine" id="cb3-40" title="40"></a>
 <a class="sourceLine" id="cb3-41" title="41"><span class="ot">getRootR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb3-42" title="42">getRootR <span class="fu">=</span> defaultLayout</a>
+<a class="sourceLine" id="cb3-42" title="42">getRootR <span class="ot">=</span> defaultLayout</a>
 <a class="sourceLine" id="cb3-43" title="43">    [whamlet|</a>
 <a class="sourceLine" id="cb3-44" title="44">        <span class="kw">&lt;p&gt;</span></a>
 <a class="sourceLine" id="cb3-45" title="45">            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">RootR</span><span class="kw">}&gt;</span>RootR</a>
@@ -269,10 +269,10 @@
 <a class="sourceLine" id="cb3-48" title="48">    |]</a>
 <a class="sourceLine" id="cb3-49" title="49"></a>
 <a class="sourceLine" id="cb3-50" title="50"><span class="ot">getFooR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb3-51" title="51">getFooR <span class="fu">=</span> getRootR</a>
+<a class="sourceLine" id="cb3-51" title="51">getFooR <span class="ot">=</span> getRootR</a>
 <a class="sourceLine" id="cb3-52" title="52"></a>
 <a class="sourceLine" id="cb3-53" title="53"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb3-54" title="54">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">Slash</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-54" title="54">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">Slash</span></a></code></pre></div>
 <p>まず <code>joinPath</code> の実装を見てください。これは1つを除いて Yesod 型クラスのデフォルト実装からほとんど一語一句そのままにコピーされたものです。異なる部分は、末尾に空文字列を余分に追加した点です。パス断片を扱う場合、空文字列はさらにスラッシュを追加するため、余分な空文字列を追加することで、末尾のスラッシュを強制できるのです。</p>
 <p><code>cleanPath</code> は少しだけトリッキーです。まず、前のように空パスをチェックし、もし空パスならそのまま受け渡し、リダイレクトが不要なことを示すために <code>Right</code> を返します。また、実際には、以下の問題についてチェックする必要があります。</p>
 <ul>
@@ -294,14 +294,14 @@
 <a class="sourceLine" id="cb4-5" title="5"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
 <a class="sourceLine" id="cb4-6" title="6"><span class="kw">import</span> <span class="dt">Data.Time</span> (getCurrentTime)</a>
 <a class="sourceLine" id="cb4-7" title="7"></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb4-9" title="9"></a>
 <a class="sourceLine" id="cb4-10" title="10">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb4-11" title="11">/ HomeR GET</a>
 <a class="sourceLine" id="cb4-12" title="12">|]</a>
 <a class="sourceLine" id="cb4-13" title="13"></a>
 <a class="sourceLine" id="cb4-14" title="14"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-15" title="15">    defaultLayout contents <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-15" title="15">    defaultLayout contents <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb4-16" title="16">        <span class="dt">PageContent</span> title headTags bodyTags <span class="ot">&lt;-</span> widgetToPageContent contents</a>
 <a class="sourceLine" id="cb4-17" title="17">        mmsg <span class="ot">&lt;-</span> getMessage</a>
 <a class="sourceLine" id="cb4-18" title="18">        withUrlRenderer [hamlet|</a>
@@ -318,13 +318,13 @@
 <a class="sourceLine" id="cb4-29" title="29">        |]</a>
 <a class="sourceLine" id="cb4-30" title="30"></a>
 <a class="sourceLine" id="cb4-31" title="31"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb4-32" title="32">getHomeR <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-32" title="32">getHomeR <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb4-33" title="33">    now <span class="ot">&lt;-</span> liftIO getCurrentTime</a>
-<a class="sourceLine" id="cb4-34" title="34">    setMessage <span class="fu">$</span> toHtml <span class="fu">$</span> <span class="st">&quot;You previously visited at: &quot;</span> <span class="fu">++</span> <span class="fu">show</span> now</a>
+<a class="sourceLine" id="cb4-34" title="34">    setMessage <span class="op">$</span> toHtml <span class="op">$</span> <span class="st">&quot;You previously visited at: &quot;</span> <span class="op">++</span> <span class="fu">show</span> now</a>
 <a class="sourceLine" id="cb4-35" title="35">    defaultLayout [whamlet|<span class="kw">&lt;p&gt;</span>Try refreshing|]</a>
 <a class="sourceLine" id="cb4-36" title="36"></a>
 <a class="sourceLine" id="cb4-37" title="37"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb4-38" title="38">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-38" title="38">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
 <p><code>getMessage</code> と　<code>setMessage</code> については、セッションの章で詳細に触れます。</p>
 <h2 id="カスタムエラーページ">カスタムエラーページ</h2>
 <p>プロフェッショナルな Web サイトの証の1つとして、適切に設計されたエラーページが挙げられます。Yesod はエラーページを表示するために、自動的に <code>defaultLayout</code> を利用しますが、もっと別の方法もあります。それが <code>errorHandler</code> メソッドを上書きする方法です。</p>
@@ -334,7 +334,7 @@
 <a class="sourceLine" id="cb5-4" title="4"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
 <a class="sourceLine" id="cb5-5" title="5"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
 <a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb5-8" title="8"></a>
 <a class="sourceLine" id="cb5-9" title="9">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb5-10" title="10">/ HomeR GET</a>
@@ -343,16 +343,16 @@
 <a class="sourceLine" id="cb5-13" title="13">|]</a>
 <a class="sourceLine" id="cb5-14" title="14"></a>
 <a class="sourceLine" id="cb5-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-16" title="16">    errorHandler <span class="dt">NotFound</span> <span class="fu">=</span> <span class="fu">fmap</span> toTypedContent <span class="fu">$</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-16" title="16">    errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> <span class="fu">fmap</span> toTypedContent <span class="op">$</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb5-17" title="17">        setTitle <span class="st">&quot;Request page not located&quot;</span></a>
 <a class="sourceLine" id="cb5-18" title="18">        toWidget [hamlet|</a>
 <a class="sourceLine" id="cb5-19" title="19"><span class="kw">&lt;h1&gt;</span>Not Found</a>
 <a class="sourceLine" id="cb5-20" title="20"><span class="kw">&lt;p&gt;</span>We apologize for the inconvenience, but the requested page could not be located.</a>
 <a class="sourceLine" id="cb5-21" title="21">|]</a>
-<a class="sourceLine" id="cb5-22" title="22">    errorHandler other <span class="fu">=</span> defaultErrorHandler other</a>
+<a class="sourceLine" id="cb5-22" title="22">    errorHandler other <span class="ot">=</span> defaultErrorHandler other</a>
 <a class="sourceLine" id="cb5-23" title="23"></a>
 <a class="sourceLine" id="cb5-24" title="24"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb5-25" title="25">getHomeR <span class="fu">=</span> defaultLayout</a>
+<a class="sourceLine" id="cb5-25" title="25">getHomeR <span class="ot">=</span> defaultLayout</a>
 <a class="sourceLine" id="cb5-26" title="26">    [whamlet|</a>
 <a class="sourceLine" id="cb5-27" title="27">        <span class="kw">&lt;p&gt;</span></a>
 <a class="sourceLine" id="cb5-28" title="28">            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">ErrorR</span><span class="kw">}&gt;</span>Internal server error</a>
@@ -360,17 +360,17 @@
 <a class="sourceLine" id="cb5-30" title="30">    |]</a>
 <a class="sourceLine" id="cb5-31" title="31"></a>
 <a class="sourceLine" id="cb5-32" title="32"><span class="ot">getErrorR ::</span> <span class="dt">Handler</span> ()</a>
-<a class="sourceLine" id="cb5-33" title="33">getErrorR <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;This is an error&quot;</span></a>
+<a class="sourceLine" id="cb5-33" title="33">getErrorR <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;This is an error&quot;</span></a>
 <a class="sourceLine" id="cb5-34" title="34"></a>
 <a class="sourceLine" id="cb5-35" title="35"><span class="ot">getNotFoundR ::</span> <span class="dt">Handler</span> ()</a>
-<a class="sourceLine" id="cb5-36" title="36">getNotFoundR <span class="fu">=</span> notFound</a>
+<a class="sourceLine" id="cb5-36" title="36">getNotFoundR <span class="ot">=</span> notFound</a>
 <a class="sourceLine" id="cb5-37" title="37"></a>
 <a class="sourceLine" id="cb5-38" title="38"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-39" title="39">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span> haskell</a></code></pre></div>
+<a class="sourceLine" id="cb5-39" title="39">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span> haskell</a></code></pre></div>
 <p>ここでは、カスタマイズした404エラーページを指定します。それぞれのエラー型に対して、カスタマイズしたハンドラを書きたくない場合は <code>defaultErrorHandler</code> を利用しましょう。型の制約により <code>fmap toTypeContent</code> でメソッドで始める必要がありますが、典型的なハンドラ関数を書くことができます (<code>TypedContent</code> については、次の章で詳しく説明します)。</p>
 <p>実際に、リダイレクトのような特別なレスポンスさえも利用可能です。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">errorHandler <span class="dt">NotFound</span> <span class="fu">=</span> redirect <span class="dt">HomeR</span></a>
-<a class="sourceLine" id="cb6-2" title="2">errorHandler other <span class="fu">=</span> defaultErrorHandler other</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> redirect <span class="dt">HomeR</span></a>
+<a class="sourceLine" id="cb6-2" title="2">errorHandler other <span class="ot">=</span> defaultErrorHandler other</a></code></pre></div>
 <div class="yesod-book-notice">
 <p>上記のように行うことはできますが、実際にはこのような使い方は推奨しません。なぜなら、404は404そのものであるべきだからです。</p>
 </div>
@@ -404,9 +404,9 @@
 <a class="sourceLine" id="cb7-2" title="2">                       <span class="ot">-&gt;</span> <span class="dt">Route</span> site</a>
 <a class="sourceLine" id="cb7-3" title="3">                       <span class="ot">-&gt;</span> [(<span class="dt">T.Text</span>, <span class="dt">T.Text</span>)] <span class="co">-- ^ クエリ文字列</span></a>
 <a class="sourceLine" id="cb7-4" title="4">                       <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Builder</span></a>
-<a class="sourceLine" id="cb7-5" title="5">urlParamRenderOverride y (<span class="dt">StaticR</span> s) _ <span class="fu">=</span></a>
-<a class="sourceLine" id="cb7-6" title="6">  <span class="dt">Just</span> <span class="fu">$</span> <span class="fu">uncurry</span> (joinPath y (Settings.staticRoot <span class="fu">$</span> settings y)) <span class="fu">$</span> renderRoute s</a>
-<a class="sourceLine" id="cb7-7" title="7">urlParamRenderOverride _ _ _ <span class="fu">=</span> <span class="dt">Nothing</span></a></code></pre></div>
+<a class="sourceLine" id="cb7-5" title="5">urlParamRenderOverride y (<span class="dt">StaticR</span> s) _ <span class="ot">=</span></a>
+<a class="sourceLine" id="cb7-6" title="6">  <span class="dt">Just</span> <span class="op">$</span> <span class="fu">uncurry</span> (joinPath y (Settings.staticRoot <span class="op">$</span> settings y)) <span class="op">$</span> renderRoute s</a>
+<a class="sourceLine" id="cb7-7" title="7">urlParamRenderOverride _ _ _ <span class="ot">=</span> <span class="dt">Nothing</span></a></code></pre></div>
 <p>これは、静的ルートが特別な静的ルートから受信されることを意味し、そのルートは異なるドメインになるよう設定可能です。これは、型安全URL の強力さと柔軟性の重要な例でもあり、たった1行のコードで、全てのハンドラを通して、静的ルートのレンダリングを変更することができてしまうのです。</p>
 <h2 id="認証-認可">認証 / 認可</h2>
 <p>単純なアプリケーションでは、各ハンドラ関数の中でパーミッションを確認するとういう方法が簡単で便利です。しかし、それはうまくスケーリングしません。結果的には、より宣言的な方法をとりたいと思うようになるでしょう。よくあるシステムでは ACL、特別な設定ファイル、そして多くの意味のわからない呪文を定義するでしょう。Yesod では、それらはただの Haskell です。3つのメソッドが関連します。</p>

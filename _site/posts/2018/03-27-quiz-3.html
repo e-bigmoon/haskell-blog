@@ -241,14 +241,14 @@ new" />
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></a>
 <a class="sourceLine" id="cb1-4" title="4"><span class="kw">import</span> <span class="dt">Data.Char</span> (isDigit)</a>
 <a class="sourceLine" id="cb1-5" title="5"></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="kw">newtype</span> <span class="dt">Digit</span> <span class="fu">=</span> <span class="dt">Digit</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">newtype</span> <span class="dt">Digit</span> <span class="ot">=</span> <span class="dt">Digit</span> <span class="dt">Char</span></a>
 <a class="sourceLine" id="cb1-7" title="7">  <span class="kw">deriving</span> <span class="dt">Show</span></a>
 <a class="sourceLine" id="cb1-8" title="8"></a>
 <a class="sourceLine" id="cb1-9" title="9"><span class="ot">propIsDigit ::</span> <span class="dt">Digit</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb1-10" title="10">propIsDigit (<span class="dt">Digit</span> c) <span class="fu">=</span> <span class="fu">isDigit</span> c</a>
+<a class="sourceLine" id="cb1-10" title="10">propIsDigit (<span class="dt">Digit</span> c) <span class="ot">=</span> <span class="fu">isDigit</span> c</a>
 <a class="sourceLine" id="cb1-11" title="11"></a>
 <a class="sourceLine" id="cb1-12" title="12"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Digit</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-13" title="13">  arbitrary <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-13" title="13">  arbitrary <span class="ot">=</span> <span class="fu">undefined</span></a></code></pre></div>
 <p>テストは以下のように実行します。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="ex">stack</span> repl --package QuickCheck -- Quiz3.hs</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="ex">*Quiz3</span><span class="op">&gt;</span> quickCheck propIsDigit</a>
@@ -262,16 +262,16 @@ new" />
 <p><a href="./03-25-quiz-2.html">前回</a>の問題と答えは以下の通りです。</p>
 <h3 id="問題">問題</h3>
 <p>難易度: λλ</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">foldr</span> (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> <span class="fu">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">foldl</span> (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> <span class="fu">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">foldr</span> (<span class="op">&amp;&amp;</span>) <span class="dt">True</span> <span class="op">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="fu">foldl</span> (<span class="op">&amp;&amp;</span>) <span class="dt">True</span> <span class="op">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a></code></pre></div>
 <p>上記の2つの式の挙動の違いを説明してください。</p>
 <p>また、なぜそうなるのか考えてみましょう！</p>
 <h3 id="こたえ">こたえ</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">&gt;&gt;&gt;</span> <span class="fu">foldr</span> (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> <span class="fu">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="op">&gt;&gt;&gt;</span> <span class="fu">foldr</span> (<span class="op">&amp;&amp;</span>) <span class="dt">True</span> <span class="op">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="dt">False</span></a>
 <a class="sourceLine" id="cb5-3" title="3"></a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="fu">&gt;&gt;&gt;</span> <span class="fu">foldl</span> (<span class="fu">&amp;&amp;</span>) <span class="dt">True</span> <span class="fu">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="fu">^</span><span class="dt">CInterrupted</span><span class="fu">.</span></a></code></pre></div>
+<a class="sourceLine" id="cb5-4" title="4"><span class="op">&gt;&gt;&gt;</span> <span class="fu">foldl</span> (<span class="op">&amp;&amp;</span>) <span class="dt">True</span> <span class="op">$</span> <span class="fu">cycle</span> [<span class="dt">True</span>, <span class="dt">False</span>]</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="op">^</span><span class="dt">CInterrupted</span><span class="op">.</span></a></code></pre></div>
 <p>ということで <code>foldr</code> は無限リストに対しても停止して値を返しますが、<code>foldl</code> は停止せず、値を返さない。</p>
 <p>でした。</p>
 <h2 id="haskell-quiz-no.2-の解説">Haskell Quiz No.2 の解説</h2>
@@ -281,9 +281,9 @@ new" />
 <p><a href="https://www.stackage.org/haddock/lts-11.2/base-4.10.1.0/src/GHC-List.html#cycle">cycle</a> 関数は <code>base</code> パッケージの <a href="https://www.stackage.org/haddock/lts-11.2/base-4.10.1.0/src/GHC-List.html#cycle">GHC.List</a> で定義されています。また <a href="https://www.stackage.org/haddock/lts-11.2/base-4.10.1.0/Prelude.html#v:cycle">Prelude</a> モジュールにも含まれています。</p>
 <p>以下は実際の定義です。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">cycle</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="fu">cycle</span> [] <span class="fu">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="fu">cycle</span> xs <span class="fu">=</span> xs'</a>
-<a class="sourceLine" id="cb6-4" title="4">  <span class="kw">where</span> xs' <span class="fu">=</span> xs <span class="fu">++</span> xs'</a></code></pre></div>
+<a class="sourceLine" id="cb6-2" title="2"><span class="fu">cycle</span> [] <span class="ot">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="fu">cycle</span> xs <span class="ot">=</span> xs'</a>
+<a class="sourceLine" id="cb6-4" title="4">  <span class="kw">where</span> xs' <span class="ot">=</span> xs <span class="op">++</span> xs'</a></code></pre></div>
 <p>この定義を見ればわかるように <code>cycle</code> 関数は空リストを与えると実行時エラーになります。</p>
 <p>それ以外の場合では与えられたリストを繰り返して無限リストを作ります。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="op">&gt;&gt;&gt;</span> <span class="ex">cycle</span> <span class="st">&quot;Haskell&quot;</span></a>
@@ -300,10 +300,10 @@ new" />
 <p><code>Foldable</code> のクラス定義とリストのインスタンス定義はこんな感じです。(実際にはもっと多くのメソッドがあります)</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">class</span> <span class="dt">Foldable</span> t <span class="kw">where</span></a>
 <a class="sourceLine" id="cb8-2" title="2"><span class="ot">  foldr ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> b</a>
-<a class="sourceLine" id="cb8-3" title="3">  <span class="fu">foldr</span> f z t <span class="fu">=</span> appEndo (<span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="fu">#.</span> f) t) z</a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="fu">foldr</span> f z t <span class="ot">=</span> appEndo (<span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="op">#.</span> f) t) z</a>
 <a class="sourceLine" id="cb8-4" title="4"></a>
 <a class="sourceLine" id="cb8-5" title="5"><span class="kw">instance</span> <span class="dt">Foldable</span> [] <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-6" title="6">  <span class="fu">foldr</span> <span class="fu">=</span> List.foldr</a></code></pre></div>
+<a class="sourceLine" id="cb8-6" title="6">  <span class="fu">foldr</span> <span class="ot">=</span> List.foldr</a></code></pre></div>
 <p>初学者に優しくない世界になりましたね・・・。なかなか定義にたどり着きません。</p>
 <p><code>import</code> 宣言のあたりを見ると <code>import qualified GHC.List as List</code> とあるので <code>List.foldr</code> は <code>GHC.List.foldr</code> だとわかります。</p>
 <p><code>GHC.List</code> を <code>base</code> パッケージの<a href="https://www.stackage.org/lts-11.2/package/base-4.10.1.0">一覧</a>から探しても見つかりません。これはわざと利用者に見えないようにしているためです。</p>
@@ -312,18 +312,18 @@ new" />
 <h3 id="foldr">foldr</h3>
 <p><a href="https://www.stackage.org/haddock/lts-11.2/base-4.10.1.0/src/GHC-Base.html#line-850">foldr</a> の実際の定義は以下の通りです。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">foldr</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="fu">foldr</span> k z <span class="fu">=</span> go</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="fu">foldr</span> k z <span class="ot">=</span> go</a>
 <a class="sourceLine" id="cb9-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb9-4" title="4">    go [] <span class="fu">=</span> z</a>
-<a class="sourceLine" id="cb9-5" title="5">    go (y<span class="fu">:</span>ys) <span class="fu">=</span> y <span class="ot">`k`</span> go ys</a></code></pre></div>
+<a class="sourceLine" id="cb9-4" title="4">    go [] <span class="ot">=</span> z</a>
+<a class="sourceLine" id="cb9-5" title="5">    go (y<span class="op">:</span>ys) <span class="ot">=</span> y <span class="ot">`k`</span> go ys</a></code></pre></div>
 <p>これではわかりずらいので少し変形してみましょう。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">foldr</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="fu">foldr</span> k z []     <span class="fu">=</span> z</a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="fu">foldr</span> k z (y<span class="fu">:</span>ys) <span class="fu">=</span> y <span class="ot">`k`</span> <span class="fu">foldr</span> k z ys</a></code></pre></div>
+<a class="sourceLine" id="cb10-2" title="2"><span class="fu">foldr</span> k z []     <span class="ot">=</span> z</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="fu">foldr</span> k z (y<span class="op">:</span>ys) <span class="ot">=</span> y <span class="ot">`k`</span> <span class="fu">foldr</span> k z ys</a></code></pre></div>
 <p>変数名もいつもの感じに変えちゃいましょう。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="fu">foldr</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="fu">foldr</span> _  e []     <span class="fu">=</span> e</a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="fu">foldr</span> f  e (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="ot">`f`</span> <span class="fu">foldr</span> f e xs <span class="co">-- f x (foldr f e xs) と同じ</span></a></code></pre></div>
+<a class="sourceLine" id="cb11-2" title="2"><span class="fu">foldr</span> _  e []     <span class="ot">=</span> e</a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="fu">foldr</span> f  e (x<span class="op">:</span>xs) <span class="ot">=</span> x <span class="ot">`f`</span> <span class="fu">foldr</span> f e xs <span class="co">-- f x (foldr f e xs) と同じ</span></a></code></pre></div>
 <p>だいぶ見慣れた形に近づいてきました。</p>
 <p><code>foldr</code> (<code>foldl</code>) はほどよく抽象化されているので、色々な理解があると思いますので、僕がいつも使っている説明をいくつかご紹介します。</p>
 <p>ここからの <code>foldr</code>, <code>foldl</code> は全てリストについての話です。</p>
@@ -335,9 +335,9 @@ new" />
 <a class="sourceLine" id="cb12-4" title="4"><span class="co">-- foldr(ight) なのでに 0 を追加します</span></a>
 <a class="sourceLine" id="cb12-5" title="5"><span class="dv">1</span> , <span class="dv">2</span> , <span class="dv">3</span> , <span class="dv">4</span> , <span class="dv">5</span> , <span class="dv">0</span></a>
 <a class="sourceLine" id="cb12-6" title="6"><span class="co">-- , を (+) に置き換えます</span></a>
-<a class="sourceLine" id="cb12-7" title="7"><span class="dv">1</span> <span class="fu">+</span> <span class="dv">2</span> <span class="fu">+</span> <span class="dv">3</span> <span class="fu">+</span> <span class="dv">4</span> <span class="fu">+</span> <span class="dv">5</span> <span class="fu">+</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb12-7" title="7"><span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">4</span> <span class="op">+</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">0</span></a>
 <a class="sourceLine" id="cb12-8" title="8"><span class="co">-- foldr(ight) なので右結合で括弧をつけていきます</span></a>
-<a class="sourceLine" id="cb12-9" title="9"><span class="dv">1</span> <span class="fu">+</span> (<span class="dv">2</span> <span class="fu">+</span> (<span class="dv">3</span> <span class="fu">+</span> (<span class="dv">4</span> <span class="fu">+</span> (<span class="dv">5</span> <span class="fu">+</span> <span class="dv">0</span>))))</a>
+<a class="sourceLine" id="cb12-9" title="9"><span class="dv">1</span> <span class="op">+</span> (<span class="dv">2</span> <span class="op">+</span> (<span class="dv">3</span> <span class="op">+</span> (<span class="dv">4</span> <span class="op">+</span> (<span class="dv">5</span> <span class="op">+</span> <span class="dv">0</span>))))</a>
 <a class="sourceLine" id="cb12-10" title="10"></a>
 <a class="sourceLine" id="cb12-11" title="11"><span class="co">-- 一般化すると</span></a>
 <a class="sourceLine" id="cb12-12" title="12">x1 <span class="ot">`f`</span> (x2 <span class="ot">`f`</span> (x3 <span class="ot">`f`</span> (x4 <span class="ot">`f`</span> (x5 <span class="ot">`f`</span> e))))</a></code></pre></div>
@@ -352,33 +352,33 @@ new" />
 <p>以上により <code>foldr :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b</code> が導かれました。</p>
 <h4 id="universal-property-を使った説明">universal property を使った説明</h4>
 <p>普遍性 (<code>universal property</code>) の詳しいことは有識者の方に任せるとして</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">myFunc []     <span class="fu">=</span> e</a>
-<a class="sourceLine" id="cb13-2" title="2">myFunc (x<span class="fu">:</span>xs) <span class="fu">=</span> f x (myFunc xs)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">myFunc []     <span class="ot">=</span> e</a>
+<a class="sourceLine" id="cb13-2" title="2">myFunc (x<span class="op">:</span>xs) <span class="ot">=</span> f x (myFunc xs)</a></code></pre></div>
 <p>上記のような再帰パターンの関数は全て <code>foldr f e</code> として書けるという性質です。この説明はどちらかと言うと、ベタに再帰で書いた関数を <code>foldr</code> を使った形式に書き直す際の理解の手助けとして有用かと思います。</p>
 <p>具体例を見ればすぐにわかります。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="fu">sum</span> [] <span class="fu">=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="fu">sum</span> (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="fu">+</span> <span class="fu">sum</span> xs</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="fu">sum</span> [] <span class="ot">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="fu">sum</span> (x<span class="op">:</span>xs) <span class="ot">=</span> x <span class="op">+</span> <span class="fu">sum</span> xs</a></code></pre></div>
 <p><code>sum</code> 関数は <code>foldr (+) 0</code> と同じです。(この時の <code>e</code> は <code>0</code>, <code>f</code> は <code>(+)</code> に対応します)</p>
 <p>では先程の <code>cycle</code> は普遍性を使って <code>foldr</code> で書けるの？という疑問になりますよね。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="fu">cycle</span> [] <span class="fu">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
-<a class="sourceLine" id="cb15-2" title="2"><span class="fu">cycle</span> xs <span class="fu">=</span> xs'</a>
-<a class="sourceLine" id="cb15-3" title="3">  <span class="kw">where</span> xs' <span class="fu">=</span> xs <span class="fu">++</span> xs'</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="fu">cycle</span> [] <span class="ot">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="fu">cycle</span> xs <span class="ot">=</span> xs'</a>
+<a class="sourceLine" id="cb15-3" title="3">  <span class="kw">where</span> xs' <span class="ot">=</span> xs <span class="op">++</span> xs'</a></code></pre></div>
 <p>先程のパターンと微妙に違うので合わせてみましょう。</p>
 <p>また <code>xs' = cycle xs</code> なので以下のように変形できます。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1"><span class="fu">cycle</span> [] <span class="fu">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
-<a class="sourceLine" id="cb16-2" title="2"><span class="fu">cycle</span> xs <span class="fu">=</span> xs <span class="fu">++</span> <span class="fu">cycle</span> xs</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1"><span class="fu">cycle</span> [] <span class="ot">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="fu">cycle</span> xs <span class="ot">=</span> xs <span class="op">++</span> <span class="fu">cycle</span> xs</a></code></pre></div>
 <p>さらに変形します。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="fu">cycle</span> []     <span class="fu">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
-<a class="sourceLine" id="cb17-2" title="2"><span class="fu">cycle</span> (x<span class="fu">:</span>xs) <span class="fu">=</span> (x<span class="fu">:</span>xs) <span class="fu">++</span> <span class="fu">cycle</span> (x<span class="fu">:</span>xs)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="fu">cycle</span> []     <span class="ot">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
+<a class="sourceLine" id="cb17-2" title="2"><span class="fu">cycle</span> (x<span class="op">:</span>xs) <span class="ot">=</span> (x<span class="op">:</span>xs) <span class="op">++</span> <span class="fu">cycle</span> (x<span class="op">:</span>xs)</a></code></pre></div>
 <p>ここで、最初のパターンと比較しやすいように <code>cycle</code> を <code>myFunc</code> という名前に変更します。</p>
 <p>ついでに <code>++</code> の位置も変更しておきます。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="co">-- cycle</span></a>
-<a class="sourceLine" id="cb18-2" title="2">myFunc []     <span class="fu">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
-<a class="sourceLine" id="cb18-3" title="3">myFunc (x<span class="fu">:</span>xs) <span class="fu">=</span> (<span class="fu">++</span>) (x<span class="fu">:</span>xs) (myFunc (x<span class="fu">:</span>xs))</a>
+<a class="sourceLine" id="cb18-2" title="2">myFunc []     <span class="ot">=</span> errorEmptyList <span class="st">&quot;cycle&quot;</span></a>
+<a class="sourceLine" id="cb18-3" title="3">myFunc (x<span class="op">:</span>xs) <span class="ot">=</span> (<span class="op">++</span>) (x<span class="op">:</span>xs) (myFunc (x<span class="op">:</span>xs))</a>
 <a class="sourceLine" id="cb18-4" title="4"></a>
 <a class="sourceLine" id="cb18-5" title="5"><span class="co">-- foldr として書き直すことが出来る再帰パターン</span></a>
-<a class="sourceLine" id="cb18-6" title="6">myFunc []     <span class="fu">=</span> e</a>
-<a class="sourceLine" id="cb18-7" title="7">myFunc (x<span class="fu">:</span>xs) <span class="fu">=</span> f x (myFunc xs)</a></code></pre></div>
+<a class="sourceLine" id="cb18-6" title="6">myFunc []     <span class="ot">=</span> e</a>
+<a class="sourceLine" id="cb18-7" title="7">myFunc (x<span class="op">:</span>xs) <span class="ot">=</span> f x (myFunc xs)</a></code></pre></div>
 <p>どうですか、微妙に違いますよね。</p>
 <p><code>x</code> と <code>xs</code> に分解しなければいけないのにどちらも <code>(x:xs)</code> になってしまっています。</p>
 <p>ということで <code>foldr</code> を使った <code>cycle</code> の定義を普遍性を使って導出することはできません。</p>
@@ -388,31 +388,31 @@ new" />
 <p>僕はいつもこのような感じで <code>foldr</code> の定義を考えます。<code>acc</code> は蓄積変数 (<code>accumulate variable</code>) の略です。</p>
 <p><code>go</code> の第二引数は常に <code>foldr</code> で畳み込んだ結果として考えることができます。</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="fu">cycle</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb19-2" title="2"><span class="fu">cycle</span> xs <span class="fu">=</span> <span class="fu">foldr</span> go e <span class="fu">undefined</span></a>
+<a class="sourceLine" id="cb19-2" title="2"><span class="fu">cycle</span> xs <span class="ot">=</span> <span class="fu">foldr</span> go e <span class="fu">undefined</span></a>
 <a class="sourceLine" id="cb19-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb19-4" title="4">    e        <span class="fu">=</span> <span class="fu">undefined</span></a>
-<a class="sourceLine" id="cb19-5" title="5">    go x acc <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
+<a class="sourceLine" id="cb19-4" title="4">    e        <span class="ot">=</span> <span class="fu">undefined</span></a>
+<a class="sourceLine" id="cb19-5" title="5">    go x acc <span class="ot">=</span> <span class="fu">undefined</span></a></code></pre></div>
 <p>少し考えると <code>xs</code> を <code>xs ++ xs ++ xs ...</code> という形式にできれば良さそうです。</p>
 <p>無限リストになるため初期値 <code>e</code> は絶対に評価されません。そのため <code>[]</code> でも <code>xs</code> でも <code>undefined</code> でも好きな値が使えそうです。ここでは何となく <code>xs</code> にしておきます。</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" title="1"><span class="fu">cycle</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb20-2" title="2"><span class="fu">cycle</span> xs <span class="fu">=</span> <span class="fu">foldr</span> go e <span class="fu">undefined</span></a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="fu">cycle</span> xs <span class="ot">=</span> <span class="fu">foldr</span> go e <span class="fu">undefined</span></a>
 <a class="sourceLine" id="cb20-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-4" title="4">    e        <span class="fu">=</span> xs</a>
-<a class="sourceLine" id="cb20-5" title="5">    go x acc <span class="fu">=</span> <span class="fu">undefined</span></a></code></pre></div>
+<a class="sourceLine" id="cb20-4" title="4">    e        <span class="ot">=</span> xs</a>
+<a class="sourceLine" id="cb20-5" title="5">    go x acc <span class="ot">=</span> <span class="fu">undefined</span></a></code></pre></div>
 <p>次に <code>go</code> 関数ですが <code>xs ++ (xs ++ (xs ++ (...)))</code> となれば良いので、 <code>go x acc = xs ++ acc</code> です。</p>
 <p><code>go</code> が <code>cycle</code> の引数 <code>xs</code> を参照している点が通常の使い方と異なる点です。</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="fu">cycle</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb21-2" title="2"><span class="fu">cycle</span> xs <span class="fu">=</span> <span class="fu">foldr</span> go e <span class="fu">undefined</span></a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="fu">cycle</span> xs <span class="ot">=</span> <span class="fu">foldr</span> go e <span class="fu">undefined</span></a>
 <a class="sourceLine" id="cb21-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb21-4" title="4">    e        <span class="fu">=</span> xs</a>
-<a class="sourceLine" id="cb21-5" title="5">    go _ acc <span class="fu">=</span> xs <span class="fu">++</span> acc</a></code></pre></div>
+<a class="sourceLine" id="cb21-4" title="4">    e        <span class="ot">=</span> xs</a>
+<a class="sourceLine" id="cb21-5" title="5">    go _ acc <span class="ot">=</span> xs <span class="op">++</span> acc</a></code></pre></div>
 <p>ここが一番のポイントですが <code>foldr</code> に与えるリストは <code>xs</code> ではありません。</p>
 <p>無限リストを生成するために適当な無限リストを与えます。</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" title="1"><span class="fu">cycle</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb22-2" title="2"><span class="fu">cycle</span> xs <span class="fu">=</span> <span class="fu">foldr</span> go e [<span class="dv">0</span><span class="fu">..</span>]</a>
+<a class="sourceLine" id="cb22-2" title="2"><span class="fu">cycle</span> xs <span class="ot">=</span> <span class="fu">foldr</span> go e [<span class="dv">0</span><span class="op">..</span>]</a>
 <a class="sourceLine" id="cb22-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb22-4" title="4">    e        <span class="fu">=</span> xs</a>
-<a class="sourceLine" id="cb22-5" title="5">    go _ acc <span class="fu">=</span> xs <span class="fu">++</span> acc</a></code></pre></div>
+<a class="sourceLine" id="cb22-4" title="4">    e        <span class="ot">=</span> xs</a>
+<a class="sourceLine" id="cb22-5" title="5">    go _ acc <span class="ot">=</span> xs <span class="op">++</span> acc</a></code></pre></div>
 <p>つまりこのような感じです。</p>
 <pre class="text"><code>0 `go` (1 `go` (2 `go` (3 `go` ...)))
 xs ++ (1 `go` (2 `go` (3 `go` ...)))
@@ -426,15 +426,15 @@ xs ++ (xs ++ (xs ++ (xs ++ ...)))</code></pre>
 <p>やっと問題の本題です・・・。</p>
 <p><code>foldr</code>, <code>cycle</code>, <a href="https://www.stackage.org/haddock/lts-11.2/ghc-prim-0.5.1.1/src/GHC-Classes.html#%26%26">(&amp;&amp;)</a> の定義は以下を使います。</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" title="1"><span class="fu">foldr</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</a>
-<a class="sourceLine" id="cb24-2" title="2"><span class="fu">foldr</span> _  e []     <span class="fu">=</span> e</a>
-<a class="sourceLine" id="cb24-3" title="3"><span class="fu">foldr</span> f  e (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="ot">`f`</span> <span class="fu">foldr</span> f e xs</a>
+<a class="sourceLine" id="cb24-2" title="2"><span class="fu">foldr</span> _  e []     <span class="ot">=</span> e</a>
+<a class="sourceLine" id="cb24-3" title="3"><span class="fu">foldr</span> f  e (x<span class="op">:</span>xs) <span class="ot">=</span> x <span class="ot">`f`</span> <span class="fu">foldr</span> f e xs</a>
 <a class="sourceLine" id="cb24-4" title="4"></a>
 <a class="sourceLine" id="cb24-5" title="5"><span class="fu">cycle</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb24-6" title="6"><span class="fu">cycle</span> xs <span class="fu">=</span> xs <span class="fu">++</span> <span class="fu">cycle</span> xs</a>
+<a class="sourceLine" id="cb24-6" title="6"><span class="fu">cycle</span> xs <span class="ot">=</span> xs <span class="op">++</span> <span class="fu">cycle</span> xs</a>
 <a class="sourceLine" id="cb24-7" title="7"></a>
 <a class="sourceLine" id="cb24-8" title="8"><span class="ot">(&amp;&amp;) ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb24-9" title="9"><span class="dt">True</span>  <span class="fu">&amp;&amp;</span> x  <span class="fu">=</span>  x</a>
-<a class="sourceLine" id="cb24-10" title="10"><span class="dt">False</span> <span class="fu">&amp;&amp;</span> _ <span class="fu">=</span>  <span class="dt">False</span></a></code></pre></div>
+<a class="sourceLine" id="cb24-9" title="9"><span class="dt">True</span>  <span class="op">&amp;&amp;</span> x  <span class="ot">=</span>  x</a>
+<a class="sourceLine" id="cb24-10" title="10"><span class="dt">False</span> <span class="op">&amp;&amp;</span> _ <span class="ot">=</span>  <span class="dt">False</span></a></code></pre></div>
 <p>それでは実際に遅延評価で簡約していきましょう。</p>
 <pre class="text"><code>foldr (&amp;&amp;) True (cycle [True, False])
   = { cycle を適用 }
@@ -452,8 +452,8 @@ False</code></pre>
 <p>これが <code>foldr</code> の場合に計算が停止する理由です。</p>
 <p>ではなぜ <code>foldl</code> の場合は停止しないのでしょうか？</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" title="1"><span class="fu">foldl</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> [b] <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb26-2" title="2"><span class="fu">foldl</span> _ acc []     <span class="fu">=</span> acc</a>
-<a class="sourceLine" id="cb26-3" title="3"><span class="fu">foldl</span> f acc (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="fu">foldl</span> f (acc <span class="ot">`f`</span> x) xs</a></code></pre></div>
+<a class="sourceLine" id="cb26-2" title="2"><span class="fu">foldl</span> _ acc []     <span class="ot">=</span> acc</a>
+<a class="sourceLine" id="cb26-3" title="3"><span class="fu">foldl</span> f acc (x<span class="op">:</span>xs) <span class="ot">=</span> <span class="fu">foldl</span> f (acc <span class="ot">`f`</span> x) xs</a></code></pre></div>
 <p><code>foldl</code> の場合も同様に簡約してみましょう。</p>
 <pre class="text"><code>foldl (&amp;&amp;) True (cycle [True, False])
   = { cycle を適用 }

@@ -301,7 +301,7 @@ utcToZonedTime :: TimeZone -&gt; UTCTime -&gt; ZonedTime
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">addUTCTime ::</span> <span class="dt">NominalDiffTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span></a></code></pre></div>
 <p>第一引数に <code>NominalDiffTime</code> という謎の型を取りますが、<code>nominalDay</code> の実装を見れば <code>60 * 60 * 24</code> っぽいことがわかるので、そんな感じで値を作ります。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">nominalDay ::</span> <span class="dt">NominalDiffTime</span></a>
-<a class="sourceLine" id="cb9-2" title="2">nominalDay <span class="fu">=</span> <span class="dv">86400</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-2" title="2">nominalDay <span class="ot">=</span> <span class="dv">86400</span></a></code></pre></div>
 <p>ちなみに、上記の実装でなぜ <code>NominalDiffTime</code> の値になるかと言うと、<code>NominalDiffTime</code> は <code>Num</code> クラスのインスタンスになっているため、自動的に <code>fromInteger</code> が呼ばれて変換されるという仕組みです。</p>
 <p>実際に試してみましょう。1日後を計算してみます。</p>
 <pre class="shell"><code>&gt; t = addUTCTime nominalDay . zonedTimeToUTC &lt;$&gt; getZonedTime

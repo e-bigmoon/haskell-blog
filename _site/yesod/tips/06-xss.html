@@ -174,7 +174,7 @@
 
       <article class="page-content">
         <h2 id="サンプルの基本形式">サンプルの基本形式</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb1-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
@@ -182,7 +182,7 @@
 <a class="sourceLine" id="cb1-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
 <a class="sourceLine" id="cb1-7" title="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
 <a class="sourceLine" id="cb1-8" title="8"></a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-10" title="10"></a>
 <a class="sourceLine" id="cb1-11" title="11">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb1-12" title="12">/check CheckR GET</a>
@@ -191,7 +191,7 @@
 <a class="sourceLine" id="cb1-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-16" title="16"></a>
 <a class="sourceLine" id="cb1-17" title="17"><span class="ot">getCheck1R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-18" title="18">getCheck1R <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-18" title="18">getCheck1R <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb1-19" title="19">  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></a>
 <a class="sourceLine" id="cb1-20" title="20"></a>
 <a class="sourceLine" id="cb1-21" title="21">  [whamlet|</a>
@@ -199,7 +199,7 @@
 <a class="sourceLine" id="cb1-23" title="23">  |]</a>
 <a class="sourceLine" id="cb1-24" title="24"></a>
 <a class="sourceLine" id="cb1-25" title="25"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-26" title="26">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-26" title="26">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
 <p>雛形は上記を使います。</p>
 <h2 id="html-のエスケープ">HTML のエスケープ</h2>
 <h3 id="テンプレート">テンプレート</h3>
@@ -222,7 +222,7 @@
 <p><a href="http://localhost:3000/check2?p=%22%3E%3C/form%3EXSS%22"><code>http://localhost:3000/check2?p="&gt;&lt;/form&gt;XSS"</code></a></p>
 <h3 id="結果-1">結果</h3>
 <p>以下のようにエスケープ処理 (<code>"</code>, <code>&lt;</code>, <code>&gt;</code>) が行われるため、安全</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">value<span class="fu">=</span><span class="st">&quot;&amp;quot;&amp;gt;&amp;lt;/form&amp;gt;XSS&amp;quot;&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">value<span class="ot">=</span><span class="st">&quot;&amp;quot;&amp;gt;&amp;lt;/form&amp;gt;XSS&amp;quot;&quot;</span></a></code></pre></div>
 <h2 id="引用符で囲まれない属性値のxss">引用符で囲まれない属性値のXSS</h2>
 <h3 id="テンプレート-2">テンプレート</h3>
 <div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1">[whamlet|</a>
@@ -232,7 +232,7 @@
 <p><a href="http://localhost:3000/check3?p=1+onmouseover%3dalert(document.cookie)"><code>http://localhost:3000/check3?p=1+onmouseover%3dalert(document.cookie)</code></a></p>
 <h3 id="結果-2">結果</h3>
 <p>以下のように <code>"</code> が無い場合は自動的に追加するため、安全</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">&lt;</span>input <span class="kw">type</span><span class="fu">=</span><span class="st">&quot;text&quot;</span> name<span class="fu">=</span><span class="st">&quot;mail&quot;</span> value<span class="fu">=</span><span class="st">&quot;1 onmouseover=alert(document.cookie)&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="op">&lt;</span>input <span class="kw">type</span><span class="ot">=</span><span class="st">&quot;text&quot;</span> name<span class="ot">=</span><span class="st">&quot;mail&quot;</span> value<span class="ot">=</span><span class="st">&quot;1 onmouseover=alert(document.cookie)&quot;</span><span class="op">&gt;</span></a></code></pre></div>
 <h2 id="href属性やsrc属性のxss">href属性やsrc属性のXSS</h2>
 <h3 id="テンプレート-3">テンプレート</h3>
 <div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1">[whamlet|</a>
@@ -243,7 +243,7 @@
 <p><a href="http://localhost:3000/check4?p=javascript:alert(document.cookie)"><code>http://localhost:3000/check4?p=javascript:alert(document.cookie)</code></a></p>
 <h3 id="結果-3">結果</h3>
 <p>以下のように JavaScript のエスケープは何も行われないため、XSS が発生する。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">&lt;</span>a href<span class="fu">=</span><span class="st">&quot;javascript:alert(document.cookie)&quot;</span><span class="fu">&gt;</span>ブックマーク<span class="fu">&lt;/</span>a<span class="fu">&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="op">&lt;</span>a href<span class="ot">=</span><span class="st">&quot;javascript:alert(document.cookie)&quot;</span><span class="op">&gt;</span>ブックマーク<span class="op">&lt;/</span>a<span class="op">&gt;</span></a></code></pre></div>
 <h2 id="javascript-の動的生成">JavaScript の動的生成</h2>
 <h3 id="テンプレート-4">テンプレート</h3>
 <div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">[whamlet|</a>
@@ -259,12 +259,12 @@
 <p><a href="http://localhost:3000/check5?p='"><code>http://localhost:3000/check5?p='),alert(document.cookie)//</code></a>,alert(document.cookie)//)</p>
 <h3 id="結果-4">結果</h3>
 <p>XSS が発生する。JavaScript のエスケープ処理が行われないため。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="fu">&lt;</span>body onload<span class="fu">=</span><span class="st">&quot;init('&amp;#39;),alert(document.cookie)//')&quot;</span><span class="fu">&gt;&lt;/</span>body<span class="fu">&gt;</span></a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="fu">&lt;</span>script<span class="fu">&gt;</span></a>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="op">&lt;</span>body onload<span class="ot">=</span><span class="st">&quot;init('&amp;#39;),alert(document.cookie)//')&quot;</span><span class="op">&gt;&lt;/</span>body<span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="op">&lt;</span>script<span class="op">&gt;</span></a>
 <a class="sourceLine" id="cb11-3" title="3">  function <span class="fu">init</span>(text) {</a>
-<a class="sourceLine" id="cb11-4" title="4">    <span class="fu">//</span> 適当な処理</a>
+<a class="sourceLine" id="cb11-4" title="4">    <span class="op">//</span> 適当な処理</a>
 <a class="sourceLine" id="cb11-5" title="5">  }</a>
-<a class="sourceLine" id="cb11-6" title="6"><span class="fu">&lt;/</span>script<span class="fu">&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb11-6" title="6"><span class="op">&lt;/</span>script<span class="op">&gt;</span></a></code></pre></div>
       </article>
 
       <div class="pager">

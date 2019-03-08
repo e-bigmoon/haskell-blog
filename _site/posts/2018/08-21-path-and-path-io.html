@@ -227,19 +227,19 @@ Haskell でファイルやディレクトリを扱うプログラムを書く時
 <p>例えば、以下のようなパスは型レベルでは同じ文字列 (<strong>FilePath</strong>) ですが</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="co">-- 相対パス</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="ot">pathRel ::</span> <span class="dt">FilePath</span></a>
-<a class="sourceLine" id="cb1-3" title="3">pathRel <span class="fu">=</span> <span class="fu">./</span>aaa<span class="fu">/</span>bbb<span class="fu">/</span>ccc</a>
+<a class="sourceLine" id="cb1-3" title="3">pathRel <span class="ot">=</span> <span class="op">./</span>aaa<span class="op">/</span>bbb<span class="op">/</span>ccc</a>
 <a class="sourceLine" id="cb1-4" title="4"></a>
 <a class="sourceLine" id="cb1-5" title="5"><span class="co">-- 絶対パス</span></a>
 <a class="sourceLine" id="cb1-6" title="6"><span class="ot">pathAbs ::</span> <span class="dt">FilePath</span></a>
-<a class="sourceLine" id="cb1-7" title="7">pathAbs <span class="fu">=</span> <span class="fu">/</span>home<span class="fu">/</span>user<span class="fu">/</span>aaa<span class="fu">/</span>bbb<span class="fu">/</span>ccc</a>
+<a class="sourceLine" id="cb1-7" title="7">pathAbs <span class="ot">=</span> <span class="op">/</span>home<span class="op">/</span>user<span class="op">/</span>aaa<span class="op">/</span>bbb<span class="op">/</span>ccc</a>
 <a class="sourceLine" id="cb1-8" title="8"></a>
 <a class="sourceLine" id="cb1-9" title="9"><span class="co">-- ファイルへのパス</span></a>
 <a class="sourceLine" id="cb1-10" title="10"><span class="ot">pathFile ::</span> <span class="dt">FilePath</span></a>
-<a class="sourceLine" id="cb1-11" title="11">pathFile <span class="fu">=</span> <span class="fu">./</span>aaa<span class="fu">/</span>a<span class="fu">.</span>png</a>
+<a class="sourceLine" id="cb1-11" title="11">pathFile <span class="ot">=</span> <span class="op">./</span>aaa<span class="op">/</span>a<span class="op">.</span>png</a>
 <a class="sourceLine" id="cb1-12" title="12"></a>
 <a class="sourceLine" id="cb1-13" title="13"><span class="co">-- ディレクトリへのパス</span></a>
 <a class="sourceLine" id="cb1-14" title="14"><span class="ot">pathDir ::</span> <span class="dt">FilePath</span></a>
-<a class="sourceLine" id="cb1-15" title="15">pathDir <span class="fu">=</span> <span class="fu">./</span>aaa</a></code></pre></div>
+<a class="sourceLine" id="cb1-15" title="15">pathDir <span class="ot">=</span> <span class="op">./</span>aaa</a></code></pre></div>
 <p>このように、<strong>FilePath</strong> 型では<strong>相対パス</strong>なのか<strong>絶対パス</strong>なのか型レベルで判断する方法が無かったり、そもそもパスが<strong>ファイル</strong>なのか<strong>ディレクトリ</strong>なのかすらわからなかったりします。</p>
 <p>今回紹介するのは、型レベルでこれらをちゃんと分類できるようにしている <a href="https://github.com/commercialhaskell/path">path</a> と <a href="https://github.com/mrkkrp/path-io">path-io</a> パッケージです。</p>
 <p>型レベルで <strong>相対パス</strong> or <strong>絶対パス</strong> と <strong>ファイル</strong> or <strong>ディレクトリ</strong> を表現するため、不正な操作はコンパイル時にチェックできるようになります。</p>
@@ -255,7 +255,7 @@ Haskell でファイルやディレクトリを扱うプログラムを書く時
 <p>ドキュメントが充実しているので <a href="https://github.com/commercialhaskell/path/blob/master/README.md">Readme</a> を読めば使い方はすぐにわかると思います。</p>
 <h3 id="データ型">データ型</h3>
 <p><code>Path</code> の型は <code>FilePath</code> を幽霊型 (Phantom type) を使ってラップしているだけです。(幽霊型については <a href="https://qiita.com/nobkz/items/5926257a375a4a181dde">ElmでPhantom Type (幽霊型)入門</a> や <a href="https://qiita.com/HirotoShioi/items/3444e215070144b8ca0f">で、出たー！幽霊型だー！(Phantom Type)</a> などが日本語のわかりやすい解説だと思います)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">newtype</span> <span class="dt">Path</span> b t <span class="fu">=</span> <span class="dt">Path</span> <span class="dt">FilePath</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">newtype</span> <span class="dt">Path</span> b t <span class="ot">=</span> <span class="dt">Path</span> <span class="dt">FilePath</span></a>
 <a class="sourceLine" id="cb2-2" title="2">  <span class="kw">deriving</span> (<span class="dt">Data</span>, <span class="dt">Typeable</span>, <span class="dt">Generic</span>)</a></code></pre></div>
 <p>ここで2つの型変数の意味は以下の通りです。</p>
 <ul>
@@ -323,10 +323,10 @@ Nothing
 <p>これで文字列から <code>Path</code> 型に変換する方法がわかりましたね！結構簡単です。</p>
 <h4 id="template-haskell-quasiquotes">Template Haskell &amp; QuasiQuotes</h4>
 <p>コンパイル時にすでにファイルパスが決まっている時はテンプレートHaskellや準クォートを使うこともできます。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">$</span>(mkAbsDir <span class="st">&quot;/home/chris&quot;</span>)</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="fu">$</span>(mkRelDir <span class="st">&quot;chris&quot;</span>)</a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="fu">$</span>(mkAbsFile <span class="st">&quot;/home/chris/x.txt&quot;</span>)</a>
-<a class="sourceLine" id="cb10-4" title="4"><span class="fu">$</span>(mkRelFile <span class="st">&quot;chris/x.txt&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="op">$</span>(mkAbsDir <span class="st">&quot;/home/chris&quot;</span>)</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="op">$</span>(mkRelDir <span class="st">&quot;chris&quot;</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="op">$</span>(mkAbsFile <span class="st">&quot;/home/chris/x.txt&quot;</span>)</a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="op">$</span>(mkRelFile <span class="st">&quot;chris/x.txt&quot;</span>)</a></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1">[absdir|/home/chris|]</a>
 <a class="sourceLine" id="cb11-2" title="2">[reldir|chris|]</a>
 <a class="sourceLine" id="cb11-3" title="3">[absfile|/home/chris/x.txt|]</a>
@@ -346,7 +346,7 @@ Nothing
 <h3 id="パスの等価性">パスの等価性</h3>
 <p>2つの <code>Path</code> の等しさは単純に文字列の等価性として定義されています。</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">instance</span> <span class="dt">Eq</span> (<span class="dt">Path</span> b t) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb13-2" title="2">  (<span class="fu">==</span>) (<span class="dt">Path</span> x) (<span class="dt">Path</span> y) <span class="fu">=</span> x <span class="fu">==</span> y</a></code></pre></div>
+<a class="sourceLine" id="cb13-2" title="2">  (<span class="op">==</span>) (<span class="dt">Path</span> x) (<span class="dt">Path</span> y) <span class="ot">=</span> x <span class="op">==</span> y</a></code></pre></div>
 <p>実際にいくつか試してみます。</p>
 <pre class="shell"><code>&gt; (==) &lt;$&gt; parseRelDir &quot;./a/b&quot; &lt;*&gt; parseRelDir &quot;./a/b&quot;
 True
@@ -447,7 +447,7 @@ True</code></pre>
 <p>そのためには <a href="https://github.com/mrkkrp/path-io">path-io</a> パッケージを利用すると良いです。内部的には <code>directory</code> パッケージを再利用していますが、<code>Path</code> 型で使えるようにラップしてくれています。(また、便利な関数もいくつか追加されています)</p>
 <h3 id="サンプルプログラム">サンプルプログラム</h3>
 <p>例えばこんな感じで使えます。以下の例はコマンドライン引数から受け取った文字列に拡張子 <code>.hs</code> を追加して適当な内容で保存し、最後にディレクトリを再帰的にコピーする例です。</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb31"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb31-2" title="2"><span class="co">-- stack script --resolver lts-12.7</span></a>
 <a class="sourceLine" id="cb31-3" title="3"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
 <a class="sourceLine" id="cb31-4" title="4"></a>
@@ -458,18 +458,18 @@ True</code></pre>
 <a class="sourceLine" id="cb31-9" title="9"><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</a>
 <a class="sourceLine" id="cb31-10" title="10"></a>
 <a class="sourceLine" id="cb31-11" title="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb31-12" title="12">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb31-12" title="12">main <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb31-13" title="13">  args <span class="ot">&lt;-</span> getArgs</a>
 <a class="sourceLine" id="cb31-14" title="14"></a>
-<a class="sourceLine" id="cb31-15" title="15">  when (<span class="fu">length</span> args <span class="fu">==</span> <span class="dv">1</span>) <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb31-16" title="16">    <span class="kw">let</span> src  <span class="fu">=</span> <span class="fu">$</span>(mkRelDir <span class="st">&quot;./src&quot;</span>)</a>
-<a class="sourceLine" id="cb31-17" title="17">        dest <span class="fu">=</span> <span class="fu">$</span>(mkRelDir <span class="st">&quot;./.backup&quot;</span>)</a>
+<a class="sourceLine" id="cb31-15" title="15">  when (<span class="fu">length</span> args <span class="op">==</span> <span class="dv">1</span>) <span class="op">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb31-16" title="16">    <span class="kw">let</span> src  <span class="ot">=</span> <span class="op">$</span>(mkRelDir <span class="st">&quot;./src&quot;</span>)</a>
+<a class="sourceLine" id="cb31-17" title="17">        dest <span class="ot">=</span> <span class="op">$</span>(mkRelDir <span class="st">&quot;./.backup&quot;</span>)</a>
 <a class="sourceLine" id="cb31-18" title="18"></a>
 <a class="sourceLine" id="cb31-19" title="19">    <span class="co">-- 安全にディレクトリを作成</span></a>
 <a class="sourceLine" id="cb31-20" title="20">    <span class="fu">mapM_</span> ensureDir [src, dest]</a>
 <a class="sourceLine" id="cb31-21" title="21"></a>
-<a class="sourceLine" id="cb31-22" title="22">    rawName <span class="ot">&lt;-</span> parseRelFile <span class="fu">$</span> <span class="fu">head</span> args</a>
-<a class="sourceLine" id="cb31-23" title="23">    fn <span class="ot">&lt;-</span> (src <span class="fu">&lt;/&gt;</span> rawName) <span class="fu">-&lt;.&gt;</span> <span class="st">&quot;hs&quot;</span></a>
+<a class="sourceLine" id="cb31-22" title="22">    rawName <span class="ot">&lt;-</span> parseRelFile <span class="op">$</span> <span class="fu">head</span> args</a>
+<a class="sourceLine" id="cb31-23" title="23">    fn <span class="ot">&lt;-</span> (src <span class="op">&lt;/&gt;</span> rawName) <span class="op">-&lt;.&gt;</span> <span class="st">&quot;hs&quot;</span></a>
 <a class="sourceLine" id="cb31-24" title="24"></a>
 <a class="sourceLine" id="cb31-25" title="25">    <span class="fu">writeFile</span> (toFilePath fn) <span class="st">&quot;main :: IO ()\nmain = undefined\n&quot;</span></a>
 <a class="sourceLine" id="cb31-26" title="26"></a>

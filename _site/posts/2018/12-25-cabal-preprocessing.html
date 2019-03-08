@@ -227,19 +227,19 @@
 <p>最近少しずつ <code>cabal</code> を使うようになりました。</p>
 <p>そのため、<code>stack</code> と <code>cabal</code> のどちらを使ってもビルドできるようにプロジェクトを修正していたのですが、<code>cabal</code> ファイルの取り扱いが難しかったのでメモ程度に残しておきます。</p>
 <p>方針としては <code>cabal</code> コマンドの実行時にフックを仕掛けて <code>hpack</code> を使って <code>package.yaml</code> から <code>cabal</code> ファイルを生成しようという感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">$</span> cabal <span class="co">--numeric-version</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="fl">2.4</span><span class="fu">.</span><span class="fl">1.0</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="op">$</span> cabal <span class="co">--numeric-version</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="fl">2.4</span><span class="op">.</span><span class="fl">1.0</span></a></code></pre></div>
 <!--more-->
 <h2 id="setup.hs-は何のためにあるのか">Setup.hs は何のためにあるのか？</h2>
 <p><code>stack</code> を使ってプロジェクトを作ると <code>Setup.hs</code> が以下の内容で自動的に生成されると思います。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb2-2" title="2">main <span class="fu">=</span> defaultMain</a></code></pre></div>
+<a class="sourceLine" id="cb2-2" title="2">main <span class="ot">=</span> defaultMain</a></code></pre></div>
 <p>今まで特に使わなくても困らなかったので、気にせずに放置していましたが、このファイルが今回の主役になります。</p>
 <p><code>cabal</code> には <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-type">build-type</a> という設定項目があり、この値はデフォルトでは <code>Simple</code> か <code>Custom</code> のどちらかに自動的に推論されます。(他にも <code>Configure</code>, <code>Make</code> などもあります。詳しくはドキュメントを参照してください)</p>
 <h3 id="simple">Simple</h3>
 <p><code>build-type</code> に <code>Simple</code> を指定した場合、<code>cabal</code> は <code>Setup.hs</code> に以下の内容が記述されているものとして処理を進めます。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb3-2" title="2">main <span class="fu">=</span> defaultMain</a></code></pre></div>
+<a class="sourceLine" id="cb3-2" title="2">main <span class="ot">=</span> defaultMain</a></code></pre></div>
 <p>そのため <code>Setup.hs</code> を削除しても問題なくビルド可能です。</p>
 <h3 id="custom">Custom</h3>
 <p><code>build-type</code> に <code>Custom</code> を指定した場合、<code>Setup.hs</code> の内容をユーザが自由に書き換えることができます。</p>
@@ -248,7 +248,7 @@
 <p>詳しいドキュメントは <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#more-complex-packages">3.3.8. More complex packages</a> を参照ください。</p>
 <h3 id="userhooks">UserHooks</h3>
 <p><code>defaultMainWithHooks</code> に渡す <a href="https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#t:UserHooks">UserHooks</a> 型はこんな感じで定義されています。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="fu">=</span> <span class="dt">UserHooks</span> {</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="ot">=</span> <span class="dt">UserHooks</span> {</a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="ot">    runTests ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
 <a class="sourceLine" id="cb4-3" title="3"><span class="ot">    readDesc ::</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> <span class="dt">GenericPackageDescription</span>),</a>
 <a class="sourceLine" id="cb4-4" title="4"><span class="ot">    hookedPreProcessors ::</span> [ <span class="dt">PPSuffixHandler</span> ],</a>
@@ -325,14 +325,14 @@
 <a class="sourceLine" id="cb5-6" title="6"><span class="kw">import</span> <span class="dt">Hpack</span></a>
 <a class="sourceLine" id="cb5-7" title="7"></a>
 <a class="sourceLine" id="cb5-8" title="8"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-9" title="9">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb5-10" title="10">  <span class="kw">let</span> myHook <span class="fu">=</span> simpleUserHooks {</a>
-<a class="sourceLine" id="cb5-11" title="11">    preBuild <span class="fu">=</span> pbHpack</a>
+<a class="sourceLine" id="cb5-9" title="9">main <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-10" title="10">  <span class="kw">let</span> myHook <span class="ot">=</span> simpleUserHooks {</a>
+<a class="sourceLine" id="cb5-11" title="11">    preBuild <span class="ot">=</span> pbHpack</a>
 <a class="sourceLine" id="cb5-12" title="12">  }</a>
 <a class="sourceLine" id="cb5-13" title="13">  defaultMainWithHooks myHook</a>
 <a class="sourceLine" id="cb5-14" title="14"></a>
 <a class="sourceLine" id="cb5-15" title="15"><span class="ot">pbHpack ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span></a>
-<a class="sourceLine" id="cb5-16" title="16">pbHpack _ _ <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb5-16" title="16">pbHpack _ _ <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb5-17" title="17">  hpack <span class="dt">Verbose</span> defaultOptions</a>
 <a class="sourceLine" id="cb5-18" title="18">  <span class="fu">return</span> emptyHookedBuildInfo</a></code></pre></div>
 <p><a href="https://www.stackage.org/package/hpack">hpack</a> パッケージの関数をそのまま使ってます。</p>
@@ -362,7 +362,7 @@ $ cabal new-build</code></pre>
 <a class="sourceLine" id="cb9-4" title="4"><span class="kw">import</span> <span class="dt">Hpack</span></a>
 <a class="sourceLine" id="cb9-5" title="5"></a>
 <a class="sourceLine" id="cb9-6" title="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-7" title="7">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-7" title="7">main <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb9-8" title="8">  hpack <span class="dt">Verbose</span> defaultOptions</a>
 <a class="sourceLine" id="cb9-9" title="9">  defaultMain</a></code></pre></div>
 <p>これだと、あんまり上手くいきません。</p>

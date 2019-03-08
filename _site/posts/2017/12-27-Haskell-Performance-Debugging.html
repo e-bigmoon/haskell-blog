@@ -235,24 +235,24 @@
 <h2 id="最初の実行">最初の実行</h2>
 <p>Cabalプロジェクトを作り、makefile を作ります。そして、最初のプロファイルを取ります。コードとプロファイル結果は GitHub の <code>master</code>ブランチにあります。</p>
 <p>実行されているコードやプロファイル結果を見る前に、質問のデータ構造の定義を確認しておきましょう:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">Node</span>  v d <span class="fu">=</span> <span class="dt">Node</span> {<span class="ot"> val ::</span> v,<span class="ot"> info ::</span> d,<span class="ot"> prior ::</span> <span class="dt">Int</span> }</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">Node</span>  v d <span class="ot">=</span> <span class="dt">Node</span> {<span class="ot"> val ::</span> v,<span class="ot"> info ::</span> d,<span class="ot"> prior ::</span> <span class="dt">Int</span> }</a>
 <a class="sourceLine" id="cb1-2" title="2">    <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">data</span> <span class="dt">Treap</span> v d <span class="fu">=</span> <span class="dt">Leaf</span> <span class="fu">|</span> <span class="dt">Tree</span> {<span class="ot">node ::</span> <span class="dt">Node</span> v d,<span class="ot"> left ::</span> <span class="dt">Treap</span> v d,<span class="ot"> right ::</span> <span class="dt">Treap</span> v d}</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">data</span> <span class="dt">Treap</span> v d <span class="ot">=</span> <span class="dt">Leaf</span> <span class="op">|</span> <span class="dt">Tree</span> {<span class="ot">node ::</span> <span class="dt">Node</span> v d,<span class="ot"> left ::</span> <span class="dt">Treap</span> v d,<span class="ot"> right ::</span> <span class="dt">Treap</span> v d}</a>
 <a class="sourceLine" id="cb1-4" title="4">    <span class="kw">deriving</span> <span class="dt">Show</span></a></code></pre></div>
 <!--more-->
 <p>注釈つきの2分木ですね。 spine と値は、リスト同様に遅延評価されます。</p>
 <p>以下が <code>main</code> 関数で、この出力を調べます。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">main <span class="fu">=</span> <span class="kw">do</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">main <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb2-2" title="2">    g <span class="ot">&lt;-</span> getStdGen</a>
-<a class="sourceLine" id="cb2-3" title="3">    <span class="kw">let</span> nulls <span class="fu">=</span> <span class="fu">repeat</span> ()</a>
-<a class="sourceLine" id="cb2-4" title="4">        n <span class="fu">=</span> <span class="dv">100000</span></a>
-<a class="sourceLine" id="cb2-5" title="5">        rxs <span class="fu">=</span> <span class="fu">take</span> n <span class="fu">$</span> randomRs (<span class="dv">1</span>,<span class="dv">100000</span>)<span class="ot"> g  ::</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb2-6" title="6">        nodeList <span class="fu">=</span> feedFold (<span class="fu">zip</span> rxs nulls) g buildNode</a>
-<a class="sourceLine" id="cb2-7" title="7">        treap <span class="fu">=</span> insertMany empty nodeList</a>
+<a class="sourceLine" id="cb2-3" title="3">    <span class="kw">let</span> nulls <span class="ot">=</span> <span class="fu">repeat</span> ()</a>
+<a class="sourceLine" id="cb2-4" title="4">        n <span class="ot">=</span> <span class="dv">100000</span></a>
+<a class="sourceLine" id="cb2-5" title="5">        rxs <span class="ot">=</span> <span class="fu">take</span> n <span class="op">$</span> randomRs (<span class="dv">1</span>,<span class="dv">100000</span>)<span class="ot"> g  ::</span> [<span class="dt">Int</span>]</a>
+<a class="sourceLine" id="cb2-6" title="6">        nodeList <span class="ot">=</span> feedFold (<span class="fu">zip</span> rxs nulls) g buildNode</a>
+<a class="sourceLine" id="cb2-7" title="7">        treap <span class="ot">=</span> insertMany empty nodeList</a>
 <a class="sourceLine" id="cb2-8" title="8"></a>
-<a class="sourceLine" id="cb2-9" title="9">    <span class="fu">print</span> <span class="fu">$</span> heightTreap treap</a>
+<a class="sourceLine" id="cb2-9" title="9">    <span class="fu">print</span> <span class="op">$</span> heightTreap treap</a>
 <a class="sourceLine" id="cb2-10" title="10"></a>
-<a class="sourceLine" id="cb2-11" title="11">    <span class="fu">print</span> <span class="fu">$</span> <span class="fu">map</span> (\<span class="dt">Node</span>{val <span class="fu">=</span> v} <span class="ot">-&gt;</span> v) <span class="fu">$</span> inOrder treap</a></code></pre></div>
+<a class="sourceLine" id="cb2-11" title="11">    <span class="fu">print</span> <span class="op">$</span> <span class="fu">map</span> (\<span class="dt">Node</span>{val <span class="ot">=</span> v} <span class="ot">-&gt;</span> v) <span class="op">$</span> inOrder treap</a></code></pre></div>
 <p>これをプロファイリングしつつビルドして、<code>-p</code> と <code>-s</code> をつけて実行します。これは時間とメモリ確保についてのプロファイリングをしてくれます。 以下が <code>-s</code> の出力です:</p>
 <pre><code>   1,691,027,808 bytes allocated in the heap
    1,179,783,328 bytes copied during GC
@@ -280,17 +280,17 @@
 <p>GC に 52% の時間が割かれているのはよろしくないですね。</p>
 <p>プロファイル結果によると、かなり大部分の時間を <code>splitTreap</code>関数で消費してしまっているようです。なので、そこで何が起きているのか確認しましょう:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">splitTreap ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> v <span class="ot">-&gt;</span> (<span class="dt">Treap</span> v d, <span class="dt">Treap</span> v d)</a>
-<a class="sourceLine" id="cb4-2" title="2">splitTreap <span class="dt">Leaf</span> _ <span class="fu">=</span> (<span class="dt">Leaf</span>, <span class="dt">Leaf</span>)</a>
-<a class="sourceLine" id="cb4-3" title="3">splitTreap (tree <span class="fu">@</span> <span class="dt">Tree</span> {node <span class="fu">=</span> <span class="dt">Node</span> { val <span class="fu">=</span> x }, left <span class="fu">=</span> l, right <span class="fu">=</span> r})   v</a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="fu">|</span> x <span class="fu">&lt;</span> v  <span class="fu">=</span></a>
-<a class="sourceLine" id="cb4-5" title="5">        <span class="kw">let</span> (lt, rt) <span class="fu">=</span> splitTreap r v</a>
-<a class="sourceLine" id="cb4-6" title="6">         <span class="kw">in</span> ( <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> l, right <span class="fu">=</span> lt }</a>
+<a class="sourceLine" id="cb4-2" title="2">splitTreap <span class="dt">Leaf</span> _ <span class="ot">=</span> (<span class="dt">Leaf</span>, <span class="dt">Leaf</span>)</a>
+<a class="sourceLine" id="cb4-3" title="3">splitTreap (tree <span class="op">@</span> <span class="dt">Tree</span> {node <span class="ot">=</span> <span class="dt">Node</span> { val <span class="ot">=</span> x }, left <span class="ot">=</span> l, right <span class="ot">=</span> r})   v</a>
+<a class="sourceLine" id="cb4-4" title="4">    <span class="op">|</span> x <span class="op">&lt;</span> v  <span class="ot">=</span></a>
+<a class="sourceLine" id="cb4-5" title="5">        <span class="kw">let</span> (lt, rt) <span class="ot">=</span> splitTreap r v</a>
+<a class="sourceLine" id="cb4-6" title="6">         <span class="kw">in</span> ( <span class="dt">Tree</span> { node <span class="ot">=</span> node tree, left <span class="ot">=</span> l, right <span class="ot">=</span> lt }</a>
 <a class="sourceLine" id="cb4-7" title="7">            , rt</a>
 <a class="sourceLine" id="cb4-8" title="8">            )</a>
-<a class="sourceLine" id="cb4-9" title="9">    <span class="fu">|</span> v <span class="fu">&lt;=</span> x <span class="fu">=</span></a>
-<a class="sourceLine" id="cb4-10" title="10">        <span class="kw">let</span> (lt, rt) <span class="fu">=</span> splitTreap l v</a>
+<a class="sourceLine" id="cb4-9" title="9">    <span class="op">|</span> v <span class="op">&lt;=</span> x <span class="ot">=</span></a>
+<a class="sourceLine" id="cb4-10" title="10">        <span class="kw">let</span> (lt, rt) <span class="ot">=</span> splitTreap l v</a>
 <a class="sourceLine" id="cb4-11" title="11">         <span class="kw">in</span> ( lt</a>
-<a class="sourceLine" id="cb4-12" title="12">            , <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> rt, right <span class="fu">=</span> r}</a>
+<a class="sourceLine" id="cb4-12" title="12">            , <span class="dt">Tree</span> { node <span class="ot">=</span> node tree, left <span class="ot">=</span> rt, right <span class="ot">=</span> r}</a>
 <a class="sourceLine" id="cb4-13" title="13">            )</a></code></pre></div>
 <p>私には気になる点が2つ見つかりました:</p>
 <ul>
@@ -308,16 +308,16 @@
 <p>このセクション関連のコードは <code>strictify-treap</code> にあります。</p>
 <p>データ構造のところどころにバンパターンを差し込んでみました:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">data</span> <span class="dt">Node</span> v d</a>
-<a class="sourceLine" id="cb5-2" title="2">    <span class="fu">=</span> <span class="dt">Node</span></a>
-<a class="sourceLine" id="cb5-3" title="3">    {<span class="ot"> val ::</span> <span class="fu">!</span>v</a>
+<a class="sourceLine" id="cb5-2" title="2">    <span class="ot">=</span> <span class="dt">Node</span></a>
+<a class="sourceLine" id="cb5-3" title="3">    {<span class="ot"> val ::</span> <span class="op">!</span>v</a>
 <a class="sourceLine" id="cb5-4" title="4">    ,<span class="ot"> info ::</span> d</a>
-<a class="sourceLine" id="cb5-5" title="5">    ,<span class="ot"> prior ::</span> <span class="fu">!</span><span class="dt">Int</span></a>
+<a class="sourceLine" id="cb5-5" title="5">    ,<span class="ot"> prior ::</span> <span class="op">!</span><span class="dt">Int</span></a>
 <a class="sourceLine" id="cb5-6" title="6">    } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
 <a class="sourceLine" id="cb5-7" title="7"></a>
 <a class="sourceLine" id="cb5-8" title="8"><span class="kw">data</span> <span class="dt">Treap</span> v d</a>
-<a class="sourceLine" id="cb5-9" title="9">    <span class="fu">=</span> <span class="dt">Leaf</span></a>
-<a class="sourceLine" id="cb5-10" title="10">    <span class="fu">|</span> <span class="dt">Tree</span></a>
-<a class="sourceLine" id="cb5-11" title="11">    {<span class="ot"> node ::</span> <span class="fu">!</span>(<span class="dt">Node</span> v d)</a>
+<a class="sourceLine" id="cb5-9" title="9">    <span class="ot">=</span> <span class="dt">Leaf</span></a>
+<a class="sourceLine" id="cb5-10" title="10">    <span class="op">|</span> <span class="dt">Tree</span></a>
+<a class="sourceLine" id="cb5-11" title="11">    {<span class="ot"> node ::</span> <span class="op">!</span>(<span class="dt">Node</span> v d)</a>
 <a class="sourceLine" id="cb5-12" title="12">    ,<span class="ot"> left ::</span> <span class="dt">Treap</span> v d</a>
 <a class="sourceLine" id="cb5-13" title="13">    ,<span class="ot"> right ::</span> <span class="dt">Treap</span> v d</a>
 <a class="sourceLine" id="cb5-14" title="14">    } <span class="kw">deriving</span> <span class="dt">Show</span></a></code></pre></div>
@@ -354,18 +354,18 @@
 <p>大きな違いはありませんが、確かに少し良い結果です。時間と割り当てのプロファイリングは全く違う結果を証明していています。後々、プログラムの実行時間は 2.49秒から 0.97秒になります。</p>
 <p>この結果にかなり励まされつつ、木の spine も正格にしようと思います。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">data</span> <span class="dt">Node</span> v d</a>
-<a class="sourceLine" id="cb7-2" title="2">    <span class="fu">=</span> <span class="dt">Node</span></a>
-<a class="sourceLine" id="cb7-3" title="3">    {<span class="ot"> val ::</span> <span class="fu">!</span>v</a>
+<a class="sourceLine" id="cb7-2" title="2">    <span class="ot">=</span> <span class="dt">Node</span></a>
+<a class="sourceLine" id="cb7-3" title="3">    {<span class="ot"> val ::</span> <span class="op">!</span>v</a>
 <a class="sourceLine" id="cb7-4" title="4">    ,<span class="ot"> info ::</span> d</a>
-<a class="sourceLine" id="cb7-5" title="5">    ,<span class="ot"> prior ::</span> <span class="fu">!</span><span class="dt">Int</span></a>
+<a class="sourceLine" id="cb7-5" title="5">    ,<span class="ot"> prior ::</span> <span class="op">!</span><span class="dt">Int</span></a>
 <a class="sourceLine" id="cb7-6" title="6">    } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</a>
 <a class="sourceLine" id="cb7-7" title="7"></a>
 <a class="sourceLine" id="cb7-8" title="8"><span class="kw">data</span> <span class="dt">Treap</span> v d</a>
-<a class="sourceLine" id="cb7-9" title="9">    <span class="fu">=</span> <span class="dt">Leaf</span></a>
-<a class="sourceLine" id="cb7-10" title="10">    <span class="fu">|</span> <span class="dt">Tree</span></a>
-<a class="sourceLine" id="cb7-11" title="11">    {<span class="ot"> node ::</span> <span class="fu">!</span>(<span class="dt">Node</span> v d)</a>
-<a class="sourceLine" id="cb7-12" title="12">    ,<span class="ot"> left ::</span> <span class="fu">!</span>(<span class="dt">Treap</span> v d)</a>
-<a class="sourceLine" id="cb7-13" title="13">    ,<span class="ot"> right ::</span> <span class="fu">!</span>(<span class="dt">Treap</span> v d)</a>
+<a class="sourceLine" id="cb7-9" title="9">    <span class="ot">=</span> <span class="dt">Leaf</span></a>
+<a class="sourceLine" id="cb7-10" title="10">    <span class="op">|</span> <span class="dt">Tree</span></a>
+<a class="sourceLine" id="cb7-11" title="11">    {<span class="ot"> node ::</span> <span class="op">!</span>(<span class="dt">Node</span> v d)</a>
+<a class="sourceLine" id="cb7-12" title="12">    ,<span class="ot"> left ::</span> <span class="op">!</span>(<span class="dt">Treap</span> v d)</a>
+<a class="sourceLine" id="cb7-13" title="13">    ,<span class="ot"> right ::</span> <span class="op">!</span>(<span class="dt">Treap</span> v d)</a>
 <a class="sourceLine" id="cb7-14" title="14">    } <span class="kw">deriving</span> <span class="dt">Show</span></a></code></pre></div>
 <p><code>-s</code> の出力結果によると、合計でまだ 94MB 程度のメモリを使っているようです。</p>
 <pre><code>  1,161,437,656 bytes allocated in the heap
@@ -401,14 +401,14 @@
 <p>まだ <code>splitTreap</code> という最大の犯罪者がいます。こいつはプログラムの実行時間のほぼ半分を占めています。タプルを割り当て、それを捨てていることはわかっているので、そこにスペースリークがある可能性があります。タプルの中にバンパターンを追加し、結果を見てみます。</p>
 <p>これが変更点です:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">splitTreap ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> v <span class="ot">-&gt;</span> (<span class="dt">Treap</span> v d, <span class="dt">Treap</span> v d)</a>
-<a class="sourceLine" id="cb9-2" title="2">splitTreap <span class="dt">Leaf</span> _ <span class="fu">=</span> (<span class="dt">Leaf</span>, <span class="dt">Leaf</span>)</a>
-<a class="sourceLine" id="cb9-3" title="3">splitTreap (tree <span class="fu">@</span> <span class="dt">Tree</span> {node <span class="fu">=</span> <span class="dt">Node</span> { val <span class="fu">=</span> x }, left <span class="fu">=</span> l, right <span class="fu">=</span> r})   v</a>
-<a class="sourceLine" id="cb9-4" title="4">    <span class="fu">|</span> x <span class="fu">&lt;</span> v  <span class="fu">=</span> <span class="kw">let</span> (<span class="fu">!</span>lt, <span class="fu">!</span>rt) <span class="fu">=</span> splitTreap r v <span class="kw">in</span></a>
-<a class="sourceLine" id="cb9-5" title="5">                (   <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> l, right <span class="fu">=</span> lt },</a>
+<a class="sourceLine" id="cb9-2" title="2">splitTreap <span class="dt">Leaf</span> _ <span class="ot">=</span> (<span class="dt">Leaf</span>, <span class="dt">Leaf</span>)</a>
+<a class="sourceLine" id="cb9-3" title="3">splitTreap (tree <span class="op">@</span> <span class="dt">Tree</span> {node <span class="ot">=</span> <span class="dt">Node</span> { val <span class="ot">=</span> x }, left <span class="ot">=</span> l, right <span class="ot">=</span> r})   v</a>
+<a class="sourceLine" id="cb9-4" title="4">    <span class="op">|</span> x <span class="op">&lt;</span> v  <span class="ot">=</span> <span class="kw">let</span> (<span class="op">!</span>lt, <span class="op">!</span>rt) <span class="ot">=</span> splitTreap r v <span class="kw">in</span></a>
+<a class="sourceLine" id="cb9-5" title="5">                (   <span class="dt">Tree</span> { node <span class="ot">=</span> node tree, left <span class="ot">=</span> l, right <span class="ot">=</span> lt },</a>
 <a class="sourceLine" id="cb9-6" title="6">                    rt  )</a>
-<a class="sourceLine" id="cb9-7" title="7">    <span class="fu">|</span> v <span class="fu">&lt;=</span> x <span class="fu">=</span> <span class="kw">let</span> (<span class="fu">!</span>lt, <span class="fu">!</span>rt) <span class="fu">=</span> splitTreap l v <span class="kw">in</span></a>
+<a class="sourceLine" id="cb9-7" title="7">    <span class="op">|</span> v <span class="op">&lt;=</span> x <span class="ot">=</span> <span class="kw">let</span> (<span class="op">!</span>lt, <span class="op">!</span>rt) <span class="ot">=</span> splitTreap l v <span class="kw">in</span></a>
 <a class="sourceLine" id="cb9-8" title="8">                (   lt,</a>
-<a class="sourceLine" id="cb9-9" title="9">                    <span class="dt">Tree</span> { node <span class="fu">=</span> node tree, left <span class="fu">=</span> rt, right <span class="fu">=</span> r}  )</a></code></pre></div>
+<a class="sourceLine" id="cb9-9" title="9">                    <span class="dt">Tree</span> { node <span class="ot">=</span> node tree, left <span class="ot">=</span> rt, right <span class="ot">=</span> r}  )</a></code></pre></div>
 <p>元のコードがタプルを直ちに破棄して <code>lt</code> と <code>rt</code> 変数を lazy なままにしているのに対して、これらの変数を WHNF に強制しています。</p>
 <p>新しい <code>-s</code> の出力結果です:</p>
 <pre><code>   1,331,896,120 bytes allocated in the heap
@@ -447,10 +447,10 @@
 <p>これはうざかったので、上のようにアンカリー化しました。これはパフォーマンスには関係ありません。</p>
 <p>ここで、<code>insertMany</code> を実際に見てみます:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="ot">insertMany ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> [<span class="dt">Node</span> v d] <span class="ot">-&gt;</span> <span class="dt">Treap</span> v d</a>
-<a class="sourceLine" id="cb12-2" title="2">insertMany <span class="fu">=</span> <span class="fu">foldl</span> insertTreap</a></code></pre></div>
+<a class="sourceLine" id="cb12-2" title="2">insertMany <span class="ot">=</span> <span class="fu">foldl</span> insertTreap</a></code></pre></div>
 <p>あぁ。<code>foldl</code> がまた来やがりました。</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="ot">insertMany ::</span> (<span class="dt">Ord</span> v) <span class="ot">=&gt;</span> <span class="dt">Treap</span> v d <span class="ot">-&gt;</span> [<span class="dt">Node</span> v d] <span class="ot">-&gt;</span> <span class="dt">Treap</span> v d</a>
-<a class="sourceLine" id="cb13-2" title="2">insertMany <span class="fu">=</span> foldl' insertTreap</a></code></pre></div>
+<a class="sourceLine" id="cb13-2" title="2">insertMany <span class="ot">=</span> foldl' insertTreap</a></code></pre></div>
 <p>さぁ、GHC のアメージングな最適化力とプライムボーイ、どちらが勝つのでしょうか? <code>-s</code> の結果です:</p>
 <pre class="plain"><code>   1,115,162,944 bytes allocated in the heap
      245,033,472 bytes copied during GC

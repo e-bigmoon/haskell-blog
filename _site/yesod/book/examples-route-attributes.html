@@ -193,7 +193,7 @@
 <a class="sourceLine" id="cb1-9" title="9"><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></a>
 <a class="sourceLine" id="cb1-10" title="10"><span class="kw">import</span>           <span class="dt">Yesod.Auth.Dummy</span></a>
 <a class="sourceLine" id="cb1-11" title="11"></a>
-<a class="sourceLine" id="cb1-12" title="12"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-12" title="12"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-13" title="13"></a>
 <a class="sourceLine" id="cb1-14" title="14">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb1-15" title="15">/ HomeR GET</a>
@@ -205,33 +205,33 @@
 <a class="sourceLine" id="cb1-21" title="21">|]</a>
 <a class="sourceLine" id="cb1-22" title="22"></a>
 <a class="sourceLine" id="cb1-23" title="23"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-24" title="24">    authRoute _ <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">AuthR</span> <span class="dt">LoginR</span></a>
+<a class="sourceLine" id="cb1-24" title="24">    authRoute _ <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> <span class="dt">AuthR</span> <span class="dt">LoginR</span></a>
 <a class="sourceLine" id="cb1-25" title="25">    isAuthorized route _writable</a>
-<a class="sourceLine" id="cb1-26" title="26">        <span class="fu">|</span> <span class="st">&quot;admin&quot;</span> <span class="ot">`member`</span> routeAttrs route <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-26" title="26">        <span class="op">|</span> <span class="st">&quot;admin&quot;</span> <span class="ot">`member`</span> routeAttrs route <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb1-27" title="27">            muser <span class="ot">&lt;-</span> maybeAuthId</a>
 <a class="sourceLine" id="cb1-28" title="28">            <span class="kw">case</span> muser <span class="kw">of</span></a>
 <a class="sourceLine" id="cb1-29" title="29">                <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">AuthenticationRequired</span></a>
 <a class="sourceLine" id="cb1-30" title="30">                <span class="dt">Just</span> ident</a>
 <a class="sourceLine" id="cb1-31" title="31">                    <span class="co">-- Just a hack since we're using the dummy module</span></a>
-<a class="sourceLine" id="cb1-32" title="32">                    <span class="fu">|</span> ident <span class="fu">==</span> <span class="st">&quot;admin&quot;</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
-<a class="sourceLine" id="cb1-33" title="33">                    <span class="fu">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="fu">$</span> <span class="dt">Unauthorized</span> <span class="st">&quot;Admin access only&quot;</span></a>
-<a class="sourceLine" id="cb1-34" title="34">        <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
+<a class="sourceLine" id="cb1-32" title="32">                    <span class="op">|</span> ident <span class="op">==</span> <span class="st">&quot;admin&quot;</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
+<a class="sourceLine" id="cb1-33" title="33">                    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="dt">Unauthorized</span> <span class="st">&quot;Admin access only&quot;</span></a>
+<a class="sourceLine" id="cb1-34" title="34">        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
 <a class="sourceLine" id="cb1-35" title="35"></a>
 <a class="sourceLine" id="cb1-36" title="36"><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-37" title="37">    renderMessage _ _ <span class="fu">=</span> defaultFormMessage</a>
+<a class="sourceLine" id="cb1-37" title="37">    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</a>
 <a class="sourceLine" id="cb1-38" title="38"></a>
 <a class="sourceLine" id="cb1-39" title="39"><span class="co">-- Hacky YesodAuth instance for just the dummy auth plugin</span></a>
 <a class="sourceLine" id="cb1-40" title="40"><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-41" title="41">    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb1-41" title="41">    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb1-42" title="42"></a>
-<a class="sourceLine" id="cb1-43" title="43">    loginDest _ <span class="fu">=</span> <span class="dt">HomeR</span></a>
-<a class="sourceLine" id="cb1-44" title="44">    logoutDest _ <span class="fu">=</span> <span class="dt">HomeR</span></a>
-<a class="sourceLine" id="cb1-45" title="45">    getAuthId <span class="fu">=</span> <span class="fu">return</span> <span class="fu">.</span> <span class="dt">Just</span> <span class="fu">.</span> credsIdent</a>
-<a class="sourceLine" id="cb1-46" title="46">    authPlugins _ <span class="fu">=</span> [authDummy]</a>
-<a class="sourceLine" id="cb1-47" title="47">    maybeAuthId <span class="fu">=</span> lookupSession credsKey</a>
+<a class="sourceLine" id="cb1-43" title="43">    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></a>
+<a class="sourceLine" id="cb1-44" title="44">    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></a>
+<a class="sourceLine" id="cb1-45" title="45">    getAuthId <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Just</span> <span class="op">.</span> credsIdent</a>
+<a class="sourceLine" id="cb1-46" title="46">    authPlugins _ <span class="ot">=</span> [authDummy]</a>
+<a class="sourceLine" id="cb1-47" title="47">    maybeAuthId <span class="ot">=</span> lookupSession credsKey</a>
 <a class="sourceLine" id="cb1-48" title="48"></a>
 <a class="sourceLine" id="cb1-49" title="49"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-50" title="50">getHomeR <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-50" title="50">getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb1-51" title="51">    setTitle <span class="st">&quot;Route attr homepage&quot;</span></a>
 <a class="sourceLine" id="cb1-52" title="52">    [whamlet|</a>
 <a class="sourceLine" id="cb1-53" title="53">        <span class="kw">&lt;p&gt;</span></a>
@@ -245,21 +245,21 @@
 <a class="sourceLine" id="cb1-61" title="61">    |]</a>
 <a class="sourceLine" id="cb1-62" title="62"></a>
 <a class="sourceLine" id="cb1-63" title="63">getUnprotectedR, getAdmin1R, getAdmin2R,<span class="ot"> getAdmin3R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-64" title="64">getUnprotectedR <span class="fu">=</span> defaultLayout [whamlet|Unprotected|]</a>
-<a class="sourceLine" id="cb1-65" title="65">getAdmin1R <span class="fu">=</span> defaultLayout [whamlet|Admin1|]</a>
-<a class="sourceLine" id="cb1-66" title="66">getAdmin2R <span class="fu">=</span> defaultLayout [whamlet|Admin2|]</a>
-<a class="sourceLine" id="cb1-67" title="67">getAdmin3R <span class="fu">=</span> defaultLayout [whamlet|Admin3|]</a>
+<a class="sourceLine" id="cb1-64" title="64">getUnprotectedR <span class="ot">=</span> defaultLayout [whamlet|Unprotected|]</a>
+<a class="sourceLine" id="cb1-65" title="65">getAdmin1R <span class="ot">=</span> defaultLayout [whamlet|Admin1|]</a>
+<a class="sourceLine" id="cb1-66" title="66">getAdmin2R <span class="ot">=</span> defaultLayout [whamlet|Admin2|]</a>
+<a class="sourceLine" id="cb1-67" title="67">getAdmin3R <span class="ot">=</span> defaultLayout [whamlet|Admin3|]</a>
 <a class="sourceLine" id="cb1-68" title="68"></a>
 <a class="sourceLine" id="cb1-69" title="69"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-70" title="70">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-70" title="70">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
 <p>これは素晴らしいね。<code>Admin3R</code> のセキュリティホールも見つけやすいでしょ？</p>
 <h2 id="もう1つの方法-階層的ルート">もう1つの方法: 階層的ルート</h2>
 <p>いくつかのケースで利用される別の方法として、階層的ルート (<strong><em>hierarchical routes</em></strong>) があります。階層的ルートを使えば、多数の関連するルートを1つの親の下にまとめることができます。例えば、全ての管理用ルートを1つの URL 構造 (例: <code>/admin</code>) の下層に配置したい場合などに適しています。階層的ルートの使い方はとても簡単です。パス、名前、コロンという規則のルート宣言を1行追加するだけです。例:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">/</span>admin <span class="dt">AdminR</span><span class="fu">:</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="op">/</span>admin <span class="dt">AdminR</span><span class="op">:</span></a></code></pre></div>
 <p>そして、全ての子ルートをその行の下に少なくとも1つのスペースでインデントして配置します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="fu">/</span><span class="dv">1</span> <span class="dt">Admin1R</span> <span class="dt">GET</span></a>
-<a class="sourceLine" id="cb3-2" title="2">  <span class="fu">/</span><span class="dv">2</span> <span class="dt">Admin2R</span> <span class="dt">GET</span></a>
-<a class="sourceLine" id="cb3-3" title="3">  <span class="fu">/</span><span class="dv">3</span> <span class="dt">Admin3R</span> <span class="dt">GET</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">  <span class="op">/</span><span class="dv">1</span> <span class="dt">Admin1R</span> <span class="dt">GET</span></a>
+<a class="sourceLine" id="cb3-2" title="2">  <span class="op">/</span><span class="dv">2</span> <span class="dt">Admin2R</span> <span class="dt">GET</span></a>
+<a class="sourceLine" id="cb3-3" title="3">  <span class="op">/</span><span class="dv">3</span> <span class="dt">Admin3R</span> <span class="dt">GET</span></a></code></pre></div>
 <p>また、子ルートを <code>AdminR</code> コンストラクタでラップすることで、型安全URLから参照できます。例: <code>AdminR Admin1R</code>。以下のコードは先程のルート属性の例を階層的ルートで書き直したものです。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
@@ -272,7 +272,7 @@
 <a class="sourceLine" id="cb4-9" title="9"><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></a>
 <a class="sourceLine" id="cb4-10" title="10"><span class="kw">import</span>           <span class="dt">Yesod.Auth.Dummy</span></a>
 <a class="sourceLine" id="cb4-11" title="11"></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb4-13" title="13"></a>
 <a class="sourceLine" id="cb4-14" title="14">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb4-15" title="15">/ HomeR GET</a>
@@ -285,32 +285,32 @@
 <a class="sourceLine" id="cb4-22" title="22">|]</a>
 <a class="sourceLine" id="cb4-23" title="23"></a>
 <a class="sourceLine" id="cb4-24" title="24"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-25" title="25">    authRoute _ <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">AuthR</span> <span class="dt">LoginR</span></a>
-<a class="sourceLine" id="cb4-26" title="26">    isAuthorized (<span class="dt">AdminR</span> _) _writable <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-25" title="25">    authRoute _ <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> <span class="dt">AuthR</span> <span class="dt">LoginR</span></a>
+<a class="sourceLine" id="cb4-26" title="26">    isAuthorized (<span class="dt">AdminR</span> _) _writable <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb4-27" title="27">        muser <span class="ot">&lt;-</span> maybeAuthId</a>
 <a class="sourceLine" id="cb4-28" title="28">        <span class="kw">case</span> muser <span class="kw">of</span></a>
 <a class="sourceLine" id="cb4-29" title="29">            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">AuthenticationRequired</span></a>
 <a class="sourceLine" id="cb4-30" title="30">            <span class="dt">Just</span> ident</a>
 <a class="sourceLine" id="cb4-31" title="31">                <span class="co">-- Just a hack since we're using the dummy module</span></a>
-<a class="sourceLine" id="cb4-32" title="32">                <span class="fu">|</span> ident <span class="fu">==</span> <span class="st">&quot;admin&quot;</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
-<a class="sourceLine" id="cb4-33" title="33">                <span class="fu">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="fu">$</span> <span class="dt">Unauthorized</span> <span class="st">&quot;Admin access only&quot;</span></a>
-<a class="sourceLine" id="cb4-34" title="34">    isAuthorized _route _writable <span class="fu">=</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
+<a class="sourceLine" id="cb4-32" title="32">                <span class="op">|</span> ident <span class="op">==</span> <span class="st">&quot;admin&quot;</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
+<a class="sourceLine" id="cb4-33" title="33">                <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="dt">Unauthorized</span> <span class="st">&quot;Admin access only&quot;</span></a>
+<a class="sourceLine" id="cb4-34" title="34">    isAuthorized _route _writable <span class="ot">=</span> <span class="fu">return</span> <span class="dt">Authorized</span></a>
 <a class="sourceLine" id="cb4-35" title="35"></a>
 <a class="sourceLine" id="cb4-36" title="36"><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-37" title="37">    renderMessage _ _ <span class="fu">=</span> defaultFormMessage</a>
+<a class="sourceLine" id="cb4-37" title="37">    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</a>
 <a class="sourceLine" id="cb4-38" title="38"></a>
 <a class="sourceLine" id="cb4-39" title="39"><span class="co">-- Hacky YesodAuth instance for just the dummy auth plugin</span></a>
 <a class="sourceLine" id="cb4-40" title="40"><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb4-41" title="41">    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">Text</span></a>
+<a class="sourceLine" id="cb4-41" title="41">    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Text</span></a>
 <a class="sourceLine" id="cb4-42" title="42"></a>
-<a class="sourceLine" id="cb4-43" title="43">    loginDest _ <span class="fu">=</span> <span class="dt">HomeR</span></a>
-<a class="sourceLine" id="cb4-44" title="44">    logoutDest _ <span class="fu">=</span> <span class="dt">HomeR</span></a>
-<a class="sourceLine" id="cb4-45" title="45">    getAuthId <span class="fu">=</span> <span class="fu">return</span> <span class="fu">.</span> <span class="dt">Just</span> <span class="fu">.</span> credsIdent</a>
-<a class="sourceLine" id="cb4-46" title="46">    authPlugins _ <span class="fu">=</span> [authDummy]</a>
-<a class="sourceLine" id="cb4-47" title="47">    maybeAuthId <span class="fu">=</span> lookupSession credsKey</a>
+<a class="sourceLine" id="cb4-43" title="43">    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></a>
+<a class="sourceLine" id="cb4-44" title="44">    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></a>
+<a class="sourceLine" id="cb4-45" title="45">    getAuthId <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Just</span> <span class="op">.</span> credsIdent</a>
+<a class="sourceLine" id="cb4-46" title="46">    authPlugins _ <span class="ot">=</span> [authDummy]</a>
+<a class="sourceLine" id="cb4-47" title="47">    maybeAuthId <span class="ot">=</span> lookupSession credsKey</a>
 <a class="sourceLine" id="cb4-48" title="48"></a>
 <a class="sourceLine" id="cb4-49" title="49"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb4-50" title="50">getHomeR <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-50" title="50">getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb4-51" title="51">    setTitle <span class="st">&quot;Route attr homepage&quot;</span></a>
 <a class="sourceLine" id="cb4-52" title="52">    [whamlet|</a>
 <a class="sourceLine" id="cb4-53" title="53">        <span class="kw">&lt;p&gt;</span></a>
@@ -324,32 +324,32 @@
 <a class="sourceLine" id="cb4-61" title="61">    |]</a>
 <a class="sourceLine" id="cb4-62" title="62"></a>
 <a class="sourceLine" id="cb4-63" title="63">getUnprotectedR, getAdmin1R, getAdmin2R,<span class="ot"> getAdmin3R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb4-64" title="64">getUnprotectedR <span class="fu">=</span> defaultLayout [whamlet|Unprotected|]</a>
-<a class="sourceLine" id="cb4-65" title="65">getAdmin1R <span class="fu">=</span> defaultLayout [whamlet|Admin1|]</a>
-<a class="sourceLine" id="cb4-66" title="66">getAdmin2R <span class="fu">=</span> defaultLayout [whamlet|Admin2|]</a>
-<a class="sourceLine" id="cb4-67" title="67">getAdmin3R <span class="fu">=</span> defaultLayout [whamlet|Admin3|]</a>
+<a class="sourceLine" id="cb4-64" title="64">getUnprotectedR <span class="ot">=</span> defaultLayout [whamlet|Unprotected|]</a>
+<a class="sourceLine" id="cb4-65" title="65">getAdmin1R <span class="ot">=</span> defaultLayout [whamlet|Admin1|]</a>
+<a class="sourceLine" id="cb4-66" title="66">getAdmin2R <span class="ot">=</span> defaultLayout [whamlet|Admin2|]</a>
+<a class="sourceLine" id="cb4-67" title="67">getAdmin3R <span class="ot">=</span> defaultLayout [whamlet|Admin3|]</a>
 <a class="sourceLine" id="cb4-68" title="68"></a>
 <a class="sourceLine" id="cb4-69" title="69"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb4-70" title="70">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-70" title="70">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
 <h2 id="属性付き階層的ルート">属性付き階層的ルート</h2>
 <p>もちろん、2つの方法を合わせることも可能です。階層的ルートの子は親の属性を継承します。例えば:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">/</span>admin <span class="dt">AdminR</span> <span class="fu">!</span>admin<span class="fu">:</span></a>
-<a class="sourceLine" id="cb5-2" title="2">    <span class="fu">/</span><span class="dv">1</span> <span class="dt">Admin1R</span> <span class="dt">GET</span> <span class="fu">!</span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb5-3" title="3">    <span class="fu">/</span><span class="dv">2</span> <span class="dt">Admin2R</span> <span class="dt">GET</span> <span class="fu">!</span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb5-4" title="4">    <span class="fu">/</span><span class="dv">3</span> <span class="dt">Admin3R</span> <span class="dt">GET</span> <span class="fu">!</span><span class="dv">3</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="op">/</span>admin <span class="dt">AdminR</span> <span class="op">!</span>admin<span class="op">:</span></a>
+<a class="sourceLine" id="cb5-2" title="2">    <span class="op">/</span><span class="dv">1</span> <span class="dt">Admin1R</span> <span class="dt">GET</span> <span class="op">!</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb5-3" title="3">    <span class="op">/</span><span class="dv">2</span> <span class="dt">Admin2R</span> <span class="dt">GET</span> <span class="op">!</span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb5-4" title="4">    <span class="op">/</span><span class="dv">3</span> <span class="dt">Admin3R</span> <span class="dt">GET</span> <span class="op">!</span><span class="dv">3</span></a></code></pre></div>
 <p><code>AdminR Admin1R</code> は属性として <code>admin</code> と <code>1</code> を持ちます。</p>
 <p>このテクニックを使えば、最初の例のように <code>admin</code> 属性を <code>isAuthorized</code> 関数で利用できます。<code>Admin3R</code> に属性を付け忘れてしまうようなこともありません。今回のような例では、オリジナルの階層的ルートのコードと比較して、上記の属性付き階層的ルートの方が優れているということはありません。<code>(AdminR _)</code> のパターンマッチを <code>"admin" `member` routeAttrs route</code> で置き換えただけなので、全く同じです。しかし、管理ページを全て同じ URL 構造の下に配置するのではなく、異なるサブツリーにする場合はこちらの方が良いでしょう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">/</span>admin <span class="dt">AdminR</span> <span class="fu">!</span>admin<span class="fu">:</span></a>
-<a class="sourceLine" id="cb6-2" title="2">    <span class="fu">/</span><span class="dv">1</span> <span class="dt">Admin1R</span> <span class="dt">GET</span></a>
-<a class="sourceLine" id="cb6-3" title="3">    <span class="fu">/</span><span class="dv">2</span> <span class="dt">Admin2R</span> <span class="dt">GET</span></a>
-<a class="sourceLine" id="cb6-4" title="4">    <span class="fu">/</span><span class="dv">3</span> <span class="dt">Admin3R</span> <span class="dt">GET</span></a>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="op">/</span>admin <span class="dt">AdminR</span> <span class="op">!</span>admin<span class="op">:</span></a>
+<a class="sourceLine" id="cb6-2" title="2">    <span class="op">/</span><span class="dv">1</span> <span class="dt">Admin1R</span> <span class="dt">GET</span></a>
+<a class="sourceLine" id="cb6-3" title="3">    <span class="op">/</span><span class="dv">2</span> <span class="dt">Admin2R</span> <span class="dt">GET</span></a>
+<a class="sourceLine" id="cb6-4" title="4">    <span class="op">/</span><span class="dv">3</span> <span class="dt">Admin3R</span> <span class="dt">GET</span></a>
 <a class="sourceLine" id="cb6-5" title="5"></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="fu">/</span>a <span class="dt">AR</span> <span class="fu">!</span>a<span class="fu">:</span></a>
-<a class="sourceLine" id="cb6-7" title="7">  <span class="fu">/</span><span class="dv">1</span> <span class="dt">A1R</span> <span class="dt">GET</span></a>
-<a class="sourceLine" id="cb6-8" title="8">  <span class="fu">/</span><span class="dv">2</span> <span class="dt">A2R</span> <span class="dt">GET</span></a>
-<a class="sourceLine" id="cb6-9" title="9">  <span class="fu">/</span>admin <span class="dt">AAdminR</span> <span class="fu">!</span>admin<span class="fu">:</span></a>
-<a class="sourceLine" id="cb6-10" title="10">    <span class="fu">/</span><span class="dv">1</span> <span class="dt">AAdmin1R</span> <span class="dt">GET</span></a>
-<a class="sourceLine" id="cb6-11" title="11">    <span class="fu">/</span><span class="dv">2</span> <span class="dt">AAdmin2R</span> <span class="dt">GET</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-6" title="6"><span class="op">/</span>a <span class="dt">AR</span> <span class="op">!</span>a<span class="op">:</span></a>
+<a class="sourceLine" id="cb6-7" title="7">  <span class="op">/</span><span class="dv">1</span> <span class="dt">A1R</span> <span class="dt">GET</span></a>
+<a class="sourceLine" id="cb6-8" title="8">  <span class="op">/</span><span class="dv">2</span> <span class="dt">A2R</span> <span class="dt">GET</span></a>
+<a class="sourceLine" id="cb6-9" title="9">  <span class="op">/</span>admin <span class="dt">AAdminR</span> <span class="op">!</span>admin<span class="op">:</span></a>
+<a class="sourceLine" id="cb6-10" title="10">    <span class="op">/</span><span class="dv">1</span> <span class="dt">AAdmin1R</span> <span class="dt">GET</span></a>
+<a class="sourceLine" id="cb6-11" title="11">    <span class="op">/</span><span class="dv">2</span> <span class="dt">AAdmin2R</span> <span class="dt">GET</span></a></code></pre></div>
 <p><code>/admin</code> と <code>/a/admin</code> の下のページは全て <code>admin</code> 属性を持ち、 <code>"admin" `member` routeAttrs route</code> でチェックできます。しかし、<code>(AdminR _)</code> によるパターンマッチでは、この例を上手く扱えません。なぜなら、<code>/admin/*</code> ルートにはマッチしますが、<code>/a/admin/*</code> にはマッチしないためです。</p>
 <h2 id="本書のコード">本書のコード</h2>
 <ul>

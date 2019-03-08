@@ -180,7 +180,7 @@
 <li><a href="https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html">Yesod には脆弱性があるのかな？</a></li>
 </ul>
 <h2 id="脆弱性を含むコード">脆弱性を含むコード</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb1-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
@@ -189,7 +189,7 @@
 <a class="sourceLine" id="cb1-7" title="7"><span class="kw">import</span>           <span class="dt">Data.Maybe</span></a>
 <a class="sourceLine" id="cb1-8" title="8"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
 <a class="sourceLine" id="cb1-9" title="9"></a>
-<a class="sourceLine" id="cb1-10" title="10"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-11" title="11"></a>
 <a class="sourceLine" id="cb1-12" title="12">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb1-13" title="13">/ HomeR GET</a>
@@ -198,7 +198,7 @@
 <a class="sourceLine" id="cb1-16" title="16"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-17" title="17"></a>
 <a class="sourceLine" id="cb1-18" title="18"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-19" title="19">getHomeR <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-19" title="19">getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb1-20" title="20">  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></a>
 <a class="sourceLine" id="cb1-21" title="21"></a>
 <a class="sourceLine" id="cb1-22" title="22">  [whamlet|</a>
@@ -213,7 +213,7 @@
 <a class="sourceLine" id="cb1-31" title="31">  |]</a>
 <a class="sourceLine" id="cb1-32" title="32"></a>
 <a class="sourceLine" id="cb1-33" title="33"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-34" title="34">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-34" title="34">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
 <p>例えば <code>http://localhost:3000/?name=%27),alert(1)//</code> にアクセスすると <code>alert</code> が実行されてしまう。</p>
 <h2 id="対策">対策</h2>
 <h3 id="方法1-インラインをやめる">方法1 インラインをやめる</h3>
@@ -222,7 +222,7 @@
 <h3 id="方法2-content-security-policy-の設定">方法2 Content Security Policy の設定</h3>
 <p>Content Security Policy を設定してインラインの JavaScript を禁止する。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-2" title="2">  yesodMiddleware handler <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-2" title="2">  yesodMiddleware handler <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb2-3" title="3">    addHeader <span class="st">&quot;Content-Security-Policy&quot;</span> <span class="st">&quot;default-src 'self'&quot;</span></a>
 <a class="sourceLine" id="cb2-4" title="4">    defaultYesodMiddleware handler</a></code></pre></div>
 <h3 id="方法3-明示的に-javascript-のエスケープを行う">方法3 明示的に javascript のエスケープを行う</h3>

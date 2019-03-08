@@ -231,7 +231,7 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <p>今回はその内容について紹介したいと思います。(セキュリティの専門家ではないので間違いがあればご指摘ください)</p>
 <!--more-->
 <h2 id="脆弱性のあるコード">脆弱性のあるコード</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></a>
 <a class="sourceLine" id="cb1-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></a>
@@ -239,7 +239,7 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <a class="sourceLine" id="cb1-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></a>
 <a class="sourceLine" id="cb1-7" title="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
 <a class="sourceLine" id="cb1-8" title="8"></a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-10" title="10"></a>
 <a class="sourceLine" id="cb1-11" title="11">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb1-12" title="12">/ HomeR GET</a>
@@ -248,7 +248,7 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <a class="sourceLine" id="cb1-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb1-16" title="16"></a>
 <a class="sourceLine" id="cb1-17" title="17"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-18" title="18">getHomeR <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-18" title="18">getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb1-19" title="19">  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></a>
 <a class="sourceLine" id="cb1-20" title="20"></a>
 <a class="sourceLine" id="cb1-21" title="21">  [whamlet|</a>
@@ -265,7 +265,7 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <a class="sourceLine" id="cb1-32" title="32">  |]</a>
 <a class="sourceLine" id="cb1-33" title="33"></a>
 <a class="sourceLine" id="cb1-34" title="34"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-35" title="35">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-35" title="35">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
 <p>このコードには脆弱性があります。</p>
 <p><strong>Yesod</strong> の変数展開 <code>#{..}</code> は、このような <strong>JavaScript</strong> の動的生成でも大丈夫だろうと思っていたのですが、そうではありませんでした。</p>
 <h3 id="正常系">正常系</h3>
@@ -290,59 +290,59 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <h2 id="展開部分を改良してみる">展開部分を改良してみる</h2>
 <p>では <strong>Javascript</strong> 型に変換すれば問題は解決するのでしょうか？</p>
 <p>試しに以下のようにコードを変更してみました。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">&lt;</span>img onload<span class="fu">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ name}')&quot;</span> src<span class="fu">=</span><span class="st">&quot;...&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="op">&lt;</span>img onload<span class="ot">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ name}')&quot;</span> src<span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="op">&gt;</span></a></code></pre></div>
 <p>ですが、やはり結果は同じです。</p>
 <h2 id="エスケープ処理">エスケープ処理</h2>
 <p>ソースコードを追いかけてみるとどうやら <strong>Value</strong> の値については <a href="https://www.stackage.org/haddock/lts-12.4/shakespeare-2.0.15/src/Text.Julius.html#string">string</a> というサニタイザーが適用されるようです。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">string ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></a>
-<a class="sourceLine" id="cb8-2" title="2">string s <span class="fu">=</span> <span class="ot">{-# SCC &quot;string&quot; #-}</span> singleton <span class="ch">'&quot;'</span> <span class="fu">&lt;&gt;</span> quote s <span class="fu">&lt;&gt;</span> singleton <span class="ch">'&quot;'</span></a>
+<a class="sourceLine" id="cb8-2" title="2">string s <span class="ot">=</span> <span class="ot">{-# SCC &quot;string&quot; #-}</span> singleton <span class="ch">'&quot;'</span> <span class="op">&lt;&gt;</span> quote s <span class="op">&lt;&gt;</span> singleton <span class="ch">'&quot;'</span></a>
 <a class="sourceLine" id="cb8-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-4" title="4">    quote q <span class="fu">=</span> <span class="kw">case</span> T.uncons t <span class="kw">of</span></a>
+<a class="sourceLine" id="cb8-4" title="4">    quote q <span class="ot">=</span> <span class="kw">case</span> T.uncons t <span class="kw">of</span></a>
 <a class="sourceLine" id="cb8-5" title="5">                <span class="dt">Nothing</span>      <span class="ot">-&gt;</span> fromText h</a>
-<a class="sourceLine" id="cb8-6" title="6">                <span class="dt">Just</span> (<span class="fu">!</span>c,t') <span class="ot">-&gt;</span> fromText h <span class="fu">&lt;&gt;</span> escape c <span class="fu">&lt;&gt;</span> quote t'</a>
-<a class="sourceLine" id="cb8-7" title="7">        <span class="kw">where</span> (h,t) <span class="fu">=</span> <span class="ot">{-# SCC &quot;break&quot; #-}</span> T.break isEscape q</a>
-<a class="sourceLine" id="cb8-8" title="8">    isEscape c <span class="fu">=</span> c <span class="fu">==</span> <span class="ch">'\&quot;'</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-9" title="9">                 c <span class="fu">==</span> <span class="ch">'\\'</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-10" title="10">                 c <span class="fu">==</span> <span class="ch">'&lt;'</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-11" title="11">                 c <span class="fu">==</span> <span class="ch">'&gt;'</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-12" title="12">                 c <span class="fu">==</span> <span class="ch">'&amp;'</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb8-13" title="13">                 c <span class="fu">&lt;</span> <span class="ch">'\x20'</span></a>
-<a class="sourceLine" id="cb8-14" title="14">    escape <span class="ch">'\&quot;'</span> <span class="fu">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
-<a class="sourceLine" id="cb8-15" title="15">    escape <span class="ch">'\\'</span> <span class="fu">=</span> <span class="st">&quot;\\\\&quot;</span></a>
-<a class="sourceLine" id="cb8-16" title="16">    escape <span class="ch">'\n'</span> <span class="fu">=</span> <span class="st">&quot;\\n&quot;</span></a>
-<a class="sourceLine" id="cb8-17" title="17">    escape <span class="ch">'\r'</span> <span class="fu">=</span> <span class="st">&quot;\\r&quot;</span></a>
-<a class="sourceLine" id="cb8-18" title="18">    escape <span class="ch">'\t'</span> <span class="fu">=</span> <span class="st">&quot;\\t&quot;</span></a>
-<a class="sourceLine" id="cb8-19" title="19">    escape <span class="ch">'&lt;'</span> <span class="fu">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
-<a class="sourceLine" id="cb8-20" title="20">    escape <span class="ch">'&gt;'</span> <span class="fu">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
-<a class="sourceLine" id="cb8-21" title="21">    escape <span class="ch">'&amp;'</span> <span class="fu">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
+<a class="sourceLine" id="cb8-6" title="6">                <span class="dt">Just</span> (<span class="op">!</span>c,t') <span class="ot">-&gt;</span> fromText h <span class="op">&lt;&gt;</span> escape c <span class="op">&lt;&gt;</span> quote t'</a>
+<a class="sourceLine" id="cb8-7" title="7">        <span class="kw">where</span> (h,t) <span class="ot">=</span> <span class="ot">{-# SCC &quot;break&quot; #-}</span> T.break isEscape q</a>
+<a class="sourceLine" id="cb8-8" title="8">    isEscape c <span class="ot">=</span> c <span class="op">==</span> <span class="ch">'\&quot;'</span> <span class="op">||</span></a>
+<a class="sourceLine" id="cb8-9" title="9">                 c <span class="op">==</span> <span class="ch">'\\'</span> <span class="op">||</span></a>
+<a class="sourceLine" id="cb8-10" title="10">                 c <span class="op">==</span> <span class="ch">'&lt;'</span>  <span class="op">||</span></a>
+<a class="sourceLine" id="cb8-11" title="11">                 c <span class="op">==</span> <span class="ch">'&gt;'</span>  <span class="op">||</span></a>
+<a class="sourceLine" id="cb8-12" title="12">                 c <span class="op">==</span> <span class="ch">'&amp;'</span>  <span class="op">||</span></a>
+<a class="sourceLine" id="cb8-13" title="13">                 c <span class="op">&lt;</span> <span class="ch">'\x20'</span></a>
+<a class="sourceLine" id="cb8-14" title="14">    escape <span class="ch">'\&quot;'</span> <span class="ot">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
+<a class="sourceLine" id="cb8-15" title="15">    escape <span class="ch">'\\'</span> <span class="ot">=</span> <span class="st">&quot;\\\\&quot;</span></a>
+<a class="sourceLine" id="cb8-16" title="16">    escape <span class="ch">'\n'</span> <span class="ot">=</span> <span class="st">&quot;\\n&quot;</span></a>
+<a class="sourceLine" id="cb8-17" title="17">    escape <span class="ch">'\r'</span> <span class="ot">=</span> <span class="st">&quot;\\r&quot;</span></a>
+<a class="sourceLine" id="cb8-18" title="18">    escape <span class="ch">'\t'</span> <span class="ot">=</span> <span class="st">&quot;\\t&quot;</span></a>
+<a class="sourceLine" id="cb8-19" title="19">    escape <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
+<a class="sourceLine" id="cb8-20" title="20">    escape <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
+<a class="sourceLine" id="cb8-21" title="21">    escape <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
 <a class="sourceLine" id="cb8-22" title="22"></a>
 <a class="sourceLine" id="cb8-23" title="23">    escape c</a>
-<a class="sourceLine" id="cb8-24" title="24">        <span class="fu">|</span> c <span class="fu">&lt;</span> <span class="ch">'\x20'</span> <span class="fu">=</span> fromString <span class="fu">$</span> <span class="st">&quot;\\u&quot;</span> <span class="fu">++</span> <span class="fu">replicate</span> (<span class="dv">4</span> <span class="fu">-</span> <span class="fu">length</span> h) <span class="ch">'0'</span> <span class="fu">++</span> h</a>
-<a class="sourceLine" id="cb8-25" title="25">        <span class="fu">|</span> <span class="fu">otherwise</span>  <span class="fu">=</span> singleton c</a>
-<a class="sourceLine" id="cb8-26" title="26">        <span class="kw">where</span> h <span class="fu">=</span> showHex (<span class="fu">fromEnum</span> c) <span class="st">&quot;&quot;</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-24" title="24">        <span class="op">|</span> c <span class="op">&lt;</span> <span class="ch">'\x20'</span> <span class="ot">=</span> fromString <span class="op">$</span> <span class="st">&quot;\\u&quot;</span> <span class="op">++</span> <span class="fu">replicate</span> (<span class="dv">4</span> <span class="op">-</span> <span class="fu">length</span> h) <span class="ch">'0'</span> <span class="op">++</span> h</a>
+<a class="sourceLine" id="cb8-25" title="25">        <span class="op">|</span> <span class="fu">otherwise</span>  <span class="ot">=</span> singleton c</a>
+<a class="sourceLine" id="cb8-26" title="26">        <span class="kw">where</span> h <span class="ot">=</span> showHex (<span class="fu">fromEnum</span> c) <span class="st">&quot;&quot;</span></a></code></pre></div>
 <p>なので、先程のコードを少し修正してこの <code>string</code> を適用してみました。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">&lt;</span>img onload<span class="fu">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ string $ name}')&quot;</span> src<span class="fu">=</span><span class="st">&quot;...&quot;</span><span class="fu">&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="op">&lt;</span>img onload<span class="ot">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ string $ name}')&quot;</span> src<span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="op">&gt;</span></a></code></pre></div>
 <p>しかし、これでもやっぱりだめです。なぜなら <code>'</code> に対してはサニタイズしていないからだと思います。</p>
 <h3 id="string-関数の修正">string 関数の修正</h3>
 <p>以下のように <code>'</code> のエスケープ処理を追加したところ、インジェクションが発生しなくなりました。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">isEscape c <span class="fu">=</span> c <span class="fu">==</span> <span class="ch">'\&quot;'</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-2" title="2">             c <span class="fu">==</span> <span class="ch">'\\'</span> <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-3" title="3">             c <span class="fu">==</span> <span class="ch">'&lt;'</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-4" title="4">             c <span class="fu">==</span> <span class="ch">'&gt;'</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-5" title="5">             c <span class="fu">==</span> <span class="ch">'&amp;'</span>  <span class="fu">||</span></a>
-<a class="sourceLine" id="cb10-6" title="6">             c <span class="fu">==</span> <span class="ch">'\''</span> <span class="fu">||</span> <span class="co">-- 追記</span></a>
-<a class="sourceLine" id="cb10-7" title="7">             c <span class="fu">&lt;</span> <span class="ch">'\x20'</span></a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">isEscape c <span class="ot">=</span> c <span class="op">==</span> <span class="ch">'\&quot;'</span> <span class="op">||</span></a>
+<a class="sourceLine" id="cb10-2" title="2">             c <span class="op">==</span> <span class="ch">'\\'</span> <span class="op">||</span></a>
+<a class="sourceLine" id="cb10-3" title="3">             c <span class="op">==</span> <span class="ch">'&lt;'</span>  <span class="op">||</span></a>
+<a class="sourceLine" id="cb10-4" title="4">             c <span class="op">==</span> <span class="ch">'&gt;'</span>  <span class="op">||</span></a>
+<a class="sourceLine" id="cb10-5" title="5">             c <span class="op">==</span> <span class="ch">'&amp;'</span>  <span class="op">||</span></a>
+<a class="sourceLine" id="cb10-6" title="6">             c <span class="op">==</span> <span class="ch">'\''</span> <span class="op">||</span> <span class="co">-- 追記</span></a>
+<a class="sourceLine" id="cb10-7" title="7">             c <span class="op">&lt;</span> <span class="ch">'\x20'</span></a>
 <a class="sourceLine" id="cb10-8" title="8"></a>
-<a class="sourceLine" id="cb10-9" title="9">escape <span class="ch">'\&quot;'</span> <span class="fu">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
-<a class="sourceLine" id="cb10-10" title="10">escape <span class="ch">'\\'</span> <span class="fu">=</span> <span class="st">&quot;\\\\&quot;</span></a>
-<a class="sourceLine" id="cb10-11" title="11">escape <span class="ch">'\n'</span> <span class="fu">=</span> <span class="st">&quot;\\n&quot;</span></a>
-<a class="sourceLine" id="cb10-12" title="12">escape <span class="ch">'\r'</span> <span class="fu">=</span> <span class="st">&quot;\\r&quot;</span></a>
-<a class="sourceLine" id="cb10-13" title="13">escape <span class="ch">'\t'</span> <span class="fu">=</span> <span class="st">&quot;\\t&quot;</span></a>
-<a class="sourceLine" id="cb10-14" title="14">escape <span class="ch">'&lt;'</span> <span class="fu">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
-<a class="sourceLine" id="cb10-15" title="15">escape <span class="ch">'&gt;'</span> <span class="fu">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
-<a class="sourceLine" id="cb10-16" title="16">escape <span class="ch">'&amp;'</span> <span class="fu">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
+<a class="sourceLine" id="cb10-9" title="9">escape <span class="ch">'\&quot;'</span> <span class="ot">=</span> <span class="st">&quot;\\\&quot;&quot;</span></a>
+<a class="sourceLine" id="cb10-10" title="10">escape <span class="ch">'\\'</span> <span class="ot">=</span> <span class="st">&quot;\\\\&quot;</span></a>
+<a class="sourceLine" id="cb10-11" title="11">escape <span class="ch">'\n'</span> <span class="ot">=</span> <span class="st">&quot;\\n&quot;</span></a>
+<a class="sourceLine" id="cb10-12" title="12">escape <span class="ch">'\r'</span> <span class="ot">=</span> <span class="st">&quot;\\r&quot;</span></a>
+<a class="sourceLine" id="cb10-13" title="13">escape <span class="ch">'\t'</span> <span class="ot">=</span> <span class="st">&quot;\\t&quot;</span></a>
+<a class="sourceLine" id="cb10-14" title="14">escape <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003c&quot;</span></a>
+<a class="sourceLine" id="cb10-15" title="15">escape <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003e&quot;</span></a>
+<a class="sourceLine" id="cb10-16" title="16">escape <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;\\u0026&quot;</span></a>
 <a class="sourceLine" id="cb10-17" title="17"><span class="co">-- 追記</span></a>
-<a class="sourceLine" id="cb10-18" title="18">escape <span class="ch">'\''</span> <span class="fu">=</span> <span class="st">&quot;\\\'&quot;</span></a></code></pre></div>
+<a class="sourceLine" id="cb10-18" title="18">escape <span class="ch">'\''</span> <span class="ot">=</span> <span class="st">&quot;\\\'&quot;</span></a></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <ul>
 <li><strong>JavaScript</strong> を動的に組み立てない</li>

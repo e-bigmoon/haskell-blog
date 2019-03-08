@@ -182,7 +182,7 @@
 <p>しかし、セキュリティ的には</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb1-1" title="1">X-XSS-Protection: 1; mode=block</a></code></pre></div>
 <p>が設定されている方が望ましいと思う。以下のようにすれば良い。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
 <a class="sourceLine" id="cb2-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
 <a class="sourceLine" id="cb2-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
@@ -190,25 +190,25 @@
 <a class="sourceLine" id="cb2-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
 <a class="sourceLine" id="cb2-7" title="7"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
 <a class="sourceLine" id="cb2-8" title="8"></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="fu">=</span> <span class="dt">App</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
 <a class="sourceLine" id="cb2-10" title="10"></a>
 <a class="sourceLine" id="cb2-11" title="11">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
 <a class="sourceLine" id="cb2-12" title="12">/ HomeR GET</a>
 <a class="sourceLine" id="cb2-13" title="13">|]</a>
 <a class="sourceLine" id="cb2-14" title="14"></a>
 <a class="sourceLine" id="cb2-15" title="15"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-16" title="16">  yesodMiddleware handler <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-16" title="16">  yesodMiddleware handler <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb2-17" title="17">    addHeader <span class="st">&quot;X-XSS-Protection&quot;</span> <span class="st">&quot;1;mode=block&quot;</span></a>
 <a class="sourceLine" id="cb2-18" title="18">    defaultYesodMiddleware handler</a>
 <a class="sourceLine" id="cb2-19" title="19"></a>
 <a class="sourceLine" id="cb2-20" title="20"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb2-21" title="21">getHomeR <span class="fu">=</span> defaultLayout <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-21" title="21">getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb2-22" title="22">  [whamlet|</a>
 <a class="sourceLine" id="cb2-23" title="23">    &quot;test&quot;</a>
 <a class="sourceLine" id="cb2-24" title="24">  |]</a>
 <a class="sourceLine" id="cb2-25" title="25"></a>
 <a class="sourceLine" id="cb2-26" title="26"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-27" title="27">main <span class="fu">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-27" title="27">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
       </article>
 
       <div class="pager">

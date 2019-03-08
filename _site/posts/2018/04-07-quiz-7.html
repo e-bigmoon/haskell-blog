@@ -234,24 +234,24 @@ myTakeWhileC :: Monad m" />
         <h2 id="haskell-quiz-no.7">Haskell Quiz No.7</h2>
 <p>難易度: λλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-11.3</span></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
 <a class="sourceLine" id="cb1-4" title="4"></a>
 <a class="sourceLine" id="cb1-5" title="5"><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</a>
-<a class="sourceLine" id="cb1-6" title="6">myTakeWhileC f <span class="fu">=</span> loop</a>
+<a class="sourceLine" id="cb1-6" title="6">myTakeWhileC f <span class="ot">=</span> loop</a>
 <a class="sourceLine" id="cb1-7" title="7">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-8" title="8">    loop <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-8" title="8">    loop <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb1-9" title="9">      mx <span class="ot">&lt;-</span> await</a>
 <a class="sourceLine" id="cb1-10" title="10">      <span class="kw">case</span> mx <span class="kw">of</span></a>
 <a class="sourceLine" id="cb1-11" title="11">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a>
 <a class="sourceLine" id="cb1-12" title="12">        <span class="dt">Just</span> x</a>
-<a class="sourceLine" id="cb1-13" title="13">          <span class="fu">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="fu">&gt;&gt;</span> loop</a>
-<a class="sourceLine" id="cb1-14" title="14">          <span class="fu">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a>
+<a class="sourceLine" id="cb1-13" title="13">          <span class="op">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="op">&gt;&gt;</span> loop</a>
+<a class="sourceLine" id="cb1-14" title="14">          <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</a>
 <a class="sourceLine" id="cb1-15" title="15"></a>
 <a class="sourceLine" id="cb1-16" title="16"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-17" title="17">main <span class="fu">=</span> <span class="fu">print</span> <span class="fu">$</span> runConduitPure <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-18" title="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="fu">&lt;=</span> <span class="dv">5</span>) <span class="fu">.|</span> sinkList</a>
+<a class="sourceLine" id="cb1-17" title="17">main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> runConduitPure <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-18" title="18">  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="op">&lt;=</span> <span class="dv">5</span>) <span class="op">.|</span> sinkList</a>
 <a class="sourceLine" id="cb1-19" title="19">  y <span class="ot">&lt;-</span> sinkList</a>
 <a class="sourceLine" id="cb1-20" title="20">  <span class="fu">return</span> (x, y)</a></code></pre></div>
 <p>答えは<a href="04-08-quiz-8.html">次回</a>。</p>
@@ -261,17 +261,17 @@ myTakeWhileC :: Monad m" />
 <h3 id="問題">問題</h3>
 <p>難易度: λλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">#!/usr/bin/env stack</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="co">-- stack script --resolver lts-11.2</span></a>
 <a class="sourceLine" id="cb2-3" title="3"><span class="kw">import</span> <span class="dt">Conduit</span></a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
-<a class="sourceLine" id="cb2-6" title="6">trans <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-7" title="7">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb2-8" title="8">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-6" title="6">trans <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb2-7" title="7">  takeC <span class="dv">5</span> <span class="op">.|</span> mapC (<span class="op">+</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-8" title="8">  mapC (<span class="op">*</span> <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb2-9" title="9"></a>
 <a class="sourceLine" id="cb2-10" title="10"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-11" title="11">main <span class="fu">=</span> runConduit <span class="fu">$</span> yieldMany [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>] <span class="fu">.|</span> trans <span class="fu">.|</span> mapM_C <span class="fu">print</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-11" title="11">main <span class="ot">=</span> runConduit <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> trans <span class="op">.|</span> mapM_C <span class="fu">print</span></a></code></pre></div>
 <h3 id="こたえ">こたえ</h3>
 <p>実際に実行してみましょう！</p>
 <pre class="shell"><code>$ ./Quiz6.hs
@@ -288,9 +288,9 @@ myTakeWhileC :: Monad m" />
 <h2 id="haskell-quiz-no.6-の解説">Haskell Quiz No.6 の解説</h2>
 <p>この問題で重要なのは <code>trans</code> 関数です。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</a>
-<a class="sourceLine" id="cb4-2" title="2">trans <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-3" title="3">  takeC <span class="dv">5</span> <span class="fu">.|</span> mapC (<span class="fu">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-4" title="4">  mapC (<span class="fu">*</span> <span class="dv">2</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb4-2" title="2">trans <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb4-3" title="3">  takeC <span class="dv">5</span> <span class="op">.|</span> mapC (<span class="op">+</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb4-4" title="4">  mapC (<span class="op">*</span> <span class="dv">2</span>)</a></code></pre></div>
 <ul>
 <li>1つめのパイプ <code>takeC 5 .| mapC (+ 1)</code> によって <code>[1..10]</code> のうち <code>[1..5]</code> が <code>mapC (+ 1)</code> によって処理されます。</li>
 <li>2つめのパイプ <code>mapC (* 2)</code> によって残りの <code>[6..10]</code> が <code>mapC (* 2)</code> によって処理されます。</li>

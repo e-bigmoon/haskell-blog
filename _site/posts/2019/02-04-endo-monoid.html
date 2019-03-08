@@ -230,22 +230,22 @@ instance Semigroup a =&gt; Semigrou" />
         <h2 id="はじめに">はじめに</h2>
 <p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Endo">Endo</a> 型が定義されています。</p>
 <p><code>Endo</code> という名前は <code>自己準同型 (Endomorphism)</code> に由来します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Endo</span> a <span class="fu">=</span> <span class="dt">Endo</span> {<span class="ot"> appEndo ::</span> a <span class="ot">-&gt;</span> a }</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">newtype</span> <span class="dt">Endo</span> a <span class="ot">=</span> <span class="dt">Endo</span> {<span class="ot"> appEndo ::</span> a <span class="ot">-&gt;</span> a }</a>
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> g <span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> g)</a>
+<a class="sourceLine" id="cb1-4" title="4">  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g <span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g)</a>
 <a class="sourceLine" id="cb1-5" title="5"></a>
 <a class="sourceLine" id="cb1-6" title="6"><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="fu">=</span> <span class="dt">Endo</span> <span class="fu">id</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span></a></code></pre></div>
 <p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="fu">&gt;</span> f <span class="fu">=</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="fu">+</span><span class="dv">1</span>), (<span class="fu">*</span><span class="dv">2</span>), <span class="fu">negate</span>]</a>
-<a class="sourceLine" id="cb2-2" title="2">ghci<span class="fu">&gt;</span> <span class="fu">print</span> <span class="fu">$</span> appEndo f <span class="dv">5</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="fu">-</span><span class="dv">9</span></a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1">ghci<span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="op">+</span><span class="dv">1</span>), (<span class="op">*</span><span class="dv">2</span>), <span class="fu">negate</span>]</a>
+<a class="sourceLine" id="cb2-2" title="2">ghci<span class="op">&gt;</span> <span class="fu">print</span> <span class="op">$</span> appEndo f <span class="dv">5</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="op">-</span><span class="dv">9</span></a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
-<a class="sourceLine" id="cb2-5" title="5">ghci<span class="fu">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>) <span class="fu">&lt;&gt;</span> <span class="fu">mempty</span> <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></a>
+<a class="sourceLine" id="cb2-5" title="5">ghci<span class="op">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>) <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></a>
 <a class="sourceLine" id="cb2-6" title="6"><span class="st">&quot;Hello, Haskell!&quot;</span></a>
 <a class="sourceLine" id="cb2-7" title="7"></a>
-<a class="sourceLine" id="cb2-8" title="8">ghci<span class="fu">&gt;</span> (appEndo <span class="fu">$</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="st">&quot;Hello, &quot;</span> <span class="fu">++</span>), <span class="fu">id</span>, (<span class="fu">++</span> <span class="st">&quot;!&quot;</span>)]) <span class="st">&quot;Haskell&quot;</span></a>
+<a class="sourceLine" id="cb2-8" title="8">ghci<span class="op">&gt;</span> (appEndo <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>), <span class="fu">id</span>, (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)]) <span class="st">&quot;Haskell&quot;</span></a>
 <a class="sourceLine" id="cb2-9" title="9"><span class="st">&quot;Hello, Haskell!&quot;</span></a></code></pre></div>
 <p><code>appEndo</code> すると関数が出てくるところがポイントですね。2つ目の評価の流れをざっくり追うとこんな感じです。</p>
 <pre class="haskll"><code>  appEndo (Endo (&quot;Hello, &quot; ++) &lt;&gt; Endo (++ &quot;!&quot;)) &quot;Haskell&quot;
@@ -258,63 +258,63 @@ instance Semigroup a =&gt; Semigrou" />
 <!--more-->
 <h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
 <p>Semigroup Law</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> (<span class="dt">Endo</span> g <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> h)</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">=</span> <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> (g <span class="fu">.</span> h)</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> (g <span class="fu">.</span> h))</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1">  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="dt">Endo</span> g <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (g <span class="op">.</span> h)</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> (g <span class="op">.</span> h))</a>
 <a class="sourceLine" id="cb4-4" title="4"><span class="co">-- Category の定義より f . (g . h) == (f . g) . h</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="fu">=</span> <span class="dt">Endo</span> ((f <span class="fu">.</span> g) <span class="fu">.</span> h)</a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> g) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> h</a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="fu">=</span> (<span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> g) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> h</a></code></pre></div>
+<a class="sourceLine" id="cb4-5" title="5"><span class="ot">=</span> <span class="dt">Endo</span> ((f <span class="op">.</span> g) <span class="op">.</span> h)</a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="ot">=</span> (<span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</a></code></pre></div>
 <p>Monoid Law</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a)</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="fu">=</span> <span class="dt">Endo</span> f <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="fu">=</span> <span class="dt">Endo</span> (f <span class="fu">.</span> <span class="fu">id</span>)</a>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1">  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> <span class="fu">id</span>)</a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="co">-- Category の定義より f . id == f</span></a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="fu">=</span> <span class="dt">Endo</span> f</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="ot">=</span> <span class="dt">Endo</span> f</a>
 <a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a) <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> f</a>
-<a class="sourceLine" id="cb5-8" title="8"><span class="fu">=</span> <span class="dt">Endo</span> <span class="fu">id</span> <span class="fu">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
-<a class="sourceLine" id="cb5-9" title="9"><span class="fu">=</span> <span class="dt">Endo</span> (<span class="fu">id</span> <span class="fu">.</span> f)</a>
+<a class="sourceLine" id="cb5-7" title="7">  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> f</a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="ot">=</span> <span class="dt">Endo</span> (<span class="fu">id</span> <span class="op">.</span> f)</a>
 <a class="sourceLine" id="cb5-10" title="10"><span class="co">-- Category の定義より id . f == f</span></a>
-<a class="sourceLine" id="cb5-11" title="11"><span class="fu">=</span> <span class="dt">Endo</span> f</a></code></pre></div>
+<a class="sourceLine" id="cb5-11" title="11"><span class="ot">=</span> <span class="dt">Endo</span> f</a></code></pre></div>
 <h3 id="f-.-g-.-h-f-.-g-.-h"><code>f . (g . h) == (f . g) . h</code></h3>
 <p><code>(.)</code> の定義</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a>
-<a class="sourceLine" id="cb6-2" title="2">f <span class="fu">.</span> g <span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g x)</a></code></pre></div>
+<a class="sourceLine" id="cb6-2" title="2">f <span class="op">.</span> g <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g x)</a></code></pre></div>
 <p>証明</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1">(<span class="dt">LHS</span>)</a>
-<a class="sourceLine" id="cb7-2" title="2">  f <span class="fu">.</span> (g <span class="fu">.</span> h)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f ((g <span class="fu">.</span> h) x)</a>
-<a class="sourceLine" id="cb7-4" title="4"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f ((\y <span class="ot">-&gt;</span> g (h y)) x)</a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a>
+<a class="sourceLine" id="cb7-2" title="2">  f <span class="op">.</span> (g <span class="op">.</span> h)</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((g <span class="op">.</span> h) x)</a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((\y <span class="ot">-&gt;</span> g (h y)) x)</a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a>
 <a class="sourceLine" id="cb7-6" title="6"></a>
 <a class="sourceLine" id="cb7-7" title="7">(<span class="dt">RHS</span>)</a>
-<a class="sourceLine" id="cb7-8" title="8">  (f <span class="fu">.</span> g) <span class="fu">.</span> h</a>
-<a class="sourceLine" id="cb7-9" title="9"><span class="fu">=</span> \x <span class="ot">-&gt;</span> (f <span class="fu">.</span> g) (h x)</a>
-<a class="sourceLine" id="cb7-10" title="10"><span class="fu">=</span> \x <span class="ot">-&gt;</span> (\y <span class="ot">-&gt;</span> f (g y)) (h x)</a>
-<a class="sourceLine" id="cb7-11" title="11"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a></code></pre></div>
+<a class="sourceLine" id="cb7-8" title="8">  (f <span class="op">.</span> g) <span class="op">.</span> h</a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="ot">=</span> \x <span class="ot">-&gt;</span> (f <span class="op">.</span> g) (h x)</a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="ot">=</span> \x <span class="ot">-&gt;</span> (\y <span class="ot">-&gt;</span> f (g y)) (h x)</a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</a></code></pre></div>
 <h3 id="id-.-f-f"><code>id . f == f</code></h3>
 <p><code>id</code> の定義</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">id</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="fu">id</span> x <span class="fu">=</span> x</a></code></pre></div>
+<a class="sourceLine" id="cb8-2" title="2"><span class="fu">id</span> x <span class="ot">=</span> x</a></code></pre></div>
 <p>証明</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="fu">id</span> <span class="fu">.</span> f</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="fu">=</span> \x <span class="ot">-&gt;</span> <span class="fu">id</span> (f x)</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="fu">=</span> \x <span class="ot">-&gt;</span> f x</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="fu">=</span> f</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1">  <span class="fu">id</span> <span class="op">.</span> f</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="fu">id</span> (f x)</a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="ot">=</span> \x <span class="ot">-&gt;</span> f x</a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="ot">=</span> f</a></code></pre></div>
 <h2 id="例1-write-endo-パターン">例1) Write Endo パターン</h2>
 <p><a href="https://hackage.haskell.org/package/yesod-core">yesod-core</a> パッケージの <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Handler.html#t:ProvidedRep">ProvideRep</a> を扱う関数は <code>Endo</code> を利用しています。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="ot">selectRep ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) () <span class="ot">-&gt;</span> m <span class="dt">TypedContent</span></a>
 <a class="sourceLine" id="cb10-2" title="2"><span class="ot">provideRep ::</span> (<span class="dt">Monad</span> m, <span class="dt">HasContentType</span> a) <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</a>
 <a class="sourceLine" id="cb10-3" title="3"><span class="ot">provideRepType ::</span> (<span class="dt">Monad</span> m, <span class="dt">ToContent</span> a) <span class="ot">=&gt;</span> <span class="dt">ContentType</span> <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</a></code></pre></div>
 <p>また <code>Yesod</code> には <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Types.html#t:GHState">GHState</a> 型がありますが、そこでも <code>Endo</code> を使っています。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">data</span> <span class="dt">GHState</span> <span class="fu">=</span> <span class="dt">GHState</span></a>
-<a class="sourceLine" id="cb11-2" title="2">    {<span class="ot"> ghsSession ::</span> <span class="fu">!</span><span class="dt">SessionMap</span></a>
-<a class="sourceLine" id="cb11-3" title="3">    ,<span class="ot"> ghsRBC     ::</span> <span class="fu">!</span>(<span class="dt">Maybe</span> <span class="dt">RequestBodyContents</span>)</a>
-<a class="sourceLine" id="cb11-4" title="4">    ,<span class="ot"> ghsIdent   ::</span> <span class="fu">!</span><span class="dt">Int</span></a>
-<a class="sourceLine" id="cb11-5" title="5">    ,<span class="ot"> ghsCache   ::</span> <span class="fu">!</span><span class="dt">TypeMap</span></a>
-<a class="sourceLine" id="cb11-6" title="6">    ,<span class="ot"> ghsCacheBy ::</span> <span class="fu">!</span><span class="dt">KeyedTypeMap</span></a>
-<a class="sourceLine" id="cb11-7" title="7">    ,<span class="ot"> ghsHeaders ::</span> <span class="fu">!</span>(<span class="dt">Endo</span> [<span class="dt">Header</span>])</a>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">data</span> <span class="dt">GHState</span> <span class="ot">=</span> <span class="dt">GHState</span></a>
+<a class="sourceLine" id="cb11-2" title="2">    {<span class="ot"> ghsSession ::</span> <span class="op">!</span><span class="dt">SessionMap</span></a>
+<a class="sourceLine" id="cb11-3" title="3">    ,<span class="ot"> ghsRBC     ::</span> <span class="op">!</span>(<span class="dt">Maybe</span> <span class="dt">RequestBodyContents</span>)</a>
+<a class="sourceLine" id="cb11-4" title="4">    ,<span class="ot"> ghsIdent   ::</span> <span class="op">!</span><span class="dt">Int</span></a>
+<a class="sourceLine" id="cb11-5" title="5">    ,<span class="ot"> ghsCache   ::</span> <span class="op">!</span><span class="dt">TypeMap</span></a>
+<a class="sourceLine" id="cb11-6" title="6">    ,<span class="ot"> ghsCacheBy ::</span> <span class="op">!</span><span class="dt">KeyedTypeMap</span></a>
+<a class="sourceLine" id="cb11-7" title="7">    ,<span class="ot"> ghsHeaders ::</span> <span class="op">!</span>(<span class="dt">Endo</span> [<span class="dt">Header</span>])</a>
 <a class="sourceLine" id="cb11-8" title="8">    }</a></code></pre></div>
 <p>このような <code>Writer</code> と <code>Endo</code> を使った実装パターンは <a href="https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html">Quick and Easy DSLs with Writer Endo</a> で紹介されている <code>Writer Endo</code> パターンとして知られているようです。</p>
 <h2 id="例2-データの更新">例2) データの更新</h2>
@@ -327,42 +327,42 @@ instance Semigroup a =&gt; Semigrou" />
 <a class="sourceLine" id="cb12-6" title="6"><span class="kw">import</span> <span class="dt">Data.Extensible</span></a>
 <a class="sourceLine" id="cb12-7" title="7"><span class="kw">import</span> <span class="dt">Data.Monoid</span></a>
 <a class="sourceLine" id="cb12-8" title="8"></a>
-<a class="sourceLine" id="cb12-9" title="9"><span class="kw">type</span> <span class="dt">Person</span> <span class="fu">=</span> <span class="dt">Record</span></a>
-<a class="sourceLine" id="cb12-10" title="10">  '[ <span class="st">&quot;name&quot;</span> <span class="fu">&gt;:</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb12-11" title="11">   , <span class="st">&quot;age&quot;</span>  <span class="fu">&gt;:</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb12-9" title="9"><span class="kw">type</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Record</span></a>
+<a class="sourceLine" id="cb12-10" title="10">  '[ <span class="st">&quot;name&quot;</span> <span class="op">&gt;:</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb12-11" title="11">   , <span class="st">&quot;age&quot;</span>  <span class="op">&gt;:</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb12-12" title="12">   ]</a>
 <a class="sourceLine" id="cb12-13" title="13"></a>
 <a class="sourceLine" id="cb12-14" title="14"><span class="ot">update ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>] <span class="ot">-&gt;</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb12-15" title="15">update fs <span class="fu">=</span> appEndo (<span class="fu">foldMap</span> <span class="dt">Endo</span> fs)</a>
+<a class="sourceLine" id="cb12-15" title="15">update fs <span class="ot">=</span> appEndo (<span class="fu">foldMap</span> <span class="dt">Endo</span> fs)</a>
 <a class="sourceLine" id="cb12-16" title="16"></a>
 <a class="sourceLine" id="cb12-17" title="17"><span class="ot">me ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>]</a>
-<a class="sourceLine" id="cb12-18" title="18">me <span class="fu">=</span></a>
-<a class="sourceLine" id="cb12-19" title="19">  [ (<span class="fu">&amp;</span> <span class="fu">#</span>name <span class="fu">.~</span> <span class="st">&quot;guchi&quot;</span>)</a>
-<a class="sourceLine" id="cb12-20" title="20">  , (<span class="fu">&amp;</span> <span class="fu">#</span>age <span class="fu">.~</span> <span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb12-18" title="18">me <span class="ot">=</span></a>
+<a class="sourceLine" id="cb12-19" title="19">  [ (<span class="op">&amp;</span> <span class="op">#</span>name <span class="op">.~</span> <span class="st">&quot;guchi&quot;</span>)</a>
+<a class="sourceLine" id="cb12-20" title="20">  , (<span class="op">&amp;</span> <span class="op">#</span>age <span class="op">.~</span> <span class="dv">20</span>)</a>
 <a class="sourceLine" id="cb12-21" title="21">  ]</a>
 <a class="sourceLine" id="cb12-22" title="22"></a>
 <a class="sourceLine" id="cb12-23" title="23"><span class="ot">defaultPerson ::</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb12-24" title="24">defaultPerson <span class="fu">=</span> <span class="fu">#</span>name <span class="fu">@=</span> <span class="st">&quot;NONAME&quot;</span></a>
-<a class="sourceLine" id="cb12-25" title="25">             <span class="fu">&lt;:</span> <span class="fu">#</span>age  <span class="fu">@=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb12-26" title="26">             <span class="fu">&lt;:</span> nil</a></code></pre></div>
+<a class="sourceLine" id="cb12-24" title="24">defaultPerson <span class="ot">=</span> <span class="op">#</span>name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span></a>
+<a class="sourceLine" id="cb12-25" title="25">             <span class="op">&lt;:</span> <span class="op">#</span>age  <span class="op">@=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb12-26" title="26">             <span class="op">&lt;:</span> nil</a></code></pre></div>
 <p>実行結果</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">λ<span class="fu">&gt;</span> stack repl <span class="co">--package extensible --package lens EndoExample.hs</span></a>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1">λ<span class="op">&gt;</span> stack repl <span class="co">--package extensible --package lens EndoExample.hs</span></a>
 <a class="sourceLine" id="cb13-2" title="2"></a>
-<a class="sourceLine" id="cb13-3" title="3">ghci<span class="fu">&gt;</span> defaultPerson</a>
-<a class="sourceLine" id="cb13-4" title="4">name <span class="fu">@=</span> <span class="st">&quot;NONAME&quot;</span> <span class="fu">&lt;:</span> age <span class="fu">@=</span> <span class="dv">0</span> <span class="fu">&lt;:</span> nil</a>
+<a class="sourceLine" id="cb13-3" title="3">ghci<span class="op">&gt;</span> defaultPerson</a>
+<a class="sourceLine" id="cb13-4" title="4">name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">0</span> <span class="op">&lt;:</span> nil</a>
 <a class="sourceLine" id="cb13-5" title="5"></a>
-<a class="sourceLine" id="cb13-6" title="6">ghci<span class="fu">&gt;</span> update me defaultPerson</a>
-<a class="sourceLine" id="cb13-7" title="7">name <span class="fu">@=</span> <span class="st">&quot;guchi&quot;</span> <span class="fu">&lt;:</span> age <span class="fu">@=</span> <span class="dv">20</span> <span class="fu">&lt;:</span> nil</a></code></pre></div>
+<a class="sourceLine" id="cb13-6" title="6">ghci<span class="op">&gt;</span> update me defaultPerson</a>
+<a class="sourceLine" id="cb13-7" title="7">name <span class="op">@=</span> <span class="st">&quot;guchi&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">20</span> <span class="op">&lt;:</span> nil</a></code></pre></div>
 <h2 id="例3-パターンマッチの実装">例3) パターンマッチの実装</h2>
 <p>僕はあまり <code>Endo</code> モノイドを使いこなせていませんが、良い感じに使えたと思える例としては TAPL 11章でレコードパターンを実装する際です。</p>
 <p>レコードのパターンマッチは代入の合成で書くことができるので、<code>Endo</code> がちょうどぴったり適用できました。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="ot">match ::</span> <span class="dt">Pattern</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> (<span class="dt">Term</span> <span class="ot">-&gt;</span> <span class="dt">Term</span>)</a>
-<a class="sourceLine" id="cb14-2" title="2">match (<span class="dt">PtVar</span> _ n) v <span class="fu">=</span> subst n v</a>
-<a class="sourceLine" id="cb14-3" title="3">match p<span class="fu">@</span>(<span class="dt">PtRecord</span> fs) v<span class="fu">@</span>(<span class="dt">TmRecord</span> fs')</a>
-<a class="sourceLine" id="cb14-4" title="4">  <span class="fu">|</span> isRecordValue v <span class="fu">&amp;&amp;</span> sameFieldLength p v</a>
-<a class="sourceLine" id="cb14-5" title="5">      <span class="fu">=</span> appEndo <span class="fu">$</span> <span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="fu">.</span> <span class="fu">uncurry</span> match) <span class="fu">$</span> <span class="fu">zip</span> (<span class="fu">map</span> <span class="fu">snd</span> fs) (<span class="fu">map</span> <span class="fu">snd</span> fs')</a>
-<a class="sourceLine" id="cb14-6" title="6">  <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;match: pattern match failure&quot;</span></a>
-<a class="sourceLine" id="cb14-7" title="7">match <span class="dt">PtRecord</span>{} _ <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;match: v is not Rrcord&quot;</span></a></code></pre></div>
+<a class="sourceLine" id="cb14-2" title="2">match (<span class="dt">PtVar</span> _ n) v <span class="ot">=</span> subst n v</a>
+<a class="sourceLine" id="cb14-3" title="3">match p<span class="op">@</span>(<span class="dt">PtRecord</span> fs) v<span class="op">@</span>(<span class="dt">TmRecord</span> fs')</a>
+<a class="sourceLine" id="cb14-4" title="4">  <span class="op">|</span> isRecordValue v <span class="op">&amp;&amp;</span> sameFieldLength p v</a>
+<a class="sourceLine" id="cb14-5" title="5">      <span class="ot">=</span> appEndo <span class="op">$</span> <span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="op">.</span> <span class="fu">uncurry</span> match) <span class="op">$</span> <span class="fu">zip</span> (<span class="fu">map</span> <span class="fu">snd</span> fs) (<span class="fu">map</span> <span class="fu">snd</span> fs')</a>
+<a class="sourceLine" id="cb14-6" title="6">  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: pattern match failure&quot;</span></a>
+<a class="sourceLine" id="cb14-7" title="7">match <span class="dt">PtRecord</span>{} _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: v is not Rrcord&quot;</span></a></code></pre></div>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://www.schoolofhaskell.com/user/mgsloan/monoids-tour">Monoids Tour</a></li>

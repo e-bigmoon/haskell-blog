@@ -285,7 +285,7 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <a class="sourceLine" id="cb5-2" title="2"><span class="kw">module</span> <span class="dt">MyDiv</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb5-3" title="3"></a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb5-5" title="5">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
+<a class="sourceLine" id="cb5-5" title="5">myDiv <span class="ot">=</span> <span class="fu">div</span></a></code></pre></div>
 <p><code>myDiv</code> の実装は単に <code>div</code> をラップしただけです。</p>
 <p>この関数はだいたい上手く動きますが、もし第二引数に <strong>0</strong> が与えられたらどうでしょうか？そう、実行時エラーになります・・・。試してみましょう。</p>
 <pre class="shell"><code>$ stack repl -- MyDiv.hs
@@ -301,7 +301,7 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <p><code>myDiv</code> に対して明示的に篩型を書いてみましょう！</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span> <span class="co">-- これが篩型</span></a>
 <a class="sourceLine" id="cb7-2" title="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb7-3" title="3">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
+<a class="sourceLine" id="cb7-3" title="3">myDiv <span class="ot">=</span> <span class="fu">div</span></a></code></pre></div>
 <p>この <code>myDiv</code> 関数を <code>LquidHaskell</code> でチェックしてみましょう。</p>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: UNSAFE ************************************************************
@@ -327,11 +327,11 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <p>つまり、僕らの定義した篩型は <code>0</code> を含む <code>Int</code> 型なので、このままだと <code>div</code> に <code>0</code> が与えられてしまう可能性があるよ！ということを教えてくれています。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="co">{-@ myDiv :: Int -&gt; Int -&gt; Int @-}</span></a>
 <a class="sourceLine" id="cb11-2" title="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb11-3" title="3">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
+<a class="sourceLine" id="cb11-3" title="3">myDiv <span class="ot">=</span> <span class="fu">div</span></a></code></pre></div>
 <p><code>myDiv</code> にも同じ篩型をつけてみましょう。</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="co">{-@ myDiv :: Int -&gt; {v:Int | v /= 0} -&gt; Int @-}</span></a>
 <a class="sourceLine" id="cb12-2" title="2"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb12-3" title="3">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
+<a class="sourceLine" id="cb12-3" title="3">myDiv <span class="ot">=</span> <span class="fu">div</span></a></code></pre></div>
 <p>これで <code>SAFE</code> になります。</p>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: SAFE **************************************************************</code></pre>
@@ -343,17 +343,17 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <a class="sourceLine" id="cb15-2" title="2"></a>
 <a class="sourceLine" id="cb15-3" title="3"><span class="co">{-@ myDiv :: Int -&gt; NonZero -&gt; Int @-}</span></a>
 <a class="sourceLine" id="cb15-4" title="4"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb15-5" title="5">myDiv <span class="fu">=</span> <span class="fu">div</span></a></code></pre></div>
+<a class="sourceLine" id="cb15-5" title="5">myDiv <span class="ot">=</span> <span class="fu">div</span></a></code></pre></div>
 <p>意味は全く同じですが、先程よりもわかりやすくなりました。</p>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <p>最後に <code>myDiv</code> を呼び出す関数を定義してみましょう。</p>
 <p><code>good</code> は問題の無い使い方です。</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="ot">good ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb17-2" title="2">good <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">2</span></a></code></pre></div>
+<a class="sourceLine" id="cb17-2" title="2">good <span class="ot">=</span> myDiv <span class="dv">10</span> <span class="dv">2</span></a></code></pre></div>
 <p>しかし、以下のような関数 <code>bad</code> が定義された場合、<code>Liquid Haskell</code> は <code>UNSAFE</code> を返します。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="ot">bad ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb18-2" title="2">bad <span class="fu">=</span> myDiv <span class="dv">10</span> <span class="dv">0</span></a></code></pre></div>
+<a class="sourceLine" id="cb18-2" title="2">bad <span class="ot">=</span> myDiv <span class="dv">10</span> <span class="dv">0</span></a></code></pre></div>
 <pre class="shell"><code>$ liquid MyDiv.hs
 **** RESULT: UNSAFE ************************************************************
 
@@ -381,11 +381,11 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <a class="sourceLine" id="cb20-5" title="5"></a>
 <a class="sourceLine" id="cb20-6" title="6"><span class="co">{-@ myDiv :: Int -&gt; NonZero -&gt; Int @-}</span></a>
 <a class="sourceLine" id="cb20-7" title="7"><span class="ot">myDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb20-8" title="8">myDiv <span class="fu">=</span> <span class="fu">div</span></a>
+<a class="sourceLine" id="cb20-8" title="8">myDiv <span class="ot">=</span> <span class="fu">div</span></a>
 <a class="sourceLine" id="cb20-9" title="9"></a>
 <a class="sourceLine" id="cb20-10" title="10"><span class="co">{-@ lazy main @-}</span></a>
 <a class="sourceLine" id="cb20-11" title="11"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb20-12" title="12">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb20-12" title="12">main <span class="ot">=</span> <span class="kw">do</span></a>
 <a class="sourceLine" id="cb20-13" title="13">  n <span class="ot">&lt;-</span> <span class="fu">getLine</span></a>
 <a class="sourceLine" id="cb20-14" title="14">  m <span class="ot">&lt;-</span> <span class="fu">getLine</span></a>
 <a class="sourceLine" id="cb20-15" title="15">  <span class="kw">case</span> safeDiv (<span class="fu">read</span> n) (<span class="fu">read</span> m) <span class="kw">of</span></a>
@@ -398,10 +398,10 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <a class="sourceLine" id="cb20-22" title="22"><span class="co">{-@ safeDiv :: Int -&gt; Int -&gt; Maybe Int @-}</span></a>
 <a class="sourceLine" id="cb20-23" title="23"><span class="ot">safeDiv ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb20-24" title="24">safeDiv n m</a>
-<a class="sourceLine" id="cb20-25" title="25">  <span class="fu">|</span> check     <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="fu">div</span> n m</a>
-<a class="sourceLine" id="cb20-26" title="26">  <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb20-25" title="25">  <span class="op">|</span> check     <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> <span class="fu">div</span> n m</a>
+<a class="sourceLine" id="cb20-26" title="26">  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Nothing</span></a>
 <a class="sourceLine" id="cb20-27" title="27">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-28" title="28">   check <span class="fu">=</span> <span class="dt">True</span></a></code></pre></div>
+<a class="sourceLine" id="cb20-28" title="28">   check <span class="ot">=</span> <span class="dt">True</span></a></code></pre></div>
 <p>Hint: <code>div</code> に <code>0</code> を通さないよう <code>check</code> でバリデーションすれば良いです。</p>
 <h3 id="エラーメッセージ">エラーメッセージ</h3>
 <p>現状では、<code>Liquid Haskell</code> は以下のエラーメッセージを返します。</p>
