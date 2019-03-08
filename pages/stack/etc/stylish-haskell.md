@@ -1,15 +1,15 @@
 ---
 title: stylish-haskell
-date: 2018/09/11
+date: 2019/03/08
 ---
 
 ## 何をするためのツールか？
 
-- [github](https://github.com/jaspervdj/stylish-haskell)
+- [jaspervdj/stylish-haskell - GitHub](https://github.com/jaspervdj/stylish-haskell)
 
-ソースコードを綺麗に整形するためのツールです。個人的には **brittany** と併用しています。
+ソースコードを綺麗に整形するためのツールです。[brittany](https://github.com/lspitzner/brittany) などのソースコードフォーマットツールとの大きな違いは、整形しすぎない点かなと思います。
 
-**README.md** に動作結果が載っています。
+[README](https://github.com/jaspervdj/stylish-haskell/blob/master/README.markdown) に動作結果が載っています。
 
 ### stylish-haskell 適用前
 
@@ -60,7 +60,7 @@ data Point = Point
 $ stack install stylish-haskell
 
 $ stylish-haskell --version
-stylish-haskell 0.9.0.2
+stylish-haskell 0.9.2.0
 ```
 
 ## 初期設定ファイルの生成方法
@@ -71,12 +71,12 @@ $ stylish-haskell --defaults > .stylish-haskell.yaml
 
 生成される設定ファイルの内容は [stylish-haskell.yaml](https://github.com/jaspervdj/stylish-haskell/blob/master/data/stylish-haskell.yaml) で確認できます。
 
-## default-extensions で指定している言語拡張
+## default-extensions
 
 以下のように **package.yaml** の **default-extensions** にデフォルトの言語拡張を指定する場合があります。
 
 ```yaml
-language-extensions:
+default-extensions:
 - TypeOperators
 - DataKinds
 - OverloadedLabels
@@ -84,7 +84,9 @@ language-extensions:
 - TypeApplications
 ```
 
-デフォルトで有効なのでソースファイルには上記の言語拡張は出現しません。そのため **stylish-haskell** はエラーを返してしまいます。
+このように指定するということは、ソースコード上からは上記の言語拡張を削除すると思います。
+
+その結果、**stylish-haskell** は言語拡張を認識できずに、以下のようなエラーを返してしまいます。
 
 ```shell
 $ stylish-haskell app/Main.hs
@@ -104,8 +106,20 @@ language_extensions:
 
 ## ワンライナー
 
-指定したディレクトリ以下に対して再帰的に適用する。
+haskell-jp slack から借用しました。ありがとうございます！
+
+### 指定したディレクトリ以下に対して再帰的に適用する。
+
+ファイル名やディレクトリ名に特殊な文字（空白や引用符など）が含まれていても動作するバージョン。
 
 ```shell
-$ stylish-haskell -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
+$ find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*' -print0 | xargs -0 stylish-haskell -i
+```
+
+### git 管理の場合
+
+git で管理している `hs` ファイルにのみに適用する場合
+
+```shell
+$ git ls-files -z | egrep -z 'hs$' | xargs -0 stylish-haskell -i
 ```
