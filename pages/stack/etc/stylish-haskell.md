@@ -84,7 +84,9 @@ default-extensions:
 - TypeApplications
 ```
 
-このように指定するということは、ソースコード上からは上記の言語拡張を削除すると思います。そのため **stylish-haskell** はエラーを返してしまいます。
+このように指定するということは、ソースコード上からは上記の言語拡張を削除すると思います。
+
+その結果、**stylish-haskell** 言語拡張を認識できずにエラーを返してしまいます。
 
 ```shell
 $ stylish-haskell app/Main.hs
