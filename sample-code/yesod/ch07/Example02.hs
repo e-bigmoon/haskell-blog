@@ -4,10 +4,9 @@
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE ViewPatterns      #-}
 import           Yesod
 
-import Data.Text (Text)
+import           Data.Text (Text)
 import qualified Data.Text as T (pack, unpack)
 
 data App = App
@@ -24,12 +23,12 @@ data Page = Page Text Text [Text] -- 2 or more
 instance PathMultiPiece Page where
     toPathMultiPiece (Page x y z) = x : y : z
     fromPathMultiPiece (x:y:z) = Just $ Page x y z
-    fromPathMultiPiece _ = Nothing
+    fromPathMultiPiece _       = Nothing
 
 getWikiR :: Page -> Handler Html
 getWikiR (Page lv1 lv2 lvs) = defaultLayout
   [whamlet|
-    #{lv1} > #{lv2} 
+    #{lv1} > #{lv2}
     $forall underLayers <- lvs
       \ > #{underLayers} #
 

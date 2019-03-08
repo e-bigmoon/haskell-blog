@@ -4,7 +4,7 @@
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Data.Text        (Text)
+import           Data.Text (Text)
 import           Yesod
 
 data App = App
