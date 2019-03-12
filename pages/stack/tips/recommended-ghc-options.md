@@ -1,6 +1,6 @@
 ---
 title: ghc-options の推奨設定
-date: 2018/05/05
+date: 2019/03/12
 ---
 
 ## ghc-options の設定例
@@ -11,9 +11,11 @@ date: 2018/05/05
 ghc-options:
 - -Wall
 - -Wcompat
+- -Widentities
 - -Wincomplete-uni-patterns
 - -Wincomplete-record-updates
 - -Wnoncanonical-monad-instances
+- -Wpartial-fields
 - -Wredundant-constraints
 - -Wtabs
 ```
