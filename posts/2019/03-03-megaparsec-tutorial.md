@@ -111,10 +111,9 @@ ype Parser = Parsec Void Text
 
 `megaparsec` は、5種類の入力ストリーム（`String`、正格または遅延 `Text` 、 正格または遅延 `ByteStrings`）をそのまま使用できると言われています。
 これが可能なのは、ライブラリでこれらの型が 
-`Stream` 型クラスのインスタンスにしているからです。
+`Stream` 型クラスのインスタンスになっているからです。
 `Stream` 型クラスはそれぞれのデータ型が
-`megaparsec` のパーサへの入力として使用されるために
-サポートすべき関数を抽象化したものです。
+`megaparsec` のパーサへの入力として使用するために必要な関数を抽象化したものです。
 
 シンプルにしたバージョンの `Stream` は、次のようになります。
 
@@ -130,6 +129,261 @@ class Stream s where
 
 型クラスには2つの型関数が関連付けられています。
 
+- ストリーム `s` における `Token s` は単一トークンの型です。一般的な例は `Char` と `Word8` ですが、カスタムストリームのために何か他のものになるかもしれません。
+
+- ストリーム `s` における `Tokens s` はストリームの「チャンク」の型です。チャンクの概念はパフォーマンス上の理由から導入されただけです。確かに、トークンのリスト `[Token s]` と同型であるストリームの一部のより効率的な表現が可能です。例えば、 `Text` 型の入力ストリームは `Tokens s ~ Text` であり、`Text` のチャンクは `Text` です。型の等価性 `Tokens s ~ s` はしばしば成り立ちますが、 `Tokens s` と `s` はカスタムストリームでは異なる可能性があるため、`megaparsec` ではこれらの方を分離します。
+
+デフォルトの入力ストリームの型を以下の表に示します。
+
+|`s`|`Token s`|`Tokens s`|
+|:-|:-|:-|
+|`String`|`CHar`|`String`|
+|正格 `Text`|`Char`|正格 `Text`|
+|遅延 `Text`|`Char`|遅延 `Text`|
+|正格 `ByteString`|`Word8`|正格 `ByteString`|
+|遅延 `ByteString`|`Word8`|遅延 `ByteString`|
+
+`Token` および `Tokens` 型関数は `megaparsec` API の型に偏在しているため、慣れることが重要です。
+
+お気づきかもしれませんが、デフォルト入力ストリームを`Token`型でグループ化すると、2つのグループになります。
+
+- `Token s ~ Char` となる文字ストリーム : `String` および 正格・遅延 `Text`。
+
+- `Token s ~ Word8` となるバイナリストリーム : 正格・遅延 `ByteString`。
+
+`megaparsec` では、それぞれの型の入力ストリームに対して同じパーサをコーディングする必要はないことがわかりました。
+(`attoparsec` ライブラリではする必要があります)
+しかし、トークンの型ごとに異なるコードが必要です。
+
+- 文字ストリームの一般的な組み合わせを得るには、`Text.Megaparsec.Char` モジュールをインポートしてください。
+
+- バイナリストリームで同じようにするには、`Text.Megaparsec.Byte`をインポートします。
+
+これらのモジュールには、次のような2つの類似したヘルパーパーサのセットが含まれています。
+
+|**Name**|`Text.Megaparsec.Char`|`Text.Megaparsec.Byte`|
+|:-|:-|:-|
+|`newline`|`(MonadParsec e s m, Token s ~ Char) => m (Token s)`|`(MonadParsec e s m, Token s ~ Word8) => m (Token s)`|
+|`eol`|`(MonadParsec e s m, Token s ~ Char) => m (Tokens s)`|`(MonadParsec e s m, Token s ~ Word8) => m (Tokens s)`|
+
+このモジュールを構築するプリミティブをいくつか紹介しましょう。そうすれば、これから使用するツールを理解できます。
+
+最初のプリミティブは`token`と呼ばれ、`Token s`を解析することができます。
+
+```haskell
+token :: MonadParsec e s m
+  => (Token s -> Maybe a)
+    -- ^ Matching function for the token to parse
+  -> Set (ErrorItem (Token s))
+     -- ^ Expected items (in case of an error)
+  -> m a
+```
+
+`token` の最初の引数はパースするトークンのマッチング関数です。
+関数が`Just`で何かを返す場合、その値はパース結果になります。
+`Nothing` はパーサがトークンを受け入れなかったことによりプリミティブが失敗したこと示します。
+
+2番目の引数は、（`container`パッケージの）`Set` であり、失敗した場合にユーザーに表示されるすべての予想されるErrorItemを含みます。
+パースエラーについて議論するときに、`ErrorItem` 型を詳しく調べます。
+
+トークンがどのように機能するのかをよりよく理解するために、
+`Text.Megaparsec モジュールの定義を見てみましょう。
+これにはあらゆる種類の入力ストリームで
+機能するコンビネータが含まれています。
+`satisfy`はかなり一般的なコンビネータです。
+マッチさせたいトークンを与えると `True` を返す述語を与え、
+パーサーは結果を返します。
+
+```haskell
+satisfy :: MonadParsec e s m
+  => (Token s -> Bool) -- ^ Predicate to apply
+  -> m (Token s)
+satisfy f = token testToken Set.empty
+  where
+    testToken x = if f x then Just x else Nothing
+```
+
+`testToken` は `Bool` を返す関数 `f` を
+期待するトークン `Maybe (Token s)` を返す関数に変えます。
+`satisfy` では、
+一致すると予想されるトークンの正確な順序がわからないため、
+2番目の引数として `Set.empty` を渡します。
+
+`satisfy` を理解するために、機能するか見てみましょう。
+パーサで遊ぶためには、それを実行するヘルパー関数が必要です。
+GHCiでテストするために `megaparsec` は `parseTest` を提供します。
+
+まず、GHCiを起動していくつかのモジュールをインポートしましょう。
+
+```bash
+λ> import Text.Megaparsec
+λ> import Text.Megaparsec.Char
+λ> import Data.Text (Text)
+λ> import Data.Void
+```
+
+パーサの型のあいまいさを解決するために、
+使用する `Parser` 型シノニムを追加します。
+
+
+```bash
+λ> type Parser = Parsec Void Text
+```
+
+また、文字列リテラルを `Text` の値として使用できるように、`OverloadedStrings` 言語拡張を有効にする必要があります。
+
+```bash
+λ> :set -XOverloadedStrings
+
+λ> parseTest (satisfy (== 'a') :: Parser Char) ""
+1:1:
+  |
+1 | <empty line>
+  | ^
+unexpected end of input
+
+λ> parseTest (satisfy (== 'a') :: Parser Char) "a"
+'a'
+
+λ> parseTest (satisfy (== 'a') :: Parser Char) "b"
+1:1:
+  |
+1 | b
+  | ^
+unexpected 'b'
+
+λ> parseTest (satisfy (> 'c') :: Parser Char) "a"
+1:1:
+  |
+1 | a
+  | ^
+unexpected 'a'
+
+λ> parseTest (satisfy (> 'c') :: Parser Char) "d"
+'d'
+```
+
+`satisfy` の多相性により、
+`parseTest` は `MonadParsec e s m` で
+`e` と `s` に何を使うべきかわからないため、
+アノテーション `:: Parser Char` は必要です
+(`m` はこれらのヘルパーにより `Identity` と仮定されます)。
+型シグネチャを持つ既存のパーサを使う場合、
+パーサの型を明示的に説明する必要はありません。
+
+うまくいきそうです。 `satisfy` の問題は、
+それが失敗したときに何が期待されるのかを述べないということです。
+なぜなら、
+`satisfy` の呼び出し元が提供する関数を分析することができないからです。
+あまり一般的ではないですが、
+代わりにもっと有用なエラーメッセージを生成することができる
+他のコンビネータがあります。
+例えば、`single` は特定のトークン値にマッチします。
+
+```bash
+single :: MonadParsec e s m
+  => Token s           -- ^ Token to match
+  -> m (Token s)
+single t = token testToken expected
+  where
+    testToken x = if x == t then Just x else Nothing
+    expected    = E.singleton (Tokens (t:|[]))
+```
+
+`Tokens` 値コンストラクタは、前に説明した型関数 `Tokens` 
+と何の共通点もありません。
+実際、 `Tokens` は `ErrorItem` のコンストラクタの1つであり、
+一致すると予想される具体的なトークン列
+を指定するために使用されます。
+
+```bash
+λ> parseTest (char 'a' :: Parser Char) "b"
+1:1:
+  |
+1 | b
+  | ^
+unexpected 'b'
+expecting 'a'
+
+λ> parseTest (char 'a' :: Parser Char) "a"
+'a'
+```
+
+以下のようにの改行を定義できます。
+
+```bash
+newline :: (MonadParsec e s m, Token s ~ Char) => m (Token s)
+newline = single '\n'
+```
+
+2つ目のプリミティブは`tokens`と呼ばれ、
+`Tokens` をパースすることを可能にします。
+つまり、入力の固定されたチャンクに一致させるために使用できます。
+
+```bash
+tokens :: MonadParsec e s m
+  => (Tokens s -> Tokens s -> Bool)
+    -- ^ Predicate to check equality of chunks
+  -> Tokens s
+    -- ^ Chunk of input to match against
+  -> m (Tokens s)
+```
+
+`tokens` に関して定義された2つのパーサーがあります。
+
+```haskell
+-- from "Text.Megaparsec":
+chunk :: MonadParsec e s m
+  => Tokens s
+  -> m (Tokens s)
+chunk = tokens (==)
+
+-- from "Text.Megaparsec.Char" and "Text.Megaparsec.Byte":
+string' :: (MonadParsec e s m, CI.FoldCase (Tokens s))
+  => Tokens s
+  -> m (Tokens s)
+string' = tokens ((==) `on` CI.mk)
+```
+
+それらは入力の一定のチャンクにマッチします。
+`string` は大文字と小文字を区別しますが、
+`string'` は大文字と小文字を区別しません。
+大文字と小文字を区別しない場合のマッチには
+`case-insensitive` パッケージが使われているため、
+`FoldCase` 制約があります。
+
+新しいコンビネータも使ってみましょう。
+
+```haskell
+λ> parseTest (string "foo" :: Parser Text) "foo"
+"foo"
+
+λ> parseTest (string "foo" :: Parser Text) "bar"
+1:1:
+  |
+1 | bar
+  | ^
+unexpected "bar"
+expecting "foo"
+
+λ> parseTest (string' "foo" :: Parser Text) "FOO"
+"FOO"
+
+λ> parseTest (string' "foo" :: Parser Text) "FoO"
+"FoO"
+
+λ> parseTest (string' "foo" :: Parser Text) "FoZ"
+1:1:
+  |
+1 | FoZ
+  | ^
+unexpected "FoZ"
+expecting "foo"
+```
+
+OK、単一のトークンと入力のチャンクをマッチできました。
+次のステップは、より興味深いパーサーを書くために
+ビルディングブロックを組み合わせる方法を学びます。
 
 <!-- <a name=""></a> -->
 
