@@ -17,8 +17,8 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 
 - [`ParsecT` と `Parsec` モナド](#ParsecT)
 - [文字 とバイナリストリーム](#Character)
-- Monadic and applicative syntax
-- Forcing consumption of input with eof
+- [モナディック構文とアプリカティブ構文](#MonaAp)
+- [`Eof` による入力の強制消費](#Eof)
 - Working with alternatives
 - Controlling backtracking with try
 - Debugging parsers
@@ -384,6 +384,118 @@ expecting "foo"
 OK、単一のトークンと入力のチャンクをマッチできました。
 次のステップは、より興味深いパーサを書くために
 基本的なパーサを組み合わせる方法を学びます。
+
+<a name="MonaAp"></a>
+
+## モナディック構文とアプリカティブ構文
+
+パーサーを組み合わせる最も簡単な方法は、それらを連続で実行することです。
+`ParsecT`と`Parsec`はモナドであり、
+モナドでの束縛はパーサを連続で使用することとまったく同じです。
+
+```haskell
+mySequence :: Parser (Char, Char, Char)
+mySequence = do
+  a <- char 'a'
+  b <- char 'b'
+  c <- char 'c'
+  return (a, b, c)
+```
+
+これを実行すると、すべてが期待通りに機能することを確認できます。
+
+
+```bash
+λ> parseTest mySequence "abc"
+('a','b','c')
+
+λ> parseTest mySequence "bcd"
+1:1:
+  |
+1 | bcd
+  | ^
+unexpected 'b'
+expecting 'a'
+
+λ> parseTest mySequence "adc"
+1:2:
+  |
+1 | adc
+  |  ^
+unexpected 'd'
+expecting 'b'
+```
+
+すべてのモナドがアプリカティブファンクターでもあることを覚えていれば、
+連続実行のための代替構文が可能であり、
+アプリカティブ構文を使用できます。
+
+```haskell
+mySequence :: Parser (Char, Char, Char)
+mySequence =
+  (,,) <$> char 'a'
+       <*> char 'b'
+       <*> char 'c'
+```
+
+2番目のバージョンは最初のバージョンとまったく同じように機能します。
+どちらのスタイルを使うかは、しばしば好みの問題です。
+モナディックスタイルは間違いなく冗長で、ときにはより明確ですが、
+一方アプリカティブスタイルはより簡潔です。
+そうは言っても、モナドはアプリカティブファンクターよりも強力であるため、
+モナディックスタイルはもちろんより強力です。
+
+<a name="Eof"></a>
+
+## eof による入力の強制消費
+
+`Applicative` はとてもおもしろいことをするのに十分強力です。
+単位元を持つ結合演算子を備えることで、
+Haskell では `Alternative` 型クラスとして表現される
+アプリカティブファンクタのモノイドを得ます。
+`parser-combinators` パッケージは
+`Applicative` と `Alternative` の概念に基づき構築された
+かなりの数の抽象的なコンビネータを提供します。
+`Text.Megaparsec` モジュールはそれらを
+`Control.Applicative.Combinators` から再エクスポートします。
+
+最も一般的なコンビネータの1つに、`many` と呼ばれるものがあります。
+それは与えられたパーサを0回以上実行することができます。
+
+```
+λ> parseTest (many (char 'a') :: Parser [Char]) "aaa"
+"aaa"
+
+λ> parseTest (many (char 'a') :: Parser [Char]) "aabbb"
+"aa"
+```
+
+2番目の結果は少し驚くかもしれません。
+パーサーは `a` が一致したとして消費しましたが、その後停止しました。
+`many (char 'a')` の後に何をしたいのか何も言っていませんでした！
+
+ほとんどの場合は、パーサに入力全体の消費を強制させ、
+恥ずかしがり屋で黙ってやめるのではなく、
+パースエラーを報告させたいです。
+これは、入力の終わりに達することを
+要求することによって行われます。
+入力の終わりは概念にすぎませんが、
+幸いにも `eof :: MonadParsec e m => m ()`と呼ばれるプリミティブがあり、
+これは何も消費せず、入力の終わりでのみ成功します。
+これをパーサに追加してもう一度試してみましょう。
+
+```bash
+λ> parseTest (many (char 'a') <* eof :: Parser [Char]) "aabbb"
+1:3:
+  |
+1 | aabbb
+  |   ^
+unexpected 'b'
+expecting 'a' or end of input
+```
+
+パーサで`b`について何も言わなかったことにより、
+それらは確かに予想外となりました。
 
 <!-- <a name=""></a> -->
 
