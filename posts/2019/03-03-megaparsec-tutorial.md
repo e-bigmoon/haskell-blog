@@ -278,7 +278,7 @@ unexpected 'a'
 あまり一般的ではないですが、
 代わりにもっと有用なエラーメッセージを生成することができる
 他のコンビネータがあります。
-例えば、`single` は特定のトークン値にマッチします。
+例えば、`single` (`Text.Megaparsec.Byte` と `Text.Megaparsec.Char` では `char` と呼ばれる型制約のあるシノニムを使用する) は特定のトークン値にマッチします。
 
 ```bash
 single :: MonadParsec e s m
@@ -346,7 +346,7 @@ string' = tokens ((==) `on` CI.mk)
 ```
 
 それらは入力の一定のチャンクにマッチします。
-`string` は大文字と小文字を区別しますが、
+`chunk` (`Text.Megaparsec.Byte` と `Text.Megaparsec.Char` では `string` と呼ばれる型制約のあるシノニムを使用する) は大文字と小文字を区別しますが、
 `string'` は大文字と小文字を区別しません。
 大文字と小文字を区別しない場合のマッチには
 `case-insensitive` パッケージが使われているため、
