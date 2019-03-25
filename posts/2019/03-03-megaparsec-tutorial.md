@@ -19,7 +19,7 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 - [文字 とバイナリストリーム](#Character)
 - [モナディック構文とアプリカティブ構文](#MonaAp)
 - [`Eof` による入力の強制消費](#Eof)
-- Working with alternatives
+- [選択肢を使った動作](#Alt)
 - Controlling backtracking with try
 - Debugging parsers
 - Labelling and hiding things
@@ -496,6 +496,209 @@ expecting 'a' or end of input
 
 パーサで`b`について何も言わなかったことにより、
 それらは確かに予想外となりました。
+
+<a name="Alt"></a>
+
+## 選択肢を使った動作
+
+これから、次の形式のURIのパースが可能である実用的なパーサを開発します。
+
+```
+scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
+```
+
+角括弧 `[]` の中はオプションであり、それらは有効なURIに現れても現れなくてもよいことを覚えておくべきです。
+`[]` は、ある可能性を別の可能性の中で表現するためにネストすることさえできます。私たちはこのすべてを処理します[^1]。
+
+[^1]: RFC 3986 に従ってURIのパースが可能であり Megaparsec パーサを含む [`modern-uri`](https://hackage.haskell.org/package/modern-uri) パッケージが実際にあります。ただし、パッケージのパーサはここで説明したものよりもはるかに複雑です。
+
+
+`scheme` から始めましょう。 `data`、`file`、`ftp`、`http`、`https`、`irc`、`mailto` など、私たちが知っているスキームのみを受け入れます。
+
+一定の文字列と一致させるために、`string` を使います。
+選択を表現するために、`Alternative` 型クラスの `(<|>)` メソッドを使います。
+次のように書くことができます。
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
+
+module Main (main) where
+
+import Control.Applicative
+import Control.Monad
+import Data.Text (Text)
+import Data.Void
+import Text.Megaparsec hiding (State)
+import Text.Megaparsec.Char
+import qualified Data.Text as T
+import qualified Text.Megaparsec.Char.Lexer as L
+
+type Parser = Parsec Void Text
+
+pScheme :: Parser Text
+pScheme = string "data"
+  <|> string "file"
+  <|> string "ftp"
+  <|> string "http"
+  <|> string "https"
+  <|> string "irc"
+  <|> string "mailto"
+```
+
+試してみましょう。
+
+```bash
+λ> parseTest pScheme ""
+1:1:
+  |
+1 | <empty line>
+  | ^
+unexpected end of input
+expecting "data", "file", "ftp", "http", "https", "irc", or "mailto"
+
+λ> parseTest pScheme "dat"
+1:1:
+  |
+1 | dat
+  | ^
+unexpected "dat"
+expecting "data", "file", "ftp", "http", "https", "irc", or "mailto"
+
+λ> parseTest pScheme "file"
+"file"
+
+λ> parseTest pScheme "irc"
+"irc"
+```
+
+見栄えは良いですが、`pScheme`の定義は少し反復的です。 `choice` コンビネータを使って `pScheme` を書く方法があります。
+
+```haskell
+pScheme :: Parser Text
+pScheme = choice
+  [ string "data"
+  , string "file"
+  , string "ftp"
+  , string "http"
+  , string "https"
+  , string "irc"
+  , string "mailto" ]
+```
+
+`choice` は要素間に `(<|>)` を入れてリストを畳み込む操作である
+`asum` の単なる同義語であり、`pScheme` の2つの定義は実際には同じです。
+`choice` を使用したほうがが少し良く見えるかもしれません。
+
+sスキームの後にはコロン`:`があるはずです。
+何かした後で別の何かを要求するために、
+モナドでの束縛またはdo記法を使います。
+
+```haskell
+data Uri = Uri
+  { uriScheme :: Text
+  } deriving (Eq, Show)
+
+pUri :: Parser Uri
+pUri = do
+  r <- pScheme
+  _ <- char ':'
+  return (Uri r)
+```
+
+`pUri`を実行しようとすると、スキーム名の後に `:` が必要であることがわかります。
+
+```bash
+λ> parseTest pUri "irc"
+1:4:
+  |
+1 | irc
+  |    ^
+unexpected end of input
+expecting ':'
+
+λ> parseTest pUri "irc:"
+Uri {uriScheme = "irc"}
+```
+
+しかし、このスキームのパーサは完成していません。
+良い Haskell のプログラマーは、
+正しくないデータを単純に表現できないように型を定義しようとします。
+すべての `Text` の値が有効なスキームであるとは限りません。
+スキームを表すためにデータ型を定義し、
+`pScheme` パーサにその型の値を返させます。
+
+```haskell
+data Scheme
+  = SchemeData
+  | SchemeFile
+  | SchemeFtp
+  | SchemeHttp
+  | SchemeHttps
+  | SchemeIrc
+  | SchemeMailto
+  deriving (Eq, Show)
+
+pScheme :: Parser Scheme
+pScheme = choice
+  [ SchemeData   <$ string "data"
+  , SchemeFile   <$ string "file"
+  , SchemeFtp    <$ string "ftp"
+  , SchemeHttp   <$ string "http"
+  , SchemeHttps  <$ string "https"
+  , SchemeIrc    <$ string "irc"
+  , SchemeMailto <$ string "mailto" ]
+
+data Uri = Uri
+  { uriScheme :: Scheme
+  } deriving (Eq, Show)
+```
+
+`(<$)` 演算子は、左側にある値をただちに関数型コンテキストに入れて、
+その時点で存在しているものはすべて置き換えます。
+`a <$ f` は `const a <$> f` と同じですが、
+関数によってはより効率的な場合があります。
+
+引き続きパーサを使ってみましょう。
+
+```
+λ> parseTest pUri "https:"
+1:5:
+  |
+1 | https:
+  |     ^
+unexpected 's'
+expecting ':'
+```
+
+うーん、`https` は有効なスキームであるべきです。
+何がいけないのかわかりますか？
+パーサは選択肢を一つずつ試し、
+`http` で一致し、 `https` 試すことはありません。
+解決策は、`SchemeHttp <$ string "https"` を
+`SchemeHttp <$ string "http"` の前に置くことです。
+選択肢は順序が重要であることを覚えておいてください！
+
+`pUri` は正しく動作するようになりました。
+
+```
+λ> parseTest pUri "http:"
+Uri {uriScheme = SchemeHttp}
+
+λ> parseTest pUri "https:"
+Uri {uriScheme = SchemeHttps}
+
+λ> parseTest pUri "mailto:"
+Uri {uriScheme = SchemeMailto}
+
+λ> parseTest pUri "foo:"
+1:1:
+  |
+1 | foo:
+  | ^
+unexpected "foo:"
+expecting "data", "file", "ftp", "http", "https", "irc", or "mailto"
+```
 
 <!-- <a name=""></a> -->
 
