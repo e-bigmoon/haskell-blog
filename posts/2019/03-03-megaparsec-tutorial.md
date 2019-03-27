@@ -20,7 +20,7 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 - [モナディック構文とアプリカティブ構文](#MonaAp)
 - [`Eof` による入力の強制消費](#Eof)
 - [選択肢を使った動作](#Alt)
-- Controlling backtracking with try
+- [`try` によるバックトラックの制御](#Try)
 - Debugging parsers
 - Labelling and hiding things
 - Running a parser
@@ -698,6 +698,181 @@ Uri {uriScheme = SchemeMailto}
   | ^
 unexpected "foo:"
 expecting "data", "file", "ftp", "http", "https", "irc", or "mailto"
+```
+
+<a name="Try"></a>
+
+## `try` によるバックトラックの制御
+
+次に扱う部分は `[//[user:password@]host[:port]]` つまり権限です。
+オプション部分のネストが含まれるので、
+これを反映するように `Uri` 型 を更新しましょう。
+
+```haskell
+data Uri = Uri
+  { uriScheme    :: Scheme
+  , uriAuthority :: Maybe Authority
+  } deriving (Eq, Show)
+
+data Authority = Authority
+  { authUser :: Maybe (Text, Text) -- (user, password)
+  , authHost :: Text
+  , authPort :: Maybe Int
+  } deriving (Eq, Show)
+```
+
+ここで、バックトラックと呼ばれる重要な概念について議論する必要があります。
+バックトラックは、入力を「消費しない」処理により時間を遡る方法です。
+これは主に分岐で重要です。ここに一例を示します。
+
+```haskel
+alternatives :: Parser (Char, Char)
+alternatives = foo <|> bar
+  where
+    foo = (,) <$> char 'a' <*> char 'b'
+    bar = (,) <$> char 'a' <*> char 'c'
+```
+
+合理的に見えますが、これを試してみましょう。
+
+```
+λ> parseTest alternatives "ab"
+('a','b')
+
+λ> parseTest alternatives "ac"
+1:2:
+  |
+1 | ac
+  |  ^
+unexpected 'c'
+expecting 'b'
+```
+
+ここで起きたことは、
+`foo` の `char 'a'` の部分(これが最初に試行されます)の成功と、
+入力ストリームからの `a` の消費です。
+`char 'b'` は `'c'`との照合に失敗したため、エラーになりました。
+ここで重要なことは、
+`foo` が何らかの入力を消費しているので
+`(<|>)` は `bar` を試していないということです！
+
+これはパフォーマンス上の理由から行われており、
+また、`foo` の残り物を `bar` に与えて実行するのは意味が無いです。
+`bar` は `foo` と同じ場所の入力ストリームから実行したいです。
+`megaparsec` は `attoparsec` や前の章のトイコンビネータとは異なり、
+自動で戻りません。そのため、`try` と呼ばれるプリミティブを使用して、
+明示的にバックトラックしたいという願望を表現する必要があります。
+`try p` は、 `p` が入力の消費に失敗した場合、
+入力が消費されていないかのように失敗します
+(実際、パーサの状態全体をバックトラックします)。
+これにより `(<|>)` で右側の選択肢を試すことが可能になります。
+
+```haskell
+alternatives :: Parser (Char, Char)
+alternatives = try foo <|> bar
+  where
+    foo = (,) <$> char 'a' <*> char 'b'
+    bar = (,) <$> char 'a' <*> char 'c'
+```
+
+```
+λ> parseTest alternatives "ac"
+('a','c')
+```
+
+実際に入力を消費するすべてのプリミティブ
+（`try` などの既存のパーサの動作を変更するプリミティブもあります）は、
+入力の消費という点で「アトミック」です。
+これは、失敗した場合に自動的にバックトラックするため、
+入力を消費して途中で失敗することはできないことを意味します。
+これが、`pScheme` の選択肢のリストが機能する理由です。
+つまり、`string` は `tokens` の上に定義され、`tokens` はプリミティブです。
+文字列全体を `string` でマッチさせるか、
+入力ストリームをまったく消費せずに失敗します。
+
+URIのパースに戻ると、
+`(<|>)` を使った `optional` という便利なコンビネータを作ることができます。
+
+```haskell
+optional :: Alternative f => f a -> f (Maybe a)
+optional p = (Just <$> p) <|> pure Nothing
+```
+
+`optional p` の `p` でマッチすれば、結果は `Just` になります。
+そうでなければ `Nothing` が返されます。
+ちょうど欲ほしかったものです！
+`optional` を定義する必要はありません、
+`Text.Megaparsec` はこのコンビネータを再エクスポートします。
+これを `pUri` で使うことができます。
+
+```haskell
+pUri :: Parser Uri
+pUri = do
+  uriScheme <- pScheme
+  void (char ':')
+  uriAuthority <- optional . try $ do            -- (1)
+    void (string "//")
+    authUser <- optional . try $ do              -- (2)
+      user <- T.pack <$> some alphaNumChar       -- (3)
+      void (char ':')
+      password <- T.pack <$> some alphaNumChar
+      void (char '@')
+      return (user, password)
+    authHost <- T.pack <$> some (alphaNumChar <|> char '.')
+    authPort <- optional (char ':' *> L.decimal) -- (4)
+    return Authority {..}                        -- (5)
+  return Uri {..}                                -- (6)
+```
+
+ユーザー名とパスワードとして
+任意の英数字の文字列を受け入れることができるようにし、
+同様にホストの形式を単純化しました。
+
+以下に重要な点を挙げます。
+
+- (1) と (2) では、 `optional` の引数を `try` でラップする必要があります。
+これは複合パーサであり、プリミティブではないためです。
+
+- (3) `some` は `many` に似ていますが、その引数のパーサが少なくとも一度はマッチすることを要求します(`some p =（:) <$> p <*> many p`)。
+
+- (4) 必要でない限り `try` を使わないでください！ここでは `char ':'` が成功すると (`token` の上に構築されているので, `try` は必要はありません)、そのあとに必ずポートが続かなければならないことがわかっているので、`L.decimal` により 10進数を要求します。`:` にマッチした後は、後戻りできないので、戻る方法は必要ありません。
+
+- (5) と (6) では、`RecordWildCards` 言語拡張を使用して `Authority` と `Uri` の値をまとめています。
+
+GHCiで `pUri` を試し、それが機能することを確認してください。
+
+```
+λ> parseTest (pUri <* eof) "https://mark:secret@example.com"
+Uri
+  { uriScheme = SchemeHttps
+  , uriAuthority = Just (Authority
+    { authUser = Just ("mark","secret")
+    , authHost = "example.com"
+    , authPort = Nothing } ) }
+
+λ> parseTest (pUri <* eof) "https://mark:secret@example.com:123"
+Uri
+  { uriScheme = SchemeHttps
+  , uriAuthority = Just (Authority
+    { authUser = Just ("mark","secret")
+    , authHost = "example.com"
+    , authPort = Just 123 } ) }
+
+λ> parseTest (pUri <* eof) "https://example.com:123"
+Uri
+  { uriScheme = SchemeHttps
+  , uriAuthority = Just (Authority
+    { authUser = Nothing
+    , authHost = "example.com"
+    , authPort = Just 123 } ) }
+
+λ> parseTest (pUri <* eof) "https://mark@example.com:123"
+1:13:
+  |
+1 | https://mark@example.com:123
+  |             ^
+unexpected '@'
+expecting '.', ':', alphanumeric character, or end of input
 ```
 
 <!-- <a name=""></a> -->
