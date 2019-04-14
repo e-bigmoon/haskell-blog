@@ -21,8 +21,8 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 - [`Eof` による入力の強制消費](#Eof)
 - [選択肢を使った動作](#Alt)
 - [`try` によるバックトラックの制御](#Try)
-- Debugging parsers
-- Labelling and hiding things
+- [パーサのデバッグ](#Debug)
+- [ラベル付けと隠蔽](#Label)
 - Running a parser
 - The MonadParsec type class
 - Lexing
@@ -874,6 +874,253 @@ Uri
 unexpected '@'
 expecting '.', ':', alphanumeric character, or end of input
 ```
+
+<a name="Debug"></a>
+
+## パーサのデバッグ
+
+面白いことが起こっていることに気付くかもしれません。
+
+```haskell
+λ> parseTest (pUri <* eof) "https://mark:@example.com"
+1:7:
+  |
+1 | https://mark:@example.com
+  |       ^
+unexpected '/'
+expecting end of input
+```
+
+パースエラーを改善できそうです。何をすればいいでしょうか？
+何が起きているのかを知る最も簡単な方法は、
+組み込みのヘルパー `dbg` を使うことです。
+
+```haskell
+dbg :: (Stream s, ShowToken (Token s), ShowErrorComponent e, Show a)
+  => String            -- ^ デバッグ用のラベル
+  -> ParsecT e s m a   -- ^ デバッグするパーサ
+  -> ParsecT e s m a   -- ^ デバッグメッセージを出力するパーサ
+```
+
+これを `pUri` で使ってみましょう。
+
+```
+pUri :: Parser Uri
+pUri = do
+  uriScheme <- dbg "scheme" pScheme
+  void (char ':')
+  uriAuthority <- dbg "auth" . optional . try $ do
+    void (string "//")
+    authUser <- dbg "user" . optional . try $ do
+      user <- T.pack <$> some alphaNumChar
+      void (char ':')
+      password <- T.pack <$> some alphaNumChar
+      void (char '@')
+      return (user, password)
+    authHost <- T.pack <$> dbg "host" (some (alphaNumChar <|> char '.'))
+    authPort <- dbg "port" $ optional (char ':' *> L.decimal)
+    return Authority {..}
+  return Uri {..}
+```
+
+それでは、その不幸な入力に対してもう一度 `pUri` を実行してみましょう。
+
+```
+λ> parseTest (pUri <* eof) "https://mark:@example.com"
+scheme> IN: "https://mark:@example.com"
+scheme> MATCH (COK): "https"
+scheme> VALUE: SchemeHttps
+
+user> IN: "mark:@example.com"
+user> MATCH (EOK): <EMPTY>
+user> VALUE: Nothing
+
+host> IN: "mark:@example.com"
+host> MATCH (COK): "mark"
+host> VALUE: "mark"
+
+port> IN: ":@example.com"
+port> MATCH (CERR): ':'
+port> ERROR:
+port> 1:14:
+port> unexpected '@'
+port> expecting integer
+
+auth> IN: "//mark:@example.com"
+auth> MATCH (EOK): <EMPTY>
+auth> VALUE: Nothing
+
+1:7:
+  |
+1 | https://mark:@example.com
+  |       ^
+unexpected '/'
+expecting end of input
+```
+
+`megaparsec` の内部で何が起こっているのか正確にわかります。
+
+- `scheme` のマッチに成功します。
+
+- `user` は失敗します。`mark` の所にユーザー名がありますが、`:` の後にパスワードはありません（ここではパスワードを空にしないことを要求します）。失敗し、`try` のおかげでバックトラックします。
+
+- `host` は `user` と同じ場所から開始し、入力をホスト名として解釈しようとします。これは成功し、ホスト名として `mark` を返すことがわかります。
+
+- `host` の後にポート番号があるかもしれないので、`port` は機会を得ます。それは `:` を見ますが、その後に整数がないので `port` は失敗します。
+
+- そのため、`auth` パーサ全体が失敗します（`port` は `auth` の内側にあり、失敗しました）。
+
+- `auth` パーサは、何もパースできなかったため、`Nothing`を返します。
+
+何をすべきでしょうか？これは、`try` を使用してコードの大部分を囲むと、
+パースエラーが悪化する可能性がある場合の例です。
+パースしたい構文をもう一度見てみましょう。
+
+```
+scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
+
+```
+
+私たちは何を探していますか？
+パースのある特定の分岐にコミットできるようにするための何か。
+`:` を見たときにポート番号が続かなければならないポートのように。
+注意深く見れば、二重スラッシュ`//`が、URIに認証情報の部分があることを示す記号であることがわかります。
+`//` のマッチはアトミックパーサ（`string`）が使われていることにより、
+マッチは自動的にバックトラックするので、
+`//` にマッチした後は恐れずに、認証情報の部分を要求することができます。
+最初のトライをpUriから削除しましょう。
+
+```haskell
+pUri :: Parser Uri
+pUri = do
+  uriScheme <- pScheme
+  void (char ':')
+  uriAuthority <- optional $ do -- removed 'try' on this line
+    void (string "//")
+    authUser <- optional . try $ do
+      user <- T.pack <$> some alphaNumChar
+      void (char ':')
+      password <- T.pack <$> some alphaNumChar
+      void (char '@')
+      return (user, password)
+    authHost <- T.pack <$> some (alphaNumChar <|> char '.')
+    authPort <- optional (char ':' *> L.decimal)
+    return Authority {..}
+  return Uri {..}
+```
+
+これで、より良いパースエラーを得られるようになりました。
+
+```
+λ> parseTest (pUri <* eof) "https://mark:@example.com"
+1:14:
+  |
+1 | https://mark:@example.com
+  |              ^
+unexpected '@'
+expecting integer
+```
+
+まだ少し誤解を招くようですが、まあ、それは私が選んだトリッキーな例です。
+たくさんの`optional`。
+
+<a name="Label"></a>
+
+## ラベル付けと隠蔽
+
+時には期待されるアイテムのリストがかなり長くなるかもしれません。
+認識されていないスキームを使用しようとしたときに得られるものを覚えていますか？
+
+```
+λ> parseTest (pUri <* eof) "foo://example.com"
+1:1:
+  |
+1 | foo://example.com
+  | ^
+unexpected "foo://"
+expecting "data", "file", "ftp", "http", "https", "irc", or "mailto"
+```
+
+`megaparsec` は、一般的に*ラベル*と呼ばれるカスタムで、期待されるアイテムを上書きする方法を提供します。これは、`label` プリミティブ(`(<?>)` 演算子の形式のシノニムを持つ)を使用して行われます。
+
+```
+pUri :: Parser Uri
+pUri = do
+  uriScheme <- pScheme <?> "valid scheme"
+  -- 残りの部分は同じ
+```
+
+```
+λ> parseTest (pUri <* eof) "foo://example.com"
+1:1:
+  |
+1 | foo://example.com
+  | ^
+unexpected "foo://"
+expecting valid scheme
+```
+
+エラーメッセージを読みやすくするために、ラベルを追加します。
+
+```
+pUri :: Parser Uri
+pUri = do
+  uriScheme <- pScheme <?> "valid scheme"
+  void (char ':')
+  uriAuthority <- optional $ do
+    void (string "//")
+    authUser <- optional . try $ do
+      user <- T.pack <$> some alphaNumChar <?> "username"
+      void (char ':')
+      password <- T.pack <$> some alphaNumChar <?> "password"
+      void (char '@')
+      return (user, password)
+    authHost <- T.pack <$> some (alphaNumChar <|> char '.') <?> "hostname"
+    authPort <- optional (char ':' *> label "port number" L.decimal)
+    return Authority {..}
+  return Uri {..}
+```
+
+例:
+
+```
+λ> parseTest (pUri <* eof) "https://mark:@example.com"
+1:14:
+  |
+1 | https://mark:@example.com
+  |              ^
+unexpected '@'
+expecting port number
+```
+
+もう1つのプリミティブは `hidden` と呼ばれます。
+`label` が名前の変更であることに対し、
+hiddenは単にそれらを完全に削除します。
+比較しましょう。
+
+```
+λ> parseTest (many (char 'a') >> many (char 'b') >> eof :: Parser ()) "d"
+1:1:
+  |
+1 | d
+  | ^
+unexpected 'd'
+expecting 'a', 'b', or end of input
+
+λ> parseTest (many (char 'a') >> hidden (many (char 'b')) >> eof :: Parser ()) "d"
+1:1:
+  |
+1 | d
+  | ^
+unexpected 'd'
+expecting 'a' or end of input
+```
+
+エラーメッセージのノイズを少なくすることが望ましい場合は、
+`hidden` を使用してください。
+例えば、プログラミング言語を解析するときは、通常、各トークンの後に空白文字がある可能性があるため、"expecting white space" というメッセージを削除することをお勧めします。
+
+演習 : `pUri` パーサーを完成させることは読者のための課題として残されています。完成に必要なすべてのツールは説明されました。
 
 <!-- <a name=""></a> -->
 
