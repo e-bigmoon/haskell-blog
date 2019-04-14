@@ -970,7 +970,7 @@ expecting end of input
 
 - そのため、`auth` パーサ全体が失敗します（`port` は `auth` の内側にあり、失敗しました）。
 
-- `auth` パーサは、何もパースできなかったため、`Nothing`を返します。
+- `auth` パーサは、何もパースできなかったため、`Nothing`を返します。`eof` は入力の終わりに達したことを要求しますが、そうではないので、最終的なエラーメッセージが表示されます。
 
 何をすべきでしょうか？これは、`try` を使用してコードの大部分を囲むと、
 パースエラーが悪化する可能性がある場合の例です。
@@ -978,7 +978,6 @@ expecting end of input
 
 ```
 scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
-
 ```
 
 私たちは何を探していますか？
@@ -988,14 +987,14 @@ scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
 `//` のマッチはアトミックパーサ（`string`）が使われていることにより、
 マッチは自動的にバックトラックするので、
 `//` にマッチした後は恐れずに、認証情報の部分を要求することができます。
-最初のトライをpUriから削除しましょう。
+最初の`try`を`pUri`から削除しましょう。
 
 ```haskell
 pUri :: Parser Uri
 pUri = do
   uriScheme <- pScheme
   void (char ':')
-  uriAuthority <- optional $ do -- removed 'try' on this line
+  uriAuthority <- optional $ do -- この行から try を削除した
     void (string "//")
     authUser <- optional . try $ do
       user <- T.pack <$> some alphaNumChar
@@ -1118,11 +1117,157 @@ expecting 'a' or end of input
 
 エラーメッセージのノイズを少なくすることが望ましい場合は、
 `hidden` を使用してください。
-例えば、プログラミング言語を解析するときは、通常、各トークンの後に空白文字がある可能性があるため、"expecting white space" というメッセージを削除することをお勧めします。
+例えば、プログラミング言語をパースするときは、通常、各トークンの後に空白文字がある可能性があるため、"expecting white space" というメッセージを削除することをお勧めします。
 
-演習 : `pUri` パーサーを完成させることは読者のための課題として残されています。完成に必要なすべてのツールは説明されました。
+演習 : `pUri` パーサを完成させることは読者のための課題として残されています。完成に必要なすべてのツールは説明されました。
 
 <!-- <a name=""></a> -->
 
 <!-- ##  -->
 
+
+
+
+
+
+
+演習の回答例(`pUri` を完成させる)
+
+```
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
+
+module Main (main) where
+
+import Control.Applicative hiding (some,many)
+import Control.Monad
+import Data.Text (Text)
+import Data.Void
+import Data.Char
+import Text.Megaparsec hiding (State)
+import Text.Megaparsec.Char
+import qualified Data.Text as T
+import qualified Text.Megaparsec.Char.Lexer as L
+
+type Parser = Parsec Void Text
+
+data Uri = Uri
+  { uriScheme    :: Scheme
+  , uriAuthority :: Maybe Authority
+  , uriPath      :: [Text]
+  , uriQuery     :: Maybe Text
+  , uriFlagment  :: Maybe Text
+  } deriving (Eq, Show)
+
+data Scheme
+  = SchemeData
+  | SchemeFile
+  | SchemeFtp
+  | SchemeHttp
+  | SchemeHttps
+  | SchemeIrc
+  | SchemeMailto
+  deriving (Eq, Show)
+
+data Authority = Authority
+  { authUser :: Maybe (Text, Text) -- (user, password)
+  , authHost :: Text
+  , authPort :: Maybe Int
+  } deriving (Eq, Show)
+
+pScheme :: Parser Scheme
+pScheme = choice
+  [ SchemeData   <$ string "data"
+  , SchemeFile   <$ string "file"
+  , SchemeFtp    <$ string "ftp"
+  , SchemeHttps  <$ string "https"
+  , SchemeHttp   <$ string "http"
+  , SchemeIrc    <$ string "irc"
+  , SchemeMailto <$ string "mailto" ]
+
+alternatives :: Parser (Char, Char)
+alternatives = try foo <|> bar
+  where
+    foo = (,) <$> char 'a' <*> char 'b'
+    bar = (,) <$> char 'a' <*> char 'c'
+
+pPath :: Parser [Text]
+pPath = choice
+  [ pPathAbempty
+  , pPathAbsolute
+  , pPathNoScheme
+  , pPathRootless
+  , pPathEmpty
+  ]
+
+pPathAbempty :: Parser [Text]
+pPathAbempty = many (char '/' *> pSegment)
+
+pPathAbsolute :: Parser [Text]
+pPathAbsolute = do
+  void (char '/')
+  option [] $ do
+    seg <- pSegmentNz
+    segs <-  many (char '/' *> pSegment)
+    return (seg:segs)
+
+pPathNoScheme :: Parser [Text]
+pPathNoScheme = do
+  seg <- pSegmentNzNc
+  segs <- many (char '/' *> pSegment)
+  return (seg:segs)
+
+pPathRootless :: Parser [Text]
+pPathRootless = do
+  seg <- pSegmentNz
+  segs <- many (char '/' *> pSegment)
+  return (seg:segs)
+
+pPathEmpty :: Parser [Text]
+pPathEmpty = return []
+
+pSegment :: Parser Text
+pSegment = T.pack <$> many pPchar
+
+pSegmentNz :: Parser Text
+pSegmentNz = T.pack <$> some pPchar
+
+pSegmentNzNc :: Parser Text
+pSegmentNzNc = T.pack <$> some (pUnreserved <|> pPctEncoded <|> pSubDelims <|> char '@')
+
+pPchar :: Parser Char
+pPchar = pUnreserved <|> pPctEncoded <|> pSubDelims <|> char ':' <|> char '@'
+
+pUnreserved :: Parser Char
+pUnreserved = alphaNumChar <|> char '-' <|> char '.' <|> char '_' <|> char '~'
+
+pPctEncoded :: Parser Char
+pPctEncoded = do
+  void (char '%')
+  a <- hexDigitChar
+  b <- hexDigitChar
+  return . chr $ (digitToInt a)*16 + digitToInt b
+
+pSubDelims :: Parser Char
+pSubDelims = choice $ map char "!$&'()*+,;="
+
+pUri :: Parser Uri
+pUri = do
+  uriScheme <- pScheme <?> "valid scheme"
+  void (char ':')
+  uriAuthority <- optional $ do
+    void (string "//")
+    authUser <- optional . try $ do
+      user <- T.pack <$> some alphaNumChar <?> "username"
+      void (char ':')
+      password <- T.pack <$> some alphaNumChar <?> "password"
+      void (char '@')
+      return (user, password)
+    authHost <- T.pack <$> some (alphaNumChar <|> char '.') <?> "hostname"
+    authPort <- optional (char ':' *> label "port number" L.decimal)
+    return Authority {..}
+  uriPath <- pPath
+  uriQuery <- optional (T.pack <$> (char '?' *> many (pPchar <|> char '/' <|> char '?')))
+  uriFlagment <- optional (T.pack <$> (char '#' *> many (pPchar <|> char '/' <|> char '?')) <?> "flagment")
+  return Uri {..}
+```
