@@ -23,8 +23,8 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 - [`try` によるバックトラックの制御](#Try)
 - [パーサのデバッグ](#Debug)
 - [ラベル付けと隠蔽](#Label)
-- Running a parser
-- The MonadParsec type class
+- [パーサの実行](#Run)
+- [`MonadParsec` 型クラス](#MonadParsec)
 - Lexing
   - White space
   - Char and string literals
@@ -1121,9 +1121,306 @@ expecting 'a' or end of input
 
 演習 : `pUri` パーサを完成させることは読者のための課題として残されています。完成に必要なすべてのツールは説明されました。
 
+<a name="Run"></a>
+
+## パーサの実行
+
+パーサーを構築する方法を詳細に調べました。
+しかし、 `parseTest` を除いて、
+それらを実行できる関数を調べていませんでした。
+
+伝統的に、あなたがプログラムしたパーサを実行するための
+"デフォルト"の関数は `parse` でした。
+しかし、`parse` は実際には `runParser` のシノニムです。
+
+```haskell
+runParser
+  :: Parsec e s a -- ^ 実行するパーサ
+  -> String     -- ^ ソースファイルの名前
+  -> s          -- ^ パーサへの入力
+  -> Either (ParseErrorBundle s e) a
+```
+
+2番目の引数は、生成された解析エラーに含まれる単なるファイル名です。
+実際の入力は関数の3番目の引数として渡されるため、
+`megaparsec` はそのファイルから何も読みません。
+
+`runParser` を使用すると、`Parsec` モナドを実行できます。
+これは、既にご存知のとおり、変換子を使わないバージョンの `ParsecT` です。
+
+```haskell
+type Parsec e s = ParsecT e s Identity
+```
+
+`runParser` には、`runParser'`、`runParserT`、
+および `runParserT'` の3つの姉妹がいます。
+接尾辞 `T` の付いたバージョンは `PrasecT` モナド変換を実行し、
+「プライム」バージョンはパーサの状態を受け取り返します。
+すべての関数を表にまとめましょう。
+
+| 引数             | `Parsec` の実行 | `ParsecT` の実行 |
+|:-----------------|:----------------|:-----------------|
+| 入力とファイル名 | `runParser`     | `runParserT`     |
+| カスタム初期状態 | `runParser'`    | `runParserT'`    |
+
+
+タブの幅を標準以外の値(デフォルトの値は8)に設定したい場合など、
+カスタム初期状態が必要な場合があります。
+`runParser'` はこのようになっています。
+
+```
+runParser'
+  :: Parsec e s a -- ^ 実行するパーサ
+  -> State s    -- ^ 初期状態
+  -> (State s, Either (ParseErrorBundle s e) a)
+```
+
+手動で状態を変更することはライブラリの高度な使用法であり、
+ここでは説明しません。
+
+ParseErrorBundleとは何かについて疑問に思う場合は、
+[この後の章のいずれか](#Error)で説明します。
+
+<a name="MonadParsec"></a>
+
+## `MonadParsec` 型クラス
+
+`megaparsec` のすべてのツールは、
+`MonadParsec` 型クラスの任意のインスタンスと連携します。
+型クラスは、プリミティブコンビネータ、
+つまりすべての `megaparsec` のパーサの基本的な構成要素、
+他のコンビネータでは表現できないコンビネータを抽象化します。
+
+プリミティブコンビネータを型クラスに持つことで、
+`megaarsec` の `ParsecT` の主要なモナド変換子を、
+MTL系のよく知られている変換子にラップして、
+モナドスタックのレイヤ間でさまざまな相互作用を実現することができます。
+動機をよりよく理解するために、
+モナドスタック内のレイヤーの順序が重要であることを思い出してください。
+このように `ReaderT` と `State` を組み合わせると、
+
+```haskell
+type MyStack a = ReaderT MyContext (State MyState) a
+```
+外側のレイヤー `ReaderT` はその下のレイヤー `m` の内部構造を検査できません。
+`ReaderT` の `Monad` インスタンスはバインディングの戦略を記述しています。
+
+```haskell
+newtype ReaderT r m a = ReaderT { runReaderT :: r -> m a }
+
+instance Monad m => Monad (ReaderT r m) where
+  m >>= k = ReaderT $ \r -> do
+    a <- runReaderT m r
+    runReaderT (k a) r
+```
+
+実際、`m` について私たちが知っている唯一のことは、
+それが `Monad`のインスタンスであり、
+したがって `m` の状態はモナディックバインドを介してのみ
+`k` に渡すことができるということです。
+とにかくそれが `ReaderT` の `(>>=)` から私たちが通常欲しいものです。
+
+`Alternative` 型クラスの `(<|>)` メソッドは異なった働きをします。
+それは状態を「分割」し、パーサの2つの分岐はもう接触しません。
+そのため、最初のブランチが破棄されるとその状態への変更も破棄され、
+2番目のブランチに影響を与えることはできないという意味で
+バックトラックした状態になります
+(最初のブランチが失敗したときの状態を「バックトラック」します。)。
+
+説明のために、ReaderTのAlternativeの定義を見てみましょう。
+
+```haskell
+instance Alternative m => Alternative (ReaderT r m) where
+  empty = liftReaderT empty
+  ReaderT m <|> ReaderT n = ReaderT $ \r -> m r <|> n r
+```
+
+`ReaderT` は「ステートレス」なモナド変換子であり、
+(何を持っていない) `ReaderT` 自体に関連するモナドの状態を組み合わせる必要なしに(ここで `m` の `Alternative` インスタンスが役に立ちます。)
+実際の作業を内部のモナドに委任するのは簡単なので、
+これはすべて非常に素晴らしいことです。
+
+それでは、Stateを見てみましょう。
+`State s a` は `StateT s Identity a` の単なるシノニムなので、
+`StateT s m` 自体の `Alternative` インスタンスを見てください。
+
+```haskell
+instance (Functor m, Alternative m) => Alternative (StateT s m) where
+  empty = StateT $ \_ -> empty
+  StateT m <|> StateT n = StateT $ \s -> m s <|> n s
+```
+
+ここでは、reader のコンテキスト `r` の共有を見たように、
+状態 `s` の分割を見ることができます。
+ただし、`m s` と `n s` の式はステートフルな結果を生成するため、
+モナディック値と一緒に、新しい状態をタプルで返すという違いがあります。
+ここでは、`m s` か `n s` のどちらかで進み、
+自然にバックトラックを達成します。
+
+ParsecTはどうですか？ 
+`State` を `ParsecT` の中に次のように置くことを考えてみましょう。
+
+```
+type MyStack a = ParsecT Void Text (State MyState) a
+```
+
+`ParsecT` は `ReaderT` よりも複雑で、`(<|>)`の実装にはもっと多くのことが必要です。
+
+- パーサ自体の状態管理
+- 起こるべき（適切な）パースエラーのマージ。
+
+`ParsecT` の `Alternative` のインスタンスへの`(<|>)`の実装は、
+その基盤となる `State MyState` モナドの `Alternative`インスタンスに
+その作業を委任することができないので、`MyState`の分割は発生せず、
+バックトラックはありません。
+
+例を挙げて説明しましょう。
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
+module Main (main) where
+
+import Control.Applicative
+import Control.Monad.State.Strict
+import Data.Text (Text)
+import Data.Void
+import Text.Megaparsec hiding (State)
+
+type Parser = ParsecT Void Text (State String)
+
+parser0 :: Parser String
+parser0 = a <|> b
+  where
+    a = "foo" <$ put "branch A"
+    b = get   <* put "branch B"
+
+parser1 :: Parser String
+parser1 = a <|> b
+  where
+    a = "foo" <$ put "branch A" <* empty
+    b = get   <* put "branch B"
+
+main :: IO ()
+main = do
+  let run p          = runState (runParserT p "" "") "initial"
+      (Right a0, s0) = run parser0
+      (Right a1, s1) = run parser1
+
+  putStrLn  "Parser 0"
+  putStrLn ("Result:      " ++ show a0)
+  putStrLn ("Final state: " ++ show s0)
+
+  putStrLn  "Parser 1"
+  putStrLn ("Result:      " ++ show a1)
+  putStrLn ("Final state: " ++ show s1)
+```
+
+これがプログラムを実行した結果です。
+
+```
+Parser 0
+Result:      "foo"
+Final state: "branch A"
+Parser 1
+Result:      "branch A"
+Final state: "branch B"
+```
+
+`parser0` を使うと、分岐 `b` が試行されていないことがわかります。
+しかしparser1では、`empty` によって失敗し、
+成功したのはブランチbであるにもかかわらず、
+最終結果（getによって返される値）がブランチaから得られることは明らかです。
+(パーサの文脈では `empty` は
+「即座に失敗し、何が起こったのかについての情報がない」
+という意味です。)
+バックトラックは発生しません。
+
+パーサーでカスタム状態をバックトラックしたい場合はどうしますか？
+ParsecTをStateT内にラップすることを許可するならば、それを提供することができます。
+
+```haskell
+type MyStack a = StateT MyState (ParsecT Void Text Identity) a
+```
+
+MyStackで`(<|>)` を使用すると、
+使用されるインスタンスは `StateT` のインスタンスになります。
+
+```haskell
+StateT m <|> StateT n = StateT $ \s -> m s <|> n s
+```
+
+これは状態をバックトラックさせ、
+それから残りの作業をその内部モナド`ParsecT` の `Alternative` インスタンスに委任します。
+この動作はまさに私たちが望むものです。
+
+```
+{-# LANGUAGE OverloadedStrings #-}
+
+module Main (main) where
+
+import Control.Applicative
+import Control.Monad.Identity
+import Control.Monad.State.Strict
+import Data.Text (Text)
+import Data.Void
+import Text.Megaparsec hiding (State)
+
+type Parser = StateT String (ParsecT Void Text Identity)
+
+parser :: Parser String
+parser = a <|> b
+  where
+    a = "foo" <$ put "branch A" <* empty
+    b = get   <* put "branch B"
+
+main :: IO ()
+main = do
+  let p            = runStateT parser "initial"
+      Right (a, s) = runParser p "" ""
+  putStrLn ("Result:      " ++ show a)
+  putStrLn ("Final state: " ++ show s)
+```
+
+プログラムは次のように出力します。
+
+```
+Result:      "initial"
+Final state: "branch B"
+```
+
+このアプローチを実行可能にするために、
+`StateT` はプリミティブパーサのセット全体をサポートするべきであり、
+そうすることで `ParsecT` と同じようにそれを扱うことができます。
+言い換えれば、
+内部モナドが(MTLの)`MonadWriter`のインスタンスである場合は
+`MonadState` だけではなく、`MonadWriter`も
+`MonadParsec`のインスタンスである必要があります。
+
+```haskell
+instance MonadWriter w m => MonadWriter w (StateT s m) where …
+```
+
+確かに、`MonadParsec` の内部インスタンスから `StateT` に
+プリミティブを持ち上げることができます。
+
+```haskell
+instance MonadParsec e s m => MonadParsec e s (StateT st m) where …
+```
+
+`megaparsec`は MTL のすべてのモナド変換子に対して
+`MonadParsec` のインスタンスを定義しているので、
+ユーザーは変換子を `ParsecT` の内側に挿入したり、
+それらの変換子で `ParsecT` をラップしたりして、
+モナドスタックの層間で異なる種類の相互作用を実現できます。
+
 <!-- <a name=""></a> -->
 
 <!-- ##  -->
+
+<!-- <a name="Error"></a> -->
+
+<!-- ## Parse errors -->
 
 
 
