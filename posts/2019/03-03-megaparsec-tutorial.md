@@ -25,10 +25,10 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 - [ラベル付けと隠蔽](#Label)
 - [パーサの実行](#Run)
 - [`MonadParsec` 型クラス](#MonadParsec)
-- Lexing
-  - White space
-  - Char and string literals
-  - Numbers
+- [字句解析](#Lexing)
+  - [空白](#White)
+  - [文字と文字列リテラル](#Char)
+  - [数字](#Numbers)
 - notFollowedBy and lookAhead
 - Parsing expressions
 - Indentation-sensitive parsing
@@ -1413,6 +1413,238 @@ instance MonadParsec e s m => MonadParsec e s (StateT st m) where …
 ユーザーは変換子を `ParsecT` の内側に挿入したり、
 それらの変換子で `ParsecT` をラップしたりして、
 モナドスタックの層間で異なる種類の相互作用を実現できます。
+
+<a name="Lexing"></a>
+
+## 字句解析
+
+字句解析は、入力ストリームを整数、キーワード、記号などのトークン
+のストリームに変換するプロセスです。
+これらは、生の入力を直接解析するよりも解析が容易であるか、
+またはパーサジェネレータで作成されたパーサへの入力として期待されます。
+字句解析は、`alex`などの外部ツールを使用して別のパスで実行できますが、
+`megaparsec`はパーサの一部として、シームレスに字句解析プログラムを書くことを簡単にする関数も提供します。
+
+文字ストリーム用の `Text.Megaparsec.Char.Lexer` と
+バイトストリーム用の `Text.Megaparsec.Byte.Lexer` の
+2つの字句解析モジュールがあります。
+正格な `Text` を入力ストリームとして扱うので
+`Text.Megaparsec.Char.Lexer` を使いますが、
+`ByteStrings` を使いたい場合はほとんどの関数は
+`Text.Megaparsec.Byte.Lexer` にも反映されます。
+
+<a name="White"></a>
+
+## 空白
+
+最初に取り上げる必要があるトピックは、空白の扱いです。
+すべてのトークンの前またはすべてのトークンの後に、
+一貫した方法で空白を消費することが役立ちます。
+Megaparsec の字句解析モジュールは、
+「トークンの前に空白を入れず、トークンの後にすべての空白を消費する」
+という戦略に従います。
+
+空白を消費するには、*スペースコンシューマ*
+と呼ばれる特別なパーサが必要です。
+`Text.Megaparsec.Char.Lexer` モジュールは、
+一般的なスペースコンシューマを構築するためのヘルパーを提供します。
+
+```haskell
+space :: MonadParsec e s m
+  => m () -- ^ 空の入力を受け入れない空白文字のパーサ
+          -- (e.g. 'space1')
+  -> m () -- ^ 行コメントのパーサ (e.g. 'skipLineComment')
+  -> m () -- ^ ブロックコメントのパーサ (e.g. 'skipBlockComment')
+  -> m ()
+```
+
+`space` 関数のドキュメンテーションはそれ自体で非常に包括的ですが、
+例を挙げて補足しましょう。
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
+module Main (main) where
+
+import Data.Text (Text)
+import Data.Void
+import Text.Megaparsec
+import Text.Megaparsec.Char
+import qualified Text.Megaparsec.Char.Lexer as L -- (1)
+
+type Parser = Parsec Void Text
+
+sc :: Parser ()
+sc = L.space
+  space1                         -- (2)
+  (L.skipLineComment "//")       -- (3)
+  (L.skipBlockComment "/*" "*/") -- (4)
+```
+
+いくつかのメモ：
+
+- `Text.Megaparsec.Char.Lexer`は、修飾付きでインポートされることを意図されています。なぜなら、Text.Megaparsec.Charの`space`のように衝突する名前を含んでいるからです。
+
+- `L.space` の最初の引数は空白を拾うために使用されることになっているパーサであるべきです。重要な点、`L.space`が無限ループに入ってしまうので、空の入力を受け入れてはいけないということです。`space1`は、要件を完全に満たす `Text.Megaparsec.Char` のパーサーです。
+
+- `L.space` の2番目の引数は、行コメント、すなわち、与えられたトークンのシーケンスで始まり行の終わりで終わるコメントをスキップする方法を定義します。`skipLineComment` ヘルパーを使用すると、行コメント用の補助パーサを簡単に作成できます。
+
+- `L.space` の3番目の引数は、ブロックコメント、つまりトークンの開始シーケンスと終了シーケンスの間のすべてのものをを受け取る方法を定義します。skipBlockCommentヘルパーは、ネストされていないブロックコメントを扱うことができます。ネストされたブロックコメントをサポートする場合は、代わりに `skipBlockCommentNested` を使用してください。
+
+操作的には、`L.space` は3つすべてのパーサを適用できなくなるまで、順番に試行します。つまり、空白がすべて消費されたことになります。
+これを知っていれば、文法にブロックコメントや行コメントが含まれていない場合は、`L.space`の2番目または3番目の引数として`empty`を渡すことができます。
+`(<|>)` の単位元である `empty` は、`L.space` が次の空白要素のためにパーサを試みるようにします。まさに望んでいたことです。
+
+スペースコンシューマ `sc` を持っているなら、
+さまざまな空白関連のヘルパーを定義できます。
+
+```haskell
+lexeme :: Parser a -> Parser a
+lexeme = L.lexeme sc -- (1)
+
+symbol :: Text -> Parser Text
+symbol = L.symbol sc -- (2)
+```
+
+- `lexeme` は、供給されたスペースコンシューマを使用してすべての末尾の空白を取る、語彙素のラッパーです。
+
+- `symbol` は内部で `string` を使って与えられたテキストにマッチさせ、そして同様にすべての末尾の空白を拾うパーサです。
+
+私たちはすぐにそれがすべて一緒に動作する方法を見ますが、
+最初に `Text.Megaparsec.Char.Lexer` からさらに2,3のヘルパーを
+紹介する必要があります。
+
+<a name="Chara"></a>
+
+## 文字と文字列リテラル
+
+エスケープ規則はさまざまなので、
+文字リテラルおよび文字列リテラルの解析は難しい場合があります。
+人生を楽にするために、`megaparsec` は `charLiteral` パーサーを提供します。
+
+```haskell
+charLiteral :: (MonadParsec e s m, Token s ~ Char) => m Char
+```
+
+`charLiteral` の仕事は、Haskellレポートに記述されている文字リテラルの構文に従ってエスケープされる可能性がある単一の文字をパースすることです。
+ただし、次の2つの理由から、リテラルを囲む引用符は解析されません。
+
+- ユーザーは文字リテラルの引用方法を制御できる
+
+- そのため、charLiteralを使用して文字列リテラルもパースできる
+
+`charLiteral`の上に構築されたパーサーの例をいくつか示します。
+
+```haskell
+charLiteral :: Parser Char
+charLiteral = between (char '\'') (char '\'') L.charLiteral
+
+stringLiteral :: Parser String
+stringLiteral = char '\"' *> manyTill L.charLiteral (char '\"')
+```
+
+- `L.charLiteral` を文字リテラルのパーサに変えるには、囲む引用符を追加するだけです。ここではHaskellの構文に従い、シングルクオートを使います。`between`コンビネータは、単純に`between open close p = open *> p <* close`ように定義されます。
+
+- `stringLiteral`はダブルクオートで囲まれた文字列リテラル内の個々の文字をパースするために `L.charLiteral` を使用します。
+
+2番目の関数も、`manyTill` コンビネータを使用しているため興味深いです。
+
+```haskell
+manyTill :: Alternative m => m a -> m end -> m [a]
+manyTill p end = go
+  where
+    go = ([] <$ end) <|> ((:) <$> p <*> go)
+```
+
+`manyTill` は繰り返しごとに最後のパーサを適用しようとし、
+失敗するとパーサ `p` を実行して `p` の結果をリストに蓄積します。
+
+少なくとも1つのアイテムが存在することを要求する `someTill` もあります。
+
+<a name="Numbers"></a>
+
+## 数字
+
+最後に、非常に一般的なニーズは数値をパースすることです。
+整数の場合、10進数、8進数、および16進数の表現で
+値を解析できる3つのヘルパーがあります。
+
+```haskell
+decimal, octal, hexadecimal
+  :: (MonadParsec e s m, Token s ~ Char, Integral a) => m a
+```
+
+それらを使うのは簡単です。
+
+```haskell
+integer :: Parser Integer
+integer = lexeme L.decimal
+```
+
+```
+λ> parseTest (integer <* eof) "123  "
+123
+
+λ> parseTest (integer <* eof) "12a  "
+1:3:
+  |
+1 | 12a
+  |   ^
+unexpected 'a'
+expecting end of input or the rest of integer
+```
+
+`scientific` と `float` は整数と少数の文法を受け入れます。
+`scientific` は`scientific`パッケージの `Scientific`型を返しますが、
+`float` はその結果型が多相的であり、
+`RealFloat` の任意のインスタンスを返すことができます。
+
+```haskell
+scientific :: (MonadParsec e s m, Token s ~ Char)              => m Scientific
+float      :: (MonadParsec e s m, Token s ~ Char, RealFloat a) => m a
+```
+
+例：
+
+```haskell
+float :: Parser Double
+float = lexeme L.float
+```
+
+```
+λ> parseTest (float <* eof) "123"
+1:4:
+  |
+1 | 123
+  |    ^
+unexpected end of input
+expecting '.', 'E', 'e', or digit
+
+λ> parseTest (float <* eof) "123.45"
+123.45
+
+λ> parseTest (float <* eof) "123d"
+1:4:
+  |
+1 | 123d
+  |    ^
+unexpected 'd'
+expecting '.', 'E', 'e', or digit
+```
+
+これらすべてのパーサーは符号付き数字を解析しないことに注意してください。
+符号付き数値用のパーサを作成するには、
+既存のパーサを `signed` コンビネータでラップする必要があります。
+
+```haskell
+signedInteger :: Parser Integer
+signedInteger = L.signed sc integer
+
+signedFloat :: Parser Double
+signedFloat = L.signed sc float
+```
+
+`signed` の最初の引数(スペースコンシューマ)は、符号と実際の数字の間の空白の消費を制御します。スペースを入れたくない場合は、代わりに`return ()`を渡してください。
 
 <!-- <a name=""></a> -->
 
