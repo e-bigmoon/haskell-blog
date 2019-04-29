@@ -1,6 +1,5 @@
 # BIG MOON Haskeller's blog
 
-[![Build Status](https://travis-ci.org/e-bigmoon/haskell-blog.svg?branch=master)](https://travis-ci.org/e-bigmoon/haskell-blog)
 [![CircleCI](https://circleci.com/gh/e-bigmoon/haskell-blog.svg?style=svg)](https://circleci.com/gh/e-bigmoon/haskell-blog)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/9fdf0837-5e38-4dc5-a035-bde11f5d0b83/deploy-status)](https://app.netlify.com/sites/haskell/deploys)
 
