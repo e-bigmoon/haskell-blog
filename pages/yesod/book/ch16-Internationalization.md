@@ -174,10 +174,13 @@ SayAge age@Int: Your age is: #{show age}
 
 ```haskell
 class RenderMessage master message where
-    renderMessage :: master
-                  -> [Lang] -- ^ languages
-                  -> message
+    renderMessage :: master  -- ^ type that specifies which set of translations to use
+                  -> [Lang]  -- ^ acceptable languages in descending order of preference
+                  -> message -- ^ message to translate
                   -> Text
+
+-- | an RFC1766 / ISO 639-1 language code (eg, @fr@, @en-GB@, etc).
+type Lang = Text
 ```
 
 `RenderMessage` クラスには2つのパラメータがあることに注意してください。これはマスターサイトとメッセージ型です。理論的には、今回の場合 master 型については省略可能ですが、これはすべてのサイトは各メッセージ型につき同じ翻訳のセットが必要であることを意味します。 フォームのような共有ライブラリにおいては、それはあまりよく機能しない解決策です。
