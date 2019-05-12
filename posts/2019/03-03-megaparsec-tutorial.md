@@ -29,8 +29,8 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
   - [空白](#White)
   - [文字と文字列リテラル](#Char)
   - [数字](#Numbers)
-- notFollowedBy and lookAhead
-- Parsing expressions
+- [`notFollowedBy` と `lookAhead`](#lookAhead)
+- [式のパース](#Expr)
 - Indentation-sensitive parsing
   - nonIndented and indentBlock
   - Parsing a simple indented list
@@ -1645,6 +1645,258 @@ signedFloat = L.signed sc float
 ```
 
 `signed` の最初の引数(スペースコンシューマ)は、符号と実際の数字の間の空白の消費を制御します。スペースを入れたくない場合は、代わりに`return ()`を渡してください。
+
+<a name="lookAhead"></a>
+
+## `notFollowedBy` と `lookAhead`
+
+実際にはパーサの位置を進めずに入力ストリームの
+先読みを実行できる(`try` に加えて)さらに2つのプリミティブがあります。
+
+１つめは `notFollowedBy` と呼ばれるものです。
+
+```
+notFollowedBy :: MonadParsec e s m => m a -> m ()
+```
+
+引数のパーサが失敗したときにのみ成功し、
+入力を消費したり、パーサの状態を変更することはありません。
+
+`notFollowedBy` を使いたいと思うかもしれない例として、
+キーワードの構文解析を考えます。
+
+```
+pKeyword :: Text -> Parser Text
+pKeyword keyword = lexeme (string keyword)
+```
+
+このパーサは問題を抱えています。
+マッチさせるキーワードが単に識別子の接頭辞であるならどうでしょうか？
+その場合、それは間違いなくキーワードではありません。
+したがって、`notFollowedBy` を使用して
+そのようなケースを排除する必要があります。
+
+```
+pKeyword :: Text -> Parser Text
+pKeyword keyword = lexeme (string keyword <* notFollowedBy alphaNumChar)
+```
+
+もう1つのプリミティブは`lookAhead`です。
+
+```
+lookAhead :: MonadParsec e s m => m a -> m a
+```
+
+`lookAhead` の引数 `p` が成功すると、`lookAhead p` 全体も成功しますが、
+入力ストリーム（およびパーサの状態全体）はそのまま残ります。
+つまり、何も消費されません。
+
+これが有用である可能性がある場所の一例は、
+すでにパースされた入力に対してチェックを実行し、
+失敗または正常に継続することです。
+慣用表現として、次のようなコードで表すことができます。
+
+```
+withPredicate1
+  :: (a -> Bool)       -- ^ パース後の入力の振る舞いの確認
+  -> String            -- ^ チェックが失敗した時に表示するメッセージ
+  -> Parser a          -- ^ 実行するパーサ
+  -> Parser a          -- ^ 振る舞いを確認したパーサの結果
+withPredicate1 f msg p = do
+  r <- lookAhead p
+  if f r
+    then p
+    else fail msg
+```
+
+これは `lookAhead` の使用した例ですが、
+チェックが成功した場合に2回解析を実行しており、
+良くないことにも注意してください。
+ここに `getOffset` 関数を使用した代わりの解決方法があります。
+
+```
+withPredicate2
+  :: (a -> Bool)       -- ^ パース後の入力の振る舞いの確認
+  -> String            -- ^ チェックが失敗した時に表示するメッセージ
+  -> Parser a          -- ^ 実行するパーサ
+  -> Parser a          -- ^ 振る舞いを確認したパーサの結果
+withPredicate2 f msg p = do
+  o <- getOffset
+  r <- p
+  if f r
+    then return r
+    else do
+      setOffset o
+      fail msg
+```
+
+このようにして、入力ストリームの `offset` を
+`p` を実行する前の状態に設定してから失敗します。
+未消費の残りとオフセットの位置に不一致がありますが、
+`fail` を呼び出してすぐに構文解析を終了するので、
+この場合は問題になりません。
+
+
+<a name="Expr"></a>
+
+## 式のパース
+
+「式」とは、
+項とそれらの項に適用される演算子から形成される構造を意味します。
+演算子は、
+異なる優先順位で、前置、中置、後置、左と右の結合にすることができます。
+このような構文の例として、学校でよく知られている算術式があります。
+
+```
+a * (b + 2)
+```
+
+2種類の項、変数(`a` と `b`)と整数(`2`)を見ることができます。
+2つの演算子、`*`と`+`もあります。
+
+式のパーサを書くには時間がかかるかもしれません。
+これ手助けするために、
+`megaparsec` には `Text.Megaparsec.Expr` モジュールが付属しています。
+これは、`Operator`データ型と`makeExprParser`ヘルパーの
+2つのだけをエクスポートします。
+
+両方ともよくドキュメント化されているので、
+このセクションでは文書化を繰り返すことはせず、
+代わりに単純だが完全に機能する式のパーサを書くつもりです。
+
+式を表すデータ型を
+[AST](https://ja.wikipedia.org/wiki/%E6%8A%BD%E8%B1%A1%E6%A7%8B%E6%96%87%E6%9C%A8)として定義することから始めましょう。
+
+```
+data Expr
+  = Var String
+  | Int Int
+  | Negation Expr
+  | Sum      Expr Expr
+  | Subtr    Expr Expr
+  | Product  Expr Expr
+  | Division Expr Expr
+  deriving (Eq, Ord, Show)
+```
+
+`makeExprParser` を使用するには、
+項のパーサと演算子テーブルを指定する必要があります。
+
+```
+makeExprParser :: MonadParsec e s m
+  => m a               -- ^ 項のパーサ
+  -> [[Operator m a]]  -- ^ 演算子テーブル, 'Operator'を参照
+  -> m a               -- ^ s式のパーサの結果
+```
+
+それでは項パーサから始めましょう。
+結合性や優先順位のようなものを扱う場合、式をパースするアルゴリズムでは、
+項をボックスとみなし、分割できない全体として考えることをお勧めします。
+この場合、このカテゴリに分類されるものが3つあります。
+変数、整数、および括弧内の式全体です。
+前の章の定義を使用して、項のパーサを次のように定義できます。
+
+```
+pVariable :: Parser Expr
+pVariable = Var <$> lexeme
+  ((:) <$> letterChar <*> many alphaNumChar <?> "variable")
+
+pInteger :: Parser Expr
+pInteger = Int <$> lexeme L.decimal
+
+parens :: Parser a -> Parser a
+parens = between (symbol "(") (symbol ")")
+
+pTerm :: Parser Expr
+pTerm = choice
+  [ parens pExpr
+  , pVariable
+  , pInteger ]
+
+pExpr :: Parser Expr
+pExpr = makeExprParser pTerm operatorTable
+
+operatorTable :: [[Operator Parser Expr]]
+operatorTable = undefined -- TODO
+```
+
+`pVariable`、`pInteger`、および`parens`の定義は、
+ここまでで問題なく進むはずです。
+文法が重ならないので `pTerm` に `try` が必要ないという点も、
+ここではとてもラッキーです。
+
+- 開き括弧 `(` がある場合は、括弧内に式が続くことを知っているので、そのブランチにコミットします。
+
+- 文字を見れば、それが識別子の始まりであることがわかります。
+
+- 数字が見えれば、それが整数の始まりであることがわかります。
+
+最後に、`pExpr` を終了するために、
+`operatorTable` を定義する必要があります。
+型からネストされたリストであることがわかります。
+すべての内部リストはサポートしたい演算子のリストです。
+それらはすべて同じ優先順位を持っています。
+外側のリストは優先順位の降順で並べられているので、
+高い位置に演算子のグループを配置するほど、
+それらはより強く結合されます。
+
+```
+data Operator m a -- N.B.
+  = InfixN  (m (a -> a -> a)) -- ^ 非結合の中置
+  | InfixL  (m (a -> a -> a)) -- ^ 左結合の中置
+  | InfixR  (m (a -> a -> a)) -- ^ 右結合の中置
+  | Prefix  (m (a -> a))      -- ^ 前置
+  | Postfix (m (a -> a))      -- ^ 後置
+
+operatorTable :: [[Operator Parser Expr]]
+operatorTable =
+  [ [ prefix "-" Negation
+    , prefix "+" id ]
+  , [ binary "*" Product
+    , binary "/" Division ]
+  , [ binary "+" Sum
+    , binary "-" Subtr ]
+  ]
+
+binary :: Text -> (Expr -> Expr -> Expr) -> Operator Parser Expr
+binary  name f = InfixL  (f <$ symbol name)
+
+prefix, postfix :: Text -> (Expr -> Expr) -> Operator Parser Expr
+prefix  name f = Prefix  (f <$ symbol name)
+postfix name f = Postfix (f <$ symbol name)
+```
+
+`binary` で `InfixL` 内部の `Parser (Expr -> Expr -> Expr)` を
+どのように配置し、
+同様に `Parser (Expr -> Expr)` を `prefix` と `postfix`
+に配置するか注意してください。
+すなわち、`symbol name` を実行し、
+`Expr` 型の最終結果を得るために項に適用する関数を返します。
+
+これでパーサーを試すことができます。準備は完了です！
+
+```
+λ> parseTest (pExpr <* eof) "a * (b + 2)"
+Product (Var "a") (Sum (Var "b") (Int 2))
+
+λ> parseTest (pExpr <* eof) "a * b + 2"
+Sum (Product (Var "a") (Var "b")) (Int 2)
+
+λ> parseTest (pExpr <* eof) "a * b / 2"
+Division (Product (Var "a") (Var "b")) (Int 2)
+
+λ> parseTest (pExpr <* eof) "a * (b $ 2)"
+1:8:
+  |
+1 | a * (b $ 2)
+  |        ^
+unexpected '$'
+expecting ')' or operator
+```
+
+`Text.Megaparsec.Expr` モジュールのドキュメントには、
+あまり標準的ではない状況で役立つヒントがいくつか含まれているので、
+それを読むことをお勧めします。
 
 <!-- <a name=""></a> -->
 
