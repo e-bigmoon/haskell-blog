@@ -31,7 +31,7 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
   - [数字](#Numbers)
 - [`notFollowedBy` と `lookAhead`](#lookAhead)
 - [式のパース](#Expr)
-- [インデントに敏感なパース](#Indentation)
+- [Indentation-sensitiveなパース](#Indentation)
   - [`nonIndented` と `indentBlock`](#nonIndented)
   - [単純なインデントされたリスト](#SimpleIndented)
   - [ネストされたインデントのあるリスト](#NestedIndented)
@@ -168,7 +168,7 @@ class Stream s where
 
 このモジュールを構築するプリミティブをいくつか紹介しましょう。そうすれば、これから使用するツールを理解できます。
 
-最初のプリミティブは`token`と呼ばれ、`Token s`を解析することができます。
+最初のプリミティブは`token`と呼ばれ、`Token s`をパースすることができます。
 
 ```haskell
 token :: MonadParsec e s m
@@ -1900,19 +1900,20 @@ expecting ')' or operator
 
 <a name="Indentation"></a>
 
-## インデントに敏感なパース
+## Indentation-sensitiveなパース
 
 `Text.Megaparsec.Char.Lexer` モジュールには、
-インデントに敏感な文法をパースするときに役立つツールが含まれています。
+Indentation-sensitive
+な文法をパースするときに役立つツールが含まれています。
 最初に利用可能なコンビネータを見直し、
-次にインデントに敏感なパーサを書くことによって
+次にIndentation-sensitiveなパーサを書くことによって
 それらを使えるようにします。
 
 <a name="nonIndented"></a>
 
-## `noIndented` と `indentBlock`
+## `nonIndented` と `indentBlock`
 
-最も単純な`noIndented` から始めましょう。
+最も単純な`nonIndented` から始めましょう。
 
 ```
 nonIndented :: MonadParsec e s m
@@ -1922,11 +1923,9 @@ nonIndented :: MonadParsec e s m
 ```
 
 それはその内側のパーサが
-インデントされていない入力を消費すること
-を確認できます。
-これは、
-インデントに敏感な入力による高レベルなパーサ
-の背後にあるモデルの一部です。
+インデントされていない入力を消費することを確認できます。
+これは、Indentation-sensitiveな入力による
+高レベルなパーサの背後にあるモデルの一部です。
 インデントされていないトップレベルの項目があり、
 すべてのインデントされたトークンはそれらのトップレベル定義の
 直接的または間接的な子であると述べます。
@@ -1935,7 +1934,7 @@ nonIndented :: MonadParsec e s m
 私たちの考えは、参照トークンとインデントトークンのために
 パーサを明示的に結び付けることです。
 そして、パーサの純粋な組み合わせによって
-インデントに敏感な文法を定義することです。
+Indentation-sensitiveな文法を定義することです。
 
 それでは、インデントブロックのパーサを
 どのように定義すればよいのでしょうか。
@@ -1966,7 +1965,7 @@ data IndentOpt m a b
     -- ^ 多くの(0個の場合を含む)インデントトークンをパースし, 与えられたインデント
     -- レベルを使う ('Nothing' の場合は最初にインデントされたトークンのレベルを使う)。
     -- 2番目の引数は最終結果を取得する方法を示し、三番目の
-    -- 引数はインデントされたトークンを解析する方法を示す。
+    -- 引数はインデントされたトークンをパースする方法を示す。
   | IndentSome (Maybe Pos) ([b] -> m a) (m b)
     -- ^ 'IndentMany'に似ているが、少なくとも1つのインデントトークンが
     -- 出現することを要求する。
@@ -2022,7 +2021,8 @@ lexeme = L.lexeme sc
 楽しみのために、`#`で始まる行のコメントを許可します。
 
 `pItemList` は、それ自体が参照トークン（リストのヘッダー）
-とインデントトークン（リスト項目）の組み合わせである最上位フォームです。
+とインデントトークン（リストの項目）の組み合わせである
+トップレベルの形式です。
 
 ```
 pItemList :: Parser (String, [String]) -- ヘッダとアイテムのリスト
@@ -2033,7 +2033,7 @@ pItemList = L.nonIndented scn (L.indentBlock scn p)
       return (L.IndentMany Nothing (return . (header, )) pItem)
 ```
 
-私たちの目的であるアイテムは、英数字とダッシュのシーケンスです。
+私たちの目的であるアイテムは、英数字とハイフンのシーケンスです。
 
 ```
 pItem :: Parser String
@@ -2135,7 +2135,7 @@ incorrect indentation (got 3, should be equal to 5)
 
 最初のメッセージは少し驚くかもしれませんが、
 リスト内に少なくとも1つの項目がなければならないことを
-`megaparsec`は知っているので、字下げレベルをチェックし、
+`megaparsec`は知っているので、インデントレベルをチェックし、
 そしてそれは1であり、間違っているので報告します。
 
 <a name="NestedIndented"></a>
@@ -2189,9 +2189,9 @@ Right
 
 <a name="LineFold"></a>
 
-## 折り返しの追加
+## 行の畳み込みの追加
 
-折り返しは、後続の項目のインデントレベルが
+行の畳み込みは、後続の項目のインデントレベルが
 最初の項目のインデントレベルよりも大きい限り、
 1行または複数行に配置できる複数の要素で構成されます。
 
@@ -2213,10 +2213,10 @@ pLineFold = L.lineFold scn $ \sc' ->
 
 lineFoldは次のように機能します。
 改行を受理するスペースコンシューマ`scn`を提供し、
-折り返しの要素間のスペースを消費するために
+行の畳み込みの要素間のスペースを消費するために
 コールバックで使用できる特別なスペースコンシューマ`sc'`を返します。
 ここで重要なことは、
-折り返し(1)の最後で通常のスペースコンシューマを
+行の畳み込み(1)の最後で通常のスペースコンシューマを
 使用する必要があることです。そうしないと、折り畳みが終了しません
 （これが、`try` で `sc '`を使用する理由でもあります）。
 
