@@ -31,11 +31,11 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
   - [数字](#Numbers)
 - [`notFollowedBy` と `lookAhead`](#lookAhead)
 - [式のパース](#Expr)
-- Indentation-sensitive parsing
-  - nonIndented and indentBlock
-  - Parsing a simple indented list
-  - Nested indented list
-  - Adding line folds
+- [インデントに敏感なパース](#Indentation)
+  - [`nonIndented` と `indentBlock`](#nonIndented)
+  - [単純なインデントされたリスト](#SimpleIndented)
+  - [ネストされたインデントのあるリスト](#NestedIndented)
+  - [折り返しの追加](#LineFolds)
 - Writing efficient parsers
 - Parse errors
   - Parse error definitions
@@ -1898,9 +1898,338 @@ expecting ')' or operator
 あまり標準的ではない状況で役立つヒントがいくつか含まれているので、
 それを読むことをお勧めします。
 
+<a name="Indentation"></a>
+
+## インデントに敏感なパース
+
+`Text.Megaparsec.Char.Lexer` モジュールには、
+インデントに敏感な文法をパースするときに役立つツールが含まれています。
+最初に利用可能なコンビネータを見直し、
+次にインデントに敏感なパーサを書くことによって
+それらを使えるようにします。
+
+<a name="nonIndented"></a>
+
+## `noIndented` と `indentBlock`
+
+最も単純な`noIndented` から始めましょう。
+
+```
+nonIndented :: MonadParsec e s m
+  => m ()              -- ^ インデント (スペース) の消費方法
+  -> m a               -- ^ 内側のパーサ
+  -> m a
+```
+
+それはその内側のパーサが
+インデントされていない入力を消費すること
+を確認できます。
+これは、
+インデントに敏感な入力による高レベルなパーサ
+の背後にあるモデルの一部です。
+インデントされていないトップレベルの項目があり、
+すべてのインデントされたトークンはそれらのトップレベル定義の
+直接的または間接的な子であると述べます。
+`megaparsec`では、これを表現するために追加の状態を必要としません。
+インデントは常に相対的なので、
+私たちの考えは、参照トークンとインデントトークンのために
+パーサを明示的に結び付けることです。
+そして、パーサの純粋な組み合わせによって
+インデントに敏感な文法を定義することです。
+
+それでは、インデントブロックのパーサを
+どのように定義すればよいのでしょうか。
+`indentBlock`のシグネチャを見てみましょう。
+
+```
+indentBlock :: (MonadParsec e s m, Token s ~ Char)
+  => m ()              -- ^ インデント (スペース) の消費方法
+  -> m (IndentOpt m a b) -- ^ 「参照」トークン の消費方法
+  -> m a
+```
+
+はじめに、インデントの消費方法を指定します。
+ここで注意すべき重要なことは、
+このスペースを消費するパーサは改行も消費しなければならないのに対し、
+トークン(参照トークンとインデントトークン)は
+通常改行をそれらの後に消費するべきではないということです。
+
+ご覧のとおり、2番目の引数を使用すると参照トークンをパースし、
+次に`indentBlock`に何をするかを指示するデータ構造を返すことができます。
+いくつかのオプションがあります。
+
+```
+data IndentOpt m a b
+  = IndentNone a
+    -- ^ インデントトークンを消費せず、値を返すだけ
+  | IndentMany (Maybe Pos) ([b] -> m a) (m b)
+    -- ^ 多くの(0個の場合を含む)インデントトークンをパースし, 与えられたインデント
+    -- レベルを使う ('Nothing' の場合は最初にインデントされたトークンのレベルを使う)。
+    -- 2番目の引数は最終結果を取得する方法を示し、三番目の
+    -- 引数はインデントされたトークンを解析する方法を示す。
+  | IndentSome (Maybe Pos) ([b] -> m a) (m b)
+    -- ^ 'IndentMany'に似ているが、少なくとも1つのインデントトークンが
+    -- 出現することを要求する。
+```
+
+考えを変えてインデントのないトークンをパースすることができます。
+多くの（つまり、場合によっては0個の）インデントトークンをパースするか、
+少なくとも1つのそのようなトークンを要求することができます。
+`indentBlock`が最初のインデントトークンのインデントレベルを検出して
+それを使用するか、手動でインデントレベルを指定することができます。
+
+<a name="SimpleIndented"></a>
+
+## 単純なインデントされたリストのパース
+
+いくつかの項目の単純なインデントされたリストをパースしましょう。
+インポートセクションから始めます。
+
+```
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections     #-}
+
+module Main (main) where
+
+import Control.Applicative
+import Control.Monad (void)
+import Data.Text (Text)
+import Data.Void
+import Text.Megaparsec
+import Text.Megaparsec.Char
+import qualified Text.Megaparsec.Char.Lexer as L
+
+type Parser = Parsec Void Text
+```
+
+2種類のスペースコンシューマが必要になります。
+1つは改行を消費する`scn`、もう1つは消費しない`sc`です（実際にはここではスペースとタブのみをパースします）。
+
+```
+lineComment :: Parser ()
+lineComment = L.skipLineComment "#"
+
+scn :: Parser ()
+scn = L.space space1 lineComment empty
+
+sc :: Parser ()
+sc = L.space (void $ some (char ' ' <|> char '\t')) lineComment empty
+
+lexeme :: Parser a -> Parser a
+lexeme = L.lexeme sc
+```
+
+楽しみのために、`#`で始まる行のコメントを許可します。
+
+`pItemList` は、それ自体が参照トークン（リストのヘッダー）
+とインデントトークン（リスト項目）の組み合わせである最上位フォームです。
+
+```
+pItemList :: Parser (String, [String]) -- ヘッダとアイテムのリスト
+pItemList = L.nonIndented scn (L.indentBlock scn p)
+  where
+    p = do
+      header <- pItem
+      return (L.IndentMany Nothing (return . (header, )) pItem)
+```
+
+私たちの目的であるアイテムは、英数字とダッシュのシーケンスです。
+
+```
+pItem :: Parser String
+pItem = lexeme (some (alphaNumChar <|> char '-')) <?> "list item"
+```
+
+GHCiでコードをロードし、
+組み込みの`parseTest`の助けを借りて試してみましょう。
+
+```
+λ> parseTest (pItemList <* eof) ""
+1:1:
+  |
+1 | <empty line>
+  | ^
+unexpected end of input
+expecting list item
+
+λ> parseTest (pItemList <* eof) "something"
+("something",[])
+
+λ> parseTest (pItemList <* eof) "  something"
+1:3:
+  |
+1 |   something
+  |   ^
+incorrect indentation (got 3, should be equal to 1)
+
+λ> parseTest (pItemList <* eof) "something\none\ntwo\nthree"
+2:1:
+  |
+2 | one
+  | ^
+unexpected 'o'
+expecting end of input
+```
+
+`IndentMany` オプションを使用しているので、
+空のリストでも問題ありませんが、
+組み込みのコンビネータ`space`はエラーメッセージから
+「より多くのスペースを期待する」というフレーズを隠しているので、
+このエラーメッセージは完全に妥当です。
+
+続けましょう。
+
+```
+λ> parseTest (pItemList <* eof) "something\n  one\n    two\n  three"
+3:5:
+  |
+3 |     two
+  |     ^
+incorrect indentation (got 5, should be equal to 3)
+
+λ> parseTest (pItemList <* eof) "something\n  one\n  two\n three"
+4:2:
+  |
+4 |  three
+  |  ^
+incorrect indentation (got 2, should be equal to 3)
+
+λ> parseTest (pItemList <* eof) "something\n  one\n  two\n  three"
+("something",["one","two","three"])
+```
+
+これは確かにうまくいきそうです。
+`IndentMany` を `IndentSome` に、`Nothing` を`Just (mkPos 5)`に
+置き換えます（インデントレベルは1から数えられるため、
+インデントされる項目の前に4つのスペースが必要になります）。
+
+```
+pItemList :: Parser (String, [String])
+pItemList = L.nonIndented scn (L.indentBlock scn p)
+  where
+    p = do
+      header <- pItem
+      return (L.IndentSome (Just (mkPos 5)) (return . (header, )) pItem)
+```
+
+ここで、
+
+```
+λ> parseTest (pItemList <* eof) "something\n"
+2:1:
+  |
+2 | <empty line>
+  | ^
+incorrect indentation (got 1, should be greater than 1)
+
+λ> parseTest (pItemList <* eof) "something\n  one"
+2:3:
+  |
+2 |   one
+  |   ^
+incorrect indentation (got 3, should be equal to 5)
+
+λ> parseTest (pItemList <* eof) "something\n    one"
+("something",["one"])
+```
+
+最初のメッセージは少し驚くかもしれませんが、
+リスト内に少なくとも1つの項目がなければならないことを
+`megaparsec`は知っているので、字下げレベルをチェックし、
+そしてそれは1であり、間違っているので報告します。
+
+<a name="NestedIndented"></a>
+
+## ネストされたインデントのあるリスト
+
+リストのアイテムにサブアイテムを含めることを許可しましょう。
+これには、新しいパーサ`pComplexItem`が必要になります。
+
+```
+pComplexItem :: Parser (String, [String])
+pComplexItem = L.indentBlock scn p
+  where
+    p = do
+      header <- pItem
+      return (L.IndentMany Nothing (return . (header, )) pItem)
+
+pItemList :: Parser (String, [(String, [String])])
+pItemList = L.nonIndented scn (L.indentBlock scn p)
+  where
+    p = do
+      header <- pItem
+      return (L.IndentSome Nothing (return . (header, )) pComplexItem)
+```
+
+次のような入力を与えます。
+
+```
+first-chapter
+  paragraph-one
+      note-A # an important note here!
+      note-B
+  paragraph-two
+    note-1
+    note-2
+  paragraph-three
+```
+
+このような結果が得られます。
+
+```
+Right
+  ( "first-chapter"
+  , [ ("paragraph-one",   ["note-A","note-B"])
+    , ("paragraph-two",   ["note-1","note-2"])
+    , ("paragraph-three", []) ] )
+```
+
+これは、このアプローチがネストされたインデントのある構造に対して
+追加の状態を必要とせずにどのように拡張するかを示しています。
+
+<a name="LineFold"></a>
+
+## 折り返しの追加
+
+折り返しは、後続の項目のインデントレベルが
+最初の項目のインデントレベルよりも大きい限り、
+1行または複数行に配置できる複数の要素で構成されます。
+
+`lineFold` という別のヘルパーを利用しましょう。
+
+```
+pComplexItem :: Parser (String, [String])
+pComplexItem = L.indentBlock scn p
+  where
+    p = do
+      header <- pItem
+      return (L.IndentMany Nothing (return . (header, )) pLineFold)
+
+pLineFold :: Parser String
+pLineFold = L.lineFold scn $ \sc' ->
+  let ps = some (alphaNumChar <|> char '-') `sepBy1` try sc'
+  in unwords <$> ps <* sc -- (1)
+```
+
+lineFoldは次のように機能します。
+改行を受理するスペースコンシューマ`scn`を提供し、
+折り返しの要素間のスペースを消費するために
+コールバックで使用できる特別なスペースコンシューマ`sc'`を返します。
+ここで重要なことは、
+折り返し(1)の最後で通常のスペースコンシューマを
+使用する必要があることです。そうしないと、折り畳みが終了しません
+（これが、`try` で `sc '`を使用する理由でもあります）。
+
+練習問題：私たちのパーサーの最終版で遊ぶことは
+読者のための練習として残されています。
+複数の単語からなる「項目」を作成することができ、
+それらが折り返されている限り、
+それらはそれらの間の単一のスペースでパースされ連結されます。
+
 <!-- <a name=""></a> -->
 
 <!-- ##  -->
+
 
 <!-- <a name="Error"></a> -->
 
