@@ -1,6 +1,6 @@
 ---
 title: 認証と認可
-date: 2019/01/20
+date: 2019/06/14
 ---
 
 認証と認可はとても良く似ていますが、それぞれ異なる概念です。認証はユーザを識別し、認可はユーザの権限を決定します。残念なことに、これらの用語はどちらも "auth" と省略されるため、両者の概念を混同してしまう場合があります。
@@ -286,7 +286,7 @@ instance YesodAuthEmail App where
         case mu of
             Nothing -> return Nothing
             Just u -> do
-                update uid [UserVerified =. True]
+                update uid [UserVerified =. True, UserVerkey =. Nothing]
                 return $ Just uid
     getPassword = liftHandler . runDB . fmap (join . fmap userPassword) . get
     setPassword uid pass = liftHandler . runDB $ update uid [UserPassword =. Just pass]
