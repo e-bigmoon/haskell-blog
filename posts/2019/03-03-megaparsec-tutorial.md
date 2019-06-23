@@ -2314,9 +2314,9 @@ takeWhile1P Nothing      f = some (satisfy f)
 ```haskell
 data ParseError s e
   = TrivialError Int (Maybe (ErrorItem (Token s))) (Set (ErrorItem (Token s)))
-    -- ^ Megaparsecの機構によって生成された些細なエラー。 データコンストラクタには、
+    -- ^ Megaparsecの機構によって生成された自明なエラー。 データコンストラクタには、
     -- エラーのオフセット、予期しないトークン（存在する場合）、
-    -- および予期されるトークンが含まれます。
+    -- および予期するトークンが含まれます。
   | FancyError Int (Set (ErrorFancy e))
     -- ^ ファンシーなカスタムエラー。
 ```
@@ -2330,6 +2330,15 @@ data ParseError s e
 - `s` は入力ストリームの型です。
 - `e` は、パースエラーのカスタムコンポーネントの型です。
 
+`ErrorItem` は次のように定義されています。
+
+```
+data ErrorItem t
+  = Tokens (NonEmpty t)      -- ^ 空ではないトークンのストリーム
+  | Label (NonEmpty Char)    -- ^ ラベル (空ではない)
+  | EndOfInput               -- ^ 入力の終わり
+```
+
 これが`ErrorFancy` です。
 
 ```
@@ -2340,7 +2349,7 @@ data ErrorFancy e
     -- ^ インデントの誤りによるエラー：参照レベルと実際のレベルの間の
     -- 望ましい順序、参照インデントレベル、実際のインデントレベル。
   | ErrorCustom e
-    -- ^ カスタムエラーデータ、 'Error Fancy'を'Void'でインデックス付け
+    -- ^ カスタムエラーデータ、 'Error Fancy'の'e'を'Void'に
     -- することで都合に応じて無効にすることができます。
 ```
 
@@ -2352,14 +2361,17 @@ data ErrorFancy e
 
 - 前の章で見たインデント関連の問題です。
 すぐに使えるindentation-sensitive な文法を扱うためのツールを
-提供しているので、インデントの問題に関するよく型付けされた
+提供しているので、インデントの問題に関する正しく型付けされた
 情報を保存する方法が必要です。
 
-最後に、`ErrorCustom`は`ErrorFancy`型に任意のデータを埋め込むことを可能にする一種の「拡張スロット」です。パースエラーにカスタムデータが必要ない場合は、`ErrorFancy`を`Void`でパラメータ化します。
-`Void`は非ボトム値ではないため、`ErrorCustom`は「キャンセル」されるか、
+最後に、`ErrorCustom`は`ErrorFancy`型に任意のデータを
+埋め込むことを可能にする一種の「拡張スロット」です。
+パースエラーにカスタムデータが必要ない場合は、
+`ErrorFancy`を`Void`でパラメータ化します。
+`Void`はボトムしか含まないため、`ErrorCustom`は「キャンセル」されるか、
 または代数データ型と数値の間の類推に従うと「0倍」になります。
 
-ライブラリの古いバージョンでは、`ParseErrors` は `parse`のような
+ライブラリの古いバージョンでは、`ParseError` は `parse`のような
 関数によって直接返していました。しかしバージョン7はエラーごとの
 行と列の計算が遅れます。
 同様にエラーが発生した場合に表示するために入力から関連する行を取得します。
@@ -2386,14 +2398,14 @@ data ParseErrorBundle s e = ParseErrorBundle
 パーサを実行するすべての関数は、正しく設定された `bundlePosState`と
 単一の`ParseError`を内部に持つ`ParseErrorBundle`を返します。
 `ParseErrorBundle`をユーザに表示する前に、
-内部の`ParseErrors`のコレクションを拡張できます。
+内部の`ParseError`のコレクションを拡張できます。
 `ParseErrors`をそれらのオフセットでソートしておくことはユーザーの責任です。
 
 <a name="SigErr"></a>
 
 ## パースエラーを通知する方法
 
-エラーを通知するためのさまざまな方法について説明しましょう。
+パースエラーを通知するためのさまざまな方法について説明しましょう。
 最も簡単な関数は`fail`です。
 
 ```haskell
@@ -2404,13 +2416,13 @@ data ParseErrorBundle s e = ParseErrorBundle
   | ^
 I'm failing, help me!
 ```
-`parse`のような、より単純なパーサライブラリに精通している
+`parsec`のような、より単純なパーサライブラリに精通している
 多くの人々にとってはこれで十分です。
 しかし、パースエラーをユーザーに表示することだけではなく、
 それを分析したり操作したりする必要があるかもしれません。
 これが`String`があまり便利ではないところです。
 
-些細なパースエラーは通常 `megaparsec` によって生成されますが、
+自明なパースエラーは通常 `megaparsec` によって生成されますが、
 プリミティブ`failure`を使って自分自身でそのようなエラーを
 知らせることができます。
 
@@ -2439,7 +2451,7 @@ expecting 'a' or 'b'
 ```
 
 `fail`に基づいたアプローチとは異なり、
-簡単なパースエラーはパターンマッチ、検査、および修正が容易です。
+簡単なパースエラーはパターンマッチによる検査や変更が容易です。
 
 ファンシーエラーについては、
 プリミティブ`fancyFaliure`で対応します。
@@ -2451,7 +2463,7 @@ fancyFailure :: MonadParsec e s m
 ```
 
 `fancyFailure` を使う際には、直接 `fancyFailure` を呼び出すのではなく、
-字句解析モジュールにある津比のようなヘルパーとして定義するのが
+字句解析モジュールにある次のようなヘルパーとして定義するのが
 望ましいことがよくあります。
 
 ```
@@ -2464,7 +2476,7 @@ incorrectIndent ord ref actual = fancyFailure . E.singleton $
   ErrorIndentation ord ref actual
 ```
 
-あなたのパーサにカスタムパースエラーのコンポーネントを追加する例として、
+あなたのパーサにカスタムパースエラーコンポーネントを追加する例として、
 与えられた`Text`の値がキーワードではないことを示す、
 特別なパースエラーを定義することを通して見てみましょう。
 
@@ -2518,7 +2530,7 @@ foo is not a keyword
 
 ## パースエラーの表示
 
-`ParseErrorBundles`の表示は`errorBundlePretty`関数で行われます。
+`ParseErrorBundle`の表示は`errorBundlePretty`関数で行われます。
 
 ```
 -- | 'ParseErrorBundle'をプリティプリントします。バンドル内のすべての 'ParseError'は、
