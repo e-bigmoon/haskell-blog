@@ -2665,13 +2665,15 @@ in foo, in bar
 ```
 -- | 内部のラッパーで発生する 'ParseError'の処理方法を指定します。
 -- 現在の実装の副作用として、このコンビネータで 'errorPos' を変更すると、
--- 最終的にパーサの状態 'statePos'も変更されます ('statePos' が入力ストリームの実際の位置と同期しなくなるので、それを避けてください。直後にパースを終了すれば、おそらく問題ありませんが、警告が出ます)。
+-- 最終的にパーサの状態 'statePos'も変更されま('statePos' が
+-- 入力ストリームの実際の位置と同期しなくなるので、それを避けてください。
+-- 直後にパースを終了すれば、おそらく問題ありませんが、注意してください)。
 
 region :: MonadParsec e s m
   => (ParseError s e -> ParseError s e)
-     -- ^ How to process 'ParseError's
+     -- ^ 'ParseError' を処理する方法
   -> m a
-     -- ^ The “region” that the processing applies to
+     -- ^ 処理を適用する 「領域」
   -> m a
 region f m = do
   r <- observing m
@@ -2717,12 +2719,12 @@ processErrorFancy location (ErrorCustom (FancyWithLocation ps cs)) =
 
 ## Megaparsec パーサのテスト
 
-パーサのテストは、ほとんどの人が遅かれ早かれ直面する実務であり、
+パーサのテストは、ほとんどの人が遅かれ早かれ直面する実践的なタスクであり、
 それをカバーしなければなりません。
 `megaparsec` のパーサをテストするための推奨される方法は
 [`hspec-megaparsec`](https://hackage.haskell.org/package/hspec-megaparsec)パッケージを使うことです。
 このパッケージは、`hspec` テストフレームワークで動作する `shouldParse`、
-`parseSatisfies` などのユーティリティエクスペクテーションを追加します。
+`parseSatisfies` などのユーティリティテスト関数のを追加します。
 
 次の例から見てみましょう。
 
@@ -2758,7 +2760,7 @@ main = hspec $
 おそらく最も一般的なヘルパーです。
 `parseSatisfies` は非常に似ていますが、期待される結果と等しいかどうかを比較する代わりに、任意の述語を適用することによって結果をチェックすることができます。
 
-その他の単純なエクスペクテーションは、
+その他の単純なテスト関数は、
 `shouldSucceedOn` と `shouldFailOn` です（これらはめったに使われません）。
 
 ```
@@ -2768,7 +2770,7 @@ main = hspec $
       parse myParser "" `shouldFailOn` "bbb"
 ```
 
-`megaparsec` で、パーサが生み出すパースエラーを詳細まで確認したいです。
+`megaparsec` で、パーサが生み出すパースエラーを詳細にテストしたいです。
 パースエラーをテストするには `shouldFailWith` があります。
 これは次のように使用できます。
 
@@ -2776,7 +2778,7 @@ main = hspec $
     it "fails on 'b's producing correct error message" $
       parse myParser "" "bbb" `shouldFailWith`
         TrivialError
-          (initialPos "" :| [])
+          0
           (Just (Tokens ('b' :| [])))
           (Set.singleton (Tokens ('a' :| [])))
 ```
@@ -2801,7 +2803,7 @@ main = hspec $
 
 演習: ファンシーパースエラーを構築するために、`errFancy` と呼ばれる同様のヘルパーがありますので、それをよく理解してください。
 
-最後に、`failLeaving` と `successfulLeaving` を使用して、
+最後に、`failsLeaving` と `succeedsLeaving` を使用して、
 パース後に入力のどの部分が未消費のままであるかをテストすることができます。
 
 ```
@@ -2815,6 +2817,22 @@ main = hspec $
 その最終状態を返す `runParser'` または `runParserT'` と共に
 使用する必要があります（これにより、
 パース後に入力ストリームの残りをチェックすることができます）。
+
+```
+runParser'
+  :: Parsec e s a      -- ^ Parser to run
+  -> State s           -- ^ Initial state
+  -> (State s, Either (ParseError (Token s) e) a)
+
+runParserT' :: Monad m
+  => ParsecT e s m a   -- ^ Parser to run
+  -> State s           -- ^ Initial state
+  -> m (State s, Either (ParseError (Token s) e) a)
+```
+
+`initialState` 関数は入力ストリームを受け取り、
+その入力ストリームとデフォルト値で埋められた
+レコードフィールドの初期状態を返します。
 
 `hspec-megaparsec` を使用するためのその他のヒントは次のとおりです。
 
