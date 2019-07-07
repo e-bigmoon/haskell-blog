@@ -41,8 +41,8 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
   - [パースエラーの定義](#ErrDef)
   - [パースエラーを通知する方法](#SigErr)
   - [パースエラーの表示](#DispErr)
-  - Catching parse errors in running parser
-- Testing Megaparsec parsers
+  - [パーサ実行時にパースエラーをキャッチする](#CatchErr)
+- [Megaparsecパーサのテスト](#Testing)
 - Working with custom input streams
 
 「例：あなた自身のパーサコンビネータを書く」の章で開発されたトイパーサコンビネータは、実際の使用には適していないので、
@@ -2546,6 +2546,281 @@ errorBundlePretty
   -> String               -- ^ バンドルのテキスト表現
 ```
 95％のケースで、あなたはこの1つの関数だけを必要とするでしょう。
+
+<a name="ChatchErr"></a>
+
+## 実行中のパーサでパースエラーをチャッチする
+
+`megaparsec` のもう1つの便利な機能は、
+パースエラーを「キャッチ」し、それを何らかの方法で変更してから、
+例外のように再びスローすることが可能なことです。
+これはプリミティブ `observing` によって有効になります。
+
+```haskell
+-- | @'observing' p@ はパーサ @p@ の失敗を「観察」することを可能にします.
+-- 実際にはパーサを終了せずに、代わりに 'Left'の 'ParseError'を取得します。
+-- 成功すると、パースされた値はいつものように 'Right' で返されます。
+-- このプリミティブは、発生したパースエラーを観察することを可能にするだけで、
+-- パーサ @p@ の動作をバックトラックしたり変更したりすることはありません。
+
+observing :: MonadParsec e s m
+  => m a             -- ^ The parser to run
+  -> m (Either (ParseError (Token s) e) a)
+```
+
+これは、の典型的な `observing` の使い方を示す完全なプログラムです。
+
+```
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications  #-}
+
+module Main (main) where
+
+-- import Control.Applicative
+import Data.List (intercalate)
+import Data.Set (Set)
+import Data.Text (Text)
+import Data.Void
+import Text.Megaparsec
+import Text.Megaparsec.Char
+import qualified Data.Set as Set
+
+data Custom
+  = TrivialWithLocation
+    [String] -- 位置スタック
+    (Maybe (ErrorItem Char))
+    (Set (ErrorItem Char))
+  | FancyWithLocation
+    [String] -- 位置スタック
+    (ErrorFancy Void) -- Custom をネストさせないように Void になっている
+  deriving (Eq, Ord, Show)
+
+instance ShowErrorComponent Custom where
+  showErrorComponent (TrivialWithLocation stack us es) =
+    parseErrorTextPretty (TrivialError @Text @Void undefined us es)
+      ++ showPosStack stack
+  showErrorComponent (FancyWithLocation stack cs) =
+    parseErrorTextPretty (FancyError @Text @Void undefined (Set.singleton cs))
+      ++ showPosStack stack
+
+showPosStack :: [String] -> String
+showPosStack = intercalate ", " . fmap ("in " ++)
+
+type Parser = Parsec Custom Text
+
+inside :: String -> Parser a -> Parser a
+inside location p = do
+  r <- observing p
+  case r of
+    Left (TrivialError _ us es) ->
+      fancyFailure . Set.singleton . ErrorCustom $
+        TrivialWithLocation [location] us es
+    Left (FancyError _ xs) -> do
+      let f (ErrorFail msg) = ErrorCustom $
+            FancyWithLocation [location] (ErrorFail msg)
+          f (ErrorIndentation ord rlvl alvl) = ErrorCustom $
+            FancyWithLocation [location] (ErrorIndentation ord rlvl alvl)
+          f (ErrorCustom (TrivialWithLocation ps us es)) = ErrorCustom $
+            TrivialWithLocation (location:ps) us es
+          f (ErrorCustom (FancyWithLocation ps cs)) = ErrorCustom $
+            FancyWithLocation (location:ps) cs
+      fancyFailure (Set.map f xs)
+    Right x -> return x
+
+myParser :: Parser String
+myParser = some (char 'a') *> some (char 'b')
+
+main :: IO ()
+main = do
+  parseTest (inside "foo" myParser) "aaacc"
+  parseTest (inside "foo" $ inside "bar" myParser) "aaacc"
+```
+
+演習: このプログラムがどのように機能するのか詳細に理解しなさい。
+
+このプログラムを実行すると、次のように出力されます。
+
+```
+1:4:
+  |
+1 | aaacc
+  |    ^
+unexpected 'c'
+expecting 'a' or 'b'
+in foo
+1:4:
+  |
+1 | aaacc
+  |    ^
+unexpected 'c'
+expecting 'a' or 'b'
+in foo, in bar
+```
+
+したがって、この機能を使用してパースエラーに対する位置ラベルの添付や、
+実際にパースエラーが何らかの方法で処理される領域を定義できます。
+このイディオムは非常に便利なので、
+プリミティブ `observing` の観点から構築された `region` と呼ばれる非プリミティブヘルパーもあります。
+
+```
+-- | 内部のラッパーで発生する 'ParseError'の処理方法を指定します。
+-- 現在の実装の副作用として、このコンビネータで 'errorPos' を変更すると、
+-- 最終的にパーサの状態 'statePos'も変更されます ('statePos' が入力ストリームの実際の位置と同期しなくなるので、それを避けてください。直後にパースを終了すれば、おそらく問題ありませんが、警告が出ます)。
+
+region :: MonadParsec e s m
+  => (ParseError s e -> ParseError s e)
+     -- ^ How to process 'ParseError's
+  -> m a
+     -- ^ The “region” that the processing applies to
+  -> m a
+region f m = do
+  r <- observing m
+  case r of
+    Left err ->
+      case f err of
+        TrivialError o us ps -> do
+          updateParserState $ \st -> st { stateOffset = o }
+          failure us ps
+        FancyError o xs -> do
+          updateParserState $ \st -> st { stateOffset = o }
+          fancyFailure xs
+    Right x -> return x
+```
+
+演習: 上記のプログラムで `region` を使用して `inside` 関数を書き換えなさい。
+
+回答例:
+
+```haskell
+inside' :: String -> Parser a -> Parser a
+inside' location p = region (processParseError location) p
+
+processParseError :: String -> ParseError Text Custom -> ParseError Text Custom
+processParseError location (TrivialError i us es) =
+  FancyError i . Set.singleton . ErrorCustom $
+    TrivialWithLocation [location] us es
+processParseError location (FancyError i xs) =
+  FancyError i $ Set.map (processErrorFancy location) xs
+
+processErrorFancy :: String -> ErrorFancy Custom -> ErrorFancy Custom
+processErrorFancy location (ErrorFail msg) = ErrorCustom $
+  FancyWithLocation [location] (ErrorFail msg)
+processErrorFancy location (ErrorIndentation ord rlvl alvl) = ErrorCustom $
+  FancyWithLocation [location] (ErrorIndentation ord rlvl alvl)
+processErrorFancy location (ErrorCustom (TrivialWithLocation ps us es)) =
+  ErrorCustom $ TrivialWithLocation (location:ps) us es
+processErrorFancy location (ErrorCustom (FancyWithLocation ps cs)) =
+  ErrorCustom $ FancyWithLocation (location:ps) cs
+```
+
+<a name="Testing"></a>
+
+## Megaparsec パーサのテスト
+
+パーサのテストは、ほとんどの人が遅かれ早かれ直面する実務であり、
+それをカバーしなければなりません。
+`megaparsec` のパーサをテストするための推奨される方法は
+[`hspec-megaparsec`](https://hackage.haskell.org/package/hspec-megaparsec)パッケージを使うことです。
+このパッケージは、`hspec` テストフレームワークで動作する `shouldParse`、
+`parseSatisfies` などのユーティリティエクスペクテーションを追加します。
+
+次の例から見てみましょう。
+
+```
+{-# LANGUAGE OverloadedStrings #-}
+
+module Main (main) where
+
+import Control.Applicative
+import Data.Text (Text)
+import Data.Void
+import Test.Hspec
+import Test.Hspec.Megaparsec
+import Text.Megaparsec
+import Text.Megaparsec.Char
+
+type Parser = Parsec Void Text
+
+myParser :: Parser String
+myParser = some (char 'a')
+
+main :: IO ()
+main = hspec $
+  describe "myParser" $ do
+    it "returns correct result" $
+      parse myParser "" "aaa" `shouldParse` "aaa"
+    it "result of parsing satisfies what it should" $
+      parse myParser "" "aaaa" `parseSatisfies` ((== 4) . length)
+```
+
+`shouldParse` は、パース結果 `Either（ParseErrorBundle s e）a`
+と比較する型 `a` の値を引数として受け取ります。
+おそらく最も一般的なヘルパーです。
+`parseSatisfies` は非常に似ていますが、期待される結果と等しいかどうかを比較する代わりに、任意の述語を適用することによって結果をチェックすることができます。
+
+その他の単純なエクスペクテーションは、
+`shouldSucceedOn` と `shouldFailOn` です（これらはめったに使われません）。
+
+```
+    it "should parse 'a's all right" $
+      parse myParser "" `shouldSucceedOn` "aaaa"
+    it "should fail on 'b's" $
+      parse myParser "" `shouldFailOn` "bbb"
+```
+
+`megaparsec` で、パーサが生み出すパースエラーを詳細まで確認したいです。
+パースエラーをテストするには `shouldFailWith` があります。
+これは次のように使用できます。
+
+```
+    it "fails on 'b's producing correct error message" $
+      parse myParser "" "bbb" `shouldFailWith`
+        TrivialError
+          (initialPos "" :| [])
+          (Just (Tokens ('b' :| [])))
+          (Set.singleton (Tokens ('a' :| [])))
+```
+
+このように `TrivialError` を書き出すのは面倒です。
+`ParseError` の定義には、`Set` や `NonEmpty` のような
+「不便な」型が含まれています。これらは、
+今見たとおり直接入力するのには便利ではありません。
+幸い、`Test.Hspec.Megaparsec` は、
+`ParserErrors`をより簡単に構築するためのAPIを提供する
+`Text.Megaparsec.Error.Builder` モジュールも再エクスポートします。
+代わりに `err` ヘルパーを使用しましょう。
+
+```
+    it "fails on 'b's producing correct error message" $
+      parse myParser "" "bbb" `shouldFailWith` err 0 (utok 'b' <> etok 'a')
+```
+
+- `err` の最初の引数は、パースエラーのオフセット（エラーが発生する前に消費されたトークンの数）です。今回はそれは単に0です。
+
+- `utok` は「期待しないトークン」を表し、同様に `etok` は「期待するトークン」を意味します。
+
+演習: ファンシーパースエラーを構築するために、`errFancy` と呼ばれる同様のヘルパーがありますので、それをよく理解してください。
+
+最後に、`failLeaving` と `successfulLeaving` を使用して、
+パース後に入力のどの部分が未消費のままであるかをテストすることができます。
+
+```
+    it "consumes all 'a's but does not touch 'b's" $
+      runParser' myParser (initialState "aaabbb") `succeedsLeaving` "bbb"
+    it "fails without consuming anything" $
+      runParser' myParser (initialState "bbbccc") `failsLeaving` "bbbccc"
+```
+
+これらは、パーサのカスタム初期状態を受け取り、
+その最終状態を返す `runParser'` または `runParserT'` と共に
+使用する必要があります（これにより、
+パース後に入力ストリームの残りをチェックすることができます）。
+
+`hspec-megaparsec` を使用するためのその他のヒントは次のとおりです。
+
+- [Megaparsec自身のテスト](https://github.com/mrkkrp/megaparsec/tree/master/megaparsec-tests) はhspec-megaparsecを使って書かれています。
+
+- `hspec-megaparsec` 自体に付属している[トイテストスイート](https://github.com/mrkkrp/hspec-megaparsec/blob/master/tests/Main.hs)。
 
 <!-- <a name=""></a> -->
 
