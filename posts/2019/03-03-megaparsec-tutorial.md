@@ -462,7 +462,7 @@ Haskell では `Alternative` 型クラスとして表現される
 最も一般的なコンビネータの1つに、`many` と呼ばれるものがあります。
 それは与えられたパーサを0回以上実行することができます。
 
-```
+```bash
 λ> parseTest (many (char 'a') :: Parser [Char]) "aaa"
 "aaa"
 
@@ -681,7 +681,7 @@ expecting ':'
 
 `pUri` は正しく動作するようになりました。
 
-```
+```bash
 λ> parseTest pUri "http:"
 Uri {uriScheme = SchemeHttp}
 
@@ -735,7 +735,7 @@ alternatives = foo <|> bar
 
 合理的に見えますが、これを試してみましょう。
 
-```
+```bash
 λ> parseTest alternatives "ab"
 ('a','b')
 
@@ -775,7 +775,7 @@ alternatives = try foo <|> bar
     bar = (,) <$> char 'a' <*> char 'c'
 ```
 
-```
+```bash
 λ> parseTest alternatives "ac"
 ('a','c')
 ```
@@ -841,7 +841,7 @@ pUri = do
 
 GHCiで `pUri` を試し、それが機能することを確認してください。
 
-```
+```bash
 λ> parseTest (pUri <* eof) "https://mark:secret@example.com"
 Uri
   { uriScheme = SchemeHttps
@@ -904,7 +904,7 @@ dbg :: (Stream s, ShowToken (Token s), ShowErrorComponent e, Show a)
 
 これを `pUri` で使ってみましょう。
 
-```
+```haskell
 pUri :: Parser Uri
 pUri = do
   uriScheme <- dbg "scheme" pScheme
@@ -925,7 +925,7 @@ pUri = do
 
 それでは、その不幸な入力に対してもう一度 `pUri` を実行してみましょう。
 
-```
+```haskell
 λ> parseTest (pUri <* eof) "https://mark:@example.com"
 scheme> IN: "https://mark:@example.com"
 scheme> MATCH (COK): "https"
@@ -1010,7 +1010,7 @@ pUri = do
 
 これで、より良いパースエラーを得られるようになりました。
 
-```
+```bash
 λ> parseTest (pUri <* eof) "https://mark:@example.com"
 1:14:
   |
@@ -1030,7 +1030,7 @@ expecting integer
 時には期待されるアイテムのリストがかなり長くなるかもしれません。
 認識されていないスキームを使用しようとしたときに得られるものを覚えていますか？
 
-```
+```bash
 λ> parseTest (pUri <* eof) "foo://example.com"
 1:1:
   |
@@ -1042,14 +1042,14 @@ expecting "data", "file", "ftp", "http", "https", "irc", or "mailto"
 
 `megaparsec` は、一般的に*ラベル*と呼ばれるカスタムで、期待されるアイテムを上書きする方法を提供します。これは、`label` プリミティブ(`(<?>)` 演算子の形式のシノニムを持つ)を使用して行われます。
 
-```
+```haskell
 pUri :: Parser Uri
 pUri = do
   uriScheme <- pScheme <?> "valid scheme"
   -- 残りの部分は同じ
 ```
 
-```
+```bash
 λ> parseTest (pUri <* eof) "foo://example.com"
 1:1:
   |
@@ -1061,7 +1061,7 @@ expecting valid scheme
 
 エラーメッセージを読みやすくするために、ラベルを追加します。
 
-```
+```haskell
 pUri :: Parser Uri
 pUri = do
   uriScheme <- pScheme <?> "valid scheme"
@@ -1082,7 +1082,7 @@ pUri = do
 
 例:
 
-```
+```bash
 λ> parseTest (pUri <* eof) "https://mark:@example.com"
 1:14:
   |
@@ -1097,7 +1097,7 @@ expecting port number
 hiddenは単にそれらを完全に削除します。
 比較しましょう。
 
-```
+```bash
 λ> parseTest (many (char 'a') >> many (char 'b') >> eof :: Parser ()) "d"
 1:1:
   |
@@ -1168,7 +1168,7 @@ type Parsec e s = ParsecT e s Identity
 カスタム初期状態が必要な場合があります。
 `runParser'` はこのようになっています。
 
-```
+```haskell
 runParser'
   :: Parsec e s a -- ^ 実行するパーサ
   -> State s    -- ^ 初期状態
@@ -1260,7 +1260,7 @@ instance (Functor m, Alternative m) => Alternative (StateT s m) where
 `ParsecT` はどうですか？
 `State` を `ParsecT` の中に次のように置くことを考えてみましょう。
 
-```
+```haskell
 type MyStack a = ParsecT Void Text (State MyState) a
 ```
 
@@ -1354,7 +1354,7 @@ StateT m <|> StateT n = StateT $ \s -> m s <|> n s
 それから残りの作業をその内部モナド`ParsecT` の `Alternative` インスタンスに委任します。
 この動作はまさに私たちが望むものです。
 
-```
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main (main) where
@@ -1581,7 +1581,7 @@ integer :: Parser Integer
 integer = lexeme L.decimal
 ```
 
-```
+```bash
 λ> parseTest (integer <* eof) "123  "
 123
 
@@ -1611,7 +1611,7 @@ float :: Parser Double
 float = lexeme L.float
 ```
 
-```
+```bash
 λ> parseTest (float <* eof) "123"
 1:4:
   |
@@ -1655,7 +1655,7 @@ signedFloat = L.signed sc float
 
 １つめは `notFollowedBy` と呼ばれるものです。
 
-```
+```haskell
 notFollowedBy :: MonadParsec e s m => m a -> m ()
 ```
 
@@ -1665,7 +1665,7 @@ notFollowedBy :: MonadParsec e s m => m a -> m ()
 `notFollowedBy` を使いたいと思うかもしれない例として、
 キーワードのパースを考えます。
 
-```
+```haskell
 pKeyword :: Text -> Parser Text
 pKeyword keyword = lexeme (string keyword)
 ```
@@ -1676,14 +1676,14 @@ pKeyword keyword = lexeme (string keyword)
 したがって、`notFollowedBy` を使用して
 そのようなケースを排除する必要があります。
 
-```
+```haskell
 pKeyword :: Text -> Parser Text
 pKeyword keyword = lexeme (string keyword <* notFollowedBy alphaNumChar)
 ```
 
 もう1つのプリミティブは`lookAhead`です。
 
-```
+```haskell
 lookAhead :: MonadParsec e s m => m a -> m a
 ```
 
@@ -1696,7 +1696,7 @@ lookAhead :: MonadParsec e s m => m a -> m a
 失敗または正常に継続することです。
 慣用表現として、次のようなコードで表すことができます。
 
-```
+```haskell
 withPredicate1
   :: (a -> Bool)       -- ^ パース後の入力の振る舞いの確認
   -> String            -- ^ チェックが失敗した時に表示するメッセージ
@@ -1714,7 +1714,7 @@ withPredicate1 f msg p = do
 良くないことにも注意してください。
 ここに `getOffset` 関数を使用した代わりの解決方法があります。
 
-```
+```haskell
 withPredicate2
   :: (a -> Bool)       -- ^ パース後の入力の振る舞いの確認
   -> String            -- ^ チェックが失敗した時に表示するメッセージ
@@ -1767,7 +1767,7 @@ a * (b + 2)
 式を表すデータ型を
 [AST](https://ja.wikipedia.org/wiki/%E6%8A%BD%E8%B1%A1%E6%A7%8B%E6%96%87%E6%9C%A8)として定義することから始めましょう。
 
-```
+```haskell
 data Expr
   = Var String
   | Int Int
@@ -1782,7 +1782,7 @@ data Expr
 `makeExprParser` を使用するには、
 項のパーサと演算子テーブルを指定する必要があります。
 
-```
+```haskell
 makeExprParser :: MonadParsec e s m
   => m a               -- ^ 項のパーサ
   -> [[Operator m a]]  -- ^ 演算子テーブル, 'Operator'を参照
@@ -1796,7 +1796,7 @@ makeExprParser :: MonadParsec e s m
 変数、整数、および括弧内の式全体です。
 前の章の定義を使用して、項のパーサを次のように定義できます。
 
-```
+```haskell
 pVariable :: Parser Expr
 pVariable = Var <$> lexeme
   ((:) <$> letterChar <*> many alphaNumChar <?> "variable")
@@ -1840,7 +1840,7 @@ operatorTable = undefined -- TODO
 高い位置に演算子のグループを配置するほど、
 それらはより強く結合されます。
 
-```
+```haskell
 data Operator m a -- 注意
   = InfixN  (m (a -> a -> a)) -- ^ 非結合の中置
   | InfixL  (m (a -> a -> a)) -- ^ 左結合の中置
@@ -1875,7 +1875,7 @@ postfix name f = Postfix (f <$ symbol name)
 
 これでパーサを試すことができます。準備は完了です！
 
-```
+```bash
 λ> parseTest (pExpr <* eof) "a * (b + 2)"
 Product (Var "a") (Sum (Var "b") (Int 2))
 
@@ -1915,7 +1915,7 @@ Indentation-sensitive
 
 最も単純な`nonIndented` から始めましょう。
 
-```
+```haskell
 nonIndented :: MonadParsec e s m
   => m ()              -- ^ インデント (スペース) の消費方法
   -> m a               -- ^ 内側のパーサ
@@ -1940,7 +1940,7 @@ Indentation-sensitiveな文法を定義することです。
 どのように定義すればよいのでしょうか。
 `indentBlock`のシグネチャを見てみましょう。
 
-```
+```haskell
 indentBlock :: (MonadParsec e s m, Token s ~ Char)
   => m ()              -- ^ インデント (スペース) の消費方法
   -> m (IndentOpt m a b) -- ^ 「参照」トークン の消費方法
@@ -1957,7 +1957,7 @@ indentBlock :: (MonadParsec e s m, Token s ~ Char)
 次に`indentBlock`に何をするかを指示するデータ構造を返すことができます。
 いくつかのオプションがあります。
 
-```
+```haskell
 data IndentOpt m a b
   = IndentNone a
     -- ^ インデントトークンを消費せず、値を返すだけ
@@ -1984,7 +1984,7 @@ data IndentOpt m a b
 いくつかの項目の単純なインデントされたリストをパースしましょう。
 インポートセクションから始めます。
 
-```
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections     #-}
 
@@ -2004,7 +2004,7 @@ type Parser = Parsec Void Text
 2種類のスペースコンシューマが必要になります。
 1つは改行を消費する`scn`、もう1つは消費しない`sc`です（実際にはここではスペースとタブのみをパースします）。
 
-```
+```haskell
 lineComment :: Parser ()
 lineComment = L.skipLineComment "#"
 
@@ -2024,7 +2024,7 @@ lexeme = L.lexeme sc
 とインデントトークン（リストの項目）の組み合わせである
 トップレベルの形式です。
 
-```
+```haskell
 pItemList :: Parser (String, [String]) -- ヘッダとアイテムのリスト
 pItemList = L.nonIndented scn (L.indentBlock scn p)
   where
@@ -2035,7 +2035,7 @@ pItemList = L.nonIndented scn (L.indentBlock scn p)
 
 私たちの目的であるアイテムは、英数字とハイフンのシーケンスです。
 
-```
+```haskell
 pItem :: Parser String
 pItem = lexeme (some (alphaNumChar <|> char '-')) <?> "list item"
 ```
@@ -2043,7 +2043,7 @@ pItem = lexeme (some (alphaNumChar <|> char '-')) <?> "list item"
 GHCiでコードをロードし、
 組み込みの`parseTest`の助けを借りて試してみましょう。
 
-```
+```bash
 λ> parseTest (pItemList <* eof) ""
 1:1:
   |
@@ -2079,7 +2079,7 @@ expecting end of input
 
 続けましょう。
 
-```
+```bash
 λ> parseTest (pItemList <* eof) "something\n  one\n    two\n  three"
 3:5:
   |
@@ -2103,7 +2103,7 @@ incorrect indentation (got 2, should be equal to 3)
 置き換えます（インデントレベルは1から数えられるため、
 インデントされる項目の前に4つのスペースが必要になります）。
 
-```
+```haskell
 pItemList :: Parser (String, [String])
 pItemList = L.nonIndented scn (L.indentBlock scn p)
   where
@@ -2114,7 +2114,7 @@ pItemList = L.nonIndented scn (L.indentBlock scn p)
 
 ここで、
 
-```
+```bash
 λ> parseTest (pItemList <* eof) "something\n"
 2:1:
   |
@@ -2145,7 +2145,7 @@ incorrect indentation (got 3, should be equal to 5)
 リストのアイテムにサブアイテムを含めることを許可しましょう。
 これには、新しいパーサ`pComplexItem`が必要になります。
 
-```
+```bash
 pComplexItem :: Parser (String, [String])
 pComplexItem = L.indentBlock scn p
   where
@@ -2197,7 +2197,7 @@ Right
 
 `lineFold` という別のヘルパーを利用しましょう。
 
-```
+```haskell
 pComplexItem :: Parser (String, [String])
 pComplexItem = L.indentBlock scn p
   where
@@ -2269,13 +2269,13 @@ pLineFold = L.lineFold scn $ \sc' ->
 認証の構成要素内でユーザ名をパースするための
 次のコードがあったことを思い出してください。
 
-```
+```haskell
   user <- T.pack <$> some alphaNumChar
 ```
 
 これは `takeWhile1P` に置き換え可能です。
 
-```
+```haskell
 user <- takeWhile1P (Just "alpha num character") isAlphaNum
   --                  ^                            ^
   --                  |                            |
@@ -2290,7 +2290,7 @@ user <- takeWhile1P (Just "alpha num character") isAlphaNum
 以下の式は、`takeWhileP` と `takeWhile1P` の `Maybe String`
 引数の意味を理解するのに役立ちます。
 
-```
+```haskell
 takeWhileP  (Just "foo") f = many (satisfy f <?> "foo")
 takeWhileP  Nothing      f = many (satisfy f)
 takeWhile1P (Just "foo") f = some (satisfy f <?> "foo")
@@ -2332,7 +2332,7 @@ data ParseError s e
 
 `ErrorItem` は次のように定義されています。
 
-```
+```haskell
 data ErrorItem t
   = Tokens (NonEmpty t)      -- ^ 空ではないトークンのストリーム
   | Label (NonEmpty Char)    -- ^ ラベル (空ではない)
@@ -2341,7 +2341,7 @@ data ErrorItem t
 
 これが`ErrorFancy` です。
 
-```
+```haskell
 data ErrorFancy e
   = ErrorFail String
     -- ^ パーサモナドで 'fail'が使われている
@@ -2383,7 +2383,7 @@ data ErrorFancy e
 
 この問題は`ParseErrorBundle`データ型で解決されます。
 
-```
+```haskell
 -- | エラーの効率的かつ正確なプリティプリントが可能な、
 -- 'PosState'を備えた 'ParseError'の空でないコレクション。
 
@@ -2426,21 +2426,21 @@ I'm failing, help me!
 プリミティブ`failure`を使って自分自身でそのようなエラーを
 知らせることができます。
 
-```
+```haskell
 failure :: MonadParsec e s m
   => Maybe (ErrorItem (Token s)) -- ^ 予期しないアイテム（ある場合）
   -> Set (ErrorItem (Token s)) -- ^ 予期するアイテム
   -> m a
 ```
 
-```
+```haskell
 unfortunateParser :: Parser ()
 unfortunateParser = failure (Just EndOfInput) (Set.fromList es)
   where
     es = [Tokens (NE.fromList "a"), Tokens (NE.fromList "b")]
 ```
 
-```
+```bash
 λ> parseTest unfortunateParser ""
 1:1:
   |
@@ -2466,7 +2466,7 @@ fancyFailure :: MonadParsec e s m
 字句解析モジュールにある次のようなヘルパーとして定義するのが
 望ましいことがよくあります。
 
-```
+```haskell
 incorrectIndent :: MonadParsec e s m
   => Ordering  -- ^ 参照レベルと実際のレベル間の望ましい順序
   -> Pos               -- ^ 参照インデントレベル
@@ -2483,41 +2483,41 @@ incorrectIndent ord ref actual = fancyFailure . E.singleton $
 まず、サポートしたいシナリオを表現するコンストラクタを使用して
 データ型を定義する必要があります。
 
-```
+```haskell
 data Custom = NotKeyword Text
   deriving (Eq, Show, Ord)
 ```
 
 そしてそれをパースエラーで表示する方法を`megaparsec`に伝えてください。
 
-```
+```haskell
 instance ShowErrorComponent Custom where
   showErrorComponent (NotKeyword txt) = T.unpack txt ++ " is not a keyword"
 ```
 
 次に、`Parser`型シノニムを更新します。
 
-```
+```haskell
 type Parser = Parsec Custom Text
 ```
 
 その後、`notKeyword`ヘルパーを定義できます。
 
-```
+```haskell
 notKeyword :: Text -> Parser a
 notKeyword = customFailure . NotKeyword
 ```
 
 `customFailure`は`Text.Megaparsec`モジュールの便利なヘルパーです。
 
-```
+```haskell
 customFailure :: MonadParsec e s m => e -> m a
 customFailure = fancyFailure . E.singleton . ErrorCustom
 ```
 
 最後に試してみましょう。
 
-```
+```bash
 λ> parseTest (notKeyword "foo" :: Parser ()) ""
 1:1:
   |
@@ -2532,7 +2532,7 @@ foo is not a keyword
 
 `ParseErrorBundle`の表示は`errorBundlePretty`関数で行われます。
 
-```
+```haskell
 -- | 'ParseErrorBundle'をプリティプリントします。バンドル内のすべての 'ParseError'は、
 -- 入力ストリームに対して単一の効率的なパスを実行することによって、
 -- 対応する問題が起きている行とともに順番にプリティプリントされます。
@@ -2570,7 +2570,7 @@ observing :: MonadParsec e s m
 
 これは、の典型的な `observing` の使い方を示す完全なプログラムです。
 
-```
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications  #-}
 
@@ -2640,7 +2640,7 @@ main = do
 
 このプログラムを実行すると、次のように出力されます。
 
-```
+```haskell
 1:4:
   |
 1 | aaacc
@@ -2662,7 +2662,7 @@ in foo, in bar
 このイディオムは非常に便利なので、
 プリミティブ `observing` の観点から構築された `region` と呼ばれる非プリミティブヘルパーもあります。
 
-```
+```haskell
 -- | 内部のラッパーで発生する 'ParseError'の処理方法を指定します。
 -- 現在の実装の副作用として、このコンビネータで 'errorPos' を変更すると、
 -- 最終的にパーサの状態 'statePos'も変更されま('statePos' が
@@ -2728,7 +2728,7 @@ processErrorFancy location (ErrorCustom (FancyWithLocation ps cs)) =
 
 次の例から見てみましょう。
 
-```
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main (main) where
@@ -2763,7 +2763,7 @@ main = hspec $
 その他の単純なテスト関数は、
 `shouldSucceedOn` と `shouldFailOn` です（これらはめったに使われません）。
 
-```
+```haskell
     it "should parse 'a's all right" $
       parse myParser "" `shouldSucceedOn` "aaaa"
     it "should fail on 'b's" $
@@ -2774,7 +2774,7 @@ main = hspec $
 パースエラーをテストするには `shouldFailWith` があります。
 これは次のように使用できます。
 
-```
+```haskell
     it "fails on 'b's producing correct error message" $
       parse myParser "" "bbb" `shouldFailWith`
         TrivialError
@@ -2792,7 +2792,7 @@ main = hspec $
 `Text.Megaparsec.Error.Builder` モジュールも再エクスポートします。
 代わりに `err` ヘルパーを使用しましょう。
 
-```
+```haskell
     it "fails on 'b's producing correct error message" $
       parse myParser "" "bbb" `shouldFailWith` err 0 (utok 'b' <> etok 'a')
 ```
@@ -2806,7 +2806,7 @@ main = hspec $
 最後に、`failsLeaving` と `succeedsLeaving` を使用して、
 パース後に入力のどの部分が未消費のままであるかをテストすることができます。
 
-```
+```haskell
     it "consumes all 'a's but does not touch 'b's" $
       runParser' myParser (initialState "aaabbb") `succeedsLeaving` "bbb"
     it "fails without consuming anything" $
@@ -2818,7 +2818,7 @@ main = hspec $
 使用する必要があります（これにより、
 パース後に入力ストリームの残りをチェックすることができます）。
 
-```
+```haskell
 runParser'
   :: Parsec e s a      -- ^ Parser to run
   -> State s           -- ^ Initial state
@@ -2882,7 +2882,7 @@ data MyToken
 トークンの開始位置と終了位置を知る方法が必要なので、
 `WithPos` を追加しましょう。
 
-```
+```haskell
 data WithPos a = WithPos
   { startPos :: SourcePos
   , endPos   :: SourcePos
@@ -2892,7 +2892,7 @@ data WithPos a = WithPos
 
 これでストリームのデータ型ができます。
 
-```
+```haskell
 newtype MyStream = MyStream
   { unMyStream :: [WithPos MyToken]
   }
@@ -2902,7 +2902,7 @@ newtype MyStream = MyStream
 関連型関数 `Token` と `Tokens` を定義したいので、
 `TypeFamilies` の言語拡張が必要です。
 
-```
+```haskell
 instance Stream MyStream where
   type Token  MyStream = WithPos MyToken
   type Tokens MyStream = [WithPos MyToken]
@@ -2913,7 +2913,7 @@ instance Stream MyStream where
 詳しいドキュメントがあります。
 足りないメソッドを定義していきましょう。
 
-```
+```haskell
 -- …
   tokenToChunk Proxy x = [x]
   tokensToChunk Proxy xs = xs
@@ -2967,7 +2967,7 @@ showMyToken = \case
 
 これで `Parser` 型が定義できます。
 
-```
+```haskell
 type Parser = Parsec Void MyStream
 ```
 
@@ -3002,7 +3002,7 @@ pInt = token test Set.empty <?> "integer"
 
 最後に、足し算をパースするテストパーサを用意しましょう。
 
-```
+```haskell
 pSum :: Parser (Int, Int)
 pSum = do
   a <- pInt
@@ -3013,7 +3013,7 @@ pSum = do
 
 入力例は次のようにします。
 
-```
+```haskell
 exampleStream :: MyStream
 exampleStream = MyStream
   [ at 1 1 (Int 5)
@@ -3026,14 +3026,14 @@ exampleStream = MyStream
 
 試してみましょう。
 
-```
+```bash
 λ> parseTest (pSum <* eof) exampleStream
 (5,6)
 ```
 
 行(1)の `Plus` を `Div` に変更すると、正しいパースエラーが発生します。
 
-```
+```bash
 λ> parseTest (pSum <* eof) exampleStream
 1:3:
   |
