@@ -43,7 +43,7 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
   - [パースエラーの表示](#DispErr)
   - [パーサ実行時にパースエラーをキャッチする](#CatchErr)
 - [Megaparsecパーサのテスト](#Testing)
-- Working with custom input streams
+- [カスタム入力ストリームの操作](#CustomInput)
 
 「例：あなた自身のパーサコンビネータを書く」の章で開発されたトイパーサコンビネータは、実際の使用には適していないので、
 同じ問題を解決するHaskellエコシステムのライブラリを見ていきましょう。
@@ -2840,13 +2840,216 @@ runParserT' :: Monad m
 
 - `hspec-megaparsec` 自体に付属している[トイテストスイート](https://github.com/mrkkrp/hspec-megaparsec/blob/master/tests/Main.hs)。
 
-<!-- <a name=""></a> -->
+<a name="CustomInput"></a>
 
-<!-- ##  -->
+## カスタム入力ストリームの操作
 
-演習の回答例(`pUri` を完成させる)
+`megaparsec` は、
+`Stream` 型クラスのインスタンスである入力をパースできます。
+これは、`alex`などの字句解析ツールと組み合わせて使用できることを
+意味します。
+
+主題から離れないようにするため、
+`alex` がどのようにしてトークンのストリーム生成するのかは説明しません。
+また、次の形式を想定します。
+
+```haskell
+{-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies      #-}
+
+module Main (main) where
+
+import Data.List.NonEmpty (NonEmpty (..))
+import Data.Proxy
+import Data.Void
+import Text.Megaparsec
+import qualified Data.List          as DL
+import qualified Data.List.NonEmpty as NE
+import qualified Data.Set           as Set
+
+data MyToken
+  = Int Int
+  | Plus
+  | Mul
+  | Div
+  | OpenParen
+  | CloseParen
+  deriving (Eq, Ord, Show)
+```
+
+パースエラーを報告するために、
+トークンの開始位置と終了位置を知る方法が必要なので、
+`WithPos` を追加しましょう。
 
 ```
+data WithPos a = WithPos
+  { startPos :: SourcePos
+  , endPos   :: SourcePos
+  , tokenVal :: a
+  } deriving (Eq, Ord, Show)
+```
+
+これでストリームのデータ型ができます。
+
+```
+newtype MyStream = MyStream
+  { unMyStream :: [WithPos MyToken]
+  }
+```
+
+次に、`MyStream` を `Stream` 型クラスのインスタンスにする必要があります。
+関連型関数 `Token` と `Tokens` を定義したいので、
+`TypeFamilies` の言語拡張が必要です。
+
+```
+instance Stream MyStream where
+  type Token  MyStream = WithPos MyToken
+  type Tokens MyStream = [WithPos MyToken]
+  -- …
+```
+
+`Stream` は `Text.Megaparsec.Stream` モジュールに
+詳しいドキュメントがあります。
+足りないメソッドを定義していきましょう。
+
+```
+-- …
+  tokenToChunk Proxy x = [x]
+  tokensToChunk Proxy xs = xs
+  chunkToTokens Proxy = id
+  chunkLength Proxy = length
+  chunkEmpty Proxy = null
+  take1_ (MyStream []) = Nothing
+  take1_ (MyStream (t:ts)) = Just (t, MyStream ts)
+  takeN_ n (MyStream s)
+    | n <= 0    = Just ([], MyStream s)
+    | null s    = Nothing
+    | otherwise =
+        let (x, s') = splitAt n s
+        in Just (x, MyStream s')
+  takeWhile_ f (MyStream s) =
+    let (x, s') = DL.span f s
+    in (x, MyStream s')
+  showTokens Proxy = DL.intercalate ", "
+    . NE.toList
+    . fmap (showMyToken . tokenVal)
+  reachOffset o pst@PosState {..} =
+    case drop (o - pstateOffset) (unMyStream pstateInput) of
+      [] ->
+        ( pstateSourcePos
+        , "<missing input>"
+        , pst { pstateInput = MyStream [] }
+        )
+      (x:xs) ->
+        ( startPos x
+        , "<missing input>"
+        , pst { pstateInput = MyStream (x:xs) }
+        )
+
+showMyToken :: MyToken -> String
+showMyToken = \case
+  (Int n)    -> show n
+  Plus       -> "+"
+  Mul        -> "*"
+  Div        -> "/"
+  OpenParen  -> "("
+  CloseParen -> ")"
+```
+
+`Stream` 型クラスに関するより多くの背景情報
+(そしてなぜこのようになっているのか)は
+[このブログ記事](https://markkarpov.com/post/megaparsec-more-speed-more-power.html)
+に書いてあります。
+`reachOffset` 関数では、元の入力ストリームが不足しているため、
+問題のある行を実際に表示することはできません。
+これは解決できますが、解決策はこの記事の範囲外です。
+
+これで `Parser` 型が定義できます。
+
+```
+type Parser = Parsec Void MyStream
+```
+
+次のステップは、
+`token` と (意味があるなら)`tokens` のプリミティブに加え、
+基本的なパーサを定義することです。
+そのまま使用できるストリームには、
+`Text.Megaparsec.Byte` および `Text.Megaparsec.Char` モジュールが
+ありますが、カスタムトークンを使用する場合はカスタムヘルパーが必要です。
+
+```haskell
+liftMyToken :: MyToken -> WithPos MyToken
+liftMyToken myToken = WithPos pos pos myToken
+  where
+    pos = initialPos ""
+
+pToken :: MyToken -> Parser MyToken
+pToken c = token test (Set.singleton . Tokens . nes . liftMyToken $ c)
+  where
+    test wpos@(WithPos _ _ x) =
+      if x == c
+        then Just x
+        else Nothing
+    nes x = x :| []
+
+pInt :: Parser Int
+pInt = token test Set.empty <?> "integer"
+  where
+    test (WithPos _ _ (Int n)) = Just n
+    test _ = Nothing
+```
+
+最後に、足し算をパースするテストパーサを用意しましょう。
+
+```
+pSum :: Parser (Int, Int)
+pSum = do
+  a <- pInt
+  _ <- pToken Plus
+  b <- pInt
+  return (a, b)
+```
+
+入力例は次のようにします。
+
+```
+exampleStream :: MyStream
+exampleStream = MyStream
+  [ at 1 1 (Int 5)
+  , at 1 3 Plus         -- (1)
+  , at 1 5 (Int 6) ]
+  where
+    at  l c = WithPos (at' l c) (at' l (c + 1))
+    at' l c = SourcePos "" (mkPos l) (mkPos c)
+```
+
+試してみましょう。
+
+```
+λ> parseTest (pSum <* eof) exampleStream
+(5,6)
+```
+
+行(1)の `Plus` を `Div` に変更すると、正しいパースエラーが発生します。
+
+```
+λ> parseTest (pSum <* eof) exampleStream
+1:3:
+  |
+1 | <missing input>
+  |   ^
+unexpected /
+expecting +
+```
+
+言い換えると、カスタムストリームのパースが可能な
+十分に機能するパーサができました。
+
+
+# 演習の回答例(`pUri` を完成させる)
+
+```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 
