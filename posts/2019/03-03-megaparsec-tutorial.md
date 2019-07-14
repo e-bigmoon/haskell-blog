@@ -2957,7 +2957,7 @@ showMyToken = \case
   CloseParen -> ")"
 ```
 
-`Stream` 型クラスに関するより多くの背景情報
+`Stream` 型クラスに関する詳しい参考資料
 (そしてなぜこのようになっているのか)は
 [このブログ記事](https://markkarpov.com/post/megaparsec-more-speed-more-power.html)
 に書いてあります。
@@ -2972,7 +2972,7 @@ type Parser = Parsec Void MyStream
 ```
 
 次のステップは、
-`token` と (意味があるなら)`tokens` のプリミティブに加え、
+`token` と (意味があるなら)`tokens` のプリミティブを使って、
 基本的なパーサを定義することです。
 そのまま使用できるストリームには、
 `Text.Megaparsec.Byte` および `Text.Megaparsec.Char` モジュールが
