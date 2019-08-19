@@ -12,12 +12,12 @@ aliases:
   - &restore_build_results
     restore_cache:
       keys:
-        - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+        - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "bigmoon-haskellers-blog.cabal" }}
         - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-
         - stack-{{ checksum "cache_key" }}-
   - &save_build_results
       save_cache:
-        key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}
+        key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "bigmoon-haskellers-blog.cabal" }}
         paths:
           - ~/.stack
           - ~/.local/bin
@@ -92,11 +92,11 @@ jobs:
           command: |
             curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version
             curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s app
-      - run:
-          name: Run stylish-haskell
-          command: |
-            curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
-            git --no-pager diff --exit-code
+      # - run:
+      #     name: Run stylish-haskell
+      #     command: |
+      #       curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name "*hs" -not -path '.git' -not -path '*.stack-work*')
+      #       git --no-pager diff --exit-code
 
   preview:
     working_directory: ~/haskell-blog
