@@ -117,7 +117,7 @@ instance IsRecord Foo
 
 ---
 
-現時点で Haskell 本を2冊 (1人1冊) 執筆しています。(値段や配布数については未定です)
+現時点で Haskell 本を「2冊」販売予定です。(値段や配布数については未定です)
 
 ### (1) すごいHaskell自分で作ろう！ Write Your Haskell for Great Good!
 
