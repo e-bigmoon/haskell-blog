@@ -40,6 +40,11 @@ aliases:
       command: |
         stack upgrade --binary-version=$STACK_VERSION
         stack --version
+  - &install_dependencies:
+    run:
+      name: Install dependencies
+      command: stack test -j 1 --only-dependencies --no-terminal --no-run-tests
+      no_output_timeout: 120m
 
 jobs:
   build:
@@ -51,10 +56,7 @@ jobs:
       - *create_cache_key_file
       - *restore_build_results
       - *display_stack_version
-      - run:
-          name: Install dependencies
-          command: stack test -j 1 --only-dependencies --no-terminal --no-run-tests
-          no_output_timeout: 120m
+      - *install_dependencies
       - run:
           name: Run stack test
           command: stack test --fast
@@ -76,6 +78,7 @@ jobs:
       - *create_cache_key_file
       - *restore_build_results
       - *display_stack_version
+      - *install_dependencies
       - run:
           name: Run stack test --pedantic
           command: |
