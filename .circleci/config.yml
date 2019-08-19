@@ -16,31 +16,31 @@ aliases:
         - stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-
         - stack-{{ checksum "cache_key" }}-
   - &save_build_results
-      save_cache:
-        key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "bigmoon-haskellers-blog.cabal" }}
-        paths:
-          - ~/.stack
-          - ~/.local/bin
-          - .stack-work
+    save_cache:
+      key: stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "bigmoon-haskellers-blog.cabal" }}
+      paths:
+        - ~/.stack
+        - ~/.local/bin
+        - .stack-work
   - &restore_preview_results
     restore_cache:
       keys:
         - stack-{{ checksum "cache_key" }}-{{ checksum "./.circleci/preview.hs" }}
         - stack-{{ checksum "cache_key" }}-
   - &save_preview_results
-      save_cache:
-        key: stack-{{ checksum "cache_key" }}-{{ checksum "./.circleci/preview.hs" }}
-        paths:
-          - ~/.stack
-          - ~/.local/bin
-          - .stack-work
+    save_cache:
+      key: stack-{{ checksum "cache_key" }}-{{ checksum "./.circleci/preview.hs" }}
+      paths:
+        - ~/.stack
+        - ~/.local/bin
+        - .stack-work
   - &display_stack_version
     run:
       name: Display stack version
       command: |
         stack upgrade --binary-version=$STACK_VERSION
         stack --version
-  - &install_dependencies:
+  - &install_dependencies
     run:
       name: Install dependencies
       command: stack test -j 1 --only-dependencies --no-terminal --no-run-tests
