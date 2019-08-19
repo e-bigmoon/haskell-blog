@@ -1,7 +1,7 @@
 ---
 title: extensible-0.6.1 マイグレーションガイド
 author: Shinya Yamaguchi
-tags: bigmoon, monoid, package
+tags: bigmoon, extensible, package
 ---
 
 ## はじめに
@@ -9,6 +9,8 @@ tags: bigmoon, monoid, package
 [extensible](https://hackage.haskell.org/package/extensible) のバージョンを最新の **0.6.1** に更新した際にいくつかコードの修正が必要になったので、メモ程度に残しておきます。
 
 今回の記事では一部の変更点にしか触れないため、完全な変更点については [CHANGELOG](https://github.com/fumieval/extensible/blob/master/CHANGELOG.md) を参照してください。
+
+<!--more-->
 
 ### 0.5
 
