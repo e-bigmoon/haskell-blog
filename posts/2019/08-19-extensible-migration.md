@@ -21,6 +21,9 @@ tags: bigmoon, extensible, package
 ### 0.5.1
 
 - [membership](https://hackage.haskell.org/package/membership) パッケージが依存関係に追加されました。(`Data.Extensible.HList` と `Data.Extensible.Internal` が membership パッケージに移動した形です)
+
+-----
+
 - `AssocKey`, `AssocValue`, `ValueIs`, `KeyValue` が廃止予定になりました。
 
 今後はそれぞれ以下の型を利用しましょう。
@@ -32,6 +35,8 @@ tags: bigmoon, extensible, package
 [ValueIs](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:ValueIs) | [TargetIs](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:TargetIs)
 [KeyValue](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyValue) | [KeyTargetAre](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyTargetAre)
 
+-----
+
 - `proxyAssocKey`, `stringAssocKey`, `proxyAssocValue` も同様に廃止予定になりました。
 
 今後はそれぞれ以下の関数を利用しましょう。
@@ -41,6 +46,8 @@ tags: bigmoon, extensible, package
 [proxyAssocKey](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyAssocKey) | [proxyKeyOf](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyKeyOf)
 [stringAssocKey](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:stringAssocKey) | [stringKeyOf](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:stringKeyOf)
 [proxyAssocValue](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyAssocValue) | [proxyTargetOf](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyTargetOf)
+
+-----
 
 - [Associate](https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Class.html#t:Associate) が廃止予定になりました。
 
@@ -61,12 +68,14 @@ type Associate k v xs = Lookup xs k v
 0.6 より前 | 0.6 以降
 ----------|-----------
 [(:*)](https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Struct.html#t::-42-) | [(:&)](https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Struct.html#t::-38-)
-[(:|)](https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-124-) | [(:/)](https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-47-)
+[(:\|)](https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-124-) | [(:/)](https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-47-)
 
 ```haskell
 type (:*) h xs = xs :& h
 type (:|) h xs = xs :/ h
 ```
+
+-----
 
 - [TangleT](https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Tangle.html#t:TangleT) の引数の順番が入れ替わりました。
 
@@ -94,21 +103,25 @@ instance IsRecord Foo
 
 ## 終わりに
 
-`0.6.1` に一気に更新しましたが、特にハマることも無くスムーズに更新が完了しました。
+`extensible-0.6.1` に一気に更新しましたが、特にハマることも無くスムーズに更新が完了しました。
 
 いくつか新しい関数などが追加されているので、その辺りも要チェックですね。
 
 ## 宣伝
 
-[技術書典7](https://techbookfest.org/event/tbf07)に参加します。
+[技術書典7](https://techbookfest.org/event/tbf07)に初参加します。
 
-![サークルカット](/images/2019/08-19/circle.png)
+<img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px">
+
+サークルカットは[アルフォンス・ミュシャ](https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A9%E3%83%B3%E3%82%B9%E3%83%BB%E3%83%9F%E3%83%A5%E3%82%B7%E3%83%A3)っぽい感じを意識しています。ミュシャ風のポスターは至る所で目にしますが、ミュシャの最高傑作は「スラヴ叙事詩」なので興味のある人は是非調べてみてください。
+
+---
 
 現時点で Haskell 本を2冊 (1人1冊) 執筆しています。(値段や配布数については未定です)
 
 ### (1) すごいHaskell自分で作ろう！ Write Your Haskell for Great Good!
 
-![表紙](/images/2019/08-19/main.jpg)
+<img src="/images/2019/08-19/main.jpg" alt ="表紙" width="400px">
 
 【著者】
 @gotoki_no_joe
@@ -118,7 +131,7 @@ Haskell でプログラミングするのは楽しい。ところで「Haskell*�
 
 構文を設計し、意味を定義し、それらに従ってインタプリタを **Haskell** と **TypeScript** で実装します。
 
-Haskell といいつつ普通でわかりやすい正格評価な処理系から始めて、その後で遅延評価をする処理系に取り組みます。必要になった部分だけを計算する遅延評価の仕組みが、組み込み演算やパターンマッチと協調する様子を自作して理解します。
+Haskell といいつつ普通でわかりやすい**正格評価な処理系**から始めて、その後で**遅延評価をする処理系**に取り組みます。必要になった部分だけを計算する遅延評価の仕組みが、組み込み演算やパターンマッチと協調する様子を自作して理解します。
 
 おまけに TypeScript によるパーサコンビネータの作り方が付いています。
 
@@ -126,8 +139,14 @@ Haskell といいつつ普通でわかりやすい正格評価な処理系から
 
 【目次 (仮)】
 
-![目次1](/images/2019/08-19/toc1.png)
-![目次2](/images/2019/08-19/toc2.png)
+クリックすると `pdf` が開きます。
+
+<a href="/images/2019/08-19/toc1.pdf">
+  <img src="/images/2019/08-19/toc1.png" alt ="目次1" width="400px">
+</a>
+<a href="/images/2019/08-19/toc2.pdf">
+  <img src="/images/2019/08-19/toc2.png" alt ="目次2" width="400px">
+</a>
 
 ### (2) GHC API 入門 (仮)
 
@@ -139,7 +158,7 @@ GHC API を使って具体的に動く何かを作る予定ですが、全然筆
 
 頑張ります！
 
-### まとめ
+### おすすめポイント
 
 Haskell の処理系を作ってみたいなーって思っている人は「すごいHaskell自分で作ろう！ Write Your Haskell for Great Good!」がおすすめです！！！
 
