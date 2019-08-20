@@ -14,7 +14,7 @@ tags: bigmoon, extensible, package
 
 ### 0.5
 
-- [Cont'](https://hackage.haskell.org/package/extensible-0.4.10.1/docs/Data-Extensible-Wrapper.html#t:Const-39-) が削除されました。
+- [Const'](https://hackage.haskell.org/package/extensible-0.4.10.1/docs/Data-Extensible-Wrapper.html#t:Const-39-) が削除されました。
 
 今後は [Control.Applicative.Const](https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html#t:Const) を利用しましょう。
 
