@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Sum Monoid</title>
+  <meta name="description" content="はじめに
+Data.Monoid に Sum 型が定義されています。
+newtype Sum a = Sum { getSum :: a }
+
+instance Num a =&gt; Semigroup (Sum a) where
+  Sum a &lt;&gt; Sum b = Sum (a + b)
+
+insta">
+  <link rel="canonical" href="../../posts/2019/02-13-sum-monoid%20copy.html">
+  <link rel="alternate" type="application/atom+xml" title="Sum Monoid" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="Sum Monoid" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2019/02-13-sum-monoid%20copy.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Sum Monoid" />
+  <meta property="og:description" content="はじめに
+Data.Monoid に Sum 型が定義されています。
+newtype Sum a = Sum { getSum :: a }
+
+instance Num a =&gt; Semigroup (Sum a) where
+  Sum a &lt;&gt; Sum b = Sum (a + b)
+
+insta" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on February 13, 2019
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Sum Monoid</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a>, <a href="../../tags/monoid.html">monoid</a>, <a href="../../tags/package.html">package</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Sum Monoid&url=https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Sum">Sum</a> 型が定義されています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="ot">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> b)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">0</span></span></code></pre></div>
+<p>使い方は簡単。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>ghci<span class="op">&gt;</span> getSum (<span class="dt">Sum</span> <span class="dv">1</span> <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">2</span> <span class="op">&lt;&gt;</span> <span class="fu">mempty</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="dv">3</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>ghci<span class="op">&gt;</span> getSum <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Sum</span> [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="dv">55</span></span></code></pre></div>
+<!--more-->
+<h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
+<p>Semigroup Law</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> (<span class="dt">Sum</span> b <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> c)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">=</span> <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> (b <span class="op">+</span> c)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> (b <span class="op">+</span> c))</span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">-- (+) の結合律より</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">=</span> <span class="dt">Sum</span> ((a <span class="op">+</span> b) <span class="op">+</span> c)</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> c</span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="ot">=</span> (<span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> c</span></code></pre></div>
+<p>Monoid Law</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">=</span> <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> <span class="dv">0</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> <span class="dv">0</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">=</span> <span class="dt">Sum</span> a</span>
+<span id="cb4-5"><a href="#cb4-5"></a></span>
+<span id="cb4-6"><a href="#cb4-6"></a>  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Sum</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> a</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">0</span> <span class="op">+</span> <span class="dt">Sum</span> a</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="ot">=</span> <span class="dt">Sum</span> (<span class="dv">0</span> <span class="op">+</span> a)</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="ot">=</span> <span class="dt">Sum</span> a</span></code></pre></div>
+<h2 id="newtype-を使って定義する理由">newtype を使って定義する理由</h2>
+<p>わざわざ <code>Sum</code> という新しい型を作ってインスタンスを定義しなくても、<code>Int</code> を使って直接 <code>Semigroup</code> と <code>Monoid</code> のインスタンスを定義すれば良いんじゃないか？と普通は思います。</p>
+<p>実際に以下の定義は問題なく動きます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Int</span> <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>  (<span class="op">&lt;&gt;</span>) <span class="ot">=</span> (<span class="op">+</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Int</span> <span class="kw">where</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>ghci<span class="op">&gt;</span> <span class="dv">1</span> <span class="op">&lt;&gt;</span> <span class="dv">2</span> <span class="op">&lt;&gt;</span><span class="ot"> mempty ::</span> <span class="dt">Int</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="dv">3</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a>ghci<span class="op">&gt;</span> <span class="fu">mconcat</span> [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>]<span class="ot"> ::</span> <span class="dt">Int</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="dv">55</span></span></code></pre></div>
+<p>しかし、足し算と同様に掛け算もモノイドとして定義したいと思う人もいるでしょう。</p>
+<p>この時 <code>Int</code> は既に <code>Semigroup</code>, <code>Monoid</code> のインスタンス定義があるため、同じファイルに以下のように定義することはできません。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> <span class="dt">Int</span> <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>  (<span class="op">&lt;&gt;</span>) <span class="ot">=</span> (<span class="op">*</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">instance</span> <span class="dt">Monoid</span> <span class="dt">Int</span> <span class="kw">where</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dv">1</span></span></code></pre></div>
+<p>この問題を解決する方法はいくつかありますが、このような例では <code>newtype</code> が適切ということです。</p>
+<h2 id="law-の自動チェック-quickcheck-classes">Law の自動チェック (quickcheck-classes)</h2>
+<p><a href="https://hackage.haskell.org/package/quickcheck-classes">quickcheck-classes</a> を使って <code>Semigroup law</code> と <code>Monoid law</code> がちゃんと法則を満たすかどうかチェックしてみます。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">newtype</span> <span class="dt">Sum</span> a <span class="ot">=</span> <span class="dt">Sum</span> {<span class="ot"> getSum ::</span> a }</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Arbitrary</span>)</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="dt">Sum</span> a <span class="op">&lt;&gt;</span> <span class="dt">Sum</span> b <span class="ot">=</span> <span class="dt">Sum</span> (a <span class="op">+</span> b)</span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">0</span></span></code></pre></div>
+<p><code>Eq</code>, <code>Show</code>, <code>Arbitrary</code> が無いとチェックできないので <code>derive</code> しています。</p>
+<p>実行はめっちゃ簡単で、<code>lawsCheck</code> 関数と <code>semigroupLaws</code> や <code>monoidLaws</code> などのチェックしたい則に対応する関数を使うだけです。</p>
+<pre class="shell"><code>&gt; import Test.QuickCheck.Classes
+&gt; import Data.Proxy
+
+&gt; lawsCheck (semigroupLaws (Proxy :: Proxy (Sum Int)))
+Semigroup: Associative +++ OK, passed 100 tests.
+Semigroup: Concatenation +++ OK, passed 100 tests.
+Semigroup: Times +++ OK, passed 100 tests; 99 discarded.
+
+&gt; lawsCheck (monoidLaws (Proxy :: Proxy (Sum Int)))
+Monoid: Associative +++ OK, passed 100 tests.
+Monoid: Left Identity +++ OK, passed 100 tests.
+Monoid: Right Identity +++ OK, passed 100 tests.
+Monoid: Concatenation +++ OK, passed 100 tests.</code></pre>
+<p>参考までに <code>mempty</code> の定義が Law を満たさない場合の例も載せておきます。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">instance</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sum</span> a) <span class="kw">where</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sum</span> <span class="dv">1</span></span></code></pre></div>
+<pre class="shell"><code>&gt; import Test.QuickCheck.Classes
+&gt; import Data.Proxy
+
+&gt; lawsCheck (semigroupLaws (Proxy :: Proxy (Sum Int)))
+Semigroup: Associative +++ OK, passed 100 tests.
+Semigroup: Concatenation +++ OK, passed 100 tests.
+Semigroup: Times +++ OK, passed 100 tests; 113 discarded.
+
+&gt; lawsCheck (monoidLaws (Proxy :: Proxy (Sum Int)))
+Monoid: Associative +++ OK, passed 100 tests.
+Monoid: Left Identity *** Failed! Falsifiable (after 1 test):
+  Description: mappend mempty a = a
+  a = Sum {getSum = 0}
+  mappend mempty a = Sum {getSum = 1}
+Monoid: Right Identity *** Failed! Falsifiable (after 1 test):
+  Description: mappend a mempty = a
+  a = Sum {getSum = 0}
+  mappend a mempty = Sum {getSum = 1}
+Monoid: Concatenation +++ OK, passed 100 tests.</code></pre>
+<p>こんな感じでモノイドの左単位元則 (Left Identity law) と右単位元則 (Right Identity law) が満たされていないことを教えてくれます。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://people.cs.kuleuven.be/~tom.schrijvers/Research/talks/lhug4.pdf">Lists and Other Monoids</a></li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2019/02-12-last-monoid.html"><i class="material-icons left">navigate_before</i>Last Monoid</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2019/07-14-megaparsec-tutorial.html">Megaparsec tutorial from IH book<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Sum Monoid&url=https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

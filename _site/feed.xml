@@ -8,8 +8,165 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-07-14T00:00:00Z</updated>
+    <updated>2019-08-19T00:00:00Z</updated>
     <entry>
+    <title>extensible-0.6.1 マイグレーションガイド</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/08-19-extensible-migration.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/08-19-extensible-migration.html</id>
+    <published>2019-08-19T00:00:00Z</published>
+    <updated>2019-08-19T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/extensible">extensible</a> のバージョンを最新の <strong>0.6.1</strong> に更新した際にいくつかコードの修正が必要になったので、メモ程度に残しておきます。</p>
+<p>今回の記事では一部の変更点にしか触れないため、完全な変更点については <a href="https://github.com/fumieval/extensible/blob/master/CHANGELOG.md">CHANGELOG</a> を参照してください。</p>
+<!--more-->
+<h3 id="section">0.5</h3>
+<ul>
+<li><a href="https://hackage.haskell.org/package/extensible-0.4.10.1/docs/Data-Extensible-Wrapper.html#t:Const-39-">Const’</a> が削除されました。</li>
+</ul>
+<p>今後は <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html#t:Const">Control.Applicative.Const</a> を利用しましょう。</p>
+<h3 id="section-1">0.5.1</h3>
+<ul>
+<li><a href="https://hackage.haskell.org/package/membership">membership</a> パッケージが依存関係に追加されました。(<code>Data.Extensible.HList</code> と <code>Data.Extensible.Internal</code> が membership パッケージに移動した形です)</li>
+</ul>
+<hr />
+<ul>
+<li><code>AssocKey</code>, <code>AssocValue</code>, <code>ValueIs</code>, <code>KeyValue</code> が廃止予定になりました。</li>
+</ul>
+<p>今後はそれぞれ以下の型を利用しましょう。</p>
+<table>
+<thead>
+<tr class="header">
+<th>0.5.1 より前</th>
+<th>0.5.1 以降</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:AssocKey">AssocKey</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyOf">KeyOf</a></td>
+</tr>
+<tr class="even">
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:AssocValue">AssocValue</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:TargetOf">TargetOf</a></td>
+</tr>
+<tr class="odd">
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:ValueIs">ValueIs</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:TargetIs">TargetIs</a></td>
+</tr>
+<tr class="even">
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyValue">KeyValue</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyTargetAre">KeyTargetAre</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<ul>
+<li><code>proxyAssocKey</code>, <code>stringAssocKey</code>, <code>proxyAssocValue</code> も同様に廃止予定になりました。</li>
+</ul>
+<p>今後はそれぞれ以下の関数を利用しましょう。</p>
+<table>
+<thead>
+<tr class="header">
+<th>0.5.1 より前</th>
+<th>0.5.1 以降</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyAssocKey">proxyAssocKey</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyKeyOf">proxyKeyOf</a></td>
+</tr>
+<tr class="even">
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:stringAssocKey">stringAssocKey</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:stringKeyOf">stringKeyOf</a></td>
+</tr>
+<tr class="odd">
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyAssocValue">proxyAssocValue</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyTargetOf">proxyTargetOf</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<ul>
+<li><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Class.html#t:Associate">Associate</a> が廃止予定になりました。</li>
+</ul>
+<p>今後は <a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Class.html#t:Lookup">Lookup</a> を利用しましょう。</p>
+<p>引数の順番が変わる点に注意してください。そのままではコンパイルエラーになります。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">type</span> <span class="dt">Associate</span> k v xs <span class="ot">=</span> <span class="dt">Lookup</span> xs k v</span></code></pre></div>
+<h3 id="section-2">0.6</h3>
+<ul>
+<li><code>(:*)</code> と <code>(:|)</code> がそれぞれ廃止予定になりました。</li>
+</ul>
+<p>今後はそれぞれ以下の関数を利用しましょう。その際、引数の順番が逆になっているので注意してください。</p>
+<table>
+<thead>
+<tr class="header">
+<th>0.6 より前</th>
+<th>0.6 以降</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Struct.html#t::-42-">(:*)</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Struct.html#t::-38-">(:&amp;)</a></td>
+</tr>
+<tr class="even">
+<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-124-">(:|)</a></td>
+<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-47-">(:/)</a></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">type</span> (<span class="op">:*</span>) h xs <span class="ot">=</span> xs <span class="op">:&amp;</span> h</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">type</span> (<span class="op">:|</span>) h xs <span class="ot">=</span> xs <span class="op">:/</span> h</span></code></pre></div>
+<hr />
+<ul>
+<li><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Tangle.html#t:TangleT">TangleT</a> の引数の順番が入れ替わりました。</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- 0.6 より前の定義</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">newtype</span> <span class="dt">TangleT</span> h xs m a</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">-- 0.6 以降の定義</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">newtype</span> <span class="dt">TangleT</span> xs h m a</span></code></pre></div>
+<h3 id="section-3">0.6.1</h3>
+<ul>
+<li><code>0.5.1</code> で廃止予定となっていた <code>deriveIsRecord</code> が削除されました。</li>
+</ul>
+<p>今後は <code>Generics</code> のインスタンスであれば導出可能です。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- 0.6.1 より前</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>deriveIsRecord &#39;<span class="dt">&#39;Foo</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co">-- 0.6.1 以降の定義 (Foo が Generics のインスタンスであればOK)</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">instance</span> <span class="dt">IsRecord</span> <span class="dt">Foo</span></span></code></pre></div>
+<h2 id="終わりに">終わりに</h2>
+<p><code>extensible-0.6.1</code> に一気に更新しましたが、特にハマることも無くスムーズに更新が完了しました。</p>
+<p>いくつか新しい関数などが追加されているので、その辺りも要チェックですね。</p>
+<h2 id="宣伝">宣伝</h2>
+<p><a href="https://techbookfest.org/event/tbf07">技術書典7</a>に初参加します。</p>
+<p><img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px"></p>
+<p>サークルカットは<a href="https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A9%E3%83%B3%E3%82%B9%E3%83%BB%E3%83%9F%E3%83%A5%E3%82%B7%E3%83%A3">アルフォンス・ミュシャ</a>っぽい感じを意識しています。ミュシャ風のポスターは至る所で目にしますが、ミュシャの最高傑作は「スラヴ叙事詩」なので興味のある人は是非調べてみてください。</p>
+<hr />
+<p>現時点で Haskell 本を「2冊」販売予定です。(値段や配布数については未定です)</p>
+<h3 id="すごいhaskell自分で作ろう-write-your-haskell-for-great-good">(1) すごいHaskell自分で作ろう！ Write Your Haskell for Great Good!</h3>
+<p><img src="/images/2019/08-19/main.jpg" alt ="表紙" width="400px"></p>
+<p>【著者】 <span class="citation" data-cites="gotoki_no_joe">@gotoki_no_joe</span></p>
+<p>【概要】 Haskell でプログラミングするのは楽しい。ところで「Haskell<em>を</em>プログラミングする」のも楽しいのでは？じゃあやってみよう。というわけで、Haskell からヒラヒラを全て削り落して削りすぎたような関数型言語を作ります。</p>
+<p>構文を設計し、意味を定義し、それらに従ってインタプリタを <strong>Haskell</strong> と <strong>TypeScript</strong> で実装します。</p>
+<p>Haskell といいつつ普通でわかりやすい<strong>正格評価な処理系</strong>から始めて、その後で<strong>遅延評価をする処理系</strong>に取り組みます。必要になった部分だけを計算する遅延評価の仕組みが、組み込み演算やパターンマッチと協調する様子を自作して理解します。</p>
+<p>おまけに TypeScript によるパーサコンビネータの作り方が付いています。</p>
+<p>ごめんなさい！Haskell らしさの重要な柱である型システムについて執筆が間に合いませんでした。インデント構文、JavaScript を出力するコンパイラとともに、後編での執筆を予定しています。</p>
+<p>【目次 (仮)】</p>
+<p>クリックすると <code>pdf</code> が開きます。</p>
+<p><a href="/images/2019/08-19/toc1.pdf"> <img src="/images/2019/08-19/toc1.png" alt ="目次1" width="400px"> </a> <a href="/images/2019/08-19/toc2.pdf"> <img src="/images/2019/08-19/toc2.png" alt ="目次2" width="400px"> </a></p>
+<h3 id="ghc-api-入門-仮">(2) GHC API 入門 (仮)</h3>
+<p>【著者】 <span class="citation" data-cites="waddlaw">@waddlaw</span></p>
+<p>【概要】 GHC API を使って具体的に動く何かを作る予定ですが、全然筆が進んでいないので内容未定・・・。(上記の書籍と比べると宣伝できるものが何も・・・)</p>
+<p>頑張ります！</p>
+<h3 id="おすすめポイント">おすすめポイント</h3>
+<p>Haskell の処理系を作ってみたいなーって思っている人は「すごいHaskell自分で作ろう！ Write Your Haskell for Great Good!」がおすすめです！！！</p>
+<p><code>TypeScript</code> と <code>Haskell</code> という異なるパラダイムの言語による実装が一冊に収まっているので、とてもお得ですね。</p>
+<p>応援よろしくお願いします〜。</p>]]></summary>
+</entry>
+<entry>
     <title>Megaparsec tutorial from IH book</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/07-14-megaparsec-tutorial.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/07-14-megaparsec-tutorial.html</id>
@@ -2019,8 +2176,8 @@ Final state: &quot;branch B&quot;</code></pre>
 </entry>
 <entry>
     <title>Sum Monoid</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid.html</id>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/02-13-sum-monoid%20copy.html</id>
     <published>2019-02-13T00:00:00Z</published>
     <updated>2019-02-13T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
@@ -3054,302 +3211,6 @@ version: 0.0</code></pre>
 <li>Stack can now be compiled again inside a directory that does not contain a <code>.git</code> directory, see <a href="https://github.com/commercialhaskell/stack/issues/4364#issuecomment-431600841">#4364</a></li>
 <li>Handle a change in GHC’s hi-dump format around <code>addDependentFile</code>, which now includes a hash. See <a href="https://github.com/yesodweb/yesod/issues/1551">yesodweb/yesod#1551</a></li>
 <li>Allow variables to appear in template file names.</li>
-</ul>]]></summary>
-</entry>
-<entry>
-    <title>CamelCase の split</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/11-16-split-camel-case.html</id>
-    <published>2018-11-16T00:00:00Z</published>
-    <updated>2018-11-16T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>Twitter で <code>CamelCase</code> の文字列を <code>Camel Case</code> にするという話を見かけたので、やってみました。</p>
-<p>文字列に含まれる文字は <code>['a'..'z'] ++ ['A'..'Z']</code> を想定しています。</p>
-<ul>
-<li>追記: 寄せられたご意見について追記しました。</li>
-</ul>
-<!--more-->
-<h2 id="split">split</h2>
-<p>分割するということなので <a href="https://www.stackage.org/package/split">split</a> パッケージを使ってみます。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">import</span> <span class="dt">Data.List.Split</span> (split, startsWithOneOf)</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">splitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>splitCC  <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</span></code></pre></div>
-<p>実行結果</p>
-<pre class="shell"><code>ghci&gt; splitCC &quot;CamelCase&quot;
-&quot;Camel Case&quot;</code></pre>
-<h2 id="fold">fold</h2>
-<p><code>split</code> パッケージを使った実装は直感的でコードもコンパクトです。</p>
-<p>しかし、見た感じ効率悪そうですよね。(リスト全体を分割した後で <code>unwords</code> かけるため)</p>
-<p>そのため、<code>fold</code> バージョンも実装してみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">import</span> <span class="dt">Data.Char</span> (isUpper, isSpace)</span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">foldSplitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go []</span>
-<span id="cb3-5"><a href="#cb3-5"></a>  <span class="kw">where</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>    go c acc</span>
-<span id="cb3-7"><a href="#cb3-7"></a>      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">&#39; &#39;</span><span class="op">:</span>c<span class="op">:</span>acc</span>
-<span id="cb3-8"><a href="#cb3-8"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</span>
-<span id="cb3-9"><a href="#cb3-9"></a>    fmt cs</span>
-<span id="cb3-10"><a href="#cb3-10"></a>      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</span>
-<span id="cb3-11"><a href="#cb3-11"></a>      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</span>
-<span id="cb3-12"><a href="#cb3-12"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</span></code></pre></div>
-<p>実行結果</p>
-<pre class="shell"><code>ghci&gt; foldSplitCC &quot;CamelCase&quot;
-&quot;Camel Case&quot;</code></pre>
-<h2 id="quickcheck">QuickCheck</h2>
-<p>念の為 <a href="https://www.stackage.org/package/QuickCheck">QuickCheck</a> を使ってランダムテストを行ってみましょう。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span> <span class="dt">SplitCC</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</span>
-<span id="cb5-8"><a href="#cb5-8"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</span>
-<span id="cb5-12"><a href="#cb5-12"></a></span>
-<span id="cb5-13"><a href="#cb5-13"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb5-14"><a href="#cb5-14"></a>main <span class="ot">=</span> quickCheck prop_split</span>
-<span id="cb5-15"><a href="#cb5-15"></a></span>
-<span id="cb5-16"><a href="#cb5-16"></a><span class="ot">prop_split ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a>prop_split xs <span class="ot">=</span> splitCC xs&#39; <span class="op">==</span> foldSplitCC xs&#39;</span>
-<span id="cb5-18"><a href="#cb5-18"></a>  <span class="kw">where</span> xs&#39; <span class="ot">=</span> getString xs</span></code></pre></div>
-<p>実行結果</p>
-<pre class="shell"><code>$ stack test
-splitcc-0.1.0.0: test (suite: splitcc-test)
-
-+++ OK, passed 100 tests.
-
-splitcc-0.1.0.0: Test suite splitcc-test passed</code></pre>
-<h2 id="ベンチマーク">ベンチマーク</h2>
-<p>次は <a href="https://github.com/vincenthz/hs-gauge">gauge</a> を使ってどっちが速いか確認してみましょう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">import</span> <span class="dt">Gauge.Main</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">import</span> <span class="dt">Gauge.Main.Options</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a></span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">import</span> <span class="dt">SplitCC</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb7-9"><a href="#cb7-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-10"><a href="#cb7-10"></a>  <span class="kw">let</span> conf <span class="ot">=</span> defaultConfig { displayMode <span class="ot">=</span> <span class="dt">Condensed</span> }</span>
-<span id="cb7-11"><a href="#cb7-11"></a>  sampleData1 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">10</span> charGen</span>
-<span id="cb7-12"><a href="#cb7-12"></a>  sampleData2 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000</span> charGen</span>
-<span id="cb7-13"><a href="#cb7-13"></a>  sampleData3 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">100000</span> charGen</span>
-<span id="cb7-14"><a href="#cb7-14"></a>  sampleData4 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000000</span> charGen</span>
-<span id="cb7-15"><a href="#cb7-15"></a></span>
-<span id="cb7-16"><a href="#cb7-16"></a>  defaultMainWith conf</span>
-<span id="cb7-17"><a href="#cb7-17"></a>    [ bgroup <span class="st">&quot;splitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf splitCC sampleData1</span>
-<span id="cb7-18"><a href="#cb7-18"></a>                       , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf splitCC sampleData2</span>
-<span id="cb7-19"><a href="#cb7-19"></a>                       , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf splitCC sampleData3</span>
-<span id="cb7-20"><a href="#cb7-20"></a>                       , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf splitCC sampleData4</span>
-<span id="cb7-21"><a href="#cb7-21"></a>                       ]</span>
-<span id="cb7-22"><a href="#cb7-22"></a>    , bgroup <span class="st">&quot;foldSplitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf foldSplitCC sampleData1</span>
-<span id="cb7-23"><a href="#cb7-23"></a>                           , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf foldSplitCC sampleData2</span>
-<span id="cb7-24"><a href="#cb7-24"></a>                           , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf foldSplitCC sampleData3</span>
-<span id="cb7-25"><a href="#cb7-25"></a>                           , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf foldSplitCC sampleData4</span>
-<span id="cb7-26"><a href="#cb7-26"></a>                           ]</span>
-<span id="cb7-27"><a href="#cb7-27"></a>    ]</span>
-<span id="cb7-28"><a href="#cb7-28"></a></span>
-<span id="cb7-29"><a href="#cb7-29"></a><span class="ot">charGen ::</span> <span class="dt">Gen</span> <span class="dt">Char</span></span>
-<span id="cb7-30"><a href="#cb7-30"></a>charGen <span class="ot">=</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</span></code></pre></div>
-<p>実行結果</p>
-<pre class="shell"><code>$ stack bench
-Benchmark splitcc-bench: RUNNING...
-splitCC/10                               mean 2.847 μs  ( +- 261.0 ns  )
-splitCC/1000                             mean 287.2 μs  ( +- 3.935 μs  )
-splitCC/100000                           mean 29.10 ms  ( +- 1.348 ms  )
-splitCC/1000000                          mean 287.3 ms  ( +- 735.0 μs  )
-
-foldSplitCC/10                           mean 219.3 ns  ( +- 2.955 ns  )
-foldSplitCC/1000                         mean 25.65 μs  ( +- 246.5 ns  )
-foldSplitCC/100000                       mean 2.640 ms  ( +- 22.98 μs  )
-foldSplitCC/1000000                      mean 27.43 ms  ( +- 1.795 ms  )
-Benchmark splitcc-bench: FINISH</code></pre>
-<h2 id="autobench">AutoBench</h2>
-<p>最後に <a href="https://github.com/mathandley/AutoBench">AutoBench</a> を使って視覚的に実行時間の変化を確認してみましょう。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">{-# LANGUAGE DeriveGeneric #-}</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">module</span> <span class="dt">Input</span> (ts, splitCC, foldSplitCC) <span class="kw">where</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="kw">import</span> <span class="dt">Data.Char</span>          (isSpace, isUpper)</span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="kw">import</span> <span class="dt">Data.List.Split</span>    (split, startsWithOneOf)</span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span>    (<span class="dt">Generic</span>)</span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="kw">import</span> <span class="dt">Data.Default</span>         (def)</span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="kw">import</span> <span class="dt">AutoBench.Types</span>      (<span class="dt">DataOpts</span>(..), <span class="dt">TestSuite</span>(..))</span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="kw">import</span> <span class="dt">AutoBench.QuickCheck</span> ()</span>
-<span id="cb9-14"><a href="#cb9-14"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a></span>
-<span id="cb9-16"><a href="#cb9-16"></a><span class="ot">splitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a>splitCC <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>]) <span class="op">.</span> getString</span>
-<span id="cb9-18"><a href="#cb9-18"></a></span>
-<span id="cb9-19"><a href="#cb9-19"></a><span class="ot">foldSplitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb9-20"><a href="#cb9-20"></a>foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go [] <span class="op">.</span> getString</span>
-<span id="cb9-21"><a href="#cb9-21"></a>  <span class="kw">where</span></span>
-<span id="cb9-22"><a href="#cb9-22"></a>    go c acc</span>
-<span id="cb9-23"><a href="#cb9-23"></a>      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">&#39; &#39;</span><span class="op">:</span>c<span class="op">:</span>acc</span>
-<span id="cb9-24"><a href="#cb9-24"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</span>
-<span id="cb9-25"><a href="#cb9-25"></a>    fmt cs</span>
-<span id="cb9-26"><a href="#cb9-26"></a>      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</span>
-<span id="cb9-27"><a href="#cb9-27"></a>      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</span>
-<span id="cb9-28"><a href="#cb9-28"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</span>
-<span id="cb9-29"><a href="#cb9-29"></a></span>
-<span id="cb9-30"><a href="#cb9-30"></a><span class="ot">ts ::</span> <span class="dt">TestSuite</span></span>
-<span id="cb9-31"><a href="#cb9-31"></a>ts  <span class="ot">=</span> def { _dataOpts <span class="ot">=</span> <span class="dt">Gen</span> <span class="dv">0</span> <span class="dv">10000</span> <span class="dv">200000</span> }</span>
-<span id="cb9-32"><a href="#cb9-32"></a></span>
-<span id="cb9-33"><a href="#cb9-33"></a><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</span>
-<span id="cb9-34"><a href="#cb9-34"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">NFData</span>)</span>
-<span id="cb9-35"><a href="#cb9-35"></a></span>
-<span id="cb9-36"><a href="#cb9-36"></a><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></span>
-<span id="cb9-37"><a href="#cb9-37"></a>  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</span></code></pre></div>
-<ul>
-<li>AutoBench を利用する際、デフォルトの設定では、入力の型は <code>NFData</code> 型クラスのインスタンスになっている必要があります。</li>
-</ul>
-<p>AutoBench の結果</p>
-<figure>
-<img src="/images/2018/11-16/AutoBenched.png" alt="" /><figcaption>AutoBench の結果</figcaption>
-</figure>
-<p>一応ターミナルにもこんな感じで詳細な結果も出力してくれます。</p>
-<pre class="shell"><code>     • Executed benchmarking file ✔
-     • Generating test report ✔
-     • Analysing performance results...
-
- ―― Test summary ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-
-  Programs       foldSplitCC, splitCC
-  Data           Random, size range [0,10000..200000]
-  Normalisation  nf
-  QuickCheck     ✔
-  GHC flags      n/a
-
- ―― Analysis ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-
-  foldSplitCC
-    Size          0       10000   20000   30000   40000   50000   60000   70000
-                  80000   90000   100000  110000  120000  130000  140000  150000
-                  160000  170000  180000  190000  200000
-    Time    (ms)  0.000   0.179   1.225   1.978   2.112   6.172   4.232   1.248
-                  0.217   5.961   5.184   2.715   5.186   2.690   6.810   4.810
-                  7.073   7.760   5.122   8.280   18.66
-    Std dev (ms)  1.742
-    Average variance introduced by outliers: 83% (severely inflated)
-
-    Fits          y = 1.18e-23 + 8.49e-17x + 2.98e-13x²
-                  y = 3.45e-13 + 4.71e-8x
-                  y = 3.47e-34 + 5.68e-29x + 9.70e-24x² + 1.70e-18x³
-
-  splitCC
-    Size          0       10000   20000   30000   40000   50000   60000   70000
-                  80000   90000   100000  110000  120000  130000  140000  150000
-                  160000  170000  180000  190000  200000
-    Time    (ms)  0.000   1.080   9.397   13.53   6.133   39.55   29.14   9.504
-                  1.596   44.46   38.58   16.35   35.41   17.94   38.40   52.06
-                  59.35   62.88   40.68   58.27   105.0
-    Std dev (ms)  10.54
-    Average variance introduced by outliers: 62% (severely inflated)
-
-    Fits          y = 2.41e-12 + 3.29e-7x
-                  y = 8.06e-15 + 1.92e-8xlog₂(x)
-                  y = 8.20e-23 + 1.21e-16x + 2.07e-12x²
-
-  Optimisation:
-
-    splitCC ≥ foldSplitCC (1.00)
-
- ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――</code></pre>
-<p><code>splitCC ≥ foldSplitCC (1.00)</code> ということなので <code>foldSplitCC</code> の方が良い結果となりました。</p>
-<h2 id="まとめ">まとめ</h2>
-<ul>
-<li>リストを何度も走査すると遅くなるので、fold で書くと良いよ！</li>
-<li>関数の振る舞いが変化していないか確認するために QuickCheck を使おう！</li>
-<li>ベンチマークの実行はとても簡単なので積極的にやってみよう！</li>
-<li>AutoBench を使って可視化すると楽しいよ！</li>
-</ul>
-<h2 id="寄せられたご意見">寄せられたご意見</h2>
-<blockquote>
-<p>問題設定として <code>convertRGB</code> は <code>convert R G B</code> でいいの？</p>
-</blockquote>
-<p>直感的に良くないですが、全然考えてなかったので今回は良いことにしておきたいと思います・・・。</p>
-<blockquote>
-<p>グラフの隅に、“splitCCは線形でfoldsplitCCは2次”とか書いてあって本当にそうだと巨大な列で結果が逆転してしまうんだけどそれは間違いだよね。</p>
-</blockquote>
-<p>これは (たぶん) グラフをプロットする際の値の選択が良くなかったため、間違った計算量が推論されてしまっています。</p>
-<p>具体的にはこのような表示があり、ここから選ぶことになるのですが全然わからないので <code>1</code> を選択した結果、今回の図のようになりました。</p>
-<pre class="shell"><code>  ▸ Select trend lines for the graph of results:
-
-  foldSplitCC
-    1)  y = 1.18e-23 + 8.49e-17x + 2.98e-13x²
-    2)  y = 3.45e-13 + 4.71e-8x
-    3)  y = 3.47e-34 + 5.68e-29x + 9.70e-24x² + 1.70e-18x³
-
-  ▸ Select a fit       [1..3]
-  ▸ View fits          [V]
-  ▸ View statistics    [S]
-  ▸ Don&#39;t plot         [X]
-
-&gt; 1
-
-  splitCC
-    1)  y = 2.41e-12 + 3.29e-7x
-    2)  y = 8.06e-15 + 1.92e-8xlog₂(x)
-    3)  y = 8.20e-23 + 1.21e-16x + 2.07e-12x²
-
-  ▸ Select a fit       [1..3]
-  ▸ View fits          [V]
-  ▸ View statistics    [S]
-  ▸ Don&#39;t plot         [X]
-
-&gt; 1</code></pre>
-<p>以下のように正しく選ぶと</p>
-<pre class="shell"><code>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-
-  ▸ Select trend lines for the graph of results:
-
-  foldSplitCC
-    1)  y = 2.80e-13 + 3.83e-8x
-    2)  y = 9.34e-16 + 2.22e-9xlog₂(x)
-    3)  y = -7.13e-3 + 1.34e-6log₂(x) + 4.22e-5log₂²(x)
-
-  ▸ Select a fit       [1..3]
-  ▸ View fits          [V]
-  ▸ View statistics    [S]
-  ▸ Don&#39;t plot         [X]
-
-&gt; 1
-
-  splitCC
-    1)  y = 2.15e-12 + 2.94e-7x
-    2)  y = 7.18e-15 + 1.71e-8xlog₂(x)
-    3)  y = 6.99e-23 + 2.79e-16x + 1.76e-12x²
-
-  ▸ Select a fit       [1..3]
-  ▸ View fits          [V]
-  ▸ View statistics    [S]
-  ▸ Don&#39;t plot         [X]
-
-&gt; 1</code></pre>
-<p>このように、正しい計算量になります。</p>
-<figure>
-<img src="/images/2018/11-16/true-result.png" alt="" /><figcaption>AutoBench の真の結果</figcaption>
-</figure>
-<blockquote>
-<p>MyString を定義するのが面倒な場合は以下のようにすると良いよ</p>
-</blockquote>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a>prop_split <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a>  xs <span class="ot">&lt;-</span> listOf <span class="op">$</span> elements ([<span class="ch">&#39;a&#39;</span><span class="op">..</span><span class="ch">&#39;z&#39;</span>]<span class="op">++</span>[<span class="ch">&#39;A&#39;</span><span class="op">..</span><span class="ch">&#39;Z&#39;</span>])</span>
-<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">return</span> <span class="op">$</span> splitCC xs <span class="op">==</span> foldSplitCC xs</span></code></pre></div>
-<blockquote>
-<p><code>splitCC ≥ foldSplitCC (1.00)</code> っていうのはどういう意味</p>
-</blockquote>
-<ul>
-<li><code>splitCC ≥ foldSplitCC</code> の部分は <code>splitCC</code> よりも <code>foldSplitCC</code> 関数の方がパフォーマンスが向上していることを示しています。</li>
-<li><code>(1.00)</code> は QuickCheck によって生成されたテストケースを入力として利用した時に全てのテストケース (<code>100%</code>) で性能が改善されたという意味です。<code>0.5</code> などとなっていた場合はテストケースによっては性能が向上していないということです。</li>
 </ul>]]></summary>
 </entry>
 
