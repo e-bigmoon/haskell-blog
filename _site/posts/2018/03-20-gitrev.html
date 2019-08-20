@@ -229,13 +229,13 @@
 <p>今回は <a href="https://www.stackage.org/package/gitrev">gitrev</a> パッケージと <a href="https://www.stackage.org/package/optparse-simple">optparse-simple</a> パッケージを使ってアプリケーションに <code>Git</code> の情報を含めてみようと思います！</p>
 <p>利用者の多いアプリケーションだと、バグ報告時にどのコミットでビルドしたものなのか知りたい場合に便利です。</p>
 <p>表示されるバージョン情報はこんな感じになります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="pp"># gitrev の例</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="op">$</span> <span class="op">./</span>Main.hs</a>
-<a class="sourceLine" id="cb1-3" title="3">Main.hs<span class="op">:</span> [panic master<span class="op">@</span>3a0bd17fdfb8a3e334292a560280e8e0791e941c (<span class="dt">Tue</span> <span class="dt">Mar</span> <span class="dv">20</span> <span class="dv">02</span><span class="op">:</span><span class="dv">00</span><span class="op">:</span><span class="dv">17</span> <span class="dv">2018</span> <span class="op">+</span><span class="dv">0900</span>) (<span class="dv">1</span> commits <span class="kw">in</span> <span class="dt">HEAD</span>)]</a>
-<a class="sourceLine" id="cb1-4" title="4"></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="pp"># optparse-simple の例</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="op">$</span> stack exec <span class="co">-- example-version-exe</span></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="dt">Version</span> <span class="fl">0.1</span><span class="op">.</span><span class="fl">0.0</span>, <span class="dt">Git</span> revision <span class="fl">341e785</span>b02c4c599f64b922b4aa9cfff3c006945</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp"># gitrev の例</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">$</span> <span class="op">./</span>Main.hs</span>
+<span id="cb1-3"><a href="#cb1-3"></a>Main.hs<span class="op">:</span> [panic master<span class="op">@</span>3a0bd17fdfb8a3e334292a560280e8e0791e941c (<span class="dt">Tue</span> <span class="dt">Mar</span> <span class="dv">20</span> <span class="dv">02</span><span class="op">:</span><span class="dv">00</span><span class="op">:</span><span class="dv">17</span> <span class="dv">2018</span> <span class="op">+</span><span class="dv">0900</span>) (<span class="dv">1</span> commits <span class="kw">in</span> <span class="dt">HEAD</span>)]</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="pp"># optparse-simple の例</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="op">$</span> stack exec <span class="co">-- example-version-exe</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="dt">Version</span> <span class="fl">0.1</span><span class="op">.</span><span class="fl">0.0</span>, <span class="dt">Git</span> revision <span class="fl">341e785</span>b02c4c599f64b922b4aa9cfff3c006945</span></code></pre></div>
 <p>以下のアプリケーション等でも利用されているように、実用度はとても高めです。</p>
 <ul>
 <li><a href="https://github.com/commercialhaskell/stack">stack</a></li>
@@ -256,47 +256,47 @@
 <p>そのため、表示する情報を自分の好きなようにカスタマイズしたい場合に便利でしょう。</p>
 <h3 id="サンプルアプリケーション">サンプルアプリケーション</h3>
 <p>以下のコードは <code>Hackage</code> に載っているコードです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="co">-- stack --resolver lts-11.1 script</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="kw">import</span> <span class="dt">Development.GitRev</span></a>
-<a class="sourceLine" id="cb2-5" title="5"></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="ot">panic ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</a>
-<a class="sourceLine" id="cb2-7" title="7">panic msg <span class="ot">=</span> <span class="fu">error</span> panicMsg</a>
-<a class="sourceLine" id="cb2-8" title="8">  <span class="kw">where</span> panicMsg <span class="ot">=</span></a>
-<a class="sourceLine" id="cb2-9" title="9">          <span class="fu">concat</span> [ <span class="st">&quot;[panic &quot;</span>, <span class="op">$</span>(gitBranch), <span class="st">&quot;@&quot;</span>, <span class="op">$</span>(gitHash)</a>
-<a class="sourceLine" id="cb2-10" title="10">                 , <span class="st">&quot; (&quot;</span>, <span class="op">$</span>(gitCommitDate), <span class="st">&quot;)&quot;</span></a>
-<a class="sourceLine" id="cb2-11" title="11">                 , <span class="st">&quot; (&quot;</span>, <span class="op">$</span>(gitCommitCount), <span class="st">&quot; commits in HEAD)&quot;</span></a>
-<a class="sourceLine" id="cb2-12" title="12">                 , dirty, <span class="st">&quot;] &quot;</span>, msg ]</a>
-<a class="sourceLine" id="cb2-13" title="13">        dirty <span class="op">|</span> <span class="op">$</span>(gitDirty) <span class="ot">=</span> <span class="st">&quot; (uncommitted files present)&quot;</span></a>
-<a class="sourceLine" id="cb2-14" title="14">              <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> <span class="st">&quot;&quot;</span></a>
-<a class="sourceLine" id="cb2-15" title="15"></a>
-<a class="sourceLine" id="cb2-16" title="16">main <span class="ot">=</span> panic <span class="st">&quot;oh no!&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co">-- stack --resolver lts-11.1 script</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">import</span> <span class="dt">Development.GitRev</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="ot">panic ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</span>
+<span id="cb2-7"><a href="#cb2-7"></a>panic msg <span class="ot">=</span> <span class="fu">error</span> panicMsg</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="kw">where</span> panicMsg <span class="ot">=</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>          <span class="fu">concat</span> [ <span class="st">&quot;[panic &quot;</span>, <span class="op">$</span>(gitBranch), <span class="st">&quot;@&quot;</span>, <span class="op">$</span>(gitHash)</span>
+<span id="cb2-10"><a href="#cb2-10"></a>                 , <span class="st">&quot; (&quot;</span>, <span class="op">$</span>(gitCommitDate), <span class="st">&quot;)&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>                 , <span class="st">&quot; (&quot;</span>, <span class="op">$</span>(gitCommitCount), <span class="st">&quot; commits in HEAD)&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>                 , dirty, <span class="st">&quot;] &quot;</span>, msg ]</span>
+<span id="cb2-13"><a href="#cb2-13"></a>        dirty <span class="op">|</span> <span class="op">$</span>(gitDirty) <span class="ot">=</span> <span class="st">&quot; (uncommitted files present)&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>              <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a>main <span class="ot">=</span> panic <span class="st">&quot;oh no!&quot;</span></span></code></pre></div>
 <p>実際に実行してみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1">$ <span class="ex">tree</span> .</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="ex">.</span></a>
-<a class="sourceLine" id="cb3-3" title="3">└── <span class="ex">Main.hs</span></a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="ex">0</span> directories, 1 file</a>
-<a class="sourceLine" id="cb3-6" title="6"></a>
-<a class="sourceLine" id="cb3-7" title="7">$ <span class="fu">chmod</span> u+x Main.hs</a>
-<a class="sourceLine" id="cb3-8" title="8">$ <span class="ex">./Main.hs</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="ex">Main.hs</span>: [panic UNKNOWN@UNKNOWN (UNKNOWN) <span class="kw">(</span><span class="ex">UNKNOWN</span> commits in HEAD<span class="kw">)</span>] <span class="ex">oh</span> no!</a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="ex">CallStack</span> (from HasCallStack)<span class="bu">:</span></a>
-<a class="sourceLine" id="cb3-11" title="11">  <span class="ex">error</span>, called at /home/bm12/Desktop/gitrev-sample/Main.hs:7:13 in main:Main</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a>$ <span class="ex">tree</span> .</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="ex">.</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>└── <span class="ex">Main.hs</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="ex">0</span> directories, 1 file</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>$ <span class="fu">chmod</span> u+x Main.hs</span>
+<span id="cb3-8"><a href="#cb3-8"></a>$ <span class="ex">./Main.hs</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="ex">Main.hs</span>: [panic UNKNOWN@UNKNOWN (UNKNOWN) <span class="kw">(</span><span class="ex">UNKNOWN</span> commits in HEAD<span class="kw">)</span>] <span class="ex">oh</span> no!</span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="ex">CallStack</span> (from HasCallStack)<span class="bu">:</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  <span class="ex">error</span>, called at /home/bm12/Desktop/gitrev-sample/Main.hs:7:13 in main:Main</span></code></pre></div>
 <p>現状は <code>git</code> のコミットが無いため、全て <code>UNKNOWN</code> として表示されています。</p>
 <p>実際に <code>git</code> リポジトリを作ってコミットしてみましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1">$ <span class="fu">git</span> init</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="ex">Initialized</span> empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/</a>
-<a class="sourceLine" id="cb4-3" title="3"></a>
-<a class="sourceLine" id="cb4-4" title="4">$ <span class="fu">git</span> add -A</a>
-<a class="sourceLine" id="cb4-5" title="5">$ <span class="fu">git</span> commit -m <span class="st">&quot;TEST&quot;</span></a>
-<a class="sourceLine" id="cb4-6" title="6">[<span class="ex">master</span> (root-commit) <span class="ex">3a0bd17</span>] TEST</a>
-<a class="sourceLine" id="cb4-7" title="7"> <span class="ex">1</span> file changed, 16 insertions(+)</a>
-<a class="sourceLine" id="cb4-8" title="8"> <span class="ex">create</span> mode 100755 Main.hs</a>
-<a class="sourceLine" id="cb4-9" title="9"></a>
-<a class="sourceLine" id="cb4-10" title="10">$ <span class="ex">./Main.hs</span></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="ex">Main.hs</span>: [panic master@3a0bd17fdfb8a3e334292a560280e8e0791e941c (Tue Mar 20 02:00:17 2018 +0900) <span class="kw">(</span><span class="ex">1</span> commits in HEAD<span class="kw">)</span>] <span class="ex">oh</span> no!</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a>$ <span class="fu">git</span> init</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ex">Initialized</span> empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>$ <span class="fu">git</span> add -A</span>
+<span id="cb4-5"><a href="#cb4-5"></a>$ <span class="fu">git</span> commit -m <span class="st">&quot;TEST&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>[<span class="ex">master</span> (root-commit) <span class="ex">3a0bd17</span>] TEST</span>
+<span id="cb4-7"><a href="#cb4-7"></a> <span class="ex">1</span> file changed, 16 insertions(+)</span>
+<span id="cb4-8"><a href="#cb4-8"></a> <span class="ex">create</span> mode 100755 Main.hs</span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a>$ <span class="ex">./Main.hs</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="ex">Main.hs</span>: [panic master@3a0bd17fdfb8a3e334292a560280e8e0791e941c (Tue Mar 20 02:00:17 2018 +0900) <span class="kw">(</span><span class="ex">1</span> commits in HEAD<span class="kw">)</span>] <span class="ex">oh</span> no!</span></code></pre></div>
 <p>こんな感じで <code>git</code> の情報を自由に組み合わせることができます。</p>
 <h2 id="optparse-simple-パッケージ">optparse-simple パッケージ</h2>
 <p>あまり書式を気にせず、定形で良い場合はもっと簡単な方法があります。</p>
@@ -304,63 +304,63 @@
 <p><code>simpleVersion</code> では <code>git</code> の情報だけでなく、アプリケーションのバージョンも一緒に表示することができます。</p>
 <h3 id="simpleversion">simpleVersion</h3>
 <p><a href="https://www.stackage.org/haddock/lts-11.1/optparse-simple-0.1.0/src/Options.Applicative.Simple.html#simpleVersion">simpleVersion</a> の定義は以下のようになっています。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">simpleVersion ::</span> <span class="dt">Version</span> <span class="ot">-&gt;</span> <span class="dt">Q</span> <span class="dt">Exp</span></a>
-<a class="sourceLine" id="cb5-2" title="2">simpleVersion version <span class="ot">=</span></a>
-<a class="sourceLine" id="cb5-3" title="3">  [<span class="op">|</span><span class="fu">concat</span> ([<span class="st">&quot;Version &quot;</span></a>
-<a class="sourceLine" id="cb5-4" title="4">           ,<span class="op">$</span>(TH.lift <span class="op">$</span> showVersion version)</a>
-<a class="sourceLine" id="cb5-5" title="5">           ] <span class="op">++</span></a>
-<a class="sourceLine" id="cb5-6" title="6">           <span class="kw">if</span> <span class="op">$</span>gitHash <span class="op">==</span> (<span class="st">&quot;UNKNOWN&quot;</span><span class="ot"> ::</span> <span class="dt">String</span>)</a>
-<a class="sourceLine" id="cb5-7" title="7">             <span class="kw">then</span> []</a>
-<a class="sourceLine" id="cb5-8" title="8">             <span class="kw">else</span></a>
-<a class="sourceLine" id="cb5-9" title="9">               [<span class="st">&quot;, Git revision &quot;</span></a>
-<a class="sourceLine" id="cb5-10" title="10">               ,<span class="op">$</span>gitHash</a>
-<a class="sourceLine" id="cb5-11" title="11">               ,<span class="kw">if</span> <span class="op">$</span>gitDirty</a>
-<a class="sourceLine" id="cb5-12" title="12">                   <span class="kw">then</span> <span class="st">&quot; (dirty)&quot;</span></a>
-<a class="sourceLine" id="cb5-13" title="13">                   <span class="kw">else</span> <span class="st">&quot;&quot;</span></a>
-<a class="sourceLine" id="cb5-14" title="14">               ])<span class="op">|</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">simpleVersion ::</span> <span class="dt">Version</span> <span class="ot">-&gt;</span> <span class="dt">Q</span> <span class="dt">Exp</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>simpleVersion version <span class="ot">=</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>  [<span class="op">|</span><span class="fu">concat</span> ([<span class="st">&quot;Version &quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>           ,<span class="op">$</span>(TH.lift <span class="op">$</span> showVersion version)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>           ] <span class="op">++</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>           <span class="kw">if</span> <span class="op">$</span>gitHash <span class="op">==</span> (<span class="st">&quot;UNKNOWN&quot;</span><span class="ot"> ::</span> <span class="dt">String</span>)</span>
+<span id="cb5-7"><a href="#cb5-7"></a>             <span class="kw">then</span> []</span>
+<span id="cb5-8"><a href="#cb5-8"></a>             <span class="kw">else</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>               [<span class="st">&quot;, Git revision &quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>               ,<span class="op">$</span>gitHash</span>
+<span id="cb5-11"><a href="#cb5-11"></a>               ,<span class="kw">if</span> <span class="op">$</span>gitDirty</span>
+<span id="cb5-12"><a href="#cb5-12"></a>                   <span class="kw">then</span> <span class="st">&quot; (dirty)&quot;</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>                   <span class="kw">else</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>               ])<span class="op">|</span>]</span></code></pre></div>
 <p><code>$gitHash</code> や <code>$gitDirty</code> を見ればわかる通り、内部的に <code>gitrev</code> パッケージを利用して <code>git</code> の情報を取得しています。</p>
 <p>また、第一引数の <code>Version</code> 型は <code>base</code> パッケージの <a href="https://www.stackage.org/haddock/lts-11.1/base-4.10.1.0/Data-Version.html">Data.Version</a> で定義されている型です。</p>
 <p>以下のように <code>makeVersion :: [Int] -&gt; Version</code> 関数を使って <code>Version</code> 型の値を作ることができます。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb6-2" title="2"></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="kw">import</span>           <span class="dt">Options.Applicative.Simple</span> (simpleVersion)</a>
-<a class="sourceLine" id="cb6-4" title="4"><span class="kw">import</span>           <span class="dt">Data.Version</span> (makeVersion)</a>
-<a class="sourceLine" id="cb6-5" title="5"></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb6-7" title="7">main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span>(simpleVersion <span class="op">$</span> makeVersion [<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>])</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">import</span>           <span class="dt">Options.Applicative.Simple</span> (simpleVersion)</span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">import</span>           <span class="dt">Data.Version</span> (makeVersion)</span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb6-7"><a href="#cb6-7"></a>main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span>(simpleVersion <span class="op">$</span> makeVersion [<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>])</span></code></pre></div>
 <p>適当にプロジェクトを作って、上記の内容を実行してみましょう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1">$ <span class="ex">stack</span> exec example-exe </a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="ex">Version</span> 100.0.0.0</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a>$ <span class="ex">stack</span> exec example-exe </span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ex">Version</span> 100.0.0.0</span></code></pre></div>
 <p>まだ <code>git</code> で管理していないため、バージョン情報のみが表示されます。</p>
 <p>では、先ほどの例と同様に <code>git</code> リポジトリを作ってコミットした結果を見てみましょう。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1">$ <span class="fu">git</span> init</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="ex">Initialized</span> empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/</a>
-<a class="sourceLine" id="cb8-3" title="3"></a>
-<a class="sourceLine" id="cb8-4" title="4">$ <span class="fu">git</span> add -A</a>
-<a class="sourceLine" id="cb8-5" title="5">$ <span class="fu">git</span> commit -m <span class="st">&quot;TEST&quot;</span></a>
-<a class="sourceLine" id="cb8-6" title="6">[<span class="ex">master</span> (root-commit) <span class="ex">3a0bd17</span>] TEST</a>
-<a class="sourceLine" id="cb8-7" title="7"> <span class="ex">1</span> file changed, 16 insertions(+)</a>
-<a class="sourceLine" id="cb8-8" title="8"> <span class="ex">create</span> mode 100755 Main.hs</a>
-<a class="sourceLine" id="cb8-9" title="9"></a>
-<a class="sourceLine" id="cb8-10" title="10">$ <span class="ex">stack</span> clean</a>
-<a class="sourceLine" id="cb8-11" title="11">$ <span class="ex">stack</span> build</a>
-<a class="sourceLine" id="cb8-12" title="12">$ <span class="ex">stack</span> exec example-exe </a>
-<a class="sourceLine" id="cb8-13" title="13"><span class="ex">Version</span> 100.0.0.0, Git revision e106394f7fdded0c9908cbf8edc87c5d5d5b4309</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a>$ <span class="fu">git</span> init</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ex">Initialized</span> empty Git repository in /home/bm12/Desktop/gitrev-sample/.git/</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a>$ <span class="fu">git</span> add -A</span>
+<span id="cb8-5"><a href="#cb8-5"></a>$ <span class="fu">git</span> commit -m <span class="st">&quot;TEST&quot;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>[<span class="ex">master</span> (root-commit) <span class="ex">3a0bd17</span>] TEST</span>
+<span id="cb8-7"><a href="#cb8-7"></a> <span class="ex">1</span> file changed, 16 insertions(+)</span>
+<span id="cb8-8"><a href="#cb8-8"></a> <span class="ex">create</span> mode 100755 Main.hs</span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>$ <span class="ex">stack</span> clean</span>
+<span id="cb8-11"><a href="#cb8-11"></a>$ <span class="ex">stack</span> build</span>
+<span id="cb8-12"><a href="#cb8-12"></a>$ <span class="ex">stack</span> exec example-exe </span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="ex">Version</span> 100.0.0.0, Git revision e106394f7fdded0c9908cbf8edc87c5d5d5b4309</span></code></pre></div>
 <p>このようにちゃんとリビジョンが表示されるようになりました。</p>
 <h3 id="アプリケーションのバージョンを自動的に更新する">アプリケーションのバージョンを自動的に更新する</h3>
 <p>アプリケーションのリリースごとに <code>makeVersion</code> を使って更新する作業はとても面倒ですし、いつか間違えてしまうかもしれません。</p>
 <p>これを解決するためには <code>.cabal</code> ファイルからバージョン情報を自動取得して <code>simpleVersion</code> 関数に渡してあげるようにすれば良いのです。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb9-2" title="2"></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="kw">import</span>           <span class="dt">Options.Applicative.Simple</span> (simpleVersion)</a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Paths_XXXX</span>               <span class="kw">as</span> <span class="dt">Meta</span></a>
-<a class="sourceLine" id="cb9-5" title="5"></a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-7" title="7">main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span>(simpleVersion Meta.version)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">import</span>           <span class="dt">Options.Applicative.Simple</span> (simpleVersion)</span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Paths_XXXX</span>               <span class="kw">as</span> <span class="dt">Meta</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb9-7"><a href="#cb9-7"></a>main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span>(simpleVersion Meta.version)</span></code></pre></div>
 <p><code>Paths_XXXX</code> の <code>XXXX</code> はアプリケーション名 (<code>cabal</code> ファイルの <code>name</code> の値) を指定します。これで <code>cabal</code> ファイルのバージョン情報を直接取得できるようになります。</p>
 <p>表示される結果はこんな感じです。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1">$ <span class="ex">stack</span> exec -- example-version-exe</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="ex">Version</span> 0.1.0.0, Git revision 341e785b02c4c599f64b922b4aa9cfff3c006945</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1"></a>$ <span class="ex">stack</span> exec -- example-version-exe</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="ex">Version</span> 0.1.0.0, Git revision 341e785b02c4c599f64b922b4aa9cfff3c006945</span></code></pre></div>
 <p>めちゃめちゃ簡単なのでオススメの方法です。</p>
 <h2 id="まとめ">まとめ</h2>
 <p>自分のアプリケーションがとてもカッコよくなるので是非ためしてみてください！</p>

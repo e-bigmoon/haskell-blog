@@ -234,7 +234,7 @@ $ import Data.Time</code></pre>
 <!--more-->
 <h2 id="time-パッケージのモジュール構造">Time パッケージのモジュール構造</h2>
 <p>基本的には <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time.html">Data.Time</a> を import して使います。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">import</span> <span class="dt">Data.Time</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">import</span> <span class="dt">Data.Time</span></span></code></pre></div>
 <p>Data.Time は以下のモジュールを再エクスポートしています。</p>
 <table>
 <thead>
@@ -264,7 +264,7 @@ $ import Data.Time</code></pre>
 </table>
 <h3 id="rio-を利用している場合">rio を利用している場合</h3>
 <p><a href="https://www.stackage.org/lts-12.9/package/rio">rio</a> を利用している場合は <a href="https://www.stackage.org/haddock/lts-12.9/rio-0.1.5.0/RIO-Time.html">RIO.Time</a> を import します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">RIO.Time</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">import</span> <span class="dt">RIO.Time</span></span></code></pre></div>
 <h2 id="data.time.localtime">Data.Time.LocalTime</h2>
 <p>現在時刻を取得する場合にこのモジュールを使います。現在時刻を取得したいからと言って <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:getCurrentTime">getCurrentTime</a> を利用すると日本時間にならないので注意してください。</p>
 <h3 id="getzonedtime">getZonedTime</h3>
@@ -298,10 +298,10 @@ utcToZonedTime :: TimeZone -&gt; UTCTime -&gt; ZonedTime
 <h2 id="日後の時間を計算するには">1日後の時間を計算するには？</h2>
 <p>ここで、取得した時間の1日後を計算してみましょう。</p>
 <p>そのためには Data.Time.Clock で定義されている <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:addUTCTime">addUTCTime</a> を使います。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">addUTCTime ::</span> <span class="dt">NominalDiffTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="ot">addUTCTime ::</span> <span class="dt">NominalDiffTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span></span></code></pre></div>
 <p>第一引数に <code>NominalDiffTime</code> という謎の型を取りますが、<code>nominalDay</code> の実装を見れば <code>60 * 60 * 24</code> っぽいことがわかるので、そんな感じで値を作ります。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">nominalDay ::</span> <span class="dt">NominalDiffTime</span></a>
-<a class="sourceLine" id="cb9-2" title="2">nominalDay <span class="ot">=</span> <span class="dv">86400</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="ot">nominalDay ::</span> <span class="dt">NominalDiffTime</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>nominalDay <span class="ot">=</span> <span class="dv">86400</span></span></code></pre></div>
 <p>ちなみに、上記の実装でなぜ <code>NominalDiffTime</code> の値になるかと言うと、<code>NominalDiffTime</code> は <code>Num</code> クラスのインスタンスになっているため、自動的に <code>fromInteger</code> が呼ばれて変換されるという仕組みです。</p>
 <p>実際に試してみましょう。1日後を計算してみます。</p>
 <pre class="shell"><code>&gt; t = addUTCTime nominalDay . zonedTimeToUTC &lt;$&gt; getZonedTime
@@ -332,9 +332,9 @@ utcToZonedTime :: TimeZone -&gt; UTCTime -&gt; ZonedTime
 <pre class="shell"><code>&gt; :t formatTime
 formatTime :: FormatTime t =&gt; TimeLocale -&gt; String -&gt; t -&gt; String</code></pre>
 <p>ここで <code>FormatTime t</code> の <code>t</code> は <code>UTCTime</code> や <code>ZonedTime</code>、<code>Day</code> などの型が使えます。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">ZonedTime</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span>   <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb13-3" title="3"><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Day</span>       <span class="ot">-&gt;</span> <span class="dt">String</span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">ZonedTime</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">UTCTime</span>   <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="ot">formatTime ::</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Day</span>       <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
 <p>型に応じて第三引数が変わるということです。</p>
 <p>実際に使えばすぐに慣れます。(第一引数の値は <a href="https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:defaultTimeLocale">defaultTimeLocale</a> を指定しておけば良いのですが、自分でカスタマイズしたものを使うこともあります)</p>
 <p>第二引数がフォーマット文字列なので、空文字列を与えれば当然結果も空になります。</p>
@@ -366,10 +366,10 @@ parseTimeM
   :: (Monad m, ParseTime t) =&gt;
      Bool -&gt; TimeLocale -&gt; String -&gt; String -&gt; m t</code></pre>
 <p>型がわかりづらいですが、具体的にはこんな型で利用することができます。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Day</span></a>
-<a class="sourceLine" id="cb17-2" title="2"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">ZonedTime</span></a>
-<a class="sourceLine" id="cb17-3" title="3"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Day</span></a>
-<a class="sourceLine" id="cb17-4" title="4"><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">ZonedTime</span></a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Day</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">ZonedTime</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Day</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="ot">parseTimeM ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">TimeLocale</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">ZonedTime</span></span></code></pre></div>
 <ul>
 <li>第一引数は <strong>空白</strong> を許容するかどうかのフラグです (True だと空白OK)</li>
 <li>第二引数は気にせず <strong>defaultTimeLocale</strong> を指定しておきましょう</li>

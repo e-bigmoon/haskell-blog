@@ -246,15 +246,15 @@ BIG MOON では、業務に必要なツールを自社開発しており、プ�
 </ul>
 <!--more-->
 <h2 id="アップデート内容">アップデート内容</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">type</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Record</span></a>
-<a class="sourceLine" id="cb1-2" title="2">  '[ <span class="st">&quot;name&quot;</span> <span class="op">:&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb1-3" title="3">   , <span class="st">&quot;age&quot;</span>  <span class="op">:&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-4" title="4">   ]</a>
-<a class="sourceLine" id="cb1-5" title="5"></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="ot">person ::</span> <span class="dt">Person</span></a>
-<a class="sourceLine" id="cb1-7" title="7">person <span class="ot">=</span> <span class="op">#</span>name <span class="op">@=</span> <span class="st">&quot;bigmoon&quot;</span></a>
-<a class="sourceLine" id="cb1-8" title="8">      <span class="op">&lt;:</span> <span class="op">#</span>age  <span class="op">@=</span> <span class="dv">10</span></a>
-<a class="sourceLine" id="cb1-9" title="9">      <span class="op">&lt;:</span> nil</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">type</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Record</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>  '[ <span class="st">&quot;name&quot;</span> <span class="op">:&gt;</span> <span class="dt">String</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>   , <span class="st">&quot;age&quot;</span>  <span class="op">:&gt;</span> <span class="dt">Int</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>   ]</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">person ::</span> <span class="dt">Person</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>person <span class="ot">=</span> <span class="op">#</span>name <span class="op">@=</span> <span class="st">&quot;bigmoon&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>      <span class="op">&lt;:</span> <span class="op">#</span>age  <span class="op">@=</span> <span class="dv">10</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>      <span class="op">&lt;:</span> nil</span></code></pre></div>
 <p>以降の例では、上記の <code>Person</code> 型と <code>person</code> 変数が宣言されているものとします。</p>
 <hr />
 <ul>
@@ -263,58 +263,58 @@ BIG MOON では、業務に必要なツールを自社開発しており、プ�
 <p>ベースモナドとして <strong>ResourceT IO</strong> などが使えるようになりました。</p>
 <p>今までは <code>Associate "IO" (ResourceT IO)</code> のように書けませんでしたが、こんな感じのコードが書けるようになりました。また、<a href="https://www.stackage.org/haddock/lts-11.9/resourcet-1.2.1/Control-Monad-Trans-Resource.html#t:ResourceT">ResourceT IO</a> 以外にも <a href="https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Control-Monad-IO-Class.html#t:MonadIO">MonadIO</a> のインスタンスであれば何でも指定可能です。</p>
 <p>ここでは <a href="https://www.stackage.org/haddock/lts-11.9/resourcet-1.2.1/Control-Monad-Trans-Resource.html#t:MonadResource">MonadResource</a> のインスタンスを自分で定義しましたが、次回リリース (0.4.10) でライブラリに追加される予定？です。(たぶん)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">type</span> <span class="dt">ExampleM</span> <span class="ot">=</span> <span class="dt">Eff</span> '[ <span class="st">&quot;IO&quot;</span> <span class="op">&gt;:</span> <span class="dt">ResourceT</span> <span class="dt">IO</span> ]</a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb2-4" title="4">main <span class="ot">=</span> runResourceT <span class="op">.</span> retractEff <span class="op">.</span> runConduit <span class="op">$</span></a>
-<a class="sourceLine" id="cb2-5" title="5">  bracketP (openFile <span class="st">&quot;data.csv&quot;</span> <span class="dt">ReadMode</span>) hClose <span class="op">$</span> \handle <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb2-6" title="6">    (sourceHandle<span class="ot"> handle ::</span> <span class="dt">ConduitT</span> i <span class="dt">ByteString</span> <span class="dt">ExampleM</span> ()) <span class="op">.|</span> stdoutC</a>
-<a class="sourceLine" id="cb2-7" title="7"></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="kw">instance</span> (<span class="dt">Associate</span> <span class="st">&quot;IO&quot;</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>) xs) <span class="ot">=&gt;</span> <span class="dt">MonadResource</span> (<span class="dt">Eff</span> xs) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-9" title="9">  liftResourceT <span class="ot">=</span> liftEff (<span class="dt">Proxy</span> <span class="op">@</span> <span class="st">&quot;IO&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">type</span> <span class="dt">ExampleM</span> <span class="ot">=</span> <span class="dt">Eff</span> '[ <span class="st">&quot;IO&quot;</span> <span class="op">&gt;:</span> <span class="dt">ResourceT</span> <span class="dt">IO</span> ]</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-4"><a href="#cb2-4"></a>main <span class="ot">=</span> runResourceT <span class="op">.</span> retractEff <span class="op">.</span> runConduit <span class="op">$</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  bracketP (openFile <span class="st">&quot;data.csv&quot;</span> <span class="dt">ReadMode</span>) hClose <span class="op">$</span> \handle <span class="ot">-&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>    (sourceHandle<span class="ot"> handle ::</span> <span class="dt">ConduitT</span> i <span class="dt">ByteString</span> <span class="dt">ExampleM</span> ()) <span class="op">.|</span> stdoutC</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="kw">instance</span> (<span class="dt">Associate</span> <span class="st">&quot;IO&quot;</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>) xs) <span class="ot">=&gt;</span> <span class="dt">MonadResource</span> (<span class="dt">Eff</span> xs) <span class="kw">where</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>  liftResourceT <span class="ot">=</span> liftEff (<span class="dt">Proxy</span> <span class="op">@</span> <span class="st">&quot;IO&quot;</span>)</span></code></pre></div>
 <p>ただ単に <code>csv</code> ファイルを読み込んで表示するだけの例です。</p>
 <pre class="csv"><code>-- data.csv
 &quot;bigmoon&quot;, 10, &quot;watch&quot;
 &quot;wado&quot;, 100, art
 </code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> main</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="st">&quot;bigmoon&quot;</span>, <span class="dv">10</span>, <span class="st">&quot;watch&quot;</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="st">&quot;wado&quot;</span>, <span class="dv">100</span>, art</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> main</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="st">&quot;bigmoon&quot;</span>, <span class="dv">10</span>, <span class="st">&quot;watch&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="st">&quot;wado&quot;</span>, <span class="dv">100</span>, art</span></code></pre></div>
 <p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/MonadIO.hs">完全なコード</a></p>
 <hr />
 <ul>
 <li>新しい制約コンビネータ <a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Dictionary.html#t:And">And</a> を追加しました。</li>
 </ul>
 <p>このコンビネータを利用することで <a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#t:Forall">Forall</a> の制約を二つ以上指定することができます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="dt">And</span><span class="ot"> ::</span> (k <span class="ot">-&gt;</span> <span class="dt">Constraint</span>) <span class="ot">-&gt;</span> (k <span class="ot">-&gt;</span> <span class="dt">Constraint</span>) <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Constraint</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">And</span><span class="ot"> ::</span> (k <span class="ot">-&gt;</span> <span class="dt">Constraint</span>) <span class="ot">-&gt;</span> (k <span class="ot">-&gt;</span> <span class="dt">Constraint</span>) <span class="ot">-&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Constraint</span></span></code></pre></div>
 <p>以下は拡張可能レコードの値が <strong>Show</strong> かつ <a href="https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Data-Typeable.html">Typeable</a> の両方を満たすという制約で <a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hfoldMapFor">hfoldMapFor</a> 関数を使う例です。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">debug ::</span> <span class="dt">Forall</span> (<span class="dt">ValueIs</span> (<span class="dt">And</span> <span class="dt">Show</span> <span class="dt">Typeable</span>)) xs <span class="ot">=&gt;</span> <span class="dt">Record</span> xs <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb6-2" title="2">debug <span class="ot">=</span> hfoldMapFor c (<span class="fu">print</span> <span class="op">.</span> fork <span class="fu">id</span> typeOf <span class="op">.</span> view _Wrapper)</a>
-<a class="sourceLine" id="cb6-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb6-4" title="4">    c <span class="ot">=</span> <span class="dt">Proxy</span> <span class="op">@</span> (<span class="dt">ValueIs</span> (<span class="dt">And</span> <span class="dt">Show</span> <span class="dt">Typeable</span>))</a>
-<a class="sourceLine" id="cb6-5" title="5">    fork f g x <span class="ot">=</span> (f x, g x)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">debug ::</span> <span class="dt">Forall</span> (<span class="dt">ValueIs</span> (<span class="dt">And</span> <span class="dt">Show</span> <span class="dt">Typeable</span>)) xs <span class="ot">=&gt;</span> <span class="dt">Record</span> xs <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb6-2"><a href="#cb6-2"></a>debug <span class="ot">=</span> hfoldMapFor c (<span class="fu">print</span> <span class="op">.</span> fork <span class="fu">id</span> typeOf <span class="op">.</span> view _Wrapper)</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="kw">where</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>    c <span class="ot">=</span> <span class="dt">Proxy</span> <span class="op">@</span> (<span class="dt">ValueIs</span> (<span class="dt">And</span> <span class="dt">Show</span> <span class="dt">Typeable</span>))</span>
+<span id="cb6-5"><a href="#cb6-5"></a>    fork f g x <span class="ot">=</span> (f x, g x)</span></code></pre></div>
 <p>例として定義した <strong>debug</strong> 関数は与えられた拡張可能レコードの <strong>値</strong> と <strong>型</strong> を表示することができます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="op">&gt;&gt;&gt;</span> debug person</a>
-<a class="sourceLine" id="cb7-2" title="2">(<span class="st">&quot;bigmoon&quot;</span>,[<span class="dt">Char</span>])</a>
-<a class="sourceLine" id="cb7-3" title="3">(<span class="dv">10</span>,<span class="dt">Int</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;&gt;&gt;</span> debug person</span>
+<span id="cb7-2"><a href="#cb7-2"></a>(<span class="st">&quot;bigmoon&quot;</span>,[<span class="dt">Char</span>])</span>
+<span id="cb7-3"><a href="#cb7-3"></a>(<span class="dv">10</span>,<span class="dt">Int</span>)</span></code></pre></div>
 <p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/And.hs">完全なコード</a></p>
 <hr />
 <ul>
 <li><a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Field.html#v:stringAssocKey">stringAssocKey</a> 関数を追加しました。</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">stringAssocKey ::</span> (<span class="dt">IsString</span> a, <span class="dt">KnownSymbol</span> (<span class="dt">AssocKey</span> kv)) <span class="ot">=&gt;</span> proxy kv <span class="ot">-&gt;</span> a</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="ot">stringAssocKey ::</span> (<span class="dt">IsString</span> a, <span class="dt">KnownSymbol</span> (<span class="dt">AssocKey</span> kv)) <span class="ot">=&gt;</span> proxy kv <span class="ot">-&gt;</span> a</span></code></pre></div>
 <p>この関数を使えば、拡張可能レコードのキーを文字列として取得することができます。</p>
 <p>例えば、拡張可能レコードのキーを全て集めてリストにして返す関数は以下のように作ることができます。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">keys ::</span> (<span class="dt">IsString</span> key, <span class="dt">Forall</span> (<span class="dt">KeyIs</span> <span class="dt">KnownSymbol</span>) xs) <span class="ot">=&gt;</span> proxy xs <span class="ot">-&gt;</span> [key]</a>
-<a class="sourceLine" id="cb9-2" title="2">keys xs <span class="ot">=</span> henumerateFor (<span class="dt">Proxy</span> <span class="op">@</span> (<span class="dt">KeyIs</span> <span class="dt">KnownSymbol</span>)) xs ((<span class="op">:</span>) <span class="op">.</span> stringAssocKey) []</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="ot">keys ::</span> (<span class="dt">IsString</span> key, <span class="dt">Forall</span> (<span class="dt">KeyIs</span> <span class="dt">KnownSymbol</span>) xs) <span class="ot">=&gt;</span> proxy xs <span class="ot">-&gt;</span> [key]</span>
+<span id="cb9-2"><a href="#cb9-2"></a>keys xs <span class="ot">=</span> henumerateFor (<span class="dt">Proxy</span> <span class="op">@</span> (<span class="dt">KeyIs</span> <span class="dt">KnownSymbol</span>)) xs ((<span class="op">:</span>) <span class="op">.</span> stringAssocKey) []</span></code></pre></div>
 <p><a href="https://www.stackage.org/haddock/lts-11.9/base-4.10.1.0/Data-String.html#t:IsString">IsString</a> のインスタンスであれば何でも良いので、<strong>String</strong> に限らず <strong>Text</strong>, <strong>ByteString</strong> などを返すことができます。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">mapM_</span> <span class="fu">putStrLn</span> <span class="op">$</span> keys person</a>
-<a class="sourceLine" id="cb10-2" title="2">name</a>
-<a class="sourceLine" id="cb10-3" title="3">age</a>
-<a class="sourceLine" id="cb10-4" title="4"></a>
-<a class="sourceLine" id="cb10-5" title="5"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">mapM_</span> Data.Text.IO.putStrLn <span class="op">$</span> keys person</a>
-<a class="sourceLine" id="cb10-6" title="6">name</a>
-<a class="sourceLine" id="cb10-7" title="7">age</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">mapM_</span> <span class="fu">putStrLn</span> <span class="op">$</span> keys person</span>
+<span id="cb10-2"><a href="#cb10-2"></a>name</span>
+<span id="cb10-3"><a href="#cb10-3"></a>age</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">mapM_</span> Data.Text.IO.putStrLn <span class="op">$</span> keys person</span>
+<span id="cb10-6"><a href="#cb10-6"></a>name</span>
+<span id="cb10-7"><a href="#cb10-7"></a>age</span></code></pre></div>
 <p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/StringAssocKey.hs">完全なコード</a></p>
 <hr />
 <ul>
@@ -322,38 +322,38 @@ BIG MOON では、業務に必要なツールを自社開発しており、プ�
 </ul>
 <p>prettyprinter パッケージについては<a href="https://haskell.e-bigmoon.com/posts/2018/03-30-prettyprinter.html">過去のブログ記事</a>で少し紹介しているので、興味ある方はそちらをご確認ください。</p>
 <p>以下のような出力になるそうです。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1">[ name<span class="op">:</span> <span class="dt">DA</span><span class="op">-</span>192H</a>
-<a class="sourceLine" id="cb11-2" title="2">  weight<span class="op">:</span> <span class="fl">260.0</span></a>
-<a class="sourceLine" id="cb11-3" title="3">  price<span class="op">:</span> <span class="dv">120</span></a>
-<a class="sourceLine" id="cb11-4" title="4">  featured<span class="op">:</span> <span class="dt">True</span></a>
-<a class="sourceLine" id="cb11-5" title="5">  description<span class="op">:</span> <span class="dt">High</span><span class="op">-</span>quality (24bit 192kHz), lightweight portable <span class="dt">DAC</span></a>
-<a class="sourceLine" id="cb11-6" title="6">  quantity<span class="op">:</span> <span class="dv">20</span></a>
-<a class="sourceLine" id="cb11-7" title="7">, name<span class="op">:</span> <span class="dt">HHP</span><span class="op">-</span><span class="dv">150</span></a>
-<a class="sourceLine" id="cb11-8" title="8">  weight<span class="op">:</span> <span class="fl">200.0</span></a>
-<a class="sourceLine" id="cb11-9" title="9">  price<span class="op">:</span> <span class="dv">330</span></a>
-<a class="sourceLine" id="cb11-10" title="10">  featured<span class="op">:</span> <span class="dt">False</span></a>
-<a class="sourceLine" id="cb11-11" title="11">  description<span class="op">:</span> <span class="dt">Premium</span> wooden headphone</a>
-<a class="sourceLine" id="cb11-12" title="12">  quantity<span class="op">:</span> <span class="dv">55</span> ]</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a>[ name<span class="op">:</span> <span class="dt">DA</span><span class="op">-</span>192H</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  weight<span class="op">:</span> <span class="fl">260.0</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>  price<span class="op">:</span> <span class="dv">120</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>  featured<span class="op">:</span> <span class="dt">True</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>  description<span class="op">:</span> <span class="dt">High</span><span class="op">-</span>quality (24bit 192kHz), lightweight portable <span class="dt">DAC</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>  quantity<span class="op">:</span> <span class="dv">20</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>, name<span class="op">:</span> <span class="dt">HHP</span><span class="op">-</span><span class="dv">150</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>  weight<span class="op">:</span> <span class="fl">200.0</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a>  price<span class="op">:</span> <span class="dv">330</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>  featured<span class="op">:</span> <span class="dt">False</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a>  description<span class="op">:</span> <span class="dt">Premium</span> wooden headphone</span>
+<span id="cb11-12"><a href="#cb11-12"></a>  quantity<span class="op">:</span> <span class="dv">55</span> ]</span></code></pre></div>
 <p>現状は <code>prettyprinter</code> 側のバグ？で上手く表示されていないようですが、そのうち直ると思います。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> pretty person</a>
-<a class="sourceLine" id="cb12-2" title="2">{ name<span class="op">:</span> bigmoon; age<span class="op">:</span> <span class="dv">10</span></a>
-<a class="sourceLine" id="cb12-3" title="3"></a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> pretty [person, person]</a>
-<a class="sourceLine" id="cb12-5" title="5">[{ name<span class="op">:</span> bigmoon; age<span class="op">:</span> <span class="dv">10</span> }, { name<span class="op">:</span> bigmoon; age<span class="op">:</span> <span class="dv">10</span> }]</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> pretty person</span>
+<span id="cb12-2"><a href="#cb12-2"></a>{ name<span class="op">:</span> bigmoon; age<span class="op">:</span> <span class="dv">10</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> pretty [person, person]</span>
+<span id="cb12-5"><a href="#cb12-5"></a>[{ name<span class="op">:</span> bigmoon; age<span class="op">:</span> <span class="dv">10</span> }, { name<span class="op">:</span> bigmoon; age<span class="op">:</span> <span class="dv">10</span> }]</span></code></pre></div>
 <p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/Pretty.hs">完全なコード</a></p>
 <hr />
 <ul>
 <li><a href="https://hackage.haskell.org/package/th-lift">th-lift</a> の <strong>Lift</strong> のインスタンスを追加しました。</li>
 </ul>
 <p><strong>Lift</strong> のインスタンスになったので例えば、<strong>Data.Yaml.TH</strong> モジュールの <a href="https://www.stackage.org/haddock/lts-11.9/yaml-0.8.30/Data-Yaml-TH.html#v:decodeFile">decodeFile</a> 関数を使ってコンパイル時に <strong>yaml</strong> ファイルから一気に拡張可能レコードを作り上げることができます。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="ot">config ::</span> <span class="dt">Config</span></a>
-<a class="sourceLine" id="cb13-2" title="2">config <span class="ot">=</span> <span class="op">$$</span>(Yaml.TH.decodeFile <span class="st">&quot;config.yaml&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="ot">config ::</span> <span class="dt">Config</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>config <span class="ot">=</span> <span class="op">$$</span>(Yaml.TH.decodeFile <span class="st">&quot;config.yaml&quot;</span>)</span></code></pre></div>
 <p>実行例:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb14-1" title="1"><span class="co"># config.yaml</span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="fu">name:</span><span class="at"> </span><span class="st">&quot;bigmoon&quot;</span></a>
-<a class="sourceLine" id="cb14-3" title="3"><span class="fu">age:</span><span class="at"> </span><span class="dv">10</span></a></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> config</a>
-<a class="sourceLine" id="cb15-2" title="2">name <span class="op">@=</span> <span class="st">&quot;bigmoon&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">10</span> <span class="op">&lt;:</span> nil</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># config.yaml</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;bigmoon&quot;</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="fu">age</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> config</span>
+<span id="cb15-2"><a href="#cb15-2"></a>name <span class="op">@=</span> <span class="st">&quot;bigmoon&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">10</span> <span class="op">&lt;:</span> nil</span></code></pre></div>
 <p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/Lift.hs">完全なコード</a></p>
 <hr />
 <ul>
@@ -361,16 +361,16 @@ BIG MOON では、業務に必要なツールを自社開発しており、プ�
 </ul>
 <p><a href="https://hackage.haskell.org/package/extensible-0.4.9/docs/Data-Extensible-Product.html#v:hmapWithIndex">hmapWithIndex</a> の制約付きバージョンです。</p>
 <p>例えば以下のようにして拡張可能レコードから <strong>aeson</strong> パッケージの <a href="https://www.stackage.org/haddock/lts-11.9/aeson-1.2.4.0/Data-Aeson.html#t:Value">Value</a> をフィールドとして持つ拡張可能レコードに変換できます。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1"><span class="ot">toJSONRecord ::</span> <span class="dt">Forall</span> (<span class="dt">ValueIs</span> <span class="dt">ToJSON</span>) xs <span class="ot">=&gt;</span> <span class="dt">Record</span> xs <span class="ot">-&gt;</span> <span class="dt">RecordOf</span> (<span class="dt">Const'</span> <span class="dt">Value</span>) xs</a>
-<a class="sourceLine" id="cb16-2" title="2">toJSONRecord <span class="ot">=</span> hmapWithIndexFor c <span class="op">$</span> \m <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb16-3" title="3">    <span class="dt">Field</span> <span class="op">.</span> <span class="dt">Const'</span> <span class="op">.</span> toJSON <span class="op">.</span> view _Wrapper</a>
-<a class="sourceLine" id="cb16-4" title="4">  <span class="kw">where</span> c <span class="ot">=</span> <span class="dt">Proxy</span> <span class="op">@</span> (<span class="dt">ValueIs</span> <span class="dt">ToJSON</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="ot">toJSONRecord ::</span> <span class="dt">Forall</span> (<span class="dt">ValueIs</span> <span class="dt">ToJSON</span>) xs <span class="ot">=&gt;</span> <span class="dt">Record</span> xs <span class="ot">-&gt;</span> <span class="dt">RecordOf</span> (<span class="dt">Const'</span> <span class="dt">Value</span>) xs</span>
+<span id="cb16-2"><a href="#cb16-2"></a>toJSONRecord <span class="ot">=</span> hmapWithIndexFor c <span class="op">$</span> \m <span class="ot">-&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>    <span class="dt">Field</span> <span class="op">.</span> <span class="dt">Const'</span> <span class="op">.</span> toJSON <span class="op">.</span> view _Wrapper</span>
+<span id="cb16-4"><a href="#cb16-4"></a>  <span class="kw">where</span> c <span class="ot">=</span> <span class="dt">Proxy</span> <span class="op">@</span> (<span class="dt">ValueIs</span> <span class="dt">ToJSON</span>)</span></code></pre></div>
 <p>実行例:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> person</a>
-<a class="sourceLine" id="cb17-2" title="2">name <span class="op">@=</span> <span class="st">&quot;bigmoon&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">10</span> <span class="op">&lt;:</span> nil</a>
-<a class="sourceLine" id="cb17-3" title="3"></a>
-<a class="sourceLine" id="cb17-4" title="4"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> toJSONRecord person</a>
-<a class="sourceLine" id="cb17-5" title="5">name <span class="op">@=</span> <span class="dt">String</span> <span class="st">&quot;bigmoon&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dt">Number</span> <span class="fl">10.0</span> <span class="op">&lt;:</span> nil</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> person</span>
+<span id="cb17-2"><a href="#cb17-2"></a>name <span class="op">@=</span> <span class="st">&quot;bigmoon&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">10</span> <span class="op">&lt;:</span> nil</span>
+<span id="cb17-3"><a href="#cb17-3"></a></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> toJSONRecord person</span>
+<span id="cb17-5"><a href="#cb17-5"></a>name <span class="op">@=</span> <span class="dt">String</span> <span class="st">&quot;bigmoon&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dt">Number</span> <span class="fl">10.0</span> <span class="op">&lt;:</span> nil</span></code></pre></div>
 <p><a href="https://github.com/waddlaw/extensible-example/blob/master/release-article/0.4.9/HmapWithIndexFor.hs">完全なコード</a></p>
 <hr />
 <ul>

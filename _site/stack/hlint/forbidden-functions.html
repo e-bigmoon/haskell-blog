@@ -180,16 +180,16 @@
 <p><code>HLint</code> を使えば、そのような関数を検出することが可能です。実際には <code>関数</code> だけでなく <code>言語拡張</code>, <code>フラグ</code>, <code>モジュール</code> なども指定することができます。</p>
 <h2 id="関数を指定する方法">関数を指定する方法</h2>
 <p><code>.hlint.yaml</code> に以下の内容を追記します。今回は <code>undefined</code> を検出してみたいと思います。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># .hlint.yaml</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">-</span> <span class="fu">functions:</span></a>
-<a class="sourceLine" id="cb1-3" title="3">  <span class="kw">-</span> <span class="kw">{</span><span class="fu">name:</span><span class="at"> undefined</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[]}</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># .hlint.yaml</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">functions</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> undefined</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[]}</span></span></code></pre></div>
 <p>現状はどこにも使われていないためヒントは表示されません。</p>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>では、以下の関数を追加してみましょう。このように型レベルで設計して、実装を <code>undefined</code> にしておくことは良くあります。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="co">-- src/Lib.hs</span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="ot">doubleToText ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb3-3" title="3">doubleToText <span class="ot">=</span> <span class="fu">undefined</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">doubleToText ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>doubleToText <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
 <p>忘れずに実装してしまえば問題無いのですが、たまには忘れることもあります。しかし、<code>HLint</code> があれば安心です。</p>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:18:16: Warning: Avoid restricted function
@@ -200,9 +200,9 @@ Note: may break the code
 1 hint</code></pre>
 <h2 id="特定のモジュールのみを対象とする方法">特定のモジュールのみを対象とする方法</h2>
 <p><code>Lib</code> モジュールのみを検査対象とする場合は <code>within</code> キーワードを次のようにします。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># .hlint.yaml</span></a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="kw">-</span> <span class="fu">functions:</span></a>
-<a class="sourceLine" id="cb5-3" title="3">  <span class="kw">-</span> <span class="kw">{</span><span class="fu">name:</span><span class="at"> undefined</span><span class="kw">,</span> <span class="fu">within:</span><span class="at"> </span><span class="kw">[</span>Lib<span class="kw">]}</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># .hlint.yaml</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">functions</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> undefined</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span></code></pre></div>
       </article>
 
       <div class="pager">

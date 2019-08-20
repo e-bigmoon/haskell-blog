@@ -175,52 +175,52 @@
 <p>しかし、毎回 <code>stack haddock --haddock-arguments --odir=haddock</code> を実行するのは面倒です。規模が小さいうちは処理もそんなに重たく無いのでビルドした際に一緒にドキュメントを生成したいと思うことがあるかもしれません。</p>
 <p>そういった時は <code>stack.yaml</code> をカスタマイズしてみましょう！</p>
 <p><code>stack.yaml</code> のコメントを削除したものがこちらです。(慣れないうちはコメントが非常に有用なのですが、慣れてくると邪魔でしかないです。)</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">resolver:</span><span class="at"> lts-9.17</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">-</span> .</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-9.17</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">-</span><span class="at"> .</span></span></code></pre></div>
 <p>ここで <code>Haddock</code> に関するデフォルトオプションを明示的に指定してみましょう。(デフォルト値を設定しているだけなので、何も無い場合と全く同じ動作をします)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">resolver:</span><span class="at"> lts-9.17</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="kw">-</span> .</a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="fu">build:</span></a>
-<a class="sourceLine" id="cb2-5" title="5">  <span class="fu">haddock:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb2-6" title="6">  <span class="fu">haddock-arguments:</span></a>
-<a class="sourceLine" id="cb2-7" title="7">    <span class="fu">haddock-args:</span><span class="at"> </span><span class="kw">[]</span></a>
-<a class="sourceLine" id="cb2-8" title="8">  <span class="fu">open-haddocks:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb2-9" title="9">  <span class="fu">haddock-internal:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb2-10" title="10">  <span class="fu">haddock-hyperlink-source:</span><span class="at"> </span><span class="ch">true</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-9.17</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="at">  </span><span class="fu">haddock</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="at">  </span><span class="fu">haddock-arguments</span><span class="kw">:</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="at">    </span><span class="fu">haddock-args</span><span class="kw">:</span><span class="at"> </span><span class="kw">[]</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="at">  </span><span class="fu">open-haddocks</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="at">  </span><span class="fu">haddock-internal</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="at">  </span><span class="fu">haddock-hyperlink-source</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
 <p>試しに <code>stack haddock</code> を実行して前と同じものが生成されていることを確認しましょう。</p>
 <pre class="shell-session"><code>$ stack clean
 $ stack haddock --haddock-arguments --odir=haddock</code></pre>
 <p>では、まずは <code>--haddock-arguments --odir=haddock</code> の指定を省略できるように、以下のように設定ファイルを書き換えましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">resolver:</span><span class="at"> lts-9.17</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="kw">-</span> .</a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="fu">build:</span></a>
-<a class="sourceLine" id="cb4-5" title="5">  <span class="fu">haddock:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb4-6" title="6">  <span class="fu">haddock-arguments:</span></a>
-<a class="sourceLine" id="cb4-7" title="7">    <span class="fu">haddock-args:</span><span class="at">         </span><span class="co"># [] を削除</span></a>
-<a class="sourceLine" id="cb4-8" title="8">    <span class="kw">-</span> --odir=haddock      <span class="co"># 追記</span></a>
-<a class="sourceLine" id="cb4-9" title="9">  <span class="fu">open-haddocks:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb4-10" title="10">  <span class="fu">haddock-internal:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb4-11" title="11">  <span class="fu">haddock-hyperlink-source:</span><span class="at"> </span><span class="ch">true</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-9.17</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="at">  </span><span class="fu">haddock</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="at">  </span><span class="fu">haddock-arguments</span><span class="kw">:</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="at">    </span><span class="fu">haddock-args</span><span class="kw">:</span><span class="co">         # [] を削除</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> --odir=haddock</span><span class="co">      # 追記</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="at">  </span><span class="fu">open-haddocks</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="at">  </span><span class="fu">haddock-internal</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="at">  </span><span class="fu">haddock-hyperlink-source</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
 <p>では確認してみましょう。</p>
 <pre class="shell-session"><code>$ rm -rf ./haddock
 $ stack clean
 $ stack haddock</code></pre>
 <p>オプションを指定していませんが、期待通り <code>haddock</code> ディレクトリが生成されました！</p>
 <p>では次に <code>stack build</code> で <code>haddock</code> を生成するようにしてみましょう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">resolver:</span><span class="at"> lts-9.17</span></a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="kw">-</span> .</a>
-<a class="sourceLine" id="cb6-4" title="4"><span class="fu">build:</span></a>
-<a class="sourceLine" id="cb6-5" title="5">  <span class="fu">haddock:</span><span class="at"> </span><span class="ch">true</span><span class="at">              </span><span class="co"># 変更</span></a>
-<a class="sourceLine" id="cb6-6" title="6">  <span class="fu">haddock-arguments:</span></a>
-<a class="sourceLine" id="cb6-7" title="7">    <span class="fu">haddock-args:</span></a>
-<a class="sourceLine" id="cb6-8" title="8">    <span class="kw">-</span> --odir=haddock</a>
-<a class="sourceLine" id="cb6-9" title="9">  <span class="fu">open-haddocks:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb6-10" title="10">  <span class="fu">haddock-internal:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb6-11" title="11">  <span class="fu">haddock-hyperlink-source:</span><span class="at"> </span><span class="ch">true</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml:stack.yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-9.17</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="at">  </span><span class="fu">haddock</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="co">              # 変更</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="at">  </span><span class="fu">haddock-arguments</span><span class="kw">:</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="at">    </span><span class="fu">haddock-args</span><span class="kw">:</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> --odir=haddock</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="at">  </span><span class="fu">open-haddocks</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="at">  </span><span class="fu">haddock-internal</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="at">  </span><span class="fu">haddock-hyperlink-source</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
 <p>確かめてみましょう。</p>
 <pre class="shell-session"><code>$ rm -rf ./haddock
 $ stack clean
@@ -234,71 +234,71 @@ $ stack build</code></pre>
 <p><code>--odir</code> を指定しても、内部に生成された <code>haddock</code> を開いてしまうため、基本的にはあまり使いません。</p>
 <h5 id="最終的なファイル">最終的なファイル</h5>
 <p>コメントを以下のようにつけました。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">module</span> <span class="dt">Minfree</span> (minfree, minfree') <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-2" title="2"></a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="kw">import</span> <span class="dt">Data.Array</span> (<span class="dt">Array</span>, elems, accumArray, assocs)</a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="kw">import</span> <span class="dt">Data.Array.ST</span> (runSTArray, newArray, writeArray)</a>
-<a class="sourceLine" id="cb8-5" title="5"></a>
-<a class="sourceLine" id="cb8-6" title="6"><span class="co">-- |</span></a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="co">-- 与えられた自然数のリストに含まれない最小の自然数を求める関数</span></a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="co">--</span></a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="co">-- 自然数は0を含む</span></a>
-<a class="sourceLine" id="cb8-10" title="10"><span class="co">--</span></a>
-<a class="sourceLine" id="cb8-11" title="11"><span class="co">-- 前提条件1: 与えられたリストには順序がついていない</span></a>
-<a class="sourceLine" id="cb8-12" title="12"><span class="co">--</span></a>
-<a class="sourceLine" id="cb8-13" title="13"><span class="co">-- 前提条件2: 要素は重複していない</span></a>
-<a class="sourceLine" id="cb8-14" title="14"><span class="ot">minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-15" title="15">minfree xs <span class="ot">=</span> <span class="fu">head</span> ([<span class="dv">0</span><span class="op">..</span>] \\ xs)</a>
-<a class="sourceLine" id="cb8-16" title="16"></a>
-<a class="sourceLine" id="cb8-17" title="17"><span class="co">-- | リスト us から vs に含まれる要素をすべて除いた残りの要素のリストを返す</span></a>
-<a class="sourceLine" id="cb8-18" title="18">(\\)<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</a>
-<a class="sourceLine" id="cb8-19" title="19">us \\ vs <span class="ot">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> vs) us</a>
-<a class="sourceLine" id="cb8-20" title="20"></a>
-<a class="sourceLine" id="cb8-21" title="21"><span class="co">-- |</span></a>
-<a class="sourceLine" id="cb8-22" title="22"><span class="co">-- 引数として論理値の配列を取る</span></a>
-<a class="sourceLine" id="cb8-23" title="23"><span class="co">-- 論理値のリストに変換して True エントリーからなる最長先頭部分列の長さを返す</span></a>
-<a class="sourceLine" id="cb8-24" title="24"><span class="ot">search ::</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-25" title="25">search <span class="ot">=</span> <span class="fu">length</span> <span class="op">.</span> <span class="fu">takeWhile</span> <span class="fu">id</span> <span class="op">.</span> elems</a>
-<a class="sourceLine" id="cb8-26" title="26"></a>
-<a class="sourceLine" id="cb8-27" title="27"><span class="co">-- | リストから配列への変換</span></a>
-<a class="sourceLine" id="cb8-28" title="28"><span class="ot">checklist ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb8-29" title="29">checklist xs <span class="ot">=</span> accumArray (<span class="op">||</span>) <span class="dt">False</span> (<span class="dv">0</span>, n) (<span class="fu">zip</span> (<span class="fu">filter</span> (<span class="op">&lt;=</span> n) xs) (<span class="fu">repeat</span> <span class="dt">True</span>))</a>
-<a class="sourceLine" id="cb8-30" title="30">  <span class="kw">where</span> n <span class="ot">=</span> <span class="fu">length</span> xs</a>
-<a class="sourceLine" id="cb8-31" title="31"></a>
-<a class="sourceLine" id="cb8-32" title="32"><span class="co">-- | checklist の置き換え</span></a>
-<a class="sourceLine" id="cb8-33" title="33"><span class="ot">countlist ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-34" title="34">countlist xs <span class="ot">=</span> accumArray (<span class="op">+</span>) <span class="dv">0</span> (<span class="dv">0</span>,n) (<span class="fu">zip</span> xs (<span class="fu">repeat</span> <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb8-35" title="35">  <span class="kw">where</span> n <span class="ot">=</span> <span class="fu">maximum</span> xs</a>
-<a class="sourceLine" id="cb8-36" title="36"></a>
-<a class="sourceLine" id="cb8-37" title="37"><span class="fu">sort</span><span class="ot"> ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</a>
-<a class="sourceLine" id="cb8-38" title="38"><span class="fu">sort</span> xs <span class="ot">=</span> <span class="fu">concat</span> [<span class="fu">replicate</span> k x <span class="op">|</span> (x,k) <span class="ot">&lt;-</span> assocs (countlist xs)]</a>
-<a class="sourceLine" id="cb8-39" title="39"></a>
-<a class="sourceLine" id="cb8-40" title="40"><span class="co">-- | Data.Array.ST モジュールを使った checklist</span></a>
-<a class="sourceLine" id="cb8-41" title="41"><span class="ot">checklist' ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb8-42" title="42">checklist' xs <span class="ot">=</span> runSTArray <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-43" title="43">  a <span class="ot">&lt;-</span> newArray (<span class="dv">0</span>, n) <span class="dt">False</span></a>
-<a class="sourceLine" id="cb8-44" title="44">  <span class="fu">sequence</span> [writeArray a x <span class="dt">True</span> <span class="op">|</span> x <span class="ot">&lt;-</span> xs, x<span class="op">&lt;=</span>n]</a>
-<a class="sourceLine" id="cb8-45" title="45">  <span class="fu">return</span> a</a>
-<a class="sourceLine" id="cb8-46" title="46">  <span class="kw">where</span> n <span class="ot">=</span> <span class="fu">length</span> xs</a>
-<a class="sourceLine" id="cb8-47" title="47"></a>
-<a class="sourceLine" id="cb8-48" title="48"><span class="co">-- | リストを述語 p を満たす要素と満たさない要素のリストに分割する</span></a>
-<a class="sourceLine" id="cb8-49" title="49"><span class="ot">partition ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> ([<span class="dt">Int</span>], [<span class="dt">Int</span>])</a>
-<a class="sourceLine" id="cb8-50" title="50">partition p xs <span class="ot">=</span> (<span class="fu">filter</span> p xs, <span class="fu">filter</span> (<span class="fu">not</span> <span class="op">.</span> p) xs)</a>
-<a class="sourceLine" id="cb8-51" title="51"></a>
-<a class="sourceLine" id="cb8-52" title="52"><span class="co">-- | 最終的な minfree</span></a>
-<a class="sourceLine" id="cb8-53" title="53"><span class="ot">minfree' ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-54" title="54">minfree' xs <span class="ot">=</span> minfrom <span class="dv">0</span> (<span class="fu">length</span> xs, xs)</a>
-<a class="sourceLine" id="cb8-55" title="55"></a>
-<a class="sourceLine" id="cb8-56" title="56"><span class="co">-- | minfree の一般化</span></a>
-<a class="sourceLine" id="cb8-57" title="57"><span class="ot">minfrom ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (<span class="dt">Int</span>, [<span class="dt">Int</span>]) <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb8-58" title="58">minfrom a (n, xs)</a>
-<a class="sourceLine" id="cb8-59" title="59">  <span class="op">|</span> n <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> a</a>
-<a class="sourceLine" id="cb8-60" title="60">  <span class="op">|</span> m <span class="op">==</span> b <span class="op">-</span> a <span class="ot">=</span> minfrom b (n<span class="op">-</span>m, vs)</a>
-<a class="sourceLine" id="cb8-61" title="61">  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> minfrom a (m,us)</a>
-<a class="sourceLine" id="cb8-62" title="62">    <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-63" title="63">      (us, vs) <span class="ot">=</span> partition (<span class="op">&lt;</span>b) xs</a>
-<a class="sourceLine" id="cb8-64" title="64">      b <span class="ot">=</span> a <span class="op">+</span> <span class="dv">1</span> <span class="op">+</span> n <span class="ot">`div`</span> <span class="dv">2</span></a>
-<a class="sourceLine" id="cb8-65" title="65">      m <span class="ot">=</span> <span class="fu">length</span> us</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell:src/minfree.hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">module</span> <span class="dt">Minfree</span> (minfree, minfree') <span class="kw">where</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">import</span> <span class="dt">Data.Array</span> (<span class="dt">Array</span>, elems, accumArray, assocs)</span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">import</span> <span class="dt">Data.Array.ST</span> (runSTArray, newArray, writeArray)</span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">-- |</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">-- 与えられた自然数のリストに含まれない最小の自然数を求める関数</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">--</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">-- 自然数は0を含む</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">--</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">-- 前提条件1: 与えられたリストには順序がついていない</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">--</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">-- 前提条件2: 要素は重複していない</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="ot">minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>minfree xs <span class="ot">=</span> <span class="fu">head</span> ([<span class="dv">0</span><span class="op">..</span>] \\ xs)</span>
+<span id="cb8-16"><a href="#cb8-16"></a></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">-- | リスト us から vs に含まれる要素をすべて除いた残りの要素のリストを返す</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>(\\)<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</span>
+<span id="cb8-19"><a href="#cb8-19"></a>us \\ vs <span class="ot">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> vs) us</span>
+<span id="cb8-20"><a href="#cb8-20"></a></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="co">-- |</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="co">-- 引数として論理値の配列を取る</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="co">-- 論理値のリストに変換して True エントリーからなる最長先頭部分列の長さを返す</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="ot">search ::</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>search <span class="ot">=</span> <span class="fu">length</span> <span class="op">.</span> <span class="fu">takeWhile</span> <span class="fu">id</span> <span class="op">.</span> elems</span>
+<span id="cb8-26"><a href="#cb8-26"></a></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="co">-- | リストから配列への変換</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a><span class="ot">checklist ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Bool</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a>checklist xs <span class="ot">=</span> accumArray (<span class="op">||</span>) <span class="dt">False</span> (<span class="dv">0</span>, n) (<span class="fu">zip</span> (<span class="fu">filter</span> (<span class="op">&lt;=</span> n) xs) (<span class="fu">repeat</span> <span class="dt">True</span>))</span>
+<span id="cb8-30"><a href="#cb8-30"></a>  <span class="kw">where</span> n <span class="ot">=</span> <span class="fu">length</span> xs</span>
+<span id="cb8-31"><a href="#cb8-31"></a></span>
+<span id="cb8-32"><a href="#cb8-32"></a><span class="co">-- | checklist の置き換え</span></span>
+<span id="cb8-33"><a href="#cb8-33"></a><span class="ot">countlist ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a>countlist xs <span class="ot">=</span> accumArray (<span class="op">+</span>) <span class="dv">0</span> (<span class="dv">0</span>,n) (<span class="fu">zip</span> xs (<span class="fu">repeat</span> <span class="dv">1</span>))</span>
+<span id="cb8-35"><a href="#cb8-35"></a>  <span class="kw">where</span> n <span class="ot">=</span> <span class="fu">maximum</span> xs</span>
+<span id="cb8-36"><a href="#cb8-36"></a></span>
+<span id="cb8-37"><a href="#cb8-37"></a><span class="fu">sort</span><span class="ot"> ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</span>
+<span id="cb8-38"><a href="#cb8-38"></a><span class="fu">sort</span> xs <span class="ot">=</span> <span class="fu">concat</span> [<span class="fu">replicate</span> k x <span class="op">|</span> (x,k) <span class="ot">&lt;-</span> assocs (countlist xs)]</span>
+<span id="cb8-39"><a href="#cb8-39"></a></span>
+<span id="cb8-40"><a href="#cb8-40"></a><span class="co">-- | Data.Array.ST モジュールを使った checklist</span></span>
+<span id="cb8-41"><a href="#cb8-41"></a><span class="ot">checklist' ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Array</span> <span class="dt">Int</span> <span class="dt">Bool</span></span>
+<span id="cb8-42"><a href="#cb8-42"></a>checklist' xs <span class="ot">=</span> runSTArray <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb8-43"><a href="#cb8-43"></a>  a <span class="ot">&lt;-</span> newArray (<span class="dv">0</span>, n) <span class="dt">False</span></span>
+<span id="cb8-44"><a href="#cb8-44"></a>  <span class="fu">sequence</span> [writeArray a x <span class="dt">True</span> <span class="op">|</span> x <span class="ot">&lt;-</span> xs, x<span class="op">&lt;=</span>n]</span>
+<span id="cb8-45"><a href="#cb8-45"></a>  <span class="fu">return</span> a</span>
+<span id="cb8-46"><a href="#cb8-46"></a>  <span class="kw">where</span> n <span class="ot">=</span> <span class="fu">length</span> xs</span>
+<span id="cb8-47"><a href="#cb8-47"></a></span>
+<span id="cb8-48"><a href="#cb8-48"></a><span class="co">-- | リストを述語 p を満たす要素と満たさない要素のリストに分割する</span></span>
+<span id="cb8-49"><a href="#cb8-49"></a><span class="ot">partition ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> ([<span class="dt">Int</span>], [<span class="dt">Int</span>])</span>
+<span id="cb8-50"><a href="#cb8-50"></a>partition p xs <span class="ot">=</span> (<span class="fu">filter</span> p xs, <span class="fu">filter</span> (<span class="fu">not</span> <span class="op">.</span> p) xs)</span>
+<span id="cb8-51"><a href="#cb8-51"></a></span>
+<span id="cb8-52"><a href="#cb8-52"></a><span class="co">-- | 最終的な minfree</span></span>
+<span id="cb8-53"><a href="#cb8-53"></a><span class="ot">minfree' ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb8-54"><a href="#cb8-54"></a>minfree' xs <span class="ot">=</span> minfrom <span class="dv">0</span> (<span class="fu">length</span> xs, xs)</span>
+<span id="cb8-55"><a href="#cb8-55"></a></span>
+<span id="cb8-56"><a href="#cb8-56"></a><span class="co">-- | minfree の一般化</span></span>
+<span id="cb8-57"><a href="#cb8-57"></a><span class="ot">minfrom ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (<span class="dt">Int</span>, [<span class="dt">Int</span>]) <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb8-58"><a href="#cb8-58"></a>minfrom a (n, xs)</span>
+<span id="cb8-59"><a href="#cb8-59"></a>  <span class="op">|</span> n <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> a</span>
+<span id="cb8-60"><a href="#cb8-60"></a>  <span class="op">|</span> m <span class="op">==</span> b <span class="op">-</span> a <span class="ot">=</span> minfrom b (n<span class="op">-</span>m, vs)</span>
+<span id="cb8-61"><a href="#cb8-61"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> minfrom a (m,us)</span>
+<span id="cb8-62"><a href="#cb8-62"></a>    <span class="kw">where</span></span>
+<span id="cb8-63"><a href="#cb8-63"></a>      (us, vs) <span class="ot">=</span> partition (<span class="op">&lt;</span>b) xs</span>
+<span id="cb8-64"><a href="#cb8-64"></a>      b <span class="ot">=</span> a <span class="op">+</span> <span class="dv">1</span> <span class="op">+</span> n <span class="ot">`div`</span> <span class="dv">2</span></span>
+<span id="cb8-65"><a href="#cb8-65"></a>      m <span class="ot">=</span> <span class="fu">length</span> us</span></code></pre></div>
 <h5 id="haddock">haddock</h5>
 <ul>
 <li><a href="https://www.haskell.org/haddock/">Haddock: A Haskell Documentation Tool</a></li>

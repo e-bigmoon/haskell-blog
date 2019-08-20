@@ -176,42 +176,42 @@
         <p>近頃の流行りとして <a href="https://12factor.net/config">the twelve-factor app</a> が提唱するように、アプリケーションの全ての設定を、設定ファイルや (やってないとは思いますが) アプリケーションのソースコードにハードコーディングする代わりに、環境変数に保存しようという動きがあります。</p>
 <p>Yesod の scaffolding は、どのアプリケーションでも必要だと思われる設定については、組み込みでサポートしています。よく使われる環境変数は、URLの生成方法に関する <code>APPROOT</code> 環境変数、リクエストを待ち受けるポート番号に関する <code>PORT</code> 環境変数、データベースの接続設定に関するものなどがあります。 (偶然にも、これは <a href="https://github.com/snoyberg/keter">the Keter deployment manager</a> と相性が良いです)</p>
 <p>実際のところ、このテクニックはとても簡単に実装できます。単に <code>main</code> 関数で環境変数を読み込むだけです。以下のコード例は、アプリケーションルートの設定に必要なちょっとした処理を含む具体例です。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="ot">{-# LANGUAGE RecordWildCards   #-}</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="kw">import</span>           <span class="dt">Data.Text</span>          (<span class="dt">Text</span>, pack)</a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="kw">import</span>           <span class="dt">System.Environment</span></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb1-9" title="9"></a>
-<a class="sourceLine" id="cb1-10" title="10"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb1-11" title="11">    {<span class="ot"> myApproot      ::</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb1-12" title="12">    ,<span class="ot"> welcomeMessage ::</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb1-13" title="13">    }</a>
-<a class="sourceLine" id="cb1-14" title="14"></a>
-<a class="sourceLine" id="cb1-15" title="15">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb1-16" title="16">/ HomeR GET</a>
-<a class="sourceLine" id="cb1-17" title="17">|]</a>
-<a class="sourceLine" id="cb1-18" title="18"></a>
-<a class="sourceLine" id="cb1-19" title="19"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb1-20" title="20">    approot <span class="ot">=</span> <span class="dt">ApprootMaster</span> myApproot</a>
-<a class="sourceLine" id="cb1-21" title="21"></a>
-<a class="sourceLine" id="cb1-22" title="22"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-23" title="23">getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-24" title="24">    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</a>
-<a class="sourceLine" id="cb1-25" title="25">    setTitle <span class="st">&quot;Environment variables&quot;</span></a>
-<a class="sourceLine" id="cb1-26" title="26">    [whamlet|</a>
-<a class="sourceLine" id="cb1-27" title="27">        <span class="kw">&lt;p&gt;</span>Here's the welcome message: <span class="kw">#{</span>welcomeMessage<span class="kw">}</span></a>
-<a class="sourceLine" id="cb1-28" title="28">        <span class="kw">&lt;p&gt;</span></a>
-<a class="sourceLine" id="cb1-29" title="29">            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}&gt;</span>And a link to: <span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}</span></a>
-<a class="sourceLine" id="cb1-30" title="30">    |]</a>
-<a class="sourceLine" id="cb1-31" title="31"></a>
-<a class="sourceLine" id="cb1-32" title="32"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-33" title="33">main <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-34" title="34">    myApproot <span class="ot">&lt;-</span> <span class="fu">fmap</span> <span class="fu">pack</span> <span class="op">$</span> getEnv <span class="st">&quot;APPROOT&quot;</span></a>
-<a class="sourceLine" id="cb1-35" title="35">    welcomeMessage <span class="ot">&lt;-</span> <span class="fu">fmap</span> <span class="fu">pack</span> <span class="op">$</span> getEnv <span class="st">&quot;WELCOME_MESSAGE&quot;</span></a>
-<a class="sourceLine" id="cb1-36" title="36">    warp <span class="dv">3000</span> <span class="dt">App</span> {<span class="op">..</span>}</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">{-# LANGUAGE RecordWildCards   #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>          (<span class="dt">Text</span>, pack)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">import</span>           <span class="dt">System.Environment</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>    {<span class="ot"> myApproot      ::</span> <span class="dt">Text</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>    ,<span class="ot"> welcomeMessage ::</span> <span class="dt">Text</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>    }</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb1-16"><a href="#cb1-16"></a>/ HomeR GET</span>
+<span id="cb1-17"><a href="#cb1-17"></a>|]</span>
+<span id="cb1-18"><a href="#cb1-18"></a></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>    approot <span class="ot">=</span> <span class="dt">ApprootMaster</span> myApproot</span>
+<span id="cb1-21"><a href="#cb1-21"></a></span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb1-25"><a href="#cb1-25"></a>    setTitle <span class="st">&quot;Environment variables&quot;</span></span>
+<span id="cb1-26"><a href="#cb1-26"></a>    [whamlet|</span>
+<span id="cb1-27"><a href="#cb1-27"></a>        <span class="kw">&lt;p&gt;</span>Here's the welcome message: <span class="kw">#{</span>welcomeMessage<span class="kw">}</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb1-29"><a href="#cb1-29"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}&gt;</span>And a link to: <span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>    |]</span>
+<span id="cb1-31"><a href="#cb1-31"></a></span>
+<span id="cb1-32"><a href="#cb1-32"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-33"><a href="#cb1-33"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-34"><a href="#cb1-34"></a>    myApproot <span class="ot">&lt;-</span> <span class="fu">fmap</span> <span class="fu">pack</span> <span class="op">$</span> getEnv <span class="st">&quot;APPROOT&quot;</span></span>
+<span id="cb1-35"><a href="#cb1-35"></a>    welcomeMessage <span class="ot">&lt;-</span> <span class="fu">fmap</span> <span class="fu">pack</span> <span class="op">$</span> getEnv <span class="st">&quot;WELCOME_MESSAGE&quot;</span></span>
+<span id="cb1-36"><a href="#cb1-36"></a>    warp <span class="dv">3000</span> <span class="dt">App</span> {<span class="op">..</span>}</span></code></pre></div>
 <p>この例でトリッキーな部分は以下の2点です。</p>
 <ol type="1">
 <li><code>getEnv</code> の戻り値は <code>String</code> 型の値なので、<code>pack</code> 関数を使って <code>Text</code> 型に変換する必要があります。</li>

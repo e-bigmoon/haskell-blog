@@ -180,40 +180,40 @@
 <li><a href="https://haskell.e-bigmoon.com/posts/2018/07-31-yesodsecurity.html">Yesod には脆弱性があるのかな？</a></li>
 </ul>
 <h2 id="脆弱性を含むコード">脆弱性を含むコード</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="co">-- stack script --resolver lts-12.4</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="kw">import</span>           <span class="dt">Data.Maybe</span></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb1-9" title="9"></a>
-<a class="sourceLine" id="cb1-10" title="10"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb1-11" title="11"></a>
-<a class="sourceLine" id="cb1-12" title="12">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb1-13" title="13">/ HomeR GET</a>
-<a class="sourceLine" id="cb1-14" title="14">|]</a>
-<a class="sourceLine" id="cb1-15" title="15"></a>
-<a class="sourceLine" id="cb1-16" title="16"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb1-17" title="17"></a>
-<a class="sourceLine" id="cb1-18" title="18"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-19" title="19">getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-20" title="20">  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></a>
-<a class="sourceLine" id="cb1-21" title="21"></a>
-<a class="sourceLine" id="cb1-22" title="22">  [whamlet|</a>
-<a class="sourceLine" id="cb1-23" title="23">    <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</a>
-<a class="sourceLine" id="cb1-24" title="24">      <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('#{name}')&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></a>
-<a class="sourceLine" id="cb1-25" title="25">  |]</a>
-<a class="sourceLine" id="cb1-26" title="26"></a>
-<a class="sourceLine" id="cb1-27" title="27">  toWidget [julius|</a>
-<a class="sourceLine" id="cb1-28" title="28">    <span class="kw">function</span> <span class="at">init</span>(text) <span class="op">{</span></a>
-<a class="sourceLine" id="cb1-29" title="29">      <span class="co">// Do whatever you want</span></a>
-<a class="sourceLine" id="cb1-30" title="30">    <span class="op">}</span></a>
-<a class="sourceLine" id="cb1-31" title="31">  |]</a>
-<a class="sourceLine" id="cb1-32" title="32"></a>
-<a class="sourceLine" id="cb1-33" title="33"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-34" title="34">main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="co">-- stack script --resolver lts-12.4</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">import</span>           <span class="dt">Data.Maybe</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb1-13"><a href="#cb1-13"></a>/ HomeR GET</span>
+<span id="cb1-14"><a href="#cb1-14"></a>|]</span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a></span>
+<span id="cb1-22"><a href="#cb1-22"></a>  [whamlet|</span>
+<span id="cb1-23"><a href="#cb1-23"></a>    <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</span>
+<span id="cb1-24"><a href="#cb1-24"></a>      <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('#{name}')&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a>  |]</span>
+<span id="cb1-26"><a href="#cb1-26"></a></span>
+<span id="cb1-27"><a href="#cb1-27"></a>  toWidget [julius|</span>
+<span id="cb1-28"><a href="#cb1-28"></a>    <span class="kw">function</span> <span class="at">init</span>(text) <span class="op">{</span></span>
+<span id="cb1-29"><a href="#cb1-29"></a>      <span class="co">// Do whatever you want</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>    <span class="op">}</span></span>
+<span id="cb1-31"><a href="#cb1-31"></a>  |]</span>
+<span id="cb1-32"><a href="#cb1-32"></a></span>
+<span id="cb1-33"><a href="#cb1-33"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-34"><a href="#cb1-34"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p>例えば <code>http://localhost:3000/?name=%27),alert(1)//</code> にアクセスすると <code>alert</code> が実行されてしまう。</p>
 <h2 id="対策">対策</h2>
 <h3 id="方法1-インラインをやめる">方法1 インラインをやめる</h3>
@@ -221,18 +221,18 @@
 <p>潜在的にではあるが、脆弱性は存在しているので、推奨はしない。(実装者によっては知らずに書いてしまうかもしれない)</p>
 <h3 id="方法2-content-security-policy-の設定">方法2 Content Security Policy の設定</h3>
 <p>Content Security Policy を設定してインラインの JavaScript を禁止する。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-2" title="2">  yesodMiddleware handler <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-3" title="3">    addHeader <span class="st">&quot;Content-Security-Policy&quot;</span> <span class="st">&quot;default-src 'self'&quot;</span></a>
-<a class="sourceLine" id="cb2-4" title="4">    defaultYesodMiddleware handler</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  yesodMiddleware handler <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    addHeader <span class="st">&quot;Content-Security-Policy&quot;</span> <span class="st">&quot;default-src 'self'&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>    defaultYesodMiddleware handler</span></code></pre></div>
 <h3 id="方法3-明示的に-javascript-のエスケープを行う">方法3 明示的に javascript のエスケープを行う</h3>
 <p>rails の <a href="https://github.com/rails/rails/blob/master/actionview/lib/action_view/helpers/javascript_helper.rb#L27">escape_javascript</a> を参考に自前でエスケープ処理を実装する。</p>
 <p>今のところ、Yesod はそのような関数を提供していない。</p>
 <p>ちなみに、以下のようにしても、やはり脆弱性は存在している。(内部関数の <a href="https://www.stackage.org/haddock/lts-12.4/shakespeare-2.0.15/src/Text.Julius.html#string">string</a> ではエスケープ処理が不十分なため)</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">[whamlet|</a>
-<a class="sourceLine" id="cb3-2" title="2">  <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</a>
-<a class="sourceLine" id="cb3-3" title="3">    <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ toJSON name}')&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></a>
-<a class="sourceLine" id="cb3-4" title="4">|]</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>[whamlet|</span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ toJSON name}')&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>|]</span></code></pre></div>
       </article>
 
       <div class="pager">

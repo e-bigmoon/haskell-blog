@@ -228,54 +228,54 @@ Control.Arrow モジュールに (^&gt;&gt;) と (&gt;&gt;^) という演算子�
 <h2 id="準備">準備</h2>
 <p>例として、文字列を全て<strong>大文字</strong>に変換する関数を考えてみましょう。</p>
 <p>素朴に書けばこんな感じでしょうか。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">import</span> <span class="dt">Data.Char</span> (toUpper)</a>
-<a class="sourceLine" id="cb1-2" title="2"></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb1-4" title="4">toAllUpper <span class="ot">=</span> <span class="fu">map</span> <span class="fu">toUpper</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">import</span> <span class="dt">Data.Char</span> (toUpper)</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>toAllUpper <span class="ot">=</span> <span class="fu">map</span> <span class="fu">toUpper</span></span></code></pre></div>
 <p>この関数は以下のように期待通りに動きます。</p>
 <pre class="shell"><code>*Main&gt; toAllUpper &quot;B|g0on&quot;
 &quot;B|G0ON&quot;</code></pre>
 <p>ではここで、同じように <code>Text</code> バージョンを作りたいと思います。何も考えずに pack と unpack を使えばすぐ定義できますね。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span>           <span class="dt">Data.Char</span> (toUpper)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw">import</span>           <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span> <span class="kw">as</span> <span class="dt">T</span></a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb3-6" title="6">toAllUpper <span class="ot">=</span> <span class="fu">map</span> <span class="fu">toUpper</span></a>
-<a class="sourceLine" id="cb3-7" title="7"></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="ot">toAllUpperText ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb3-9" title="9">toAllUpperText <span class="ot">=</span> T.pack <span class="op">.</span> toAllUpper <span class="op">.</span> T.unpack</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">import</span>           <span class="dt">Data.Char</span> (toUpper)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">import</span>           <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span> <span class="kw">as</span> <span class="dt">T</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">toAllUpper ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>toAllUpper <span class="ot">=</span> <span class="fu">map</span> <span class="fu">toUpper</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="ot">toAllUpperText ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>toAllUpperText <span class="ot">=</span> T.pack <span class="op">.</span> toAllUpper <span class="op">.</span> T.unpack</span></code></pre></div>
 <p>この関数も同様にちゃんと動きます。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> toAllUpperText <span class="op">$</span> T.pack <span class="st">&quot;B|g0on&quot;</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="st">&quot;B|G0ON&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> toAllUpperText <span class="op">$</span> T.pack <span class="st">&quot;B|g0on&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="st">&quot;B|G0ON&quot;</span></span></code></pre></div>
 <h2 id="と-を無理矢理使ってみる">(^&gt;&gt;) と (&gt;&gt;^) を無理矢理使ってみる</h2>
 <p>先程定義した <code>toAllUpperText</code> 関数は <code>(^&gt;&gt;)</code> と <code>(&gt;&gt;^)</code> を使って、以下のように書き直すことができます。(<code>Control.Arrow</code> をインポートする必要があります。)</p>
 <p>左から右バージョン</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="ot">toAllUpperText' ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb5-2" title="2">toAllUpperText' <span class="ot">=</span> T.unpack <span class="op">^&gt;&gt;</span> toAllUpper <span class="op">&gt;&gt;^</span> T.pack</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">toAllUpperText' ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>toAllUpperText' <span class="ot">=</span> T.unpack <span class="op">^&gt;&gt;</span> toAllUpper <span class="op">&gt;&gt;^</span> T.pack</span></code></pre></div>
 <p>右から左バージョン</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">toAllUpperText'' ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></a>
-<a class="sourceLine" id="cb6-2" title="2">toAllUpperText'' <span class="ot">=</span> T.pack <span class="op">&lt;&lt;^</span> toAllUpper <span class="op">^&lt;&lt;</span> T.unpack</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">toAllUpperText'' ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>toAllUpperText'' <span class="ot">=</span> T.pack <span class="op">&lt;&lt;^</span> toAllUpper <span class="op">^&lt;&lt;</span> T.unpack</span></code></pre></div>
 <p>関数合成 (<code>.</code>) を単純に置き換えただけです・・・。</p>
 <h3 id="型">型</h3>
 <p>この演算子の何が面白いかと言うと、<strong>入力</strong>と<strong>出力</strong>をそれぞれ変換できるんですね！</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="ot">(&gt;&gt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a b c <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b d</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">(&lt;&lt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a c d <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a b d</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="ot">(^&lt;&lt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b c <span class="ot">-&gt;</span> a b d</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ot">(&gt;&gt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a b c <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b d</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="ot">(&lt;&lt;^) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> a c d <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a b d</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">(^&lt;&lt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> a b c <span class="ot">-&gt;</span> a b d</span></code></pre></div>
 <p>先程の例は <code>Arrow a</code> の <code>a</code> を関数型 <code>(-&gt;)</code> として具体化したものになります。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</a>
-<a class="sourceLine" id="cb9-2" title="2">  <span class="co">-- a = (-&gt;) として具体化した</span></a>
-<a class="sourceLine" id="cb9-3" title="3">    (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) c d <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) b d</a>
-<a class="sourceLine" id="cb9-4" title="4">  <span class="ot">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="ot">(^&gt;&gt;) ::</span> <span class="dt">Arrow</span> a <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a c d <span class="ot">-&gt;</span> a b d</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="co">-- a = (-&gt;) として具体化した</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>    (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) c d <span class="ot">-&gt;</span> (<span class="ot">-&gt;</span>) b d</span>
+<span id="cb9-4"><a href="#cb9-4"></a>  <span class="ot">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</span></code></pre></div>
 <p>引数の順番を逆にすれば関数合成の型と同じですね。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1">  <span class="ot">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a>
-<a class="sourceLine" id="cb10-2" title="2">  <span class="co">-- 引数を逆にした</span></a>
-<a class="sourceLine" id="cb10-3" title="3">  (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</a>
-<a class="sourceLine" id="cb10-4" title="4">  <span class="co">-- 変数名の変更</span></a>
-<a class="sourceLine" id="cb10-5" title="5">  <span class="ot">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a>
-<a class="sourceLine" id="cb10-6" title="6"></a>
-<a class="sourceLine" id="cb10-7" title="7"><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a>  <span class="ot">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="co">-- 引数を逆にした</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>  (c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> d)</span>
+<span id="cb10-4"><a href="#cb10-4"></a>  <span class="co">-- 変数名の変更</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  <span class="ot">=</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</span></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <ul>
 <li>現実世界で Arrow をバリバリ使っているコードをみかけることは (僕は) 全く無いです。(Hakyll は過去に Arrow ベースで定義されていたようですが、Monad ベースに切り替わりました)</li>

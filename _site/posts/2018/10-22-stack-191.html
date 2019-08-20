@@ -312,15 +312,15 @@ Version 1.9.1, Git revision f9d0042c141660e1d38f797e1d426be4a99b2a3c (6168 commi
 <h4 id="解説">解説</h4>
 <p>グローバルな <code>~/.stack/.config.yaml</code> とプロジェクト固有の <code>stack.yaml</code> の話で <code>package.yaml</code> は関係しません。</p>
 <p>例として、それぞれファイルの内容を以下のように設定しておきます。(<code>$everything</code> は全てのパッケージを指定)</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># ~/.stack/config.yaml</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">ghc-options:</span></a>
-<a class="sourceLine" id="cb4-3" title="3">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;aaa&quot;</span></a></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># stack.yaml</span></a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="fu">resolver:</span><span class="at"> lts-12.13</span></a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="kw">-</span> .</a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="fu">ghc-options:</span></a>
-<a class="sourceLine" id="cb5-6" title="6">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;bbb&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># ~/.stack/config.yaml</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="at">  </span><span class="fu">&quot;$everything&quot;</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;aaa&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># stack.yaml</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-12.13</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="at">  </span><span class="fu">&quot;$everything&quot;</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;bbb&quot;</span></span></code></pre></div>
 <p>パッケージの指定が重複していたときに今までは、<code>stack.yaml</code> (プロジェクト固有) の <code>ghc-options</code> で上書きされていましたが、 <code>stack.yaml</code> の <code>ghc-options</code> を結合するようになりました。以下は動作例です。</p>
 <pre class="shell"><code># stack v1.9.1 の動作
 $ stack build
@@ -330,15 +330,15 @@ $ stack build
 $ stack build
 ... --ghc-options bbb</code></pre>
 <p><code>ghc-options</code> の内容が重複する場合は両方とも引数に与えられますが、後ろの値で上書きされるようなのでプロジェクト固有の設定が優先されます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># ~/.stack/config.yaml</span></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="fu">ghc-options:</span></a>
-<a class="sourceLine" id="cb7-3" title="3">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;-dumpdir=./respect-config&quot;</span></a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb8-1" title="1"><span class="co"># stack.yaml</span></a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="fu">resolver:</span><span class="at"> lts-12.13</span></a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="fu">packages:</span></a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="kw">-</span> .</a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="fu">ghc-options:</span></a>
-<a class="sourceLine" id="cb8-6" title="6">  <span class="fu">&quot;$everything&quot;:</span><span class="at"> </span><span class="st">&quot;-dumpdir=./respect-stack&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># ~/.stack/config.yaml</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="at">  </span><span class="fu">&quot;$everything&quot;</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;-dumpdir=./respect-config&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># stack.yaml</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-12.13</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="at">  </span><span class="fu">&quot;$everything&quot;</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;-dumpdir=./respect-stack&quot;</span></span></code></pre></div>
 <p>実際に試してみると、以下のようになると思います。</p>
 <pre class="sell"><code>$ stack build -v
 ... --ghc-options -dumpdir=./respect-config --ghc-options -dumpdir=./respect-stack
@@ -570,7 +570,7 @@ rio-0.1.2.0@sha256:cb2a65cee1c0450815002ca890633215e4544b5c1c9f7091a950142c6efe8
 <hr />
 <ul>
 <li><p><code>hackage-base-url</code> 設定オプションを利用することで、パッケージアップロード時の Hackage ベースURL に任意のURLを指定できるようになりました。(デフォルトは <code>https://hackage.haskell.org/</code> です)</p></li>
-<li><a href="https://github.com/commercialhaskell/stack/pull/4167">Fix behavior of –no-signature to turn signing off #4167</a></li>
+<li><p><a href="https://github.com/commercialhaskell/stack/pull/4167">Fix behavior of –no-signature to turn signing off #4167</a></p></li>
 <li><p><a href="https://github.com/commercialhaskell/stack/issues/3739">stack upload –no-signature still shows “Unable to find gpg2 or gpg executable” #3739</a></p></li>
 </ul>
 <hr />
@@ -686,12 +686,12 @@ rio-0.1.2.0@sha256:cb2a65cee1c0450815002ca890633215e4544b5c1c9f7091a950142c6efe8
 <h4 id="解説-2">解説</h4>
 <p>Cabal 2.0 から <code>internal Libraries</code> が追加され、stack 側も対応したという感じです。</p>
 <p>例として以下のような <code>package.yaml</code> があった場合</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb11-1" title="1"><span class="co"># package.yaml</span></a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="fu">name:</span><span class="at"> test-internal</span></a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb11-4" title="4">  <span class="kw">-</span> base</a>
-<a class="sourceLine" id="cb11-5" title="5"><span class="fu">internal-libraries:</span></a>
-<a class="sourceLine" id="cb11-6" title="6">  <span class="fu">internal-foo:</span><span class="at"> </span><span class="kw">{}</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># package.yaml</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> test-internal</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="at">  </span><span class="kw">-</span><span class="at"> base</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="fu">internal-libraries</span><span class="kw">:</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="at">  </span><span class="fu">internal-foo</span><span class="kw">:</span><span class="at"> </span><span class="kw">{}</span></span></code></pre></div>
 <p>自動生成される <code>cabal</code> ファイルは以下のようになります。</p>
 <pre class="cabal"><code>name:           test-internal
 version:        0.0.0

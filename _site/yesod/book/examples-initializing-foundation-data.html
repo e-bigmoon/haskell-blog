@@ -191,10 +191,10 @@
 <p>という程度にシンプルです。</p>
 <h2 id="step1-アプリケーションのファウンデーションを定義しよう">Step1: アプリケーションのファウンデーションを定義しよう</h2>
 <p>最初の説明を良く読めば、今回のアプリケーションで初期化しておくべきものは、Web サイトに表示する Markdown コンテンツと訪問者数を保存するためのミュータブル変数だとわかるでしょう。これから私達がやりたいことは、初期化処理で可能な限り多くのことを行い、ハンドラ内で同じ作業の繰り返しを避けることです。そのため、前処理で Markdown コンテンツを HTML 変換します。訪問者カウンタは単に <code>IORef</code> で十分です。まとめると、ファウンデーション型は以下のようになります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb1-2" title="2">    {<span class="ot"> homepageContent ::</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb1-3" title="3">    ,<span class="ot"> visitorCount    ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb1-4" title="4">    }</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>    {<span class="ot"> homepageContent ::</span> <span class="dt">Html</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    ,<span class="ot"> visitorCount    ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    }</span></code></pre></div>
 <h2 id="step2-ファウンデーションの使い方">Step2: ファウンデーションの使い方</h2>
 <p>例を非常に単純にするためにルートはトップページしか考えません。やりたいことは以下の通りです。</p>
 <ol type="1">
@@ -203,17 +203,17 @@
 <li>訪問者数と共に Markdown コンテンツを表示する。</li>
 </ol>
 <p>コードを多少短くするためのテクニックとしてレコードワイルドカード構文 <code>App{..}</code> を採用します。この言語拡張はデータ型にいくつもの異なるフィールドがある場合に便利です。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb2-2" title="2">getHomeR <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-3" title="3">    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</a>
-<a class="sourceLine" id="cb2-4" title="4">    currentCount <span class="ot">&lt;-</span> liftIO <span class="op">$</span> atomicModifyIORef visitorCount</a>
-<a class="sourceLine" id="cb2-5" title="5">        <span class="op">$</span> \i <span class="ot">-&gt;</span> (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb2-6" title="6">    defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb2-7" title="7">        setTitle <span class="st">&quot;Homepage&quot;</span></a>
-<a class="sourceLine" id="cb2-8" title="8">        [whamlet|</a>
-<a class="sourceLine" id="cb2-9" title="9">            <span class="kw">&lt;article&gt;#{</span>homepageContent<span class="kw">}</span></a>
-<a class="sourceLine" id="cb2-10" title="10">            <span class="kw">&lt;p&gt;</span>You are visitor number: <span class="kw">#{</span>currentCount<span class="kw">}</span>.</a>
-<a class="sourceLine" id="cb2-11" title="11">        |]</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    currentCount <span class="ot">&lt;-</span> liftIO <span class="op">$</span> atomicModifyIORef visitorCount</span>
+<span id="cb2-5"><a href="#cb2-5"></a>        <span class="op">$</span> \i <span class="ot">-&gt;</span> (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>        setTitle <span class="st">&quot;Homepage&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>        [whamlet|</span>
+<span id="cb2-9"><a href="#cb2-9"></a>            <span class="kw">&lt;article&gt;#{</span>homepageContent<span class="kw">}</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>            <span class="kw">&lt;p&gt;</span>You are visitor number: <span class="kw">#{</span>currentCount<span class="kw">}</span>.</span>
+<span id="cb2-11"><a href="#cb2-11"></a>        |]</span></code></pre></div>
 <h2 id="step3-ファウンデーション型の値を作る">Step3: ファウンデーション型の値を作る</h2>
 <p>アプリケーションを初期化するときに、Step1 で定義した <code>App</code> 型の2つのフィールドに値を与える必要があります。この処理はただの <code>IO</code> なので必要に応じて任意のアクションを実行できます。今回は以下のアクションを実行します。</p>
 <ol type="1">
@@ -222,57 +222,57 @@
 <li>訪問者数をカウントするための変数を作る。</li>
 </ol>
 <p>コードは上記のステップを Haskell に落とし込むだけです。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">go ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb3-2" title="2">go <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-3" title="3">    rawMarkdown <span class="ot">&lt;-</span> TLIO.readFile <span class="st">&quot;homepage.md&quot;</span></a>
-<a class="sourceLine" id="cb3-4" title="4">    countRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></a>
-<a class="sourceLine" id="cb3-5" title="5">    warp <span class="dv">3000</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb3-6" title="6">        { homepageContent <span class="ot">=</span> markdown def rawMarkdown</a>
-<a class="sourceLine" id="cb3-7" title="7">        , visitorCount    <span class="ot">=</span> countRef</a>
-<a class="sourceLine" id="cb3-8" title="8">        }</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">go ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-2"><a href="#cb3-2"></a>go <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    rawMarkdown <span class="ot">&lt;-</span> TLIO.readFile <span class="st">&quot;homepage.md&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    countRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>        { homepageContent <span class="ot">=</span> markdown def rawMarkdown</span>
+<span id="cb3-7"><a href="#cb3-7"></a>        , visitorCount    <span class="ot">=</span> countRef</span>
+<span id="cb3-8"><a href="#cb3-8"></a>        }</span></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <p>今回の例に関して言えば、特に難しい概念や用語は登場していません。ただのプログラミングです。この章の目的は、アプリケーションに必要なものを揃えるための、一般的に利用されているベストプラクティスを紹介することです。実際のアプリケーションに関して言えば、初期化ステップはもっと複雑になるでしょう。例えば、データベースのコネクションプールをセットアップしたり、ビッグデータをバッチ処理するためにバックグラウンドジョブを起動したりします。この章を読み終わった読者は、アプリケーション毎に必要となる初期化処理を記述できるようになります。</p>
 <p>以下は、今回の例の完全なソースコードです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="ot">{-# LANGUAGE RecordWildCards   #-}</span></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="kw">import</span>           <span class="dt">Data.IORef</span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="kw">import</span>           <span class="dt">Text.Markdown</span></a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="kw">import</span>           <span class="dt">Yesod</span></a>
-<a class="sourceLine" id="cb4-10" title="10"></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb4-12" title="12">    {<span class="ot"> homepageContent ::</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb4-13" title="13">    ,<span class="ot"> visitorCount    ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb4-14" title="14">    }</a>
-<a class="sourceLine" id="cb4-15" title="15"></a>
-<a class="sourceLine" id="cb4-16" title="16">mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</a>
-<a class="sourceLine" id="cb4-17" title="17">/ HomeR GET</a>
-<a class="sourceLine" id="cb4-18" title="18">|]</a>
-<a class="sourceLine" id="cb4-19" title="19"><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb4-20" title="20"></a>
-<a class="sourceLine" id="cb4-21" title="21"><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></a>
-<a class="sourceLine" id="cb4-22" title="22">getHomeR <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-23" title="23">    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</a>
-<a class="sourceLine" id="cb4-24" title="24">    currentCount <span class="ot">&lt;-</span> liftIO <span class="op">$</span> atomicModifyIORef visitorCount</a>
-<a class="sourceLine" id="cb4-25" title="25">        <span class="op">$</span> \i <span class="ot">-&gt;</span> (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-26" title="26">    defaultLayout <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-27" title="27">        setTitle <span class="st">&quot;Homepage&quot;</span></a>
-<a class="sourceLine" id="cb4-28" title="28">        [whamlet|</a>
-<a class="sourceLine" id="cb4-29" title="29">            <span class="kw">&lt;article&gt;#{</span>homepageContent<span class="kw">}</span></a>
-<a class="sourceLine" id="cb4-30" title="30">            <span class="kw">&lt;p&gt;</span>You are visitor number: <span class="kw">#{</span>currentCount<span class="kw">}</span>.</a>
-<a class="sourceLine" id="cb4-31" title="31">        |]</a>
-<a class="sourceLine" id="cb4-32" title="32"></a>
-<a class="sourceLine" id="cb4-33" title="33"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb4-34" title="34">main <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb4-35" title="35">    rawMarkdown <span class="ot">&lt;-</span> TLIO.readFile <span class="st">&quot;homepage.md&quot;</span></a>
-<a class="sourceLine" id="cb4-36" title="36">    countRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></a>
-<a class="sourceLine" id="cb4-37" title="37">    warp <span class="dv">3000</span> <span class="dt">App</span></a>
-<a class="sourceLine" id="cb4-38" title="38">        { homepageContent <span class="ot">=</span> markdown def rawMarkdown</a>
-<a class="sourceLine" id="cb4-39" title="39">        , visitorCount    <span class="ot">=</span> countRef</a>
-<a class="sourceLine" id="cb4-40" title="40">        }</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">{-# LANGUAGE RecordWildCards   #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">import</span>           <span class="dt">Text.Markdown</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    {<span class="ot"> homepageContent ::</span> <span class="dt">Html</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    ,<span class="ot"> visitorCount    ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>    }</span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb4-17"><a href="#cb4-17"></a>/ HomeR GET</span>
+<span id="cb4-18"><a href="#cb4-18"></a>|]</span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb4-24"><a href="#cb4-24"></a>    currentCount <span class="ot">&lt;-</span> liftIO <span class="op">$</span> atomicModifyIORef visitorCount</span>
+<span id="cb4-25"><a href="#cb4-25"></a>        <span class="op">$</span> \i <span class="ot">-&gt;</span> (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb4-26"><a href="#cb4-26"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a>        setTitle <span class="st">&quot;Homepage&quot;</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a>        [whamlet|</span>
+<span id="cb4-29"><a href="#cb4-29"></a>            <span class="kw">&lt;article&gt;#{</span>homepageContent<span class="kw">}</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a>            <span class="kw">&lt;p&gt;</span>You are visitor number: <span class="kw">#{</span>currentCount<span class="kw">}</span>.</span>
+<span id="cb4-31"><a href="#cb4-31"></a>        |]</span>
+<span id="cb4-32"><a href="#cb4-32"></a></span>
+<span id="cb4-33"><a href="#cb4-33"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-34"><a href="#cb4-34"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a>    rawMarkdown <span class="ot">&lt;-</span> TLIO.readFile <span class="st">&quot;homepage.md&quot;</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a>    countRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
+<span id="cb4-37"><a href="#cb4-37"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb4-38"><a href="#cb4-38"></a>        { homepageContent <span class="ot">=</span> markdown def rawMarkdown</span>
+<span id="cb4-39"><a href="#cb4-39"></a>        , visitorCount    <span class="ot">=</span> countRef</span>
+<span id="cb4-40"><a href="#cb4-40"></a>        }</span></code></pre></div>
 <h2 id="本書のコード">本書のコード</h2>
 <ul>
 <li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex01/Example01.hs">Example01.hs</a></li>

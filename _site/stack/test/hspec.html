@@ -172,34 +172,34 @@
 
       <article class="page-content">
         <p>まずは <code>HSpec</code> を使うために、<code>package.yaml</code> の <code>tests</code> に <code>hspec</code> パッケージを追記します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml:package.yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">tests:</span></a>
-<a class="sourceLine" id="cb1-2" title="2">  <span class="fu">PFAD-test:</span></a>
-<a class="sourceLine" id="cb1-3" title="3">    <span class="fu">main:</span><span class="at">                Spec.hs</span></a>
-<a class="sourceLine" id="cb1-4" title="4">    <span class="fu">source-dirs:</span><span class="at">         test</span></a>
-<a class="sourceLine" id="cb1-5" title="5">    <span class="fu">ghc-options:</span></a>
-<a class="sourceLine" id="cb1-6" title="6">    <span class="kw">-</span> -threaded</a>
-<a class="sourceLine" id="cb1-7" title="7">    <span class="kw">-</span> -rtsopts</a>
-<a class="sourceLine" id="cb1-8" title="8">    <span class="kw">-</span> -with-rtsopts=-N</a>
-<a class="sourceLine" id="cb1-9" title="9">    <span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb1-10" title="10">    <span class="kw">-</span> PFAD</a>
-<a class="sourceLine" id="cb1-11" title="11">    <span class="kw">-</span> hspec <span class="co"># ここを追記</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml:package.yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="at">  </span><span class="fu">PFAD-test</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Spec.hs</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         test</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hspec</span><span class="co"> # ここを追記</span></span></code></pre></div>
 <p>ここで、<code>test/Spec.hs</code> の内容を以下のように書き換えます。<code>hspec-discover</code> を利用することで、それぞれのソースファイルと一対一に対応した <code>Spec</code> ファイルを自動的に読み込んでテストしてくれるようになります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode :test/spec.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="ot">{-# OPTIONS_GHC -F -pgmF hspec-discover #-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode :test/spec.hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">{-# OPTIONS_GHC -F -pgmF hspec-discover #-}</span></span></code></pre></div>
 <p>Spec ファイルの命名規則は、 <code>src/Minfree.hs</code> に対しては <code>test/MinfreeSpec.hs</code> という感じです。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode :test/minfreespec.hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-2" title="2"></a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="kw">import</span> <span class="dt">Test.Hspec</span></a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="kw">import</span> <span class="dt">Minfree</span></a>
-<a class="sourceLine" id="cb3-5" title="5"></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="ot">spec ::</span> <span class="dt">Spec</span></a>
-<a class="sourceLine" id="cb3-7" title="7">spec <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-8" title="8">  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-9" title="9">    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-10" title="10">      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></a>
-<a class="sourceLine" id="cb3-11" title="11"></a>
-<a class="sourceLine" id="cb3-12" title="12">  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-13" title="13">    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb3-14" title="14">      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode :test/minfreespec.hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">import</span> <span class="dt">Test.Hspec</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">spec ::</span> <span class="dt">Spec</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>spec <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span></code></pre></div>
 <p>上記の書き方で <code>minfree</code> 関数と <code>minfree'</code> 関数の入力と出力の振る舞いがテストできるようになりました。</p>
 <p>最後に以下のコマンドでテストを実行します。</p>
 <pre class="shell-session"><code>$ stack test

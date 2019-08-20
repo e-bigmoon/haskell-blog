@@ -248,8 +248,8 @@ stack ls コマンドは今回に含まれていないので v1.7.0 で追加さ
 <li>In addition to supporting <code>.tar.gz</code> and <code>.zip</code> files as remote archives, plain <code>.tar</code> files are now accepted too. This will additionally help with cases where HTTP servers mistakenly set the transfer encoding to <code>gzip</code>. See <a href="https://github.com/commercialhaskell/stack/issues/3647">#3647</a>.</li>
 </ul>
 <p>ということで <code>.tar</code> に加えて <code>extra-deps</code> に <code>.tar.gz</code>, <code>.zip</code> 形式が指定できるようになったみたいです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">extra-deps:</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="kw">-</span> http://www.mathstat.dal.ca/~selinger/quipper/downloads/quipper-0.8.tgz</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">-</span><span class="at"> http://www.mathstat.dal.ca/~selinger/quipper/downloads/quipper-0.8.tgz</span></span></code></pre></div>
 <p>僕は使ったこと無いですが、役立ちそう。</p>
 <hr />
 <ul>
@@ -272,30 +272,30 @@ stack ls コマンドは今回に含まれていないので v1.7.0 で追加さ
 <li>The script interpreter’s implicit file arguments are now passed before other arguments. See <a href="Error%20when%20using%20RTS%20options%20with%20the%20Stack%20script%20interpreter%20#3658">#3658</a>. In particular, this makes it possible to pass <code>-- +RTS ... -RTS</code> to specify RTS arguments used when running the script.</li>
 </ul>
 <p>スクリプトインタプリタの暗黙的なファイル引数を他の引数より先に渡すように修正されたようです。 その結果、以下のような <code>RTS</code> オプションの指定が適切に処理できるようになりました。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="pp">#!/usr/bin/env stack</span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="co">{- stack</span></a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="co">  script</span></a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="co">  --resolver lts-6.25</span></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="co">  --package turtle</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co">  --</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">  +RTS -s -RTS</span></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">-}</span></a>
-<a class="sourceLine" id="cb3-9" title="9"></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="ot">main ::</span> <span class="dt">IO</span></a>
-<a class="sourceLine" id="cb3-11" title="11">main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello, world!&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co">{- stack</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">  script</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">  --resolver lts-6.25</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">  --package turtle</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">  --</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">  +RTS -s -RTS</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">-}</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="ot">main ::</span> <span class="dt">IO</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello, world!&quot;</span></span></code></pre></div>
 <hr />
 <ul>
 <li>Don’t ignore the template year parameter in config files, and clarify the surrounding documentation. See <a href="stack%20new%20--%20AesonException%20#2275">#2275</a>.</li>
 </ul>
 <p><code>config.yaml</code> に <code>year</code> パラメータを指定できるようになったそうです。こんな感じです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">templates:</span></a>
-<a class="sourceLine" id="cb4-2" title="2">  <span class="fu">params:</span></a>
-<a class="sourceLine" id="cb4-3" title="3">    <span class="fu">author-email:</span><span class="at"> 415fox@gmail.com</span></a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="fu">author-name:</span><span class="at"> michael fox</span></a>
-<a class="sourceLine" id="cb4-5" title="5">    <span class="fu">category:</span><span class="at"> Application</span></a>
-<a class="sourceLine" id="cb4-6" title="6">    <span class="fu">copyright:</span><span class="at"> copytright michael fox 2016</span></a>
-<a class="sourceLine" id="cb4-7" title="7">    <span class="fu">github-username:</span><span class="at"> gitfoxi</span></a>
-<a class="sourceLine" id="cb4-8" title="8">    <span class="fu">year:</span><span class="at"> </span><span class="dv">2016</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="at">  </span><span class="fu">params</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="at">    </span><span class="fu">author-email</span><span class="kw">:</span><span class="at"> 415fox@gmail.com</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="at">    </span><span class="fu">author-name</span><span class="kw">:</span><span class="at"> michael fox</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="at">    </span><span class="fu">category</span><span class="kw">:</span><span class="at"> Application</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="at">    </span><span class="fu">copyright</span><span class="kw">:</span><span class="at"> copytright michael fox 2016</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="at">    </span><span class="fu">github-username</span><span class="kw">:</span><span class="at"> gitfoxi</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="at">    </span><span class="fu">year</span><span class="kw">:</span><span class="at"> </span><span class="dv">2016</span></span></code></pre></div>
 <p>ドキュメントを見る限り <code>copyright</code> を省略した場合は <code>author-name</code> と <code>year</code> を使って <code>copyright</code> が生成されるようです。 また <code>year</code> を省略した場合は現在の年が設定されるとのことなので、設定しなくても良さそうですね。</p>
 <blockquote>
 <p>year - if copyright is not specified, year and author-name are used to generate the copyright property in cabal. If year is not specified, it defaults to the current year.</p>

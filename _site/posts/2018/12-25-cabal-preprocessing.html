@@ -227,19 +227,19 @@
 <p>最近少しずつ <code>cabal</code> を使うようになりました。</p>
 <p>そのため、<code>stack</code> と <code>cabal</code> のどちらを使ってもビルドできるようにプロジェクトを修正していたのですが、<code>cabal</code> ファイルの取り扱いが難しかったのでメモ程度に残しておきます。</p>
 <p>方針としては <code>cabal</code> コマンドの実行時にフックを仕掛けて <code>hpack</code> を使って <code>package.yaml</code> から <code>cabal</code> ファイルを生成しようという感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="op">$</span> cabal <span class="co">--numeric-version</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="fl">2.4</span><span class="op">.</span><span class="fl">1.0</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">$</span> cabal <span class="co">--numeric-version</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fl">2.4</span><span class="op">.</span><span class="fl">1.0</span></span></code></pre></div>
 <!--more-->
 <h2 id="setup.hs-は何のためにあるのか">Setup.hs は何のためにあるのか？</h2>
 <p><code>stack</code> を使ってプロジェクトを作ると <code>Setup.hs</code> が以下の内容で自動的に生成されると思います。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb2-2" title="2">main <span class="ot">=</span> defaultMain</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>main <span class="ot">=</span> defaultMain</span></code></pre></div>
 <p>今まで特に使わなくても困らなかったので、気にせずに放置していましたが、このファイルが今回の主役になります。</p>
 <p><code>cabal</code> には <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-type">build-type</a> という設定項目があり、この値はデフォルトでは <code>Simple</code> か <code>Custom</code> のどちらかに自動的に推論されます。(他にも <code>Configure</code>, <code>Make</code> などもあります。詳しくはドキュメントを参照してください)</p>
 <h3 id="simple">Simple</h3>
 <p><code>build-type</code> に <code>Simple</code> を指定した場合、<code>cabal</code> は <code>Setup.hs</code> に以下の内容が記述されているものとして処理を進めます。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb3-2" title="2">main <span class="ot">=</span> defaultMain</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>main <span class="ot">=</span> defaultMain</span></code></pre></div>
 <p>そのため <code>Setup.hs</code> を削除しても問題なくビルド可能です。</p>
 <h3 id="custom">Custom</h3>
 <p><code>build-type</code> に <code>Custom</code> を指定した場合、<code>Setup.hs</code> の内容をユーザが自由に書き換えることができます。</p>
@@ -248,68 +248,68 @@
 <p>詳しいドキュメントは <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#more-complex-packages">3.3.8. More complex packages</a> を参照ください。</p>
 <h3 id="userhooks">UserHooks</h3>
 <p><code>defaultMainWithHooks</code> に渡す <a href="https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#t:UserHooks">UserHooks</a> 型はこんな感じで定義されています。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="ot">=</span> <span class="dt">UserHooks</span> {</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="ot">    runTests ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="ot">    readDesc ::</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> <span class="dt">GenericPackageDescription</span>),</a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="ot">    hookedPreProcessors ::</span> [ <span class="dt">PPSuffixHandler</span> ],</a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="ot">    hookedPrograms ::</span> [<span class="dt">Program</span>],</a>
-<a class="sourceLine" id="cb4-6" title="6"></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="ot">    preConf  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="ot">    confHook ::</span> (<span class="dt">GenericPackageDescription</span>, <span class="dt">HookedBuildInfo</span>) <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">LocalBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="ot">    postConf ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-10" title="10"></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="ot">    preBuild  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="ot">    buildHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-13" title="13"><span class="ot">    postBuild ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-14" title="14"></a>
-<a class="sourceLine" id="cb4-15" title="15"><span class="ot">    preRepl  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-16" title="16"><span class="ot">    replHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-17" title="17"><span class="ot">    postRepl ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-18" title="18"></a>
-<a class="sourceLine" id="cb4-19" title="19"><span class="ot">    preClean  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-20" title="20"><span class="ot">    cleanHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-21" title="21"><span class="ot">    postClean ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-22" title="22"></a>
-<a class="sourceLine" id="cb4-23" title="23"><span class="ot">    preCopy  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-24" title="24"><span class="ot">    copyHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-25" title="25"><span class="ot">    postCopy ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-26" title="26"></a>
-<a class="sourceLine" id="cb4-27" title="27"><span class="ot">    preInst  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-28" title="28"><span class="ot">    instHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-29" title="29"><span class="ot">    postInst ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-30" title="30"></a>
-<a class="sourceLine" id="cb4-31" title="31"><span class="ot">    preSDist  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-32" title="32"><span class="ot">    sDistHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-33" title="33"><span class="ot">    postSDist ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-34" title="34"></a>
-<a class="sourceLine" id="cb4-35" title="35"><span class="ot">    preReg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-36" title="36"><span class="ot">    regHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-37" title="37"><span class="ot">    postReg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-38" title="38"></a>
-<a class="sourceLine" id="cb4-39" title="39"><span class="ot">    preUnreg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-40" title="40"><span class="ot">    unregHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-41" title="41"><span class="ot">    postUnreg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-42" title="42"></a>
-<a class="sourceLine" id="cb4-43" title="43"><span class="ot">    preHscolour  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-44" title="44"><span class="ot">    hscolourHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-45" title="45"><span class="ot">    postHscolour ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-46" title="46"></a>
-<a class="sourceLine" id="cb4-47" title="47"><span class="ot">    preDoctest  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-48" title="48"><span class="ot">    doctestHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-49" title="49"><span class="ot">    postDoctest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-50" title="50"></a>
-<a class="sourceLine" id="cb4-51" title="51"><span class="ot">    preHaddock  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-52" title="52"><span class="ot">    haddockHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-53" title="53"><span class="ot">    postHaddock ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-54" title="54"></a>
-<a class="sourceLine" id="cb4-55" title="55"><span class="ot">    preTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-56" title="56"><span class="ot">    testHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-57" title="57"><span class="ot">    postTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-58" title="58"></a>
-<a class="sourceLine" id="cb4-59" title="59"><span class="ot">    preBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</a>
-<a class="sourceLine" id="cb4-60" title="60"><span class="ot">    benchHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</a>
-<a class="sourceLine" id="cb4-61" title="61"><span class="ot">    postBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb4-62" title="62">  }</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="ot">=</span> <span class="dt">UserHooks</span> {</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">    runTests ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">    readDesc ::</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> <span class="dt">GenericPackageDescription</span>),</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">    hookedPreProcessors ::</span> [ <span class="dt">PPSuffixHandler</span> ],</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="ot">    hookedPrograms ::</span> [<span class="dt">Program</span>],</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="ot">    preConf  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="ot">    confHook ::</span> (<span class="dt">GenericPackageDescription</span>, <span class="dt">HookedBuildInfo</span>) <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">LocalBuildInfo</span>,</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="ot">    postConf ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="ot">    preBuild  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="ot">    buildHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="ot">    postBuild ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-14"><a href="#cb4-14"></a></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="ot">    preRepl  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="ot">    replHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="ot">    postRepl ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-18"><a href="#cb4-18"></a></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="ot">    preClean  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="ot">    cleanHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="ot">    postClean ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-22"><a href="#cb4-22"></a></span>
+<span id="cb4-23"><a href="#cb4-23"></a><span class="ot">    preCopy  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-24"><a href="#cb4-24"></a><span class="ot">    copyHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-25"><a href="#cb4-25"></a><span class="ot">    postCopy ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-26"><a href="#cb4-26"></a></span>
+<span id="cb4-27"><a href="#cb4-27"></a><span class="ot">    preInst  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-28"><a href="#cb4-28"></a><span class="ot">    instHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-29"><a href="#cb4-29"></a><span class="ot">    postInst ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-30"><a href="#cb4-30"></a></span>
+<span id="cb4-31"><a href="#cb4-31"></a><span class="ot">    preSDist  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-32"><a href="#cb4-32"></a><span class="ot">    sDistHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-33"><a href="#cb4-33"></a><span class="ot">    postSDist ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-34"><a href="#cb4-34"></a></span>
+<span id="cb4-35"><a href="#cb4-35"></a><span class="ot">    preReg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-36"><a href="#cb4-36"></a><span class="ot">    regHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-37"><a href="#cb4-37"></a><span class="ot">    postReg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-38"><a href="#cb4-38"></a></span>
+<span id="cb4-39"><a href="#cb4-39"></a><span class="ot">    preUnreg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-40"><a href="#cb4-40"></a><span class="ot">    unregHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-41"><a href="#cb4-41"></a><span class="ot">    postUnreg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-42"><a href="#cb4-42"></a></span>
+<span id="cb4-43"><a href="#cb4-43"></a><span class="ot">    preHscolour  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-44"><a href="#cb4-44"></a><span class="ot">    hscolourHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-45"><a href="#cb4-45"></a><span class="ot">    postHscolour ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-46"><a href="#cb4-46"></a></span>
+<span id="cb4-47"><a href="#cb4-47"></a><span class="ot">    preDoctest  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-48"><a href="#cb4-48"></a><span class="ot">    doctestHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-49"><a href="#cb4-49"></a><span class="ot">    postDoctest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-50"><a href="#cb4-50"></a></span>
+<span id="cb4-51"><a href="#cb4-51"></a><span class="ot">    preHaddock  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-52"><a href="#cb4-52"></a><span class="ot">    haddockHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-53"><a href="#cb4-53"></a><span class="ot">    postHaddock ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-54"><a href="#cb4-54"></a></span>
+<span id="cb4-55"><a href="#cb4-55"></a><span class="ot">    preTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-56"><a href="#cb4-56"></a><span class="ot">    testHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-57"><a href="#cb4-57"></a><span class="ot">    postTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-58"><a href="#cb4-58"></a></span>
+<span id="cb4-59"><a href="#cb4-59"></a><span class="ot">    preBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
+<span id="cb4-60"><a href="#cb4-60"></a><span class="ot">    benchHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
+<span id="cb4-61"><a href="#cb4-61"></a><span class="ot">    postBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-62"><a href="#cb4-62"></a>  }</span></code></pre></div>
 <p>これだけあれば、やりたいことはほとんど出来そうですね。</p>
 <h2 id="実装">実装</h2>
 <p>フックする場所はたくさんあるので問題無さそうです。</p>
@@ -317,38 +317,38 @@
 <p>適当に cabal のコードを読んでいると、どうやら <a href="https://github.com/haskell/cabal/blob/e15d87d542b4b23983aed3d54e0b42585257f453/cabal-install/Distribution/Client/CmdBuild.hs#L119">establishProjectBaseContext</a> という関数が <code>.cabal</code> ファイルを読み込んでコンテキストを作っているっぽいことがわかりました。</p>
 <p>なので、<code>preBuild</code> にフックすれば良さそうです。(<code>cabal</code> のコードベースについて全然わからないので、本当に合ってるかどうかは不安)</p>
 <p>最終的に、こんな感じで完成しました。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-2" title="2"></a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="kw">import</span> <span class="dt">Distribution.Simple.Setup</span> (<span class="dt">BuildFlags</span>)</a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="kw">import</span> <span class="dt">Distribution.Types.HookedBuildInfo</span> (<span class="dt">HookedBuildInfo</span>, emptyHookedBuildInfo)</a>
-<a class="sourceLine" id="cb5-6" title="6"><span class="kw">import</span> <span class="dt">Hpack</span></a>
-<a class="sourceLine" id="cb5-7" title="7"></a>
-<a class="sourceLine" id="cb5-8" title="8"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb5-9" title="9">main <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb5-10" title="10">  <span class="kw">let</span> myHook <span class="ot">=</span> simpleUserHooks {</a>
-<a class="sourceLine" id="cb5-11" title="11">    preBuild <span class="ot">=</span> pbHpack</a>
-<a class="sourceLine" id="cb5-12" title="12">  }</a>
-<a class="sourceLine" id="cb5-13" title="13">  defaultMainWithHooks myHook</a>
-<a class="sourceLine" id="cb5-14" title="14"></a>
-<a class="sourceLine" id="cb5-15" title="15"><span class="ot">pbHpack ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span></a>
-<a class="sourceLine" id="cb5-16" title="16">pbHpack _ _ <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb5-17" title="17">  hpack <span class="dt">Verbose</span> defaultOptions</a>
-<a class="sourceLine" id="cb5-18" title="18">  <span class="fu">return</span> emptyHookedBuildInfo</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">import</span> <span class="dt">Distribution.Simple.Setup</span> (<span class="dt">BuildFlags</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span> <span class="dt">Distribution.Types.HookedBuildInfo</span> (<span class="dt">HookedBuildInfo</span>, emptyHookedBuildInfo)</span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">import</span> <span class="dt">Hpack</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-9"><a href="#cb5-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>  <span class="kw">let</span> myHook <span class="ot">=</span> simpleUserHooks {</span>
+<span id="cb5-11"><a href="#cb5-11"></a>    preBuild <span class="ot">=</span> pbHpack</span>
+<span id="cb5-12"><a href="#cb5-12"></a>  }</span>
+<span id="cb5-13"><a href="#cb5-13"></a>  defaultMainWithHooks myHook</span>
+<span id="cb5-14"><a href="#cb5-14"></a></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="ot">pbHpack ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>pbHpack _ _ <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a>  hpack <span class="dt">Verbose</span> defaultOptions</span>
+<span id="cb5-18"><a href="#cb5-18"></a>  <span class="fu">return</span> emptyHookedBuildInfo</span></code></pre></div>
 <p><a href="https://www.stackage.org/package/hpack">hpack</a> パッケージの関数をそのまま使ってます。</p>
 <p>今回は他に何もしないので <code>emptyHookedBuildInfo</code> で大丈夫でした。(たぶん)</p>
 <h3 id="extra-source-files">extra-source-files</h3>
 <p>キャッシュの問題があるので <code>extra-source-files</code> に <code>package.yaml</code> を追加しておくと良さそうです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">extra-source-files:</span></a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="kw">-</span> package.yaml</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">extra-source-files</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">-</span><span class="at"> package.yaml</span></span></code></pre></div>
 <h3 id="custom-setup">custom-setup</h3>
 <p>最後に忘れてはいけないのが、<code>custom-setup</code> の設定です。</p>
 <p><code>Setup.hs</code> で利用する依存関係などは <code>library</code> や <code>executables</code>, <code>tests</code> と同様に <code>custom-setup</code> を <code>package.yaml</code> に追記します。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">custom-setup:</span></a>
-<a class="sourceLine" id="cb7-2" title="2">  <span class="fu">dependencies:</span></a>
-<a class="sourceLine" id="cb7-3" title="3">    <span class="kw">-</span> base</a>
-<a class="sourceLine" id="cb7-4" title="4">    <span class="kw">-</span> Cabal</a>
-<a class="sourceLine" id="cb7-5" title="5">    <span class="kw">-</span> hpack</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">custom-setup</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="at">  </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="at">    </span><span class="kw">-</span><span class="at"> base</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="at">    </span><span class="kw">-</span><span class="at"> Cabal</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hpack</span></span></code></pre></div>
 <p>これで完成です。</p>
 <p>最初の一度だけは <code>hpack</code> を使って <code>cabal</code> ファイルを生成する必要がありますが、それ以降は必要ありません。</p>
 <pre class="shell"><code>$ curl -sSL https://github.com/sol/hpack/raw/master/get-hpack.sh | bash
@@ -356,15 +356,15 @@ $ hpack package.yaml
 $ cabal new-build</code></pre>
 <h2 id="失敗したこと">失敗したこと</h2>
 <p>最初はフックさせずにこんな感じですぐに実装できるものだと思ってましたが、</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb9-2" title="2"></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="kw">import</span> <span class="dt">Distribution.Simple</span></a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="kw">import</span> <span class="dt">Hpack</span></a>
-<a class="sourceLine" id="cb9-5" title="5"></a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb9-7" title="7">main <span class="ot">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb9-8" title="8">  hpack <span class="dt">Verbose</span> defaultOptions</a>
-<a class="sourceLine" id="cb9-9" title="9">  defaultMain</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">import</span> <span class="dt">Hpack</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb9-7"><a href="#cb9-7"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a>  hpack <span class="dt">Verbose</span> defaultOptions</span>
+<span id="cb9-9"><a href="#cb9-9"></a>  defaultMain</span></code></pre></div>
 <p>これだと、あんまり上手くいきません。</p>
 <p><code>package.yaml</code> を更新しても実行されなかったり、期待するタイミングで <code>.cabal</code> ファイルが生成されていないっぽい感じでした。</p>
 <h2 id="まとめ">まとめ</h2>

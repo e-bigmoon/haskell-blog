@@ -235,30 +235,30 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <!--more-->
 <h2 id="やりたいこと">やりたいこと</h2>
 <p>データの挿入と更新操作を次のような型で表現します。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span> <span class="dt">Operation</span> <span class="ot">=</span> <span class="dt">Insert</span> <span class="op">|</span> <span class="dt">Update</span></a>
-<a class="sourceLine" id="cb2-2" title="2">  <span class="kw">deriving</span> <span class="dt">Eq</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">data</span> <span class="dt">Operation</span> <span class="ot">=</span> <span class="dt">Insert</span> <span class="op">|</span> <span class="dt">Update</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="kw">deriving</span> <span class="dt">Eq</span></span></code></pre></div>
 <p>上記のデータ型を使って、次のような関数を定義します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb3-2" title="2">adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb3-3" title="3">                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb3-6" title="6">isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></a>
-<a class="sourceLine" id="cb3-7" title="7">isInsert _      <span class="ot">=</span> <span class="dt">False</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
 <p><code>adjustBound</code> 関数は以下のように動作します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="op">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">5</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="dv">11</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="op">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">100</span></a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="dv">11</span></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="op">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> (<span class="op">-</span><span class="dv">100</span>)</a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="dv">11</span></a>
-<a class="sourceLine" id="cb4-7" title="7"></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="op">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">5</span></a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="dv">5</span></a>
-<a class="sourceLine" id="cb4-10" title="10"><span class="op">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">100</span></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="dv">10</span></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="op">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> (<span class="op">-</span><span class="dv">100</span>)</a>
-<a class="sourceLine" id="cb4-13" title="13"><span class="dv">0</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">5</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="dv">11</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="op">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">100</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="dv">11</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="op">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> (<span class="op">-</span><span class="dv">100</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="dv">11</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="op">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">5</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="dv">5</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="op">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">100</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="dv">10</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="op">&gt;</span> adjustBound <span class="dt">Update</span> <span class="dv">0</span> <span class="dv">10</span> (<span class="op">-</span><span class="dv">100</span>)</span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="dv">0</span></span></code></pre></div>
 <p><code>adjustBound</code> のような関数でバグが無いことを確認するためには何をしたら良いでしょうか？</p>
 <p>型は非常に強力ですが、値について何も教えてくれません。</p>
 <h2 id="バグの少ない世界を目指して">バグの少ない世界を目指して</h2>
@@ -268,19 +268,19 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <p>そんな心配性の方は <code>Liquid Haskell (LH)</code> を使いましょう！</p>
 <h2 id="型をより厳しく">型をより厳しく</h2>
 <p>最初に定義した <code>Operation</code> 型と <code>adjustBound</code> を再掲します。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="co">-- LH.hs</span></a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="kw">module</span> <span class="dt">LH</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-3" title="3"></a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="kw">data</span> <span class="dt">Operation</span> <span class="ot">=</span> <span class="dt">Insert</span> <span class="op">|</span> <span class="dt">Update</span></a>
-<a class="sourceLine" id="cb5-5" title="5">  <span class="kw">deriving</span> <span class="dt">Eq</span></a>
-<a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb5-8" title="8">adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb5-9" title="9">                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a>
-<a class="sourceLine" id="cb5-10" title="10"></a>
-<a class="sourceLine" id="cb5-11" title="11"><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb5-12" title="12">isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></a>
-<a class="sourceLine" id="cb5-13" title="13">isInsert _      <span class="ot">=</span> <span class="dt">False</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- LH.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">module</span> <span class="dt">LH</span> <span class="kw">where</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">data</span> <span class="dt">Operation</span> <span class="ot">=</span> <span class="dt">Insert</span> <span class="op">|</span> <span class="dt">Update</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="kw">deriving</span> <span class="dt">Eq</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span>
+<span id="cb5-10"><a href="#cb5-10"></a></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
 <p>とりあえず、現在のコードを <code>LH</code> にかけてみます。</p>
 <pre class="shell"><code>$ liquid LH.hs
 LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
@@ -306,12 +306,12 @@ Working 100% [=================================================================]
 <p>例えば <code>lower</code> と <code>upper</code> が自然数 (0含む) しか許容しないという仕様が与えられた時、どうしますか？</p>
 <p>よくある対応としては、コメントにその旨を書いたり、テストを作ったりという作業になるでしょう。</p>
 <p><code>Liquid Haskell</code> では上記の仕様を <code>事前条件</code> として記述することができます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; _ @-}</span></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb7-3" title="3">adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-4" title="4">                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; _ @-}</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
 <p><code>Nat</code> は <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Prelude.spec">Prelude</a> で以下のように定義されています。つまり、0以上の <code>Int</code> のみを含むリファインメント型です。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="co">{-@ type Nat = {v: Int | v &gt;= 0 } @-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">{-@ type Nat = {v: Int | v &gt;= 0 } @-}</span></span></code></pre></div>
 <p>これだけです。<code>LH</code> で結果を確かめてみましょう。</p>
 <pre class="shell"><code>$ liquid LH.hs
 ...
@@ -321,8 +321,8 @@ Working 100% [=================================================================]
 <p>これでもう <code>adjustBound</code> の <code>lower</code> と <code>upper</code> は <code>0</code> 以上の自然数でしか呼び出されていないことが示されました。</p>
 <h3 id="もう少し具体例">もう少し具体例</h3>
 <p>では、別のプログラマが <code>adjustBound</code> を利用した関数を作ったとしましょう。この関数自体に意味はないですが、<code>LH</code> を理解するためにはとても良い例だと思います。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="ot">f ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb10-2" title="2">f <span class="ot">=</span> adjustBound <span class="dt">Insert</span> (<span class="op">-</span><span class="dv">100</span>) (<span class="op">-</span><span class="dv">50</span>) (<span class="op">-</span><span class="dv">70</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="ot">f ::</span> <span class="dt">Int</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>f <span class="ot">=</span> adjustBound <span class="dt">Insert</span> (<span class="op">-</span><span class="dv">100</span>) (<span class="op">-</span><span class="dv">50</span>) (<span class="op">-</span><span class="dv">70</span>)</span></code></pre></div>
 <p>この関数 <code>f</code> は、型が正しいため当然コンパイルできます。</p>
 <pre class="shell"><code>$ stack repl -- LH.hs
 &gt; f
@@ -375,10 +375,10 @@ Working 100% [=================================================================]
 <p>先程、事前条件についてリファインメント型を書きました。</p>
 <p>次は事後条件についてリファインメントを書きましょう！</p>
 <p>同様に戻り値の型も自然数という仕様にします。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; Nat @-}</span></a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb13-3" title="3">adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb13-4" title="4">                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; Nat @-}</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
 <pre class="shell"><code>$ liquid LH.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <p>リファインメント型 (Refinement type) は <code>篩 (ふるい) 型</code> と訳されている本 (<a href="https://taimen.jp/f/389">入門LiquidHaskell−篩型による静的コード解析−</a>) もありますが、それは <code>Haskell</code> の型の値が条件によって <code>ふるい</code> 落とされて、新しい型 (リファインメント型) になっているというイメージから来ているのだと思います。(読んだこと無いので間違ってたらすみません・・・。)</p>
@@ -407,32 +407,32 @@ Working 100% [=================================================================]
 </ol>
 <p>ここからが面白いところです。</p>
 <p>まずは前準備として <code>x 〜 y</code> までの間の自然数を表すリファインメント型と述語を定義します。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="co">{-@ type Btwn Lo Hi = {v:Int | Lo &lt;= v &amp;&amp; v &lt;= Hi} @-}</span></a>
-<a class="sourceLine" id="cb15-2" title="2"><span class="co">{-@ predicate BtwnP Lo Hi = Lo &lt;= v &amp;&amp; v &lt;= Hi @-}</span></a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">{-@ type Btwn Lo Hi = {v:Int | Lo &lt;= v &amp;&amp; v &lt;= Hi} @-}</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="co">{-@ predicate BtwnP Lo Hi = Lo &lt;= v &amp;&amp; v &lt;= Hi @-}</span></span></code></pre></div>
 <p>では、<code>仕様1</code>を反映させてみましょう。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1"><span class="co">{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u} -&gt; _ -&gt; Nat @-}</span></a>
-<a class="sourceLine" id="cb16-2" title="2"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb16-3" title="3">adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb16-4" title="4">                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u} -&gt; _ -&gt; Nat @-}</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
 <pre class="shell"><code>$ liquid LH.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <p>では次に、<code>仕様2</code> と <code>仕様3</code> です。</p>
 <p>リファインメント型は以下のようになります。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="co">{-@ adjustBound ::</span></a>
-<a class="sourceLine" id="cb18-2" title="2"><span class="co">      op:Operation -&gt;</span></a>
-<a class="sourceLine" id="cb18-3" title="3"><span class="co">      l:Nat -&gt;</span></a>
-<a class="sourceLine" id="cb18-4" title="4"><span class="co">      {u:Nat | l &lt;= u} -&gt;</span></a>
-<a class="sourceLine" id="cb18-5" title="5"><span class="co">      _ -&gt;</span></a>
-<a class="sourceLine" id="cb18-6" title="6"><span class="co">      {v:Nat | if (isInsert op) then (BtwnP l (u+1)) else BtwnP l u }</span></a>
-<a class="sourceLine" id="cb18-7" title="7"><span class="co">@-}</span></a>
-<a class="sourceLine" id="cb18-8" title="8"><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb18-9" title="9">adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb18-10" title="10">                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</a>
-<a class="sourceLine" id="cb18-11" title="11"></a>
-<a class="sourceLine" id="cb18-12" title="12"><span class="co">{-@ measure isInsert @-}</span></a>
-<a class="sourceLine" id="cb18-13" title="13"><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb18-14" title="14">isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></a>
-<a class="sourceLine" id="cb18-15" title="15">isInsert _      <span class="ot">=</span> <span class="dt">False</span></a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">{-@ adjustBound ::</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="co">      op:Operation -&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="co">      l:Nat -&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="co">      {u:Nat | l &lt;= u} -&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="co">      _ -&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="co">      {v:Nat | if (isInsert op) then (BtwnP l (u+1)) else BtwnP l u }</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="co">@-}</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="co">{-@ measure isInsert @-}</span></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb18-15"><a href="#cb18-15"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
 <pre class="shell"><code>$ liquid LH.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <h2 id="はまったポイント">はまったポイント</h2>
