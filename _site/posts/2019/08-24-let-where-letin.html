@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>let, where, let...in の使い分け</title>
+  <meta name="description" content="はじめに
+アルバイトの学生に良く質問される内容の1つに「let, where, let...in はどういう風に使い分ければ良いですか？」というものがあります。ちょっと前に twitter でも同じような話題を見かけたので、少しまとめてみました。
+また、様々な Haskell 書籍で同様の内容について触れられていますが">
+  <link rel="canonical" href="../../posts/2019/08-24-let-where-letin.html">
+  <link rel="alternate" type="application/atom+xml" title="let, where, let...in の使い分け" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="let, where, let...in の使い分け" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2019/08-24-let-where-letin.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="let, where, let...in の使い分け" />
+  <meta property="og:description" content="はじめに
+アルバイトの学生に良く質問される内容の1つに「let, where, let...in はどういう風に使い分ければ良いですか？」というものがあります。ちょっと前に twitter でも同じような話題を見かけたので、少しまとめてみました。
+また、様々な Haskell 書籍で同様の内容について触れられていますが" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on August 24, 2019
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">let, where, let...in の使い分け</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a>, <a href="../../tags/haskell.html">haskell</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=let, where, let...in の使い分け&url=https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p>アルバイトの学生に良く質問される内容の1つに「<code>let</code>, <code>where</code>, <code>let...in</code> はどういう風に使い分ければ良いですか？」というものがあります。ちょっと前に <strong>twitter</strong> でも同じような話題を見かけたので、少しまとめてみました。</p>
+<p>また、様々な Haskell 書籍で同様の内容について触れられていますが、明確な指針は無く個人の好みという感じがします。</p>
+<!--more-->
+<h2 id="let-を使うタイミング-do-の中">let を使うタイミング (do の中)</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">-- let version</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>      z <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<ul>
+<li>上記のコードのように <code>do</code> の中で束縛された変数 <code>x</code> を使って新しい変数 <code>y</code> を宣言する時に良く使います</li>
+<li>他の変数に依存していない <code>z</code> はどの書き方でも書けますが、通常は <code>let</code> で続けて書くことが多いと思います</li>
+<li><code>let</code> は <code>do</code> (またはリスト内包表記) 以外では使えません</li>
+<li>内部的には <code>do { let decls; stmts } = let decls in do { stmts }</code> という変換が行われます。(リスト内包表記は <code>[ e | let decls, Q ] = let decls in [ e | Q ]</code> という変換です。)</li>
+</ul>
+<h3 id="where-で書いた場合">where で書いた場合</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- where version</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="kw">where</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<ul>
+<li><code>where</code> を使って <code>x</code> を宣言することはできません。(<code>do</code> を脱糖した形を見ると、できない感じが伝わりやすいかもしれません)</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- do を使わない形</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>f <span class="ot">=</span> <span class="fu">return</span> <span class="dv">1</span> <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z))</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">where</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<ul>
+<li>何百行も続く巨大な <code>do</code> だと <code>where</code> で宣言されている変数までの距離が遠いため、可読性が落ちます。<code>z</code> を <code>where</code> で書くか <code>let</code> で書くかはケースバイケースかもしれません</li>
+</ul>
+<h3 id="letin-で書いた場合">let…in で書いた場合</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- let...in version</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<ul>
+<li><code>let...in</code> を使うとインデントに気配りする必要があるので面倒です
+<ul>
+<li>例えば <code>let</code> と <code>in</code> の先頭を合わせるとコンパイルエラーになります</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- let...in version (compile error)</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<h2 id="where-を使うタイミング-ガード">where を使うタイミング (ガード)</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>calcBmi cm kg</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">=</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">=</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">=</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="st">&quot;太っているね&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>  <span class="kw">where</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>    bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    m <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">-- *Main&gt; putStrLn $ calcBmi 170 60</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">-- 普通だね</span></span></code></pre></div>
+<ul>
+<li>このように、ガードで共通する変数を宣言する場合に <code>where</code> を使うと見通しが良くなります。</li>
+<li><code>do</code> の中ではないため、当然 <code>let</code> は使えません</li>
+</ul>
+<h3 id="letin-で書いた場合-1">let…in で書いた場合</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">{-# LANGUAGE MultiWayIf #-}</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>calcBmi cm kg <span class="ot">=</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="kw">let</span> m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>      bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="kw">in</span> <span class="kw">if</span> <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">-&gt;</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>        <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">-&gt;</span> <span class="st">&quot;太っているね&quot;</span></span></code></pre></div>
+<ul>
+<li>もし <code>let...in</code> を使って同じように書く場合は、上記のように <code>MultiWayIf</code> を使うことになるでしょう。</li>
+</ul>
+<h2 id="letin-を使うタイミング">let…in を使うタイミング</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb8-6"><a href="#cb8-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> (\s <span class="ot">-&gt;</span> <span class="kw">let</span> (x,s') <span class="ot">=</span> app st s <span class="kw">in</span> (g x, s'))</span></code></pre></div>
+<ul>
+<li>こんな感じの関数を書くときにはとても便利です</li>
+<li>ただ、このようなケースというのはあまり遭遇しないので、個人的には使わないようにしています。無くてもほぼ困らないです
+<ul>
+<li>理由1: レイアウトルールを気にしなければならない点がとても面倒なので</li>
+<li>理由2: ポイントフリースタイルで書くのが好きなので</li>
+</ul></li>
+</ul>
+<h3 id="where-で書いた場合-1">where で書いた場合</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb9-6"><a href="#cb9-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="fu">fmap</span> g <span class="ot">=</span> <span class="dt">S</span> <span class="op">.</span> f g</span>
+<span id="cb9-11"><a href="#cb9-11"></a></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="ot">f ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (b, <span class="dt">State</span>)</span>
+<span id="cb9-13"><a href="#cb9-13"></a>f g st s <span class="ot">=</span> (g x, s')</span>
+<span id="cb9-14"><a href="#cb9-14"></a>  <span class="kw">where</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>    (x,s') <span class="ot">=</span> app st s</span>
+<span id="cb9-16"><a href="#cb9-16"></a></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">-- もしくは</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> f</span>
+<span id="cb9-21"><a href="#cb9-21"></a>    <span class="kw">where</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a>      f s <span class="ot">=</span> (g x, s')</span>
+<span id="cb9-23"><a href="#cb9-23"></a>        <span class="kw">where</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a>          (x,s') <span class="ot">=</span> app st s</span></code></pre></div>
+<ul>
+<li><code>let...in</code> で書いたときよりも可読性が落ちてしまったように思います</li>
+</ul>
+<h2 id="where-と-letin-の違い">where と let…in の違い</h2>
+<p><code>let...in</code> と <code>where</code> の明確な違いは <code>let...in</code> が式なのに対して <code>where</code> が節だという点です。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- OK</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>f <span class="ot">=</span> <span class="kw">if</span> <span class="kw">let</span> x <span class="ot">=</span> <span class="dt">True</span> <span class="kw">in</span> x <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co">-- NG</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>g <span class="ot">=</span> <span class="kw">if</span> (x <span class="kw">where</span> x <span class="ot">=</span> <span class="dt">True</span>) <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span></code></pre></div>
+<p>構文上のどこに式が出現できるかという規則については <code>Language Report</code> に詳しく記載されています。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>このように、<code>let</code>, <code>where</code>, <code>let...in</code> はどちらでも書けることが多いので、適材適所で自分の感性を信じて使いこなすと良いのではないかと思います。</p>
+<p>そういえばラムダノートさんから<a href="https://www.lambdanote.com/collections/haskell">プログラミングHaskellの第2版</a>が発売されましたね。書籍の内容が個人的にとても好きなので、弊社のアルバイトの人には推薦図書として英語版を読んでもらっていました。</p>
+<p>これからは日本語で読めるようになったので、これを機に Haskell に入門してみるのも良いかもしれません。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/onlinereport/haskell2010/">Haskell 2010 Language Report</a></li>
+<li>すごいHaskellたのしく学ぼう！</li>
+<li>Programming in Haskell 2nd Edition</li>
+</ul>
+<h2 id="宣伝">宣伝</h2>
+<p><a href="https://techbookfest.org/event/tbf07">技術書典7</a>に初参加します。</p>
+<p><img src="../../images/2019/08-19/circle.png" alt="サークルカット" width="400px"></p>
+<p>進捗・詳細については <a href="../../ad/techbookfest7.html">技術書典7特設ページ</a> をご確認ください。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2019/08-19-extensible-migration.html"><i class="material-icons left">navigate_before</i>extensible-0.6.1 マイグレーションガイド</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=let, where, let...in の使い分け&url=https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

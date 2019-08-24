@@ -8,8 +8,172 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-08-19T00:00:00Z</updated>
+    <updated>2019-08-24T00:00:00Z</updated>
     <entry>
+    <title>let, where, let...in の使い分け</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html</id>
+    <published>2019-08-24T00:00:00Z</published>
+    <updated>2019-08-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>アルバイトの学生に良く質問される内容の1つに「<code>let</code>, <code>where</code>, <code>let...in</code> はどういう風に使い分ければ良いですか？」というものがあります。ちょっと前に <strong>twitter</strong> でも同じような話題を見かけたので、少しまとめてみました。</p>
+<p>また、様々な Haskell 書籍で同様の内容について触れられていますが、明確な指針は無く個人の好みという感じがします。</p>
+<!--more-->
+<h2 id="let-を使うタイミング-do-の中">let を使うタイミング (do の中)</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">-- let version</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>      z <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<ul>
+<li>上記のコードのように <code>do</code> の中で束縛された変数 <code>x</code> を使って新しい変数 <code>y</code> を宣言する時に良く使います</li>
+<li>他の変数に依存していない <code>z</code> はどの書き方でも書けますが、通常は <code>let</code> で続けて書くことが多いと思います</li>
+<li><code>let</code> は <code>do</code> (またはリスト内包表記) 以外では使えません</li>
+<li>内部的には <code>do { let decls; stmts } = let decls in do { stmts }</code> という変換が行われます。(リスト内包表記は <code>[ e | let decls, Q ] = let decls in [ e | Q ]</code> という変換です。)</li>
+</ul>
+<h3 id="where-で書いた場合">where で書いた場合</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- where version</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="kw">where</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<ul>
+<li><code>where</code> を使って <code>x</code> を宣言することはできません。(<code>do</code> を脱糖した形を見ると、できない感じが伝わりやすいかもしれません)</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- do を使わない形</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>f <span class="ot">=</span> <span class="fu">return</span> <span class="dv">1</span> <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z))</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">where</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<ul>
+<li>何百行も続く巨大な <code>do</code> だと <code>where</code> で宣言されている変数までの距離が遠いため、可読性が落ちます。<code>z</code> を <code>where</code> で書くか <code>let</code> で書くかはケースバイケースかもしれません</li>
+</ul>
+<h3 id="letin-で書いた場合">let…in で書いた場合</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- let...in version</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<ul>
+<li><code>let...in</code> を使うとインデントに気配りする必要があるので面倒です
+<ul>
+<li>例えば <code>let</code> と <code>in</code> の先頭を合わせるとコンパイルエラーになります</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- let...in version (compile error)</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<h2 id="where-を使うタイミング-ガード">where を使うタイミング (ガード)</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>calcBmi cm kg</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">=</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">=</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">=</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="st">&quot;太っているね&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>  <span class="kw">where</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>    bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    m <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">-- *Main&gt; putStrLn $ calcBmi 170 60</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">-- 普通だね</span></span></code></pre></div>
+<ul>
+<li>このように、ガードで共通する変数を宣言する場合に <code>where</code> を使うと見通しが良くなります。</li>
+<li><code>do</code> の中ではないため、当然 <code>let</code> は使えません</li>
+</ul>
+<h3 id="letin-で書いた場合-1">let…in で書いた場合</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">{-# LANGUAGE MultiWayIf #-}</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>calcBmi cm kg <span class="ot">=</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="kw">let</span> m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>      bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="kw">in</span> <span class="kw">if</span> <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">-&gt;</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>        <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">-&gt;</span> <span class="st">&quot;太っているね&quot;</span></span></code></pre></div>
+<ul>
+<li>もし <code>let...in</code> を使って同じように書く場合は、上記のように <code>MultiWayIf</code> を使うことになるでしょう。</li>
+</ul>
+<h2 id="letin-を使うタイミング">let…in を使うタイミング</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb8-6"><a href="#cb8-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> (\s <span class="ot">-&gt;</span> <span class="kw">let</span> (x,s&#39;) <span class="ot">=</span> app st s <span class="kw">in</span> (g x, s&#39;))</span></code></pre></div>
+<ul>
+<li>こんな感じの関数を書くときにはとても便利です</li>
+<li>ただ、このようなケースというのはあまり遭遇しないので、個人的には使わないようにしています。無くてもほぼ困らないです
+<ul>
+<li>理由1: レイアウトルールを気にしなければならない点がとても面倒なので</li>
+<li>理由2: ポイントフリースタイルで書くのが好きなので</li>
+</ul></li>
+</ul>
+<h3 id="where-で書いた場合-1">where で書いた場合</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb9-6"><a href="#cb9-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="fu">fmap</span> g <span class="ot">=</span> <span class="dt">S</span> <span class="op">.</span> f g</span>
+<span id="cb9-11"><a href="#cb9-11"></a></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="ot">f ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (b, <span class="dt">State</span>)</span>
+<span id="cb9-13"><a href="#cb9-13"></a>f g st s <span class="ot">=</span> (g x, s&#39;)</span>
+<span id="cb9-14"><a href="#cb9-14"></a>  <span class="kw">where</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>    (x,s&#39;) <span class="ot">=</span> app st s</span>
+<span id="cb9-16"><a href="#cb9-16"></a></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">-- もしくは</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> f</span>
+<span id="cb9-21"><a href="#cb9-21"></a>    <span class="kw">where</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a>      f s <span class="ot">=</span> (g x, s&#39;)</span>
+<span id="cb9-23"><a href="#cb9-23"></a>        <span class="kw">where</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a>          (x,s&#39;) <span class="ot">=</span> app st s</span></code></pre></div>
+<ul>
+<li><code>let...in</code> で書いたときよりも可読性が落ちてしまったように思います</li>
+</ul>
+<h2 id="where-と-letin-の違い">where と let…in の違い</h2>
+<p><code>let...in</code> と <code>where</code> の明確な違いは <code>let...in</code> が式なのに対して <code>where</code> が節だという点です。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- OK</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>f <span class="ot">=</span> <span class="kw">if</span> <span class="kw">let</span> x <span class="ot">=</span> <span class="dt">True</span> <span class="kw">in</span> x <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co">-- NG</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>g <span class="ot">=</span> <span class="kw">if</span> (x <span class="kw">where</span> x <span class="ot">=</span> <span class="dt">True</span>) <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span></code></pre></div>
+<p>構文上のどこに式が出現できるかという規則については <code>Language Report</code> に詳しく記載されています。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>このように、<code>let</code>, <code>where</code>, <code>let...in</code> はどちらでも書けることが多いので、適材適所で自分の感性を信じて使いこなすと良いのではないかと思います。</p>
+<p>そういえばラムダノートさんから<a href="https://www.lambdanote.com/collections/haskell">プログラミングHaskellの第2版</a>が発売されましたね。書籍の内容が個人的にとても好きなので、弊社のアルバイトの人には推薦図書として英語版を読んでもらっていました。</p>
+<p>これからは日本語で読めるようになったので、これを機に Haskell に入門してみるのも良いかもしれません。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/onlinereport/haskell2010/">Haskell 2010 Language Report</a></li>
+<li>すごいHaskellたのしく学ぼう！</li>
+<li>Programming in Haskell 2nd Edition</li>
+</ul>
+<h2 id="宣伝">宣伝</h2>
+<p><a href="https://techbookfest.org/event/tbf07">技術書典7</a>に初参加します。</p>
+<p><img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px"></p>
+<p>進捗・詳細については <a href="/ad/techbookfest7.html">技術書典7特設ページ</a> をご確認ください。</p>]]></summary>
+</entry>
+<entry>
     <title>extensible-0.6.1 マイグレーションガイド</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/08-19-extensible-migration.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/08-19-extensible-migration.html</id>
@@ -3141,77 +3305,6 @@ $ cabal new-build</code></pre>
 <p>とりあえず実装してみたという感じなので、実際どのぐらい使えるのか試してみようと思います。</p>
 <p><code>stack</code> も <code>cabal</code> も両方とも良いビルドツールだと思います。</p>
 <p>もうちょっとしたら、<code>cabal</code> も同様にオススメしていこうと思います。</p>]]></summary>
-</entry>
-<entry>
-    <title>Stack 1.9.3 がリリースされました。</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/12-10-stack-193.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/12-10-stack-193.html</id>
-    <published>2018-12-10T00:00:00Z</published>
-    <updated>2018-12-10T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>12月3日に Stack version 1.9.3 が<a href="https://github.com/commercialhaskell/stack/blob/v1.9.3/ChangeLog.md#v193">リリース</a>されました。</p>
-<p>更新は <code>stack upgrade</code> コマンドを実行します。</p>
-<pre class="shell"><code>$ stack upgrade
-...
-
-$ stack --numeric-version
-1.9.3</code></pre>
-<p>今回はバグフィックスが3点のみです。</p>
-<!--more-->
-<h2 id="changelog-翻訳">Changelog (翻訳)</h2>
-<h3 id="バグフィックス">バグフィックス</h3>
-<ul>
-<li>Stack をコンパイルする際に <code>.git</code> ディレクトリが含まれていない場合、コンパイルに失敗する問題を修正しました。詳細: <a href="https://github.com/commercialhaskell/stack/issues/4364#issuecomment-431600841">#4364</a></li>
-</ul>
-<p>この問題は <code>Stack</code> をビルドする人の話なので、普通の人は問題になりませんが、githash を使っている人は自分のアプリケーションでも起こりうる問題なので注意です。</p>
-<p>Stack はバージョン情報に git の情報を含めるために <a href="https://github.com/acfoltzer/gitrev">gitrev</a> を使っていたのですが、現在は開発が止まっているようで <a href="https://github.com/snoyberg/githash">githash</a> に切り替えました。(<a href="https://github.com/commercialhaskell/stack/pull/4130">Switch to githash to include some unmerged bugfixes in gitrev #4130</a>)</p>
-<p>今回の問題を修正するために実装された <code>tGitInfoCwdTry</code> 関数を使うことで <code>.git</code> ディレクトリが存在しない場合でもコンパイルできるようになります。</p>
-<p>参考リンク</p>
-<ul>
-<li><a href="https://github.com/commercialhaskell/stack/issues/4364">1.9.1 fails to build from tarball without .git/ #4364</a></li>
-<li><a href="https://github.com/commercialhaskell/stack/pull/4368">Compile without a Git dir #4364 #4368</a></li>
-</ul>
-<hr />
-<ul>
-<li>GHC が生成する hi-dump ファイルの <code>addDependentFile</code> 関連のフォーマット変更 (ハッシュを含むようになった) に対応しました。詳細: <a href="https://github.com/yesodweb/yesod/issues/1551">yesodweb/yesod#1551</a></li>
-</ul>
-<p>Yesod で報告された問題に対する修正です。<code>.hi-dump</code> フォーマットが変わったので、それに対応しました。shakespeare の問題なので主に Yesod ユーザに影響があるかと思われます。以下のバージョンを利用すればこの問題は解決するため、この現象で悩んでいる人は stack と shakespeare の両方を更新しましょう。</p>
-<ul>
-<li>stack &gt;= 1.9.3</li>
-<li>shakespeare &gt;= 2.0.19</li>
-</ul>
-<p>stack は GHC が出力する <code>hi</code> ファイルの情報を内部で利用しているため、このようなことが起きます。(ビルド時にデフォルトで <code>-ddump-hi -ddump-to-file</code> オプションが追加されています)</p>
-<p><code>-ddump-to-file</code> が自動的に追加されてしまうせいで <code>-ddump-splices</code> の結果を表示しようとしてもコンソールに出力されなかったりして不便だったので出力先のディレクトリを指定できるようにしました。たぶん次のメジャーリリースで使えるようになると思います。</p>
-<p>参考リンク</p>
-<ul>
-<li><a href="https://github.com/yesodweb/yesod/issues/1551">Unable to detect file changes on hamlet templates on stack devel for lts-12.5 #1551</a></li>
-<li><a href="https://github.com/commercialhaskell/stack/issues/4369">Support GHC 8.4 in addDependentFile for 1.9.3 #4369</a></li>
-<li><a href="https://github.com/commercialhaskell/stack/issues/4360">qAddDependentFile doesn’t cause re-compilation without extra-source-files #4360</a></li>
-<li><a href="https://github.com/commercialhaskell/stack/commit/aae15e3">commit@aae15e3ae5767febe9fcad36bf5a5e184c635de1</a></li>
-<li><a href="https://github.com/commercialhaskell/stack/issues/4225">Can’t display -ddump-splices result. #4225</a></li>
-<li><a href="https://github.com/commercialhaskell/stack/pull/4242">Add the ddump-dir option/config value #4225 #4242</a></li>
-</ul>
-<hr />
-<ul>
-<li>テンプレートファイルのファイル名に変数が利用できるようになりました</li>
-</ul>
-<p>こんな感じで使えます。</p>
-<pre class="mastache"><code>{-# START_FILE {{name}}.cabal #-}
-name: {{name}}
-version: 0.0</code></pre>
-<p>参考リンク</p>
-<ul>
-<li><a href="https://github.com/commercialhaskell/stack/pull/4397">Expand mustache variables in template file names #4397</a></li>
-<li><a href="https://github.com/commercialhaskell/stack/pull/4381">Allow variables in filenames in templates #4381</a></li>
-</ul>
-<hr />
-<h2 id="changelog-オリジナル">Changelog (オリジナル)</h2>
-<h3 id="bug-fixes">Bug fixes</h3>
-<ul>
-<li>Stack can now be compiled again inside a directory that does not contain a <code>.git</code> directory, see <a href="https://github.com/commercialhaskell/stack/issues/4364#issuecomment-431600841">#4364</a></li>
-<li>Handle a change in GHC’s hi-dump format around <code>addDependentFile</code>, which now includes a hash. See <a href="https://github.com/yesodweb/yesod/issues/1551">yesodweb/yesod#1551</a></li>
-<li>Allow variables to appear in template file names.</li>
-</ul>]]></summary>
 </entry>
 
 </feed>
