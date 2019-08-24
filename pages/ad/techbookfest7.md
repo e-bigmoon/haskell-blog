@@ -4,7 +4,7 @@ tags: book,技術書典
 date: 2019/08/24
 ---
 
-[技術書典7](https://techbookfest.org/event/tbf07)に初参加します。
+[技術書典7](https://techbookfest.org/event/tbf07)に初参加します。本ページの情報は随時更新しています。
 
 <img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px">
 
