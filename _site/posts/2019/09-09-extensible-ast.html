@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>AST を拡張しよう</title>
+  <meta name="description" content="はじめに
+実験的な内容です。(@fumievalさん, @matsubara0507さん、アドバイスありがとうございました)">
+  <link rel="canonical" href="../../posts/2019/09-09-extensible-ast.html">
+  <link rel="alternate" type="application/atom+xml" title="AST を拡張しよう" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="AST を拡張しよう" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2019/09-09-extensible-ast.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="AST を拡張しよう" />
+  <meta property="og:description" content="はじめに
+実験的な内容です。(@fumievalさん, @matsubara0507さん、アドバイスありがとうございました)" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on September  9, 2019
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">AST を拡張しよう</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a>, <a href="../../tags/extensible.html">extensible</a>, <a href="../../tags/package.html">package</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=AST を拡張しよう&url=https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p>実験的な内容です。(<span class="citation" data-cites="fumievalさん">@fumievalさん</span>, <span class="citation" data-cites="matsubara0507さん">@matsubara0507さん</span>、アドバイスありがとうございました)</p>
+<!--more-->
+<h2 id="モチベーション">モチベーション</h2>
+<p>まずは、以下のような型 <code>Expr</code> と関数 <code>pretty</code> が定義されているとします。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">Expr</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb1-8"><a href="#cb1-8"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<p>今回、この <code>Expr</code> をベースとして新しい型 <code>ExprM</code>, <code>ExprS</code> をそれぞれ定義したい場合、どのように書けば良いのでしょうか？</p>
+<p>素朴に定義するとなると、以下のようになりそうです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">data</span> <span class="dt">ExprM</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="op">|</span> <span class="dt">Mul</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb2-9"><a href="#cb2-9"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span>
+<span id="cb2-10"><a href="#cb2-10"></a>pretty (<span class="dt">Mul</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; * &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">data</span> <span class="dt">ExprS</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="op">|</span> <span class="dt">Sub</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb3-9"><a href="#cb3-9"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span>
+<span id="cb3-10"><a href="#cb3-10"></a>pretty (<span class="dt">Sub</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; - &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<p>しかし、同じようなコードが含まれていて冗長なので何とかしたいです・・・。</p>
+<h2 id="方針">方針</h2>
+<ul>
+<li>各コンストラクタ <code>Constant</code>, <code>Add</code> 等を <code>extensible</code> のフィールドとして定義</li>
+<li><code>Expr</code>, <code>ExprS</code>, <code>ExprM</code> は、それぞれのフィールドを集めて作った拡張可能和として定義</li>
+<li>スマートコンストラクタは再利用できるようにしたい</li>
+</ul>
+<h2 id="実装">実装</h2>
+<ol type="1">
+<li>コンストラクタの定義</li>
+<li>型の定義</li>
+<li>スマートコンストラクタの定義</li>
+<li>pretty 関数の定義</li>
+<li>新しい型を定義</li>
+</ol>
+<h3 id="コンストラクタの定義">コンストラクタの定義</h3>
+<p>まずはそれぞれのフィールドを定義しましょう。それぞれの型は <code>Assoc Symbol Type</code> のカインドを持ちます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- Field/Constant.hs</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">{-# LANGUAGE DataKinds     #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">type</span> <span class="dt">Constant</span> <span class="ot">=</span> <span class="st">&quot;constant&quot;</span> <span class="op">&gt;:</span> <span class="dt">Int</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">{-# LANGUAGE DataKinds     #-}</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">type</span> <span class="dt">Add</span> expr <span class="ot">=</span> <span class="st">&quot;add&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span></code></pre></div>
+<p>これらのフィールドは以下のような型のコンストラクタを1つずつ切り出したような感じです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">data</span> <span class="dt">Expr</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span></code></pre></div>
+<h3 id="型の定義">型の定義</h3>
+<p>フィールドの定義は完了したので、次にそれらのフィールドを集めて型にしましょう。</p>
+<p>拡張性を得るために型クラスを定義します。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">-- Expr.hs</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">module</span> <span class="dt">Base</span> <span class="kw">where</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="kw">import</span> <span class="dt">Data.Kind</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">import</span> <span class="dt">GHC.TypeLits</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="kw">class</span> <span class="dt">Expr</span> expr <span class="kw">where</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="kw">type</span> <span class="dt">FieldList</span><span class="ot"> expr ::</span> [<span class="dt">Assoc</span> <span class="dt">Symbol</span> <span class="dt">Type</span>]</span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="ot">  liftExpr ::</span> <span class="dt">Variant</span> (<span class="dt">FieldList</span> expr) <span class="ot">-&gt;</span> expr</span></code></pre></div>
+<p><code>FieldList expr</code> によって型に応じてフィールドが変化します。</p>
+<p>実際に <code>Expr</code> 型を定義してみましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Expr/Base.hs</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">module</span> <span class="dt">Expr.Base</span> <span class="kw">where</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="kw">newtype</span> <span class="dt">ExprB</span> <span class="ot">=</span> <span class="dt">ExprB</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  {<span class="ot"> unwrapExprB ::</span> <span class="dt">Variant</span> <span class="dt">ExprBFields</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb8-15"><a href="#cb8-15"></a></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="kw">type</span> <span class="dt">ExprBFields</span> <span class="ot">=</span> '[ <span class="dt">Constant</span>, <span class="dt">Add</span> <span class="dt">ExprB</span> ]</span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprB</span> <span class="ot">=</span> <span class="dt">ExprBFields</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprB</span></span></code></pre></div>
+<ul>
+<li><code>type ExprBFields</code> は型に含まれるフィールドを表します。</li>
+<li>再帰的に定義するために <code>newtype ExprB</code> を宣言しています。</li>
+<li><code>Variant ExprBFields</code> によって <code>Constant</code>, <code>Add ExprB</code> の直和型っぽい感じになります。</li>
+</ul>
+<p><code>liftExpr</code> は再利用可能なスマートコンストラクタを作るためにあります。次で説明します。</p>
+<h3 id="スマートコンストラクタの定義">スマートコンストラクタの定義</h3>
+<p>ここまでで型の定義は終わりました。次は値を作りましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="ot">{-# LANGUAGE TypeFamilies     #-}</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="kw">module</span> <span class="dt">Field.Add</span> <span class="kw">where</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="kw">type</span> <span class="dt">Add</span> expr <span class="ot">=</span> <span class="st">&quot;add&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span>
+<span id="cb9-14"><a href="#cb9-14"></a></span>
+<span id="cb9-15"><a href="#cb9-15"></a>add e1 e2 <span class="ot">=</span> liftExpr (<span class="op">#</span>add <span class="op">#</span> (e1, e2))</span></code></pre></div>
+<p><code>liftExpr</code> は文脈に応じて適切なタグに変化します。例えば <code>ExprB</code> 型であれば <code>ExprB</code> コンストラクタになります。</p>
+<p>同様に <code>Constant</code> の値を作る関数も定義しましょう。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="ot">{-# LANGUAGE TypeFamilies     #-}</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="kw">module</span> <span class="dt">Field.Constant</span> <span class="kw">where</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="kw">type</span> <span class="dt">Constant</span> <span class="ot">=</span> <span class="st">&quot;constant&quot;</span> <span class="op">&gt;:</span> <span class="dt">Int</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a></span>
+<span id="cb10-14"><a href="#cb10-14"></a>c i <span class="ot">=</span> liftExpr (<span class="op">#</span>constant <span class="op">#</span> i)</span></code></pre></div>
+<p>実際に使ってみるとこんな感じです。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">1</span>) (add <span class="op">@=</span> (<span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">0</span>) (constant <span class="op">@=</span> <span class="dv">10</span>)},<span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">0</span>) (constant <span class="op">@=</span> <span class="dv">20</span>)}))}</span></code></pre></div>
+<p>extensible の形式で表示されていますが、問題無く値が作れています。型注釈が無い場合はコンパイルエラーになってしまいますが、ここでは気にしないことにします。</p>
+<h3 id="pretty-関数の定義">pretty 関数の定義</h3>
+<p>値が作れるようになったら、次は <code>pretty</code> 関数を作ります。</p>
+<p>ここが一番面白いポイントだと思っているのですが、<code>pretty</code> のような関数を各フィールドに対して動作する型クラスのメソッドとして定義します。</p>
+<p>まずは、パターンマッチのための補助関数 <code>matchVariant</code> を定義します。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">-- Expr.hs</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="ot">{-# LANGUAGE ConstraintKinds     #-}</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="ot">{-# LANGUAGE DataKinds           #-}</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="ot">{-# LANGUAGE PolyKinds           #-}</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="ot">{-# LANGUAGE RankNTypes          #-}</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="ot">{-# LANGUAGE ScopedTypeVariables #-}</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="ot">{-# LANGUAGE TypeApplications    #-}</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="ot">{-# LANGUAGE TypeFamilies        #-}</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="op">...</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="kw">import</span> <span class="dt">Data.Functor.Identity</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="op">...</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="ot">matchVariant ::</span> <span class="kw">forall</span> c xs r<span class="op">.</span> <span class="dt">Forall</span> c xs</span>
+<span id="cb12-16"><a href="#cb12-16"></a>  <span class="ot">=&gt;</span> <span class="dt">Proxy</span> c <span class="ot">-&gt;</span> (<span class="kw">forall</span> x<span class="op">.</span> c x <span class="ot">=&gt;</span> <span class="dt">Membership</span> xs x <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> x <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> r</span>
+<span id="cb12-17"><a href="#cb12-17"></a>matchVariant _ f <span class="ot">=</span> matchField <span class="op">$</span> htabulateFor (<span class="dt">Proxy</span> <span class="op">@</span>c) <span class="op">$</span> \m <span class="ot">-&gt;</span> <span class="dt">Field</span> <span class="op">$</span> <span class="dt">Match</span> <span class="op">$</span> f m <span class="op">.</span> runIdentity</span></code></pre></div>
+<p>次に <code>pretty</code> 関数を定義するための型クラスを作ります。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts #-}</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="ot">{-# LANGUAGE PolyKinds        #-}</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="ot">{-# LANGUAGE TypeApplications #-}</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">module</span> <span class="dt">Operation.Pretty</span> <span class="kw">where</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="ot">pretty' ::</span> <span class="dt">Forall</span> <span class="dt">PrettyField</span> xs <span class="ot">=&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>pretty' <span class="ot">=</span> matchVariant (<span class="dt">Proxy</span> <span class="op">@</span><span class="dt">PrettyField</span>) prettyField</span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="kw">class</span> <span class="dt">Expr</span> expr <span class="ot">=&gt;</span> <span class="dt">Pretty</span> expr <span class="kw">where</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="ot">  pretty ::</span> expr <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="kw">class</span> <span class="dt">PrettyField</span> kv <span class="kw">where</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="ot">  prettyField ::</span> proxy kv <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> kv <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<p>実際にインスタンスを定義します。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="op">...</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="op">...</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="op">...</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="kw">instance</span> <span class="dt">Pretty</span> expr <span class="ot">=&gt;</span> <span class="dt">PrettyField</span> (<span class="dt">Add</span> expr) <span class="kw">where</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a>  prettyField _ (l, r) <span class="ot">=</span> pretty l <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty r</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">-- Field/Constant.hs</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="op">...</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="op">...</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="op">...</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a></span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="kw">instance</span> <span class="dt">PrettyField</span> <span class="dt">Constant</span> <span class="kw">where</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>  prettyField _ <span class="ot">=</span> <span class="fu">show</span></span></code></pre></div>
+<p><code>ExprB</code> に対する定義はボイラープレートのようなものです。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">-- Expr/Base.hs</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="op">...</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="op">...</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>  pretty <span class="ot">=</span> pretty' <span class="op">.</span> unwrapExprB</span></code></pre></div>
+<p>実際に使ってみます。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;</span> pretty e1</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">&quot;10 + 20&quot;</span></span></code></pre></div>
+<p>期待通り、ちゃんと動いています。</p>
+<h3 id="新しい型を定義">新しい型を定義</h3>
+<p>最後に既存の型を拡張して <code>ExprM</code> を作ります。</p>
+<p>まずは <code>Mul</code> フィールドの <code>pretty</code> とコンストラクタの定義を追加しましょう。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">-- Field/Mul.hs</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="ot">{-# LANGUAGE DataKinds         #-}</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="ot">{-# LANGUAGE OverloadedLabels  #-}</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="ot">{-# LANGUAGE TypeOperators     #-}</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="kw">module</span> <span class="dt">Field.Mul</span> <span class="kw">where</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="kw">type</span> <span class="dt">Mul</span> expr <span class="ot">=</span> <span class="st">&quot;mul&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span>
+<span id="cb18-16"><a href="#cb18-16"></a></span>
+<span id="cb18-17"><a href="#cb18-17"></a><span class="kw">instance</span> <span class="dt">Pretty</span> expr <span class="ot">=&gt;</span> <span class="dt">PrettyField</span> (<span class="dt">Mul</span> expr) <span class="kw">where</span></span>
+<span id="cb18-18"><a href="#cb18-18"></a>  prettyField _ (l, r) <span class="ot">=</span> pretty l <span class="op">&lt;&gt;</span> <span class="st">&quot; * &quot;</span> <span class="op">&lt;&gt;</span> pretty r</span>
+<span id="cb18-19"><a href="#cb18-19"></a></span>
+<span id="cb18-20"><a href="#cb18-20"></a>mul e1 e2 <span class="ot">=</span> liftExpr (<span class="op">#</span>mul <span class="op">#</span> (e1, e2))</span></code></pre></div>
+<p>次に <code>ExprM</code> 型を定義します。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">-- Expr/Mul.hs</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="kw">module</span> <span class="dt">Expr.Mul</span> <span class="kw">where</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="kw">newtype</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a>  {<span class="ot"> unwrapExprM ::</span> <span class="dt">Variant</span> <span class="dt">ExprMFields</span></span>
+<span id="cb19-17"><a href="#cb19-17"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb19-18"><a href="#cb19-18"></a></span>
+<span id="cb19-19"><a href="#cb19-19"></a><span class="kw">type</span> <span class="dt">ExprMFields</span> <span class="ot">=</span> '[ <span class="dt">Constant</span>, <span class="dt">Add</span> <span class="dt">ExprM</span>, <span class="dt">Mul</span> <span class="dt">ExprM</span> ]</span>
+<span id="cb19-20"><a href="#cb19-20"></a></span>
+<span id="cb19-21"><a href="#cb19-21"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb19-22"><a href="#cb19-22"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprMFields</span></span>
+<span id="cb19-23"><a href="#cb19-23"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb19-24"><a href="#cb19-24"></a></span>
+<span id="cb19-25"><a href="#cb19-25"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb19-26"><a href="#cb19-26"></a>  pretty <span class="ot">=</span> pretty' <span class="op">.</span> unwrapExprM</span></code></pre></div>
+<p>ほとんど同じですが、<code>type ExprMFields</code> の部分で <code>Mul ExprM</code> を追加しています。(<code>ExprB</code> のフィールドに単純に追加する方法も一応可能です。)</p>
+<p>実際に使ってみると、ちゃんと異なる型と認識してコンパイルエラーになってくれます。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> add (c <span class="dv">40</span>) (c <span class="dv">50</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="op">&gt;</span> add e1 e2</span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="co">-- 型が異なるためコンパイルエラー</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="op">&gt;</span> pretty e1</span>
+<span id="cb20-8"><a href="#cb20-8"></a><span class="st">&quot;10 + 20&quot;</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="op">&gt;</span> pretty e2</span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="st">&quot;40 + 50&quot;</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="op">&gt;</span> e3 <span class="ot">=</span> mul (c <span class="dv">60</span>) (c <span class="dv">70</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb20-13"><a href="#cb20-13"></a><span class="co">-- ExprB 型には Mul フィールドが存在していないため、コンパイルエラー</span></span>
+<span id="cb20-14"><a href="#cb20-14"></a></span>
+<span id="cb20-15"><a href="#cb20-15"></a><span class="op">&gt;</span> e3 <span class="ot">=</span> mul (c <span class="dv">60</span>) (c <span class="dv">70</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb20-16"><a href="#cb20-16"></a><span class="op">&gt;</span> pretty e3</span>
+<span id="cb20-17"><a href="#cb20-17"></a><span class="st">&quot;60 * 70&quot;</span></span></code></pre></div>
+<h2 id="おまけ">おまけ</h2>
+<h3 id="既存のフィールドを拡張する">既存のフィールドを拡張する</h3>
+<p><code>UndecidableInstances</code> 拡張を使っても良ければ、以下のように <code>ExprBFields ++ '[ Mul ExprM ]</code> と書くこともできます。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="ot">{-# LANGUAGE UndecidableInstances #-}</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="kw">module</span> <span class="dt">Expr.Mul</span> <span class="kw">where</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a></span>
+<span id="cb21-14"><a href="#cb21-14"></a><span class="kw">newtype</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>  {<span class="ot"> unwrapExprM ::</span> <span class="dt">Variant</span> <span class="dt">ExprMFields</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb21-17"><a href="#cb21-17"></a></span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="kw">type</span> <span class="dt">ExprMFields</span> <span class="ot">=</span> <span class="dt">ExprBFields</span> <span class="op">++</span> '[ <span class="dt">Mul</span> <span class="dt">ExprM</span> ]</span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="co">-- type ExprMFields = '[ Constant, Add ExprM, Mul ExprM ]</span></span>
+<span id="cb21-20"><a href="#cb21-20"></a></span>
+<span id="cb21-21"><a href="#cb21-21"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprMFields</span></span>
+<span id="cb21-23"><a href="#cb21-23"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb21-24"><a href="#cb21-24"></a></span>
+<span id="cb21-25"><a href="#cb21-25"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb21-26"><a href="#cb21-26"></a>  pretty <span class="ot">=</span> pretty' <span class="op">.</span> unwrapExprM</span></code></pre></div>
+<h3 id="操作を追加しよう">操作を追加しよう</h3>
+<p><code>eval</code> を追加してみましょう。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="co">-- Operation/Eval.hs</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="ot">{-# LANGUAGE FlexibleContexts #-}</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="ot">{-# LANGUAGE PolyKinds        #-}</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="ot">{-# LANGUAGE TypeApplications #-}</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="kw">module</span> <span class="dt">Operation.Eval</span> <span class="kw">where</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a></span>
+<span id="cb22-11"><a href="#cb22-11"></a><span class="ot">eval' ::</span> <span class="dt">Forall</span> <span class="dt">EvalField</span> xs <span class="ot">=&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a>eval' <span class="ot">=</span> matchVariant (<span class="dt">Proxy</span> <span class="op">@</span><span class="dt">EvalField</span>) evalField</span>
+<span id="cb22-13"><a href="#cb22-13"></a></span>
+<span id="cb22-14"><a href="#cb22-14"></a><span class="kw">class</span> <span class="dt">Eval</span> expr <span class="kw">where</span></span>
+<span id="cb22-15"><a href="#cb22-15"></a><span class="ot">  eval ::</span> expr <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb22-16"><a href="#cb22-16"></a></span>
+<span id="cb22-17"><a href="#cb22-17"></a><span class="kw">class</span> <span class="dt">EvalField</span> kv <span class="kw">where</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a><span class="ot">  evalField ::</span> proxy kv <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> kv <span class="ot">-&gt;</span> <span class="dt">Int</span></span></code></pre></div>
+<p>さらに、インスタンス定義もこのファイルに定義します。</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1"></a><span class="co">-- Operation/Eval.hs</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="op">...</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="op">...</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="kw">import</span> <span class="dt">Expr.Mul</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="op">...</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="kw">instance</span> <span class="dt">Eval</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a>  eval <span class="ot">=</span> eval' <span class="op">.</span> unwrapExprB</span>
+<span id="cb23-16"><a href="#cb23-16"></a></span>
+<span id="cb23-17"><a href="#cb23-17"></a><span class="kw">instance</span> <span class="dt">Eval</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb23-18"><a href="#cb23-18"></a>  eval <span class="ot">=</span> eval' <span class="op">.</span> unwrapExprM</span>
+<span id="cb23-19"><a href="#cb23-19"></a></span>
+<span id="cb23-20"><a href="#cb23-20"></a><span class="op">...</span></span>
+<span id="cb23-21"><a href="#cb23-21"></a></span>
+<span id="cb23-22"><a href="#cb23-22"></a><span class="kw">instance</span> <span class="dt">EvalField</span> <span class="dt">Constant</span> <span class="kw">where</span></span>
+<span id="cb23-23"><a href="#cb23-23"></a>  evalField _ <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb23-24"><a href="#cb23-24"></a></span>
+<span id="cb23-25"><a href="#cb23-25"></a><span class="kw">instance</span> <span class="dt">Eval</span> expr <span class="ot">=&gt;</span> <span class="dt">EvalField</span> (<span class="dt">Add</span> expr) <span class="kw">where</span></span>
+<span id="cb23-26"><a href="#cb23-26"></a>  evalField _ (l, r) <span class="ot">=</span> eval l <span class="op">+</span> eval r</span>
+<span id="cb23-27"><a href="#cb23-27"></a></span>
+<span id="cb23-28"><a href="#cb23-28"></a><span class="kw">instance</span> <span class="dt">Eval</span> expr <span class="ot">=&gt;</span> <span class="dt">EvalField</span> (<span class="dt">Mul</span> expr) <span class="kw">where</span></span>
+<span id="cb23-29"><a href="#cb23-29"></a>  evalField _ (l, r) <span class="ot">=</span> eval l <span class="op">*</span> eval r</span></code></pre></div>
+<p>これで使えるようになりました。</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> mul (c <span class="dv">40</span>) (c <span class="dv">50</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="op">&gt;</span> eval e1</span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="dv">30</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="op">&gt;</span> eval e2</span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="dv">2000</span></span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<p>何かに使えないかなー。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2019/08-24-let-where-letin.html"><i class="material-icons left">navigate_before</i>let, where, let...in の使い分け</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=AST を拡張しよう&url=https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

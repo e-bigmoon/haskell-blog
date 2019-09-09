@@ -8,8 +8,392 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-08-24T00:00:00Z</updated>
+    <updated>2019-09-09T00:00:00Z</updated>
     <entry>
+    <title>AST を拡張しよう</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html</id>
+    <published>2019-09-09T00:00:00Z</published>
+    <updated>2019-09-09T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>実験的な内容です。(<span class="citation" data-cites="fumievalさん">@fumievalさん</span>, <span class="citation" data-cites="matsubara0507さん">@matsubara0507さん</span>、アドバイスありがとうございました)</p>
+<!--more-->
+<h2 id="モチベーション">モチベーション</h2>
+<p>まずは、以下のような型 <code>Expr</code> と関数 <code>pretty</code> が定義されているとします。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">Expr</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb1-8"><a href="#cb1-8"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<p>今回、この <code>Expr</code> をベースとして新しい型 <code>ExprM</code>, <code>ExprS</code> をそれぞれ定義したい場合、どのように書けば良いのでしょうか？</p>
+<p>素朴に定義するとなると、以下のようになりそうです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">data</span> <span class="dt">ExprM</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="op">|</span> <span class="dt">Mul</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb2-9"><a href="#cb2-9"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span>
+<span id="cb2-10"><a href="#cb2-10"></a>pretty (<span class="dt">Mul</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; * &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">data</span> <span class="dt">ExprS</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="op">|</span> <span class="dt">Sub</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb3-9"><a href="#cb3-9"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span>
+<span id="cb3-10"><a href="#cb3-10"></a>pretty (<span class="dt">Sub</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; - &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<p>しかし、同じようなコードが含まれていて冗長なので何とかしたいです・・・。</p>
+<h2 id="方針">方針</h2>
+<ul>
+<li>各コンストラクタ <code>Constant</code>, <code>Add</code> 等を <code>extensible</code> のフィールドとして定義</li>
+<li><code>Expr</code>, <code>ExprS</code>, <code>ExprM</code> は、それぞれのフィールドを集めて作った拡張可能和として定義</li>
+<li>スマートコンストラクタは再利用できるようにしたい</li>
+</ul>
+<h2 id="実装">実装</h2>
+<ol type="1">
+<li>コンストラクタの定義</li>
+<li>型の定義</li>
+<li>スマートコンストラクタの定義</li>
+<li>pretty 関数の定義</li>
+<li>新しい型を定義</li>
+</ol>
+<h3 id="コンストラクタの定義">コンストラクタの定義</h3>
+<p>まずはそれぞれのフィールドを定義しましょう。それぞれの型は <code>Assoc Symbol Type</code> のカインドを持ちます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- Field/Constant.hs</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">{-# LANGUAGE DataKinds     #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">type</span> <span class="dt">Constant</span> <span class="ot">=</span> <span class="st">&quot;constant&quot;</span> <span class="op">&gt;:</span> <span class="dt">Int</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">{-# LANGUAGE DataKinds     #-}</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">type</span> <span class="dt">Add</span> expr <span class="ot">=</span> <span class="st">&quot;add&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span></code></pre></div>
+<p>これらのフィールドは以下のような型のコンストラクタを1つずつ切り出したような感じです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">data</span> <span class="dt">Expr</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span></code></pre></div>
+<h3 id="型の定義">型の定義</h3>
+<p>フィールドの定義は完了したので、次にそれらのフィールドを集めて型にしましょう。</p>
+<p>拡張性を得るために型クラスを定義します。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">-- Expr.hs</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">module</span> <span class="dt">Base</span> <span class="kw">where</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="kw">import</span> <span class="dt">Data.Kind</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">import</span> <span class="dt">GHC.TypeLits</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="kw">class</span> <span class="dt">Expr</span> expr <span class="kw">where</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="kw">type</span> <span class="dt">FieldList</span><span class="ot"> expr ::</span> [<span class="dt">Assoc</span> <span class="dt">Symbol</span> <span class="dt">Type</span>]</span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="ot">  liftExpr ::</span> <span class="dt">Variant</span> (<span class="dt">FieldList</span> expr) <span class="ot">-&gt;</span> expr</span></code></pre></div>
+<p><code>FieldList expr</code> によって型に応じてフィールドが変化します。</p>
+<p>実際に <code>Expr</code> 型を定義してみましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Expr/Base.hs</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">module</span> <span class="dt">Expr.Base</span> <span class="kw">where</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="kw">newtype</span> <span class="dt">ExprB</span> <span class="ot">=</span> <span class="dt">ExprB</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  {<span class="ot"> unwrapExprB ::</span> <span class="dt">Variant</span> <span class="dt">ExprBFields</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb8-15"><a href="#cb8-15"></a></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="kw">type</span> <span class="dt">ExprBFields</span> <span class="ot">=</span> &#39;[ <span class="dt">Constant</span>, <span class="dt">Add</span> <span class="dt">ExprB</span> ]</span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprB</span> <span class="ot">=</span> <span class="dt">ExprBFields</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprB</span></span></code></pre></div>
+<ul>
+<li><code>type ExprBFields</code> は型に含まれるフィールドを表します。</li>
+<li>再帰的に定義するために <code>newtype ExprB</code> を宣言しています。</li>
+<li><code>Variant ExprBFields</code> によって <code>Constant</code>, <code>Add ExprB</code> の直和型っぽい感じになります。</li>
+</ul>
+<p><code>liftExpr</code> は再利用可能なスマートコンストラクタを作るためにあります。次で説明します。</p>
+<h3 id="スマートコンストラクタの定義">スマートコンストラクタの定義</h3>
+<p>ここまでで型の定義は終わりました。次は値を作りましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="ot">{-# LANGUAGE TypeFamilies     #-}</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="kw">module</span> <span class="dt">Field.Add</span> <span class="kw">where</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="kw">type</span> <span class="dt">Add</span> expr <span class="ot">=</span> <span class="st">&quot;add&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span>
+<span id="cb9-14"><a href="#cb9-14"></a></span>
+<span id="cb9-15"><a href="#cb9-15"></a>add e1 e2 <span class="ot">=</span> liftExpr (<span class="op">#</span>add <span class="op">#</span> (e1, e2))</span></code></pre></div>
+<p><code>liftExpr</code> は文脈に応じて適切なタグに変化します。例えば <code>ExprB</code> 型であれば <code>ExprB</code> コンストラクタになります。</p>
+<p>同様に <code>Constant</code> の値を作る関数も定義しましょう。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="ot">{-# LANGUAGE TypeFamilies     #-}</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="kw">module</span> <span class="dt">Field.Constant</span> <span class="kw">where</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="kw">type</span> <span class="dt">Constant</span> <span class="ot">=</span> <span class="st">&quot;constant&quot;</span> <span class="op">&gt;:</span> <span class="dt">Int</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a></span>
+<span id="cb10-14"><a href="#cb10-14"></a>c i <span class="ot">=</span> liftExpr (<span class="op">#</span>constant <span class="op">#</span> i)</span></code></pre></div>
+<p>実際に使ってみるとこんな感じです。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">1</span>) (add <span class="op">@=</span> (<span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">0</span>) (constant <span class="op">@=</span> <span class="dv">10</span>)},<span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">0</span>) (constant <span class="op">@=</span> <span class="dv">20</span>)}))}</span></code></pre></div>
+<p>extensible の形式で表示されていますが、問題無く値が作れています。型注釈が無い場合はコンパイルエラーになってしまいますが、ここでは気にしないことにします。</p>
+<h3 id="pretty-関数の定義">pretty 関数の定義</h3>
+<p>値が作れるようになったら、次は <code>pretty</code> 関数を作ります。</p>
+<p>ここが一番面白いポイントだと思っているのですが、<code>pretty</code> のような関数を各フィールドに対して動作する型クラスのメソッドとして定義します。</p>
+<p>まずは、パターンマッチのための補助関数 <code>matchVariant</code> を定義します。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">-- Expr.hs</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="ot">{-# LANGUAGE ConstraintKinds     #-}</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="ot">{-# LANGUAGE DataKinds           #-}</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="ot">{-# LANGUAGE PolyKinds           #-}</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="ot">{-# LANGUAGE RankNTypes          #-}</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="ot">{-# LANGUAGE ScopedTypeVariables #-}</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="ot">{-# LANGUAGE TypeApplications    #-}</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="ot">{-# LANGUAGE TypeFamilies        #-}</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="op">...</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="kw">import</span> <span class="dt">Data.Functor.Identity</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="op">...</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="ot">matchVariant ::</span> <span class="kw">forall</span> c xs r<span class="op">.</span> <span class="dt">Forall</span> c xs</span>
+<span id="cb12-16"><a href="#cb12-16"></a>  <span class="ot">=&gt;</span> <span class="dt">Proxy</span> c <span class="ot">-&gt;</span> (<span class="kw">forall</span> x<span class="op">.</span> c x <span class="ot">=&gt;</span> <span class="dt">Membership</span> xs x <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> x <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> r</span>
+<span id="cb12-17"><a href="#cb12-17"></a>matchVariant _ f <span class="ot">=</span> matchField <span class="op">$</span> htabulateFor (<span class="dt">Proxy</span> <span class="op">@</span>c) <span class="op">$</span> \m <span class="ot">-&gt;</span> <span class="dt">Field</span> <span class="op">$</span> <span class="dt">Match</span> <span class="op">$</span> f m <span class="op">.</span> runIdentity</span></code></pre></div>
+<p>次に <code>pretty</code> 関数を定義するための型クラスを作ります。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts #-}</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="ot">{-# LANGUAGE PolyKinds        #-}</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="ot">{-# LANGUAGE TypeApplications #-}</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">module</span> <span class="dt">Operation.Pretty</span> <span class="kw">where</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="ot">pretty&#39; ::</span> <span class="dt">Forall</span> <span class="dt">PrettyField</span> xs <span class="ot">=&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>pretty&#39; <span class="ot">=</span> matchVariant (<span class="dt">Proxy</span> <span class="op">@</span><span class="dt">PrettyField</span>) prettyField</span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="kw">class</span> <span class="dt">Expr</span> expr <span class="ot">=&gt;</span> <span class="dt">Pretty</span> expr <span class="kw">where</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="ot">  pretty ::</span> expr <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="kw">class</span> <span class="dt">PrettyField</span> kv <span class="kw">where</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="ot">  prettyField ::</span> proxy kv <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> kv <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<p>実際にインスタンスを定義します。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="op">...</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="op">...</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="op">...</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="kw">instance</span> <span class="dt">Pretty</span> expr <span class="ot">=&gt;</span> <span class="dt">PrettyField</span> (<span class="dt">Add</span> expr) <span class="kw">where</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a>  prettyField _ (l, r) <span class="ot">=</span> pretty l <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty r</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">-- Field/Constant.hs</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="op">...</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="op">...</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="op">...</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a></span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="kw">instance</span> <span class="dt">PrettyField</span> <span class="dt">Constant</span> <span class="kw">where</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>  prettyField _ <span class="ot">=</span> <span class="fu">show</span></span></code></pre></div>
+<p><code>ExprB</code> に対する定義はボイラープレートのようなものです。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">-- Expr/Base.hs</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="op">...</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="op">...</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>  pretty <span class="ot">=</span> pretty&#39; <span class="op">.</span> unwrapExprB</span></code></pre></div>
+<p>実際に使ってみます。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;</span> pretty e1</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">&quot;10 + 20&quot;</span></span></code></pre></div>
+<p>期待通り、ちゃんと動いています。</p>
+<h3 id="新しい型を定義">新しい型を定義</h3>
+<p>最後に既存の型を拡張して <code>ExprM</code> を作ります。</p>
+<p>まずは <code>Mul</code> フィールドの <code>pretty</code> とコンストラクタの定義を追加しましょう。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">-- Field/Mul.hs</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="ot">{-# LANGUAGE DataKinds         #-}</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="ot">{-# LANGUAGE OverloadedLabels  #-}</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="ot">{-# LANGUAGE TypeOperators     #-}</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="kw">module</span> <span class="dt">Field.Mul</span> <span class="kw">where</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="kw">type</span> <span class="dt">Mul</span> expr <span class="ot">=</span> <span class="st">&quot;mul&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span>
+<span id="cb18-16"><a href="#cb18-16"></a></span>
+<span id="cb18-17"><a href="#cb18-17"></a><span class="kw">instance</span> <span class="dt">Pretty</span> expr <span class="ot">=&gt;</span> <span class="dt">PrettyField</span> (<span class="dt">Mul</span> expr) <span class="kw">where</span></span>
+<span id="cb18-18"><a href="#cb18-18"></a>  prettyField _ (l, r) <span class="ot">=</span> pretty l <span class="op">&lt;&gt;</span> <span class="st">&quot; * &quot;</span> <span class="op">&lt;&gt;</span> pretty r</span>
+<span id="cb18-19"><a href="#cb18-19"></a></span>
+<span id="cb18-20"><a href="#cb18-20"></a>mul e1 e2 <span class="ot">=</span> liftExpr (<span class="op">#</span>mul <span class="op">#</span> (e1, e2))</span></code></pre></div>
+<p>次に <code>ExprM</code> 型を定義します。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">-- Expr/Mul.hs</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="kw">module</span> <span class="dt">Expr.Mul</span> <span class="kw">where</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="kw">newtype</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a>  {<span class="ot"> unwrapExprM ::</span> <span class="dt">Variant</span> <span class="dt">ExprMFields</span></span>
+<span id="cb19-17"><a href="#cb19-17"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb19-18"><a href="#cb19-18"></a></span>
+<span id="cb19-19"><a href="#cb19-19"></a><span class="kw">type</span> <span class="dt">ExprMFields</span> <span class="ot">=</span> &#39;[ <span class="dt">Constant</span>, <span class="dt">Add</span> <span class="dt">ExprM</span>, <span class="dt">Mul</span> <span class="dt">ExprM</span> ]</span>
+<span id="cb19-20"><a href="#cb19-20"></a></span>
+<span id="cb19-21"><a href="#cb19-21"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb19-22"><a href="#cb19-22"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprMFields</span></span>
+<span id="cb19-23"><a href="#cb19-23"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb19-24"><a href="#cb19-24"></a></span>
+<span id="cb19-25"><a href="#cb19-25"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb19-26"><a href="#cb19-26"></a>  pretty <span class="ot">=</span> pretty&#39; <span class="op">.</span> unwrapExprM</span></code></pre></div>
+<p>ほとんど同じですが、<code>type ExprMFields</code> の部分で <code>Mul ExprM</code> を追加しています。(<code>ExprB</code> のフィールドに単純に追加する方法も一応可能です。)</p>
+<p>実際に使ってみると、ちゃんと異なる型と認識してコンパイルエラーになってくれます。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> add (c <span class="dv">40</span>) (c <span class="dv">50</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="op">&gt;</span> add e1 e2</span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="co">-- 型が異なるためコンパイルエラー</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="op">&gt;</span> pretty e1</span>
+<span id="cb20-8"><a href="#cb20-8"></a><span class="st">&quot;10 + 20&quot;</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="op">&gt;</span> pretty e2</span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="st">&quot;40 + 50&quot;</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="op">&gt;</span> e3 <span class="ot">=</span> mul (c <span class="dv">60</span>) (c <span class="dv">70</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb20-13"><a href="#cb20-13"></a><span class="co">-- ExprB 型には Mul フィールドが存在していないため、コンパイルエラー</span></span>
+<span id="cb20-14"><a href="#cb20-14"></a></span>
+<span id="cb20-15"><a href="#cb20-15"></a><span class="op">&gt;</span> e3 <span class="ot">=</span> mul (c <span class="dv">60</span>) (c <span class="dv">70</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb20-16"><a href="#cb20-16"></a><span class="op">&gt;</span> pretty e3</span>
+<span id="cb20-17"><a href="#cb20-17"></a><span class="st">&quot;60 * 70&quot;</span></span></code></pre></div>
+<h2 id="おまけ">おまけ</h2>
+<h3 id="既存のフィールドを拡張する">既存のフィールドを拡張する</h3>
+<p><code>UndecidableInstances</code> 拡張を使っても良ければ、以下のように <code>ExprBFields ++ '[ Mul ExprM ]</code> と書くこともできます。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="ot">{-# LANGUAGE UndecidableInstances #-}</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="kw">module</span> <span class="dt">Expr.Mul</span> <span class="kw">where</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a></span>
+<span id="cb21-14"><a href="#cb21-14"></a><span class="kw">newtype</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>  {<span class="ot"> unwrapExprM ::</span> <span class="dt">Variant</span> <span class="dt">ExprMFields</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb21-17"><a href="#cb21-17"></a></span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="kw">type</span> <span class="dt">ExprMFields</span> <span class="ot">=</span> <span class="dt">ExprBFields</span> <span class="op">++</span> &#39;[ <span class="dt">Mul</span> <span class="dt">ExprM</span> ]</span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="co">-- type ExprMFields = &#39;[ Constant, Add ExprM, Mul ExprM ]</span></span>
+<span id="cb21-20"><a href="#cb21-20"></a></span>
+<span id="cb21-21"><a href="#cb21-21"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprMFields</span></span>
+<span id="cb21-23"><a href="#cb21-23"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb21-24"><a href="#cb21-24"></a></span>
+<span id="cb21-25"><a href="#cb21-25"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb21-26"><a href="#cb21-26"></a>  pretty <span class="ot">=</span> pretty&#39; <span class="op">.</span> unwrapExprM</span></code></pre></div>
+<h3 id="操作を追加しよう">操作を追加しよう</h3>
+<p><code>eval</code> を追加してみましょう。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="co">-- Operation/Eval.hs</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="ot">{-# LANGUAGE FlexibleContexts #-}</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="ot">{-# LANGUAGE PolyKinds        #-}</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="ot">{-# LANGUAGE TypeApplications #-}</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="kw">module</span> <span class="dt">Operation.Eval</span> <span class="kw">where</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a></span>
+<span id="cb22-11"><a href="#cb22-11"></a><span class="ot">eval&#39; ::</span> <span class="dt">Forall</span> <span class="dt">EvalField</span> xs <span class="ot">=&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a>eval&#39; <span class="ot">=</span> matchVariant (<span class="dt">Proxy</span> <span class="op">@</span><span class="dt">EvalField</span>) evalField</span>
+<span id="cb22-13"><a href="#cb22-13"></a></span>
+<span id="cb22-14"><a href="#cb22-14"></a><span class="kw">class</span> <span class="dt">Eval</span> expr <span class="kw">where</span></span>
+<span id="cb22-15"><a href="#cb22-15"></a><span class="ot">  eval ::</span> expr <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb22-16"><a href="#cb22-16"></a></span>
+<span id="cb22-17"><a href="#cb22-17"></a><span class="kw">class</span> <span class="dt">EvalField</span> kv <span class="kw">where</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a><span class="ot">  evalField ::</span> proxy kv <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> kv <span class="ot">-&gt;</span> <span class="dt">Int</span></span></code></pre></div>
+<p>さらに、インスタンス定義もこのファイルに定義します。</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1"></a><span class="co">-- Operation/Eval.hs</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="op">...</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="op">...</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="kw">import</span> <span class="dt">Expr.Mul</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="op">...</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="kw">instance</span> <span class="dt">Eval</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a>  eval <span class="ot">=</span> eval&#39; <span class="op">.</span> unwrapExprB</span>
+<span id="cb23-16"><a href="#cb23-16"></a></span>
+<span id="cb23-17"><a href="#cb23-17"></a><span class="kw">instance</span> <span class="dt">Eval</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb23-18"><a href="#cb23-18"></a>  eval <span class="ot">=</span> eval&#39; <span class="op">.</span> unwrapExprM</span>
+<span id="cb23-19"><a href="#cb23-19"></a></span>
+<span id="cb23-20"><a href="#cb23-20"></a><span class="op">...</span></span>
+<span id="cb23-21"><a href="#cb23-21"></a></span>
+<span id="cb23-22"><a href="#cb23-22"></a><span class="kw">instance</span> <span class="dt">EvalField</span> <span class="dt">Constant</span> <span class="kw">where</span></span>
+<span id="cb23-23"><a href="#cb23-23"></a>  evalField _ <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb23-24"><a href="#cb23-24"></a></span>
+<span id="cb23-25"><a href="#cb23-25"></a><span class="kw">instance</span> <span class="dt">Eval</span> expr <span class="ot">=&gt;</span> <span class="dt">EvalField</span> (<span class="dt">Add</span> expr) <span class="kw">where</span></span>
+<span id="cb23-26"><a href="#cb23-26"></a>  evalField _ (l, r) <span class="ot">=</span> eval l <span class="op">+</span> eval r</span>
+<span id="cb23-27"><a href="#cb23-27"></a></span>
+<span id="cb23-28"><a href="#cb23-28"></a><span class="kw">instance</span> <span class="dt">Eval</span> expr <span class="ot">=&gt;</span> <span class="dt">EvalField</span> (<span class="dt">Mul</span> expr) <span class="kw">where</span></span>
+<span id="cb23-29"><a href="#cb23-29"></a>  evalField _ (l, r) <span class="ot">=</span> eval l <span class="op">*</span> eval r</span></code></pre></div>
+<p>これで使えるようになりました。</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> mul (c <span class="dv">40</span>) (c <span class="dv">50</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="op">&gt;</span> eval e1</span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="dv">30</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="op">&gt;</span> eval e2</span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="dv">2000</span></span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<p>何かに使えないかなー。</p>]]></summary>
+</entry>
+<entry>
     <title>let, where, let...in の使い分け</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html</id>
@@ -3150,161 +3534,6 @@ PartialOptions
 <li><a href="http://ozark.hendrix.edu/~yorgey/pub/monoid-pearl.pdf">Monoids: Theme and Variations (Functional Pearl)</a></li>
 <li><a href="https://www.stackage.org/haddock/lts-13.5/base-4.12.0.0/Prelude.html#t:Foldable">Foldable</a></li>
 </ul>]]></summary>
-</entry>
-<entry>
-    <title>cabal build で package.yaml を使う</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2018/12-25-cabal-preprocessing.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2018/12-25-cabal-preprocessing.html</id>
-    <published>2018-12-25T00:00:00Z</published>
-    <updated>2018-12-25T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>最近少しずつ <code>cabal</code> を使うようになりました。</p>
-<p>そのため、<code>stack</code> と <code>cabal</code> のどちらを使ってもビルドできるようにプロジェクトを修正していたのですが、<code>cabal</code> ファイルの取り扱いが難しかったのでメモ程度に残しておきます。</p>
-<p>方針としては <code>cabal</code> コマンドの実行時にフックを仕掛けて <code>hpack</code> を使って <code>package.yaml</code> から <code>cabal</code> ファイルを生成しようという感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">$</span> cabal <span class="co">--numeric-version</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fl">2.4</span><span class="op">.</span><span class="fl">1.0</span></span></code></pre></div>
-<!--more-->
-<h2 id="setup.hs-は何のためにあるのか">Setup.hs は何のためにあるのか？</h2>
-<p><code>stack</code> を使ってプロジェクトを作ると <code>Setup.hs</code> が以下の内容で自動的に生成されると思います。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>main <span class="ot">=</span> defaultMain</span></code></pre></div>
-<p>今まで特に使わなくても困らなかったので、気にせずに放置していましたが、このファイルが今回の主役になります。</p>
-<p><code>cabal</code> には <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-type">build-type</a> という設定項目があり、この値はデフォルトでは <code>Simple</code> か <code>Custom</code> のどちらかに自動的に推論されます。(他にも <code>Configure</code>, <code>Make</code> などもあります。詳しくはドキュメントを参照してください)</p>
-<h3 id="simple">Simple</h3>
-<p><code>build-type</code> に <code>Simple</code> を指定した場合、<code>cabal</code> は <code>Setup.hs</code> に以下の内容が記述されているものとして処理を進めます。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>main <span class="ot">=</span> defaultMain</span></code></pre></div>
-<p>そのため <code>Setup.hs</code> を削除しても問題なくビルド可能です。</p>
-<h3 id="custom">Custom</h3>
-<p><code>build-type</code> に <code>Custom</code> を指定した場合、<code>Setup.hs</code> の内容をユーザが自由に書き換えることができます。</p>
-<p>Cabal には <a href="https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#v:defaultMainWithHooks">defaultMainWithHooks</a> という素晴らしい関数が用意されています。</p>
-<p>この関数を利用することで、コマンドの前後に好きな処理を挟むことができます。(処理の上書きも可能です)</p>
-<p>詳しいドキュメントは <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#more-complex-packages">3.3.8. More complex packages</a> を参照ください。</p>
-<h3 id="userhooks">UserHooks</h3>
-<p><code>defaultMainWithHooks</code> に渡す <a href="https://www.stackage.org/haddock/lts-13.0/Cabal-2.4.1.0/Distribution-Simple.html#t:UserHooks">UserHooks</a> 型はこんな感じで定義されています。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">data</span> <span class="dt">UserHooks</span> <span class="ot">=</span> <span class="dt">UserHooks</span> {</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">    runTests ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">    readDesc ::</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> <span class="dt">GenericPackageDescription</span>),</span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">    hookedPreProcessors ::</span> [ <span class="dt">PPSuffixHandler</span> ],</span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="ot">    hookedPrograms ::</span> [<span class="dt">Program</span>],</span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="ot">    preConf  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="ot">    confHook ::</span> (<span class="dt">GenericPackageDescription</span>, <span class="dt">HookedBuildInfo</span>) <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">LocalBuildInfo</span>,</span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="ot">    postConf ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ConfigFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-10"><a href="#cb4-10"></a></span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="ot">    preBuild  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-12"><a href="#cb4-12"></a><span class="ot">    buildHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-13"><a href="#cb4-13"></a><span class="ot">    postBuild ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-14"><a href="#cb4-14"></a></span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="ot">    preRepl  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-16"><a href="#cb4-16"></a><span class="ot">    replHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-17"><a href="#cb4-17"></a><span class="ot">    postRepl ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">ReplFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-18"><a href="#cb4-18"></a></span>
-<span id="cb4-19"><a href="#cb4-19"></a><span class="ot">    preClean  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-20"><a href="#cb4-20"></a><span class="ot">    cleanHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-21"><a href="#cb4-21"></a><span class="ot">    postClean ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CleanFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-22"><a href="#cb4-22"></a></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="ot">    preCopy  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-24"><a href="#cb4-24"></a><span class="ot">    copyHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-25"><a href="#cb4-25"></a><span class="ot">    postCopy ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">CopyFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-26"><a href="#cb4-26"></a></span>
-<span id="cb4-27"><a href="#cb4-27"></a><span class="ot">    preInst  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-28"><a href="#cb4-28"></a><span class="ot">    instHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-29"><a href="#cb4-29"></a><span class="ot">    postInst ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">InstallFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-30"><a href="#cb4-30"></a></span>
-<span id="cb4-31"><a href="#cb4-31"></a><span class="ot">    preSDist  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-32"><a href="#cb4-32"></a><span class="ot">    sDistHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-33"><a href="#cb4-33"></a><span class="ot">    postSDist ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">SDistFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-34"><a href="#cb4-34"></a></span>
-<span id="cb4-35"><a href="#cb4-35"></a><span class="ot">    preReg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-36"><a href="#cb4-36"></a><span class="ot">    regHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-37"><a href="#cb4-37"></a><span class="ot">    postReg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-38"><a href="#cb4-38"></a></span>
-<span id="cb4-39"><a href="#cb4-39"></a><span class="ot">    preUnreg  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-40"><a href="#cb4-40"></a><span class="ot">    unregHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-41"><a href="#cb4-41"></a><span class="ot">    postUnreg ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">RegisterFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-42"><a href="#cb4-42"></a></span>
-<span id="cb4-43"><a href="#cb4-43"></a><span class="ot">    preHscolour  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-44"><a href="#cb4-44"></a><span class="ot">    hscolourHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-45"><a href="#cb4-45"></a><span class="ot">    postHscolour ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HscolourFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-46"><a href="#cb4-46"></a></span>
-<span id="cb4-47"><a href="#cb4-47"></a><span class="ot">    preDoctest  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-48"><a href="#cb4-48"></a><span class="ot">    doctestHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-49"><a href="#cb4-49"></a><span class="ot">    postDoctest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">DoctestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-50"><a href="#cb4-50"></a></span>
-<span id="cb4-51"><a href="#cb4-51"></a><span class="ot">    preHaddock  ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-52"><a href="#cb4-52"></a><span class="ot">    haddockHook ::</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-53"><a href="#cb4-53"></a><span class="ot">    postHaddock ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">HaddockFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-54"><a href="#cb4-54"></a></span>
-<span id="cb4-55"><a href="#cb4-55"></a><span class="ot">    preTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-56"><a href="#cb4-56"></a><span class="ot">    testHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-57"><a href="#cb4-57"></a><span class="ot">    postTest ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">TestFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-58"><a href="#cb4-58"></a></span>
-<span id="cb4-59"><a href="#cb4-59"></a><span class="ot">    preBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span>,</span>
-<span id="cb4-60"><a href="#cb4-60"></a><span class="ot">    benchHook ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">UserHooks</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (),</span>
-<span id="cb4-61"><a href="#cb4-61"></a><span class="ot">    postBench ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BenchmarkFlags</span> <span class="ot">-&gt;</span> <span class="dt">PackageDescription</span> <span class="ot">-&gt;</span> <span class="dt">LocalBuildInfo</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
-<span id="cb4-62"><a href="#cb4-62"></a>  }</span></code></pre></div>
-<p>これだけあれば、やりたいことはほとんど出来そうですね。</p>
-<h2 id="実装">実装</h2>
-<p>フックする場所はたくさんあるので問題無さそうです。</p>
-<p>しかし、これだけあると、どこにフックすれば良いのか？ということになるのですが、処理的には <code>package.yaml</code> から <code>.cabal</code> ファイルを生成したいので <code>.cabal</code> ファイルを読み込む手前で差し込む必要がありそうです。</p>
-<p>適当に cabal のコードを読んでいると、どうやら <a href="https://github.com/haskell/cabal/blob/e15d87d542b4b23983aed3d54e0b42585257f453/cabal-install/Distribution/Client/CmdBuild.hs#L119">establishProjectBaseContext</a> という関数が <code>.cabal</code> ファイルを読み込んでコンテキストを作っているっぽいことがわかりました。</p>
-<p>なので、<code>preBuild</code> にフックすれば良さそうです。(<code>cabal</code> のコードベースについて全然わからないので、本当に合ってるかどうかは不安)</p>
-<p>最終的に、こんな感じで完成しました。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">import</span> <span class="dt">Distribution.Simple.Setup</span> (<span class="dt">BuildFlags</span>)</span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span> <span class="dt">Distribution.Types.HookedBuildInfo</span> (<span class="dt">HookedBuildInfo</span>, emptyHookedBuildInfo)</span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">import</span> <span class="dt">Hpack</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb5-9"><a href="#cb5-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a>  <span class="kw">let</span> myHook <span class="ot">=</span> simpleUserHooks {</span>
-<span id="cb5-11"><a href="#cb5-11"></a>    preBuild <span class="ot">=</span> pbHpack</span>
-<span id="cb5-12"><a href="#cb5-12"></a>  }</span>
-<span id="cb5-13"><a href="#cb5-13"></a>  defaultMainWithHooks myHook</span>
-<span id="cb5-14"><a href="#cb5-14"></a></span>
-<span id="cb5-15"><a href="#cb5-15"></a><span class="ot">pbHpack ::</span> <span class="dt">Args</span> <span class="ot">-&gt;</span> <span class="dt">BuildFlags</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">HookedBuildInfo</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>pbHpack _ _ <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a>  hpack <span class="dt">Verbose</span> defaultOptions</span>
-<span id="cb5-18"><a href="#cb5-18"></a>  <span class="fu">return</span> emptyHookedBuildInfo</span></code></pre></div>
-<p><a href="https://www.stackage.org/package/hpack">hpack</a> パッケージの関数をそのまま使ってます。</p>
-<p>今回は他に何もしないので <code>emptyHookedBuildInfo</code> で大丈夫でした。(たぶん)</p>
-<h3 id="extra-source-files">extra-source-files</h3>
-<p>キャッシュの問題があるので <code>extra-source-files</code> に <code>package.yaml</code> を追加しておくと良さそうです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">extra-source-files</span><span class="kw">:</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">-</span><span class="at"> package.yaml</span></span></code></pre></div>
-<h3 id="custom-setup">custom-setup</h3>
-<p>最後に忘れてはいけないのが、<code>custom-setup</code> の設定です。</p>
-<p><code>Setup.hs</code> で利用する依存関係などは <code>library</code> や <code>executables</code>, <code>tests</code> と同様に <code>custom-setup</code> を <code>package.yaml</code> に追記します。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">custom-setup</span><span class="kw">:</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="at">  </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="at">    </span><span class="kw">-</span><span class="at"> base</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="at">    </span><span class="kw">-</span><span class="at"> Cabal</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hpack</span></span></code></pre></div>
-<p>これで完成です。</p>
-<p>最初の一度だけは <code>hpack</code> を使って <code>cabal</code> ファイルを生成する必要がありますが、それ以降は必要ありません。</p>
-<pre class="shell"><code>$ curl -sSL https://github.com/sol/hpack/raw/master/get-hpack.sh | bash
-$ hpack package.yaml
-$ cabal new-build</code></pre>
-<h2 id="失敗したこと">失敗したこと</h2>
-<p>最初はフックさせずにこんな感じですぐに実装できるものだと思ってましたが、</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">import</span> <span class="dt">Distribution.Simple</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">import</span> <span class="dt">Hpack</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb9-7"><a href="#cb9-7"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a>  hpack <span class="dt">Verbose</span> defaultOptions</span>
-<span id="cb9-9"><a href="#cb9-9"></a>  defaultMain</span></code></pre></div>
-<p>これだと、あんまり上手くいきません。</p>
-<p><code>package.yaml</code> を更新しても実行されなかったり、期待するタイミングで <code>.cabal</code> ファイルが生成されていないっぽい感じでした。</p>
-<h2 id="まとめ">まとめ</h2>
-<p>とりあえず実装してみたという感じなので、実際どのぐらい使えるのか試してみようと思います。</p>
-<p><code>stack</code> も <code>cabal</code> も両方とも良いビルドツールだと思います。</p>
-<p>もうちょっとしたら、<code>cabal</code> も同様にオススメしていこうと思います。</p>]]></summary>
 </entry>
 
 </feed>
