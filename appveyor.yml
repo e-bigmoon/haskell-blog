@@ -1,0 +1,49 @@
+clone_folder: "c:\\WORK"
+clone_depth: 5
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+
+platform:
+  - x86_64
+  - x86
+cache:
+ - "C:\\SR"
+
+environment:
+  global:
+    CABOPTS:  --store-dir=C:\\SR --http-transport=plain-http
+    CHOCOCMD: ghc --version %GHCVER%
+  matrix:
+    - GHCVER: 8.6.2
+    - GHCVER: 8.4.2
+    - GHCVER: 8.2.2
+    - GHCVER: 8.0.2
+    - GHCVER: 7.10.3.2
+    - GHCVER: 7.8.4.1
+    - GHCVER: 7.6.3.1
+
+for:
+  -
+    matrix:
+      only:
+        - platform: x86
+    environment:
+      global:
+        GHCOPTS: --forcex86
+
+install:
+ - choco source add -n mistuke -s https://www.myget.org/F/mistuke/api/v2
+ - choco install %CHOCOCMD% -y %GHCOPTS% %CHOCOPTS% --ignore-dependencies
+ - choco install -y cabal %CHOCOPTS%
+ - refreshenv
+
+before_build:
+ - cabal --version
+ - ghc --version
+ - cabal %CABOPTS% v2-update
+ - IF EXIST configure.ac bash -c "autoreconf -i"
+
+build_script:
+ - echo packages:. > cabal.project
+ - cabal %CABOPTS% v2-build -j all
