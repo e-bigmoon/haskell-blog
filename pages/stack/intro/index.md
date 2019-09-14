@@ -28,16 +28,15 @@ next: ./why-stack.html
     - [extra-deps の指定方法](./extra-deps.html)
 1. [アプリケーションの作成](./create-app.html)
 1. [ドキュメントの作成](../doc/index.html)
-    - Haddock の基礎知識
-    - Haddock コメント形式
-    - 実際に使ってみよう！
-    - Haddock の設定
-    - 最終的なファイル
-1. テストの作成
-    - テストフレームワーク (hspec, tasty)
-    - 単体テスト
-    - ランダムテスト (QuickCheck)
+    - [Haddock の基礎知識](../doc/haddock-intro.html)
+    - [Haddock コメント形式](../doc/haddock-comment.html)
+    - [Haddock の設定](../doc/haddock-settings.html)
+1. [テストの作成](../test/)
+    - [テストフレームワーク (hspec)](../test/hspec.html)
+    - [【基礎】ランダムテスト (QuickCheck)](../test/quickcheck.html)
+    - [【実践】ランダムテスト (QuickCheck)](../test/quickcheck2.html)
     - ドキュメントのテスト (doctest)
+    - テストフレームワーク (tasty)
 1. ベンチマークの作成
     - criterion
     - gauge

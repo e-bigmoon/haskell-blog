@@ -94,12 +94,13 @@ _ | stack | cabal
   - [extra-deps の指定方法](intro/extra-deps.html)
 - [アプリケーションの作成](intro/create-app.html)
 - [ドキュメントの作成](doc/)
-  - [haddockの基礎知識](doc/haddock-intro.html)
-  - [haddockコメント形式](doc/haddock-comment.html)
-  - [haddockのための設定](doc/haddock-settings.html)
+  - [Haddock の基礎知識](doc/haddock-intro.html)
+  - [Haddock コメント形式](doc/haddock-comment.html)
+  - [Haddock の設定](doc/haddock-settings.html)
 - [テストの作成](test/)
-  - [HSpec](test/hspec.html)
-  - [QuickCheck](test/quickcheck.html)
+  - [テストフレームワーク (hspec)](test/hspec.html)
+  - [【基礎】ランダムテスト (QuickCheck)](test/quickcheck.html)
+  - [【実践】ランダムテスト (QuickCheck)](test/quickcheck2.html)
   - [doctest](test/doctest.html)
 
 ## プラクティス
