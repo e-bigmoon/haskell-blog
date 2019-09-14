@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>haddokの基礎知識</title>
+  <title>Haddock の基礎知識</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/doc/haddock-intro.html">
-  <link rel="alternate" type="application/atom+xml" title="haddokの基礎知識" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="Haddock の基礎知識" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="haddokの基礎知識" />
+  <meta property="og:title" content="Haddock の基礎知識" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/doc/haddock-intro.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="haddokの基礎知識" />
+  <meta property="og:site_name" content="Haddock の基礎知識" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -166,61 +166,80 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">haddokの基礎知識</h1>
+        <h1 class="post-title">Haddock の基礎知識</h1>
+        
+        <span>最終更新日: 2019/09/14</span>
         
       </div>
 
       <article class="page-content">
-        <p><code>stack</code> には <code>Haddock</code> 形式と呼ばれる形式でコメントを残すことで、そのコメントを自動的にドキュメントに変換する <code>stack haddock</code> コマンドがあります。</p>
-<p>まずは特に何もせずに <code>Haddock</code> を生成してみましょう。</p>
+        <h2 id="haddock-の生成">Haddock の生成</h2>
+<p><strong>stack</strong> には <strong>Haddock</strong> 形式と呼ばれる形式でコメントを残すことで、そのコメントを自動的にドキュメントに変換する <strong>stack haddock</strong> コマンドがあります。</p>
+<p>まずは特に何もせずに <strong>Haddock</strong> を生成してみましょう。</p>
 <pre class="shell-session"><code>$ stack haddock
 ...
-/home/bm12/.stack/snapshots/x86_64-linux-nopie/lts-9.17/8.0.2/doc/index.html</code></pre>
-<p>ドキュメントが生成されるパスはデフォルトでは <code>.stack</code> 以下になっているため、ちょっと確認しづらいです。</p>
+
+Running Haddock on library for PFAD-0.1.0.0..
+Haddock coverage:
+   0% (  0 /  3) in 'Minfree'
+  Missing documentation for:
+    Module header
+    minfree (src/Minfree.hs:6)
+    minfree' (src/Minfree.hs:36)
+Documentation created:
+.stack-work/dist/x86_64-linux/Cabal-2.4.0.1/doc/html/PFAD/index.html,
+.stack-work/dist/x86_64-linux/Cabal-2.4.0.1/doc/html/PFAD/PFAD.txt
+
+...</code></pre>
+<p>これでドキュメントは生成されましたが、ログによると <code>.stack-work/dist/x86_64-linux/Cabal-2.4.0.1/doc/html/PFAD/index.html</code> に生成されているようです。生成されるドキュメントはデフォルトで <code>.stack-work</code> 以下の奥深くになっているため、ちょっと確認しづらいです。</p>
+<p>そういう場合は、自動的にブラウザで開いてくれる <code>--open</code> オプションを使ってみましょう。</p>
+<pre class="shell"><code>$ stack haddock --open</code></pre>
+<h3 id="出力先ディレクトリの変更">出力先ディレクトリの変更</h3>
 <p>次に、<code>--haddock-arguments --odir=haddock</code> オプションで、出力先ディレクトリを変更してみましょう。</p>
 <pre class="shell-session"><code>$ stack haddock --haddock-arguments --odir=haddock
 $ tree -L 1
 .
-├── app
 ├── ChangeLog.md
 ├── LICENSE
-├── package.yaml
 ├── PFAD.cabal
 ├── README.md
 ├── Setup.hs
+├── app
+├── package.yaml
 ├── src
 ├── stack.yaml
+├── stack.yaml.lock
 └── test</code></pre>
-<p><code>Haddock</code> ディレクトリができると思いきや、何も起こりませんね。これはビルドキャッシュが残っているためです。一度 <code>stack clean</code> をしてからもう一度実行してみましょう。</p>
+<p><strong>haddock</strong> ディレクトリができると思いきや、何も起こりませんね。これはビルドキャッシュが残っているためです。一度 <strong>stack clean</strong> をしてからもう一度実行してみましょう。</p>
 <pre class="shell-session"><code>$ stack clean
 $ stack haddock --haddock-arguments --odir=haddock
 $ tree -L 1
 .
-├── app
 ├── ChangeLog.md
-├── haddock       # 生成された
 ├── LICENSE
-├── package.yaml
 ├── PFAD.cabal
 ├── README.md
 ├── Setup.hs
+├── app
+├── haddock
+├── package.yaml
 ├── src
 ├── stack.yaml
+├── stack.yaml.lock
 └── test</code></pre>
-<p><code>haddock/index.html</code> をブラウザで確認すると、こんな感じで <code>Hackage</code> と同じようなドキュメントが生成されているはずです。</p>
-<p><img src="../../images/haddock01.png" alt="page1.png" /> <img src="../../images/haddock02.png" alt="page2.png" /></p>
+<p><strong>haddock/index.html</strong> をブラウザで確認すると、こんな感じで <strong>Hackage</strong> と同じようなドキュメントが生成されているはずです。</p>
+<p><img src="../../images/haddock01.jpeg" /> <img src="../../images/haddock02.jpeg" /></p>
 <p>ここまでで基本的なドキュメントの生成方法はわかりました。</p>
-<p>気にしておいて欲しい点としては <code>expose</code> されている関数のみがドキュメント化されるという点です。<code>Haddock</code> 形式のコメントを使っていなくても <code>expose</code> されている関数や型は、自動的に情報が公開されることを理解しておきましょう。</p>
-<p>次は <code>Haddock</code> コメントを追加してどんどんドキュメントをリッチにしていきましょう！</p>
-<h5 id="haddock">haddock</h5>
-<ul>
-<li><a href="https://www.haskell.org/haddock/">Haddock: A Haskell Documentation Tool</a></li>
-<li><a href="http://haskell-haddock.readthedocs.io/en/latest/index.html">Welcome to Haddock’s documentation!</a></li>
-</ul>
+<p>気にしておいて欲しい点としては公開 (<strong>expose</strong>) されている関数のみがドキュメント化されるという点です。<strong>Haddock</strong> 形式のコメントを使っていなくても <strong>expose</strong> されている関数や型は、自動的に情報が公開されることを理解しておきましょう。</p>
+<p>次は <strong>Haddock</strong> 形式のコメントを追加してどんどんドキュメントをリッチにしていきましょう！</p>
       </article>
 
       <div class="pager">
       
+        <a class="waves-effect waves-light btn white-text prev" href="./index.html"><span>«</span>前</a>
+      
+      
+        <a class="waves-effect waves-light btn white-text next" href="./haddock-comment.html">次<span>»</span></a>
       
       </div>
 
@@ -232,7 +251,7 @@ $ tree -L 1
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=haddokの基礎知識&url=https://haskell.e-bigmoon.com/stack/doc/haddock-intro.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Haddock の基礎知識&url=https://haskell.e-bigmoon.com/stack/doc/haddock-intro.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/doc/haddock-intro.html"><i class="mdi mdi-facebook white-text"></i></a>

@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>HSpec</title>
+  <title>テストフレームワーク (hspec)</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/test/hspec.html">
-  <link rel="alternate" type="application/atom+xml" title="HSpec" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="テストフレームワーク (hspec)" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="HSpec" />
+  <meta property="og:title" content="テストフレームワーク (hspec)" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/test/hspec.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="HSpec" />
+  <meta property="og:site_name" content="テストフレームワーク (hspec)" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -166,41 +166,54 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">HSpec</h1>
+        <h1 class="post-title">テストフレームワーク (hspec)</h1>
+        
+        <span>最終更新日: 2019/09/14</span>
         
       </div>
 
       <article class="page-content">
-        <p>まずは <code>HSpec</code> を使うために、<code>package.yaml</code> の <code>tests</code> に <code>hspec</code> パッケージを追記します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml:package.yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="at">  </span><span class="fu">PFAD-test</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Spec.hs</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         test</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hspec</span><span class="co"> # ここを追記</span></span></code></pre></div>
-<p>ここで、<code>test/Spec.hs</code> の内容を以下のように書き換えます。<code>hspec-discover</code> を利用することで、それぞれのソースファイルと一対一に対応した <code>Spec</code> ファイルを自動的に読み込んでテストしてくれるようになります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode :test/spec.hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">{-# OPTIONS_GHC -F -pgmF hspec-discover #-}</span></span></code></pre></div>
-<p>Spec ファイルの命名規則は、 <code>src/Minfree.hs</code> に対しては <code>test/MinfreeSpec.hs</code> という感じです。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode :test/minfreespec.hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">import</span> <span class="dt">Test.Hspec</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">spec ::</span> <span class="dt">Spec</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>spec <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a>    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span></code></pre></div>
-<p>上記の書き方で <code>minfree</code> 関数と <code>minfree'</code> 関数の入力と出力の振る舞いがテストできるようになりました。</p>
+        <p>この章ではテストフレームワークの <strong>hspec</strong> を使ったテストの書き方を学習します。</p>
+<h2 id="hspec-discover-のインストール">hspec-discover のインストール</h2>
+<p><a href="https://hackage.haskell.org/package/hspec-discover">hspec-discover</a> を利用することで、それぞれのソースファイルと一対一に対応した <strong>Spec</strong> ファイルを自動的に読み込んでテストしてくれるようになります。</p>
+<pre class="shell"><code>$ stack install hspec-discover
+$ hspec-discover
+Usage: hspec-discover SRC CUR DST [--module-name=NAME]</code></pre>
+<h2 id="テストの作成">テストの作成</h2>
+<p>まずは <strong>hspec</strong> を使うために、<strong>package.yaml</strong> の <strong>tests</strong> に <strong>hspec</strong> パッケージを追記します。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="at">  </span><span class="fu">PFAD-test</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Spec.hs</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         test</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hspec</span><span class="co"> # ここを追記</span></span></code></pre></div>
+<p>つぎに、<strong>hspec-discover</strong> を利用するため <code>test/Spec.hs</code> の内容を以下のように書き換えます。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">{-# OPTIONS_GHC -F -pgmF hspec-discover #-}</span></span></code></pre></div>
+<h3 id="ファイルの命名規則">ファイルの命名規則</h3>
+<p><strong>hspec-discover</strong> を利用する場合、テスト対象のファイルを自動的に見つけるために命名規則が決まっています。</p>
+<p><strong>Spec</strong> ファイルの命名規則は、<strong>src/Minfree.hs</strong> に対しては <strong>test/MinfreeSpec.hs</strong> という感じです。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- test/MinfreeSpec.hs</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">import</span> <span class="dt">Test.Hspec</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="ot">spec ::</span> <span class="dt">Spec</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>spec <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a></span>
+<span id="cb4-13"><a href="#cb4-13"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span></code></pre></div>
+<p>上記の書き方で <strong>minfree</strong> 関数と <strong>minfree’</strong> 関数の入力と出力の振る舞いがテストできるようになりました。</p>
+<h2 id="テストの実行">テストの実行</h2>
 <p>最後に以下のコマンドでテストを実行します。</p>
 <pre class="shell-session"><code>$ stack test
 Registering PFAD-0.1.0.0...
@@ -209,9 +222,9 @@ PFAD-0.1.0.0: test (suite: PFAD-test)
 Progress: 1/2
 Minfree
   minfree
-    本に載っている例
+    書籍の実行例
   minfree'
-    本に載っている例
+    書籍の実行例
 
 Finished in 0.0003 seconds
 2 examples, 0 failures
@@ -219,15 +232,14 @@ Finished in 0.0003 seconds
 PFAD-0.1.0.0: Test suite PFAD-test passed
 Completed 2 action(s).
 ExitSuccess</code></pre>
-<h5 id="hspec">hspec</h5>
-<ul>
-<li><a href="http://fujimura.hatenablog.com/entry/2015/12/15/214332">Hspecベストプラクティス</a></li>
-<li><a href="https://github.com/hspec/hspec-example">hspec/hspec-example on github</a></li>
-</ul>
       </article>
 
       <div class="pager">
       
+        <a class="waves-effect waves-light btn white-text prev" href="./index.html"><span>«</span>前</a>
+      
+      
+        <a class="waves-effect waves-light btn white-text next" href="./quickcheck.html">次<span>»</span></a>
       
       </div>
 
@@ -239,7 +251,7 @@ ExitSuccess</code></pre>
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=HSpec&url=https://haskell.e-bigmoon.com/stack/test/hspec.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=テストフレームワーク (hspec)&url=https://haskell.e-bigmoon.com/stack/test/hspec.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/test/hspec.html"><i class="mdi mdi-facebook white-text"></i></a>
