@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>stack について</title>
+  <title>stack のインストールと設定</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/intro/stack-install.html">
-  <link rel="alternate" type="application/atom+xml" title="stack について" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="stack のインストールと設定" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="stack について" />
+  <meta property="og:title" content="stack のインストールと設定" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/intro/stack-install.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="stack について" />
+  <meta property="og:site_name" content="stack のインストールと設定" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -166,9 +166,9 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">stack について</h1>
+        <h1 class="post-title">stack のインストールと設定</h1>
         
-        <span>最終更新日: 2018/05/05</span>
+        <span>最終更新日: 2019/09/14</span>
         
       </div>
 
@@ -179,7 +179,10 @@
 <pre class="shell"><code>$ curl -sSL https://get.haskellstack.org/ | sh
 
 $ wget -qO- https://get.haskellstack.org/ | sh</code></pre>
-<h2 id="パスの追加">パスの追加</h2>
+<p>これで <strong>stack</strong> が使えるようになったと思います。以下のようにバージョン情報が表示されれば大丈夫です。</p>
+<pre class="shell"><code>$ stack --version
+Version 2.1.3, Git revision 0fa51b9925decd937e4a993ad90cb686f88fa282 (7739 commits) x86_64 hpack-0.31.2</code></pre>
+<h3 id="パスの追加">パスの追加</h3>
 <p>このタイミングで <code>~/.local/bin</code> を環境変数 <strong>PATH</strong> に追加しておくことをおすすめします。</p>
 <p><strong>stack install</strong> コマンドでインストールされる実行ファイルは <code>~/.local/bin/</code> 以下に保存されます。</p>
 <p>そのため、<code>~/.local/bin/</code> にパスを通すことで、どこからでもコマンドを実行できるようになります。</p>
@@ -187,41 +190,42 @@ $ wget -qO- https://get.haskellstack.org/ | sh</code></pre>
 
 # 必要に応じて .bashrc や .bash_profile などに追記してください
 $ echo 'export PATH=~/.local/bin:$PATH' &gt;&gt; ~/.bashrc</code></pre>
-<h2 id="コマンドの自動補完設定">コマンドの自動補完設定</h2>
+<h3 id="コマンドの自動補完設定">コマンドの自動補完設定</h3>
 <p>これを設定しておくと、<strong>stack</strong> のサブコマンドを補完してくれるので、何かと便利です。</p>
 <pre class="shell"><code>$ echo 'eval &quot;$(stack --bash-completion-script stack)&quot;' &gt;&gt; ~/.bashrc</code></pre>
 <p><strong>zsh</strong> ユーザは <a href="https://docs.haskellstack.org/en/stable/shell_autocompletion/#for-zsh-users">for ZSH users</a> をご確認ください。</p>
 <h2 id="stack-のディレクトリ構造">~/.stack/ のディレクトリ構造</h2>
-<p><strong>stack</strong> をダウンロードしたら、初回だけ <strong>stack update</strong> を行い、グローバルプロジェクト用のディレクトリを生成しましょう。</p>
+<p><strong>stack</strong> をインストールしたら、初回だけ <strong>stack update</strong> を行い、グローバルプロジェクト用のディレクトリを生成しましょう。</p>
 <pre class="shell"><code>$ stack update
 ...
 
 $ tree ~/.stack/
-/home/bm12/.stack/
-|-- config.yaml
-`-- indices
-    `-- Hackage
-        |-- 00-index.tar
-        |-- 00-index.tar.gz
-        |-- 00-index.tar.idx
-        |-- 01-index.tar
-        |-- mirrors.json
-        |-- root.json
-        |-- snapshot.json
-        `-- timestamp.json</code></pre>
-<ul>
-<li><strong>config.yaml</strong> にプロジェクトで共通する設定を記述しておくことができます。</li>
-<li><strong>indices</strong> フォルダ以下を触ることはありません。</li>
-</ul>
+~/.stack/
+├── config.yaml
+├── pantry
+│   ├── hackage
+│   │   ├── 00-index.tar
+│   │   ├── 00-index.tar.gz
+│   │   ├── 00-index.tar.idx
+│   │   ├── hackage-security-lock
+│   │   ├── mirrors.json
+│   │   ├── root.json
+│   │   ├── snapshot.json
+│   │   └── timestamp.json
+│   ├── pantry.sqlite3
+│   └── pantry.sqlite3.pantry-write-lock
+├── stack.sqlite3
+└── stack.sqlite3.pantry-write-lock</code></pre>
+<p><strong>pantry</strong> フォルダや <strong>stack.sqlite3</strong>, <strong>stack.sqlite3.pantry-write-lock</strong> ファイルを触ることは基本的にありません。</p>
 <h3 id="config.yaml">config.yaml</h3>
 <p><strong>config.yaml</strong> には <strong>stack new</strong> でプロジェクトを生成する際の設定を記述します。</p>
-<p>僕は設定している項目は以下のとおりです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="at">  </span><span class="fu">scm-init</span><span class="kw">:</span><span class="at"> git</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="at">  </span><span class="fu">params</span><span class="kw">:</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="at">    </span><span class="fu">author-name</span><span class="kw">:</span><span class="at"> Your Name</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="at">    </span><span class="fu">author-email</span><span class="kw">:</span><span class="at"> youremail@example.com</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="at">    </span><span class="fu">github-username</span><span class="kw">:</span><span class="at"> yourusername</span></span></code></pre></div>
+<p>僕が設定している項目は以下のとおりです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="at">  </span><span class="fu">scm-init</span><span class="kw">:</span><span class="at"> git</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="at">  </span><span class="fu">params</span><span class="kw">:</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="at">    </span><span class="fu">author-name</span><span class="kw">:</span><span class="at"> Your Name</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="at">    </span><span class="fu">author-email</span><span class="kw">:</span><span class="at"> youremail@example.com</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="at">    </span><span class="fu">github-username</span><span class="kw">:</span><span class="at"> yourusername</span></span></code></pre></div>
 <p>詳しくは <a href="../tips/config-yaml.html">config.yaml のよくある設定</a> をご確認ください。</p>
       </article>
 
@@ -242,7 +246,7 @@ $ tree ~/.stack/
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=stack について&url=https://haskell.e-bigmoon.com/stack/intro/stack-install.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=stack のインストールと設定&url=https://haskell.e-bigmoon.com/stack/intro/stack-install.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/intro/stack-install.html"><i class="mdi mdi-facebook white-text"></i></a>

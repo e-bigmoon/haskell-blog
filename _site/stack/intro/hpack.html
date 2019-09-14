@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>hpack について</title>
+  <title>hpack とは何か？</title>
   <meta name="description" content="BIG MOON">
   <link rel="canonical" href="../../stack/intro/hpack.html">
-  <link rel="alternate" type="application/atom+xml" title="hpack について" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="hpack とは何か？" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="hpack について" />
+  <meta property="og:title" content="hpack とは何か？" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/stack/intro/hpack.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="hpack について" />
+  <meta property="og:site_name" content="hpack とは何か？" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -166,29 +166,27 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">hpack について</h1>
+        <h1 class="post-title">hpack とは何か？</h1>
         
-        <span>最終更新日: 2018/05/05</span>
+        <span>最終更新日: 2019/09/14</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="hpack-の役割">hpack の役割</h2>
-<p><a href="https://github.com/sol/hpack">hpack</a> は <strong>yaml</strong> 形式の <strong>package.yaml</strong> という名前のファイルから <code>.cabal</code> を自動生成するためのツールです。</p>
+        <p><a href="https://github.com/sol/hpack">hpack</a> は <strong>yaml</strong> 形式の <strong>package.yaml</strong> という名前のファイルから <code>.cabal</code> を自動生成するためのツールです。</p>
 <p><strong>hpack</strong> を使うメリットとしては以下が挙げられます。</p>
 <ul>
 <li><strong>yaml</strong> 形式なのでわかりやすい (<strong>cabal</strong> 形式を覚えなくて良い)</li>
 <li><strong>exposed-modules</strong> と <strong>other-modules</strong> を明示的に書かなくても自動的に推論してくれる</li>
-<li>共通する <strong>dependencies</strong> や <strong>ghc-options</strong> を一箇所に集約できる</li>
 </ul>
+<p><strong>stack</strong> で管理されているプロジェクトは、<strong>hpack</strong> を利用していることが多いです。そのため、本記事でも <strong>hpack</strong> を利用します。</p>
+<p>ただ、最近では <strong>hpack</strong> を使わないプロジェクトも多いので、慣れてきたら <strong>package.yaml</strong> を削除して <strong>cabal</strong> だけでも良いかもしれません。</p>
 <h2 id="インストール-使い方">インストール &amp; 使い方</h2>
-<p><strong>stack</strong> と一緒にインストールされるため、別途 <strong>hpack</strong> をインストールする必要はありません。</p>
-<p><strong>stack build</strong> コマンドを実行すれば自動的に <strong>package.yaml</strong> から <code>.cabal</code> ファイルを生成してくれます。</p>
-<p>自分の使っているバージョンを確認する場合は <code>stack --version</code> を使います。一番最後に表示されます。</p>
-<pre class="shell"><code>$ stack --version
-Version 1.7.1, Git revision 681c800873816c022739ca7ed14755e85a579565 (5807 commits) x86_64 hpack-0.28.2</code></pre>
-<p>もし、開発版の <strong>hpack</strong> を利用したい場合は <code>--with-hpack=&lt;PATH&gt;</code> オプションを利用します。</p>
-<p>また、手動で <code>.cabal</code> を変更した場合は <strong>hpack</strong> が変更を検知して <code>.cabal</code> を生成しないので、そちらもご注意ください。</p>
+<p><strong>stack</strong> はライブラリとしての <strong>hpack</strong> に依存しているため、別途 <strong>hpack</strong> をインストールする必要はありません。<strong>stack build</strong> コマンドを実行すれば自動的に <strong>package.yaml</strong> から <code>.cabal</code> ファイルを生成してくれます。</p>
+<p>自分の使っているバージョンを確認する場合は <code>stack --hpack-numeric-version</code> を使います。</p>
+<pre class="shell"><code>$ stack --hpack-numeric-version 
+0.31.2</code></pre>
+<p>手動で <code>.cabal</code> を変更した場合は <strong>hpack</strong> が変更を検知して <code>.cabal</code> を生成しないので、そちらもご注意ください。その場合は単純に <strong>cabal</strong> ファイルを削除し、もう一度ビルドすれば良いです。</p>
 <h3 id="gitignore-ファイルへの追加">.gitignore ファイルへの追加</h3>
 <p><strong>stack new</strong> で作ったプロジェクトの場合 <code>.gitignore</code> に <code>&lt;project&gt;.cabal</code> が追加されていると思います。</p>
 <p>これは、異なる <strong>hpack</strong> (<strong>stack</strong>) のバージョンでビルドしようとしたときの問題を回避するために設定されています。</p>
@@ -198,6 +196,7 @@ Version 1.7.1, Git revision 681c800873816c022739ca7ed14755e85a579565 (5807 commi
 <h2 id="hpack-を使いたくない場合">hpack を使いたくない場合</h2>
 <p><strong>hpack</strong> は <strong>package.yaml</strong> がプロジェクトのルートに存在する場合のみ <strong>package.yaml</strong> から <code>.cabal</code> ファイルを生成します。</p>
 <p>そのため、<strong>hpack</strong> を利用したくない場合はプロジェクトから <strong>package.yaml</strong> を削除するだけで大丈夫です。</p>
+<pre class="shell"><code>$ rm package.yaml</code></pre>
       </article>
 
       <div class="pager">
@@ -205,7 +204,7 @@ Version 1.7.1, Git revision 681c800873816c022739ca7ed14755e85a579565 (5807 commi
         <a class="waves-effect waves-light btn white-text prev" href="stack-install.html"><span>«</span>前</a>
       
       
-        <a class="waves-effect waves-light btn white-text next" href="create-prj.html">次<span>»</span></a>
+        <a class="waves-effect waves-light btn white-text next" href="alt-stack.html">次<span>»</span></a>
       
       </div>
 
@@ -217,7 +216,7 @@ Version 1.7.1, Git revision 681c800873816c022739ca7ed14755e85a579565 (5807 commi
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=hpack について&url=https://haskell.e-bigmoon.com/stack/intro/hpack.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=hpack とは何か？&url=https://haskell.e-bigmoon.com/stack/intro/hpack.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/intro/hpack.html"><i class="mdi mdi-facebook white-text"></i></a>

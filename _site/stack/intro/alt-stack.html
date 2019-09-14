@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>なぜ stack を使うのか？</title>
+  <title>stack 以外の選択肢について</title>
   <meta name="description" content="BIG MOON">
-  <link rel="canonical" href="../../stack/intro/why-stack.html">
-  <link rel="alternate" type="application/atom+xml" title="なぜ stack を使うのか？" href="../../feed.xml" />
+  <link rel="canonical" href="../../stack/intro/alt-stack.html">
+  <link rel="alternate" type="application/atom+xml" title="stack 以外の選択肢について" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="なぜ stack を使うのか？" />
+  <meta property="og:title" content="stack 以外の選択肢について" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="/stack/intro/why-stack.html" />
+  <meta property="og:url" content="/stack/intro/alt-stack.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="なぜ stack を使うのか？" />
+  <meta property="og:site_name" content="stack 以外の選択肢について" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -166,43 +166,42 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">なぜ stack を使うのか？</h1>
+        <h1 class="post-title">stack 以外の選択肢について</h1>
         
         <span>最終更新日: 2019/09/14</span>
         
       </div>
 
       <article class="page-content">
-        <h2 id="stack-について">stack について</h2>
-<p><strong>stack</strong> は <strong>Haskell</strong> で開発を効率良く行うためのビルドツールです。コンパイラ (<strong>GHC</strong>) のインストールやパッケージ管理などを行います。</p>
-<p>また、<strong>stack</strong> は今まで全く <strong>Haskell</strong> に触れたことが無い人から、多人数で管理される <strong>Haskell</strong> プロジェクトまで、かなり広範囲のユーザを対象として作られています。</p>
-<p>特に初心者にとって非常に使いやすいツールになっています。</p>
-<h3 id="haskell-でソフトウェア開発">Haskell でソフトウェア開発</h3>
-<p><strong>stack</strong> などのビルドツールを使わずに <strong>Haskell</strong> で本格的なアプリケーションを開発することはとても大変です。</p>
-<p>仮に開発ができたとしても、規模が大きくなるにつれて開発者しかビルドできなくなってしまいます。</p>
-<p><strong>stack</strong> が登場する以前の <strong>Haskell</strong> 界隈では、この問題は特に珍しいことではありませんでした。(現在では <strong>stack</strong> 以外にも <strong>Nix</strong>, <strong>cabal (Nix-style Local Build)</strong> などを使う方法あります)</p>
-<h3 id="cabal-hell">cabal hell</h3>
-<p>特に頭を悩ませていた問題が <strong>cabal hell</strong> と呼ばれるパッケージ依存性の問題です。</p>
-<p>1つのマシンで複数の <strong>Haskell</strong> プロジェクトをビルドしようとするだけで、全てがおかしくなっていました。(<strong>Yesod</strong> など比較的大きなライブラリでは、新規ユーザがビルドできる方が凄いという状況だったと記憶しています)</p>
-<p>この問題を解決するために <strong>stack</strong> が現れます。2015年頃の話なので、<strong>Haskell</strong> の歴史からすると、比較的最近の出来事です。</p>
-<p><strong>stack</strong> は <strong>cabal</strong> を捨てたわけではありません。<strong>cabal</strong> を利用したまま、その上で <strong>cabal hell</strong> が起こらないように、バージョンを固定したパッケージの集合を管理するようにしました。(次の節で説明する <a href="https://www.stackage.org/">Stackage</a> の <a href="https://www.stackage.org/lts">lts</a> や <a href="https://www.stackage.org/nightly">nightly</a> などの名前が付いているスナップショットです)</p>
-<p>つまり、依存関係が壊れないように <strong>Haskell</strong> のライブラリ製作者、<strong>Stackage</strong> メンテナで頑張っています。そのため、サポートツールも多いですが、コミュニティによる人間の作業も多いです。</p>
-<h3 id="haskell-platform">Haskell Platform</h3>
-<p><strong>stack</strong> が登場する以前は、とりあえず <strong>Haskell</strong> を始めるなら <a href="https://www.haskell.org/platform/">Haskell Platform</a> を入れておけば良い。という風潮がありました。</p>
-<p>理由としてはコンパイラ (<strong>GHC</strong>), ビルドツール (<strong>cabal</strong>), よく使うパッケージ (<strong>text</strong>, <strong>bytestring</strong>, etc…) をワンクリックで全てインストールできるためです。(当時は画期的で、僕もとてもお世話になりました)</p>
-<p>しかしながら、現在ではあまり利用されなくなってきていると思います。<strong>Haskell Platform</strong> を使ったインストール方法は、一時的に <strong>Haskell</strong> を書籍・授業等で学ぶという分には良いかもしれません。</p>
-<p>しかし、継続的に利用していこう、何かアプリケーションを作ってみようと少しでも考えている人は、 <strong>stack</strong> を使いましょう！</p>
-<h2 id="まとめ">まとめ</h2>
-<p>これから業務なり、勉強なりで <strong>Haskell</strong> を使ってみようと思っている人は必ず <strong>stack</strong> を使いましょう。使ってみて気に入らない点が出てきた段階で、別のビルドツールに乗り換えたら良いと思います。</p>
-<p>現在 <strong>github</strong> などで見かけるプロジェクトは <strong>stack</strong>, <strong>cabal</strong>, <strong>nix</strong> のどれかで管理されています。</p>
+        <p><strong>Haskell</strong> の学習を始める前に、<strong>stack</strong> 以外の選択肢についても簡単に確認しておきましょう。</p>
+<h2 id="cabal">cabal</h2>
+<p>Haskell を始めたばかりの初学者には今の所おすすめしていません。</p>
+<p>その理由としては</p>
+<ul>
+<li><strong>cabal</strong> の記法が独特</li>
+<li>ネット上に存在する日本語の情報が古い場合が多い</li>
+<li>よくわからないタイミングでビルドできなくなることがある (例えば <code>--max-backjumps</code> のオプション等)</li>
+<li>エラーメッセージがわかりづらい</li>
+</ul>
+<p>ただ、現在実装が進んでいる <strong>cabal new-build</strong> は非常に魅力的だと思いますし、本格的なプロジェクトを始める時に、再度検討すれば良いかなと思います。(また、慣れてる人は <strong>cabal</strong> を使うことが多いかもしれません)</p>
+<h2 id="haskell-platform">Haskell Platform</h2>
+<p>書籍に閉じた学習目的であれば、こちらも候補になります。</p>
+<p>しかしながら、以下の理由であまり推奨していません。</p>
+<ul>
+<li>インターネット上に存在するチュートリアルでは様々なパッケージを利用するため。<strong>Haskell Platform</strong> にパッケージが含まれていないと追加するのは結構面倒だったと思います</li>
+<li><strong>Haskell</strong> のプロジェクトを始めようと思ったら結局は <strong>stack</strong> や <strong>cabal</strong> を使うことになるので、初めからそちらを利用した方が良いです。</li>
+</ul>
+<h2 id="nix">Nix</h2>
+<p>上級者向けなのでやめておきましょう。</p>
+<p>大規模アプリケーションで採用されている場合が多いように思います。</p>
       </article>
 
       <div class="pager">
       
-        <a class="waves-effect waves-light btn white-text prev" href="./index.html"><span>«</span>前</a>
+        <a class="waves-effect waves-light btn white-text prev" href="./hpack.html"><span>«</span>前</a>
       
       
-        <a class="waves-effect waves-light btn white-text next" href="./stackage.html">次<span>»</span></a>
+        <a class="waves-effect waves-light btn white-text next" href="./create-prj.html">次<span>»</span></a>
       
       </div>
 
@@ -214,13 +213,13 @@
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=なぜ stack を使うのか？&url=https://haskell.e-bigmoon.com/stack/intro/why-stack.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=stack 以外の選択肢について&url=https://haskell.e-bigmoon.com/stack/intro/alt-stack.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/intro/why-stack.html"><i class="mdi mdi-facebook white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/intro/alt-stack.html"><i class="mdi mdi-facebook white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/intro/why-stack.html"><i class="mdi mdi-google-plus white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/intro/alt-stack.html"><i class="mdi mdi-google-plus white-text"></i></a>
     </li>
   </ul>
 </div>

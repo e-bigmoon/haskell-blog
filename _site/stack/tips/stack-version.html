@@ -11,10 +11,10 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Stackage とは何か？</title>
+  <title>Stack のバージョンについて</title>
   <meta name="description" content="BIG MOON">
-  <link rel="canonical" href="../../stack/intro/stackage.html">
-  <link rel="alternate" type="application/atom+xml" title="Stackage とは何か？" href="../../feed.xml" />
+  <link rel="canonical" href="../../stack/tips/stack-version.html">
+  <link rel="alternate" type="application/atom+xml" title="Stack のバージョンについて" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -27,11 +27,11 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
 
   <!-- OGP -->
-  <meta property="og:title" content="Stackage とは何か？" />
+  <meta property="og:title" content="Stack のバージョンについて" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="/stack/intro/stackage.html" />
+  <meta property="og:url" content="/stack/tips/stack-version.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Stackage とは何か？" />
+  <meta property="og:site_name" content="Stack のバージョンについて" />
   <meta property="og:description" content="BIG MOON" />
 
   <meta name="twitter:card" content="summary" />
@@ -166,105 +166,48 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
-        <h1 class="post-title">Stackage とは何か？</h1>
+        <h1 class="post-title">Stack のバージョンについて</h1>
         
         <span>最終更新日: 2019/09/14</span>
         
       </div>
 
       <article class="page-content">
-        <p><a href="https://www.stackage.org/">Stackage</a> は <strong>Stable Hackage</strong> の略で、どんな組み合わせでも依存関係でエラーが起きないように調整されたパッケージの集合 (スナップショット) を提供しています。</p>
-<p>スナップショットには以下の2種類があります。</p>
-<ul>
-<li>長期サポート (3ヶ月 ~ 6ヶ月) の <strong>lts (Long Term Support)</strong></li>
-<li>日々のスナップショット <strong>nightly</strong></li>
-</ul>
-<h2 id="スナップショットのバージョン規則">スナップショットのバージョン規則</h2>
-<p><strong>lts</strong> のバージョンは <code>X.Y</code> という形式になっており、<code>X</code> をメジャーバージョン, <code>Y</code> をマイナーバージョンと呼びます。また、<strong>nightly</strong> のバージョンは <code>nightly-YYYY-MM-DD</code> という形式になっています。</p>
-<p>バージョンの上がるタイミングと内容は以下のようになっています。</p>
+        <p>stack のバージョンを確認するためには <code>--version</code> オプションを利用します。</p>
+<pre class="shell"><code>$ stack --version
+Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commits) x86_64 hpack-0.31.2</code></pre>
+<p>上記の結果から、以下のバージョンを利用していることがわかります。</p>
 <table>
 <thead>
 <tr class="header">
-<th style="text-align: left;">バージョン</th>
-<th style="text-align: left;">タイミング</th>
-<th style="text-align: left;">例</th>
-<th style="text-align: left;">備考</th>
+<th>_</th>
+<th>バージョン</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">メジャーバージョン</td>
-<td style="text-align: left;">3 ~ 6 ヶ月に一度</td>
-<td style="text-align: left;">lts-13.0 → lts-14.0</td>
-<td style="text-align: left;">API の破壊的変更, パッケージの追加, パッケージの削除が行われる</td>
+<td>stack</td>
+<td>2.1.3</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">マイナーバージョン</td>
-<td style="text-align: left;">1週間に一度 (主に日曜日)</td>
-<td style="text-align: left;">lts-14.0 → lts-14.1</td>
-<td style="text-align: left;">互換性のある API の変更, パッケージの追加が行われる</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">nightly</td>
-<td style="text-align: left;">(原則) 毎日</td>
-<td style="text-align: left;">nightly-2019-09-13 → nightly-2019-09-14</td>
-<td style="text-align: left;">API の変更, パッケージの追加</td>
+<td>hpack</td>
+<td>0.31.2</td>
 </tr>
 </tbody>
 </table>
-<p><strong>lts</strong> で一度対応してしまえば、マイナーバージョンを上げた際にコードが壊れることは基本的にありません。なので、互換性を維持したまま新しい関数やバグフィックスされた関数などを使うことができます。</p>
-<p>これは Haskell のパッケージが <a href="https://pvp.haskell.org/">Haskell Package Versioning Policy</a> に従っているためです。バージョンの決め方は以下の図の通りです。</p>
-<p><img src="https://pvp.haskell.org/pvp-decision-tree.svg" /></p>
-<p><strong>Stackage</strong> は <a href="https://hackage.haskell.org/">Hackage</a> にアップロードされたパッケージをミラーしているので、自分の作ったパッケージを <strong>Hackage</strong> にアップロードすると、自動的に <strong>Stackage</strong> にも反映されます。この段階では <strong>lts</strong> にも <strong>nightly</strong> にも含まれません。</p>
-<p>もし、自分の作ったパッケージを <strong>lts</strong> や <strong>nightly</strong> に含めたい場合は自分で申請する必要があります。申請方法は簡単で、<a href="https://github.com/fpco/stackage/pulls">stackage リポジトリ</a>にプルリクエストを投げて、承認されれば完了です。</p>
-<p>詳しいことは、<a href="https://github.com/fpco/stackage/blob/master/MAINTAINERS.md">MAINTAINERS.md</a> にまとまっているため、興味がある方はどうぞ。</p>
-<h2 id="スナップショットに追加されるタイミング">スナップショットに追加されるタイミング</h2>
-<p>スナップショットに追加される基本的な流れとしては以下の通りです。</p>
-<ol type="1">
-<li><strong>Hackage</strong> にパッケージをアップロードする</li>
-<li><strong>Stackage</strong> に追加される</li>
-<li><strong>nightly</strong> の申請を行い、<strong>nightly</strong> に追加される</li>
-<li><strong>lts</strong> のマイナーバージョンアップデートで <strong>lts</strong> に追加される</li>
-</ol>
-<h2 id="スナップショットの指定">スナップショットの指定</h2>
-<p>スナップショットを <strong>stack.yaml</strong> の <strong>resolver</strong> に指定する (後述) ことで、プロジェクトで利用するパッケージのバージョンを固定することができます。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-14.5</span></span></code></pre></div>
-<p>また、オプションとして渡すこともできます。その場合は <code>--resolver</code> オプションを利用します。</p>
-<pre class="shell"><code>$ stack repl --resolver lts-14.5</code></pre>
-<p>また、上記では紹介していませんが <code>ghc-X.Y.Z</code> のように GHC のバージョンを指定したスナップショットもあります。</p>
-<pre class="shell"><code># resolver のスナップショットに lts-14.5 を指定して ghci を起動
-$ stack ghci --resolver lts-14.5
-
-# GHC-8.8.1 で ghci を起動
-$ stack ghci --resolver ghc-8.8.1
-
-# GHC-8.6.5 で ghci を起動
-$ stack ghci --resolver ghc-8.6.5
-
-# 最新の resolver で ghci を起動
-$ stack ghci --resolver nightly
-$ stack ghci --resolver lts</code></pre>
-<p>利用可能なスナップショットの一覧は <strong>stack ls snapshots</strong> コマンドで確認することができます。</p>
-<pre class="shell"><code>$ stack ls snapshots remote
-a month ago
-
-Resolver name: lts-14.1
-LTS Haskell 14.1 (ghc-8.6.5)
-
-Resolver name: nightly-2019-08-12
-Stackage Nightly 2019-08-12 (ghc-8.6.5)
-...</code></pre>
-<h2 id="カスタムスナップショット">カスタムスナップショット</h2>
-<p>自分でカスタマイズしたスナップショットを定義して利用することもできます。</p>
-<p>詳しくは <a href="../../posts/2017/12-23-stack161.html">カスタムスナップショットの紹介</a> をご確認ください。</p>
+<h2 id="その他の確認方法">その他の確認方法</h2>
+<h2 id="numeric-version-オプション">numeric-version オプション</h2>
+<p><code>stack</code> のバージョンのみを表示します。</p>
+<pre class="shell"><code>stack --numeric-version
+2.1.3</code></pre>
+<h2 id="hpack-numeric-version-オプション">hpack-numeric-version オプション</h2>
+<p><code>hpack</code> のバージョンのみを表示します。</p>
+<pre class="shell"><code>$ stack --hpack-numeric-version
+0.31.2</code></pre>
       </article>
 
       <div class="pager">
       
-        <a class="waves-effect waves-light btn white-text prev" href="why-stack.html"><span>«</span>前</a>
-      
-      
-        <a class="waves-effect waves-light btn white-text next" href="stack-install.html">次<span>»</span></a>
       
       </div>
 
@@ -276,13 +219,13 @@ Stackage Nightly 2019-08-12 (ghc-8.6.5)
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Stackage とは何か？&url=https://haskell.e-bigmoon.com/stack/intro/stackage.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Stack のバージョンについて&url=https://haskell.e-bigmoon.com/stack/tips/stack-version.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/intro/stackage.html"><i class="mdi mdi-facebook white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/tips/stack-version.html"><i class="mdi mdi-facebook white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/intro/stackage.html"><i class="mdi mdi-google-plus white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/tips/stack-version.html"><i class="mdi mdi-google-plus white-text"></i></a>
     </li>
   </ul>
 </div>

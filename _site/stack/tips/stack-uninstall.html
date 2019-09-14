@@ -168,20 +168,26 @@
       <div class="post-heading">
         <h1 class="post-title">Stack の削除</h1>
         
-        <span>最終更新日: 2018/07/30</span>
+        <span>最終更新日: 2019/09/14</span>
         
       </div>
 
       <article class="page-content">
-        <p>Stack を削除 (アンインストール) する方法はいくつかあります。</p>
-<p><code>brew</code> や <code>apt</code> などのパッケージマネージャを利用している場合は各種パッケージマネージャのやり方に従ってください。</p>
+        <p><strong>stack</strong> を削除 (アンインストール) する方法はいくつかあります。</p>
+<p><strong>brew</strong> や <strong>apt</strong> などのパッケージマネージャを利用している場合は各種パッケージマネージャのやり方に従ってください。</p>
 <p>ここでは公式サイトに従ってインストールされたものを想定しています。</p>
 <p>また、削除前に本当に削除して大丈夫か、一度パスを確認してから実行してください。</p>
 <h2 id="アンインストール方法">アンインストール方法</h2>
-<p>基本的には <code>~/.stack</code> と <code>~/.local/bin</code> を削除すれば良いです。</p>
-<pre class="shell"><code>$ stack rm -rf $(stack path --stack-root)
-$ stack rm -rf $(stack path --local-bin-path)</code></pre>
-<p>スナップショットや <strong>GHC</strong> のバイナリは全てこれらのディレクトリに保存されています。</p>
+<p>基本的には以下の3つを削除します。スナップショットや <strong>GHC</strong> のバイナリは全てこれらのディレクトリに保存されています。</p>
+<pre class="shell"><code># stack が自動的にダウンロードしたパッケージやGHCは以下のディレクトリに保存されます
+$ stack rm -rf $(stack path --stack-root)
+
+# stack install でインストールした実行ファイルを削除します
+$ stack rm -rf $(stack path --local-bin-path)
+
+# stack の実行ファイルを削除します
+$ rm /usr/local/bin/stack</code></pre>
+<p>特に <code>~/.stack/</code> 以下は数GB ~ 数十GBほどになっているのが普通なので、忘れずに削除しましょう。</p>
 <h3 id="プロジェクトごとのファイル">プロジェクトごとのファイル</h3>
 <p>プロジェクト毎に必要なファイルは <code>.stack-work</code> に保存されています。そのため該当するプロジェクトディレクトリで以下のコマンドを実行しましょう。</p>
 <pre class="shell"><code>$ stack clean --full</code></pre>

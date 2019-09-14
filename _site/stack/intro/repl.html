@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>repl 環境の使い方</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../stack/intro/repl.html">
+  <link rel="alternate" type="application/atom+xml" title="repl 環境の使い方" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+
+  <!-- OGP -->
+  <meta property="og:title" content="repl 環境の使い方" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/stack/intro/repl.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="repl 環境の使い方" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">repl 環境の使い方</h1>
+        
+        <span>最終更新日: 2019/09/14</span>
+        
+      </div>
+
+      <article class="page-content">
+        <p>ここまでの内容を対話環境で実行したいと思います。</p>
+<p><strong>stack ghci</strong> と <strong>stack repl</strong> はただのエイリアスなので好きな方を使ってください。</p>
+<h2 id="repl-環境">repl 環境</h2>
+<pre class="shell"><code>$ stack repl
+Using main module: 1. Package `PFAD' component PFAD:exe:PFAD-exe with main-is file: /PFAD/app/Main.hs
+PFAD&gt; configure (lib + exe)
+Configuring PFAD-0.1.0.0...
+PFAD&gt; initial-build-steps (lib + exe)
+The following GHC options are incompatible with GHCi and have not been passed to it: -threaded
+Configuring GHCi with the following packages: PFAD
+GHCi, version 8.6.5: http://www.haskell.org/ghc/  :? for help
+[1 of 2] Compiling Main             ( /PFAD/app/Main.hs, interpreted )
+[2 of 2] Compiling Minfree          ( /PFAD/src/Minfree.hs, interpreted )
+
+/PFAD/src/Minfree.hs:3:1: error:
+    Could not load module ‘Data.Array’
+    It is a member of the hidden package ‘array-0.5.3.0’.
+    You can run ‘:set -package array’ to expose it.
+    (Note: this unloads all the modules in the current scope.)
+    Use -v to see a list of the files searched for.
+  |
+3 | import Data.Array (Array, elems, accumArray, assocs)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/PFAD/src/Minfree.hs:4:1: error:
+    Could not load module ‘Data.Array.ST’
+    It is a member of the hidden package ‘array-0.5.3.0’.
+    You can run ‘:set -package array’ to expose it.
+    (Note: this unloads all the modules in the current scope.)
+    Use -v to see a list of the files searched for.
+  |
+4 | import Data.Array.ST (runSTArray, newArray, writeArray)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Failed, one module loaded.
+
+&lt;no location info&gt;: error:
+    Could not find module ‘Minfree’
+    It is not a module in the current program, or in any known package.
+Loaded GHCi configuration from /tmp/haskell-stack-ghci/35ac6387/ghci-script</code></pre>
+<p>少し長いですが、このエラーメッセージのうち特に重要な部分を抜き出してみましょう。</p>
+<h3 id="エラーメッセージの読み方">エラーメッセージの読み方</h3>
+<p>エラーその1</p>
+<pre class="shell"><code>/PFAD/src/Minfree.hs:3:1: error:
+    Could not load module ‘Data.Array’
+    It is a member of the hidden package ‘array-0.5.3.0’.
+    You can run ‘:set -package array’ to expose it.
+    (Note: this unloads all the modules in the current scope.)
+    Use -v to see a list of the files searched for.
+  |
+3 | import Data.Array (Array, elems, accumArray, assocs)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</code></pre>
+<p>エラーその2</p>
+<pre class="shell"><code>/PFAD/src/Minfree.hs:4:1: error:
+    Could not load module ‘Data.Array.ST’
+    It is a member of the hidden package ‘array-0.5.3.0’.
+    You can run ‘:set -package array’ to expose it.
+    (Note: this unloads all the modules in the current scope.)
+    Use -v to see a list of the files searched for.
+  |
+4 | import Data.Array.ST (runSTArray, newArray, writeArray)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</code></pre>
+<p>このエラーメッセージから読み取って欲しい点は以下の3点です。</p>
+<ul>
+<li>エラーが発生したソースコードの場所</li>
+<li>エラーの原因 (<strong>import</strong> しようと思ったモジュールが見つからなかった)</li>
+<li>モジュールがどのパッケージで定義されているか</li>
+</ul>
+<p>このエラーメッセージから読み取って欲しい点は以下の3点です。</p>
+<table>
+<thead>
+<tr class="header">
+<th>エラーの内容</th>
+<th>エラーその1</th>
+<th>エラーその2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>エラーの発生箇所</td>
+<td><code>PFAD/src/Minfree.hs:3:1</code></td>
+<td><code>PFAD/src/Minfree.hs:4:1</code></td>
+</tr>
+<tr class="even">
+<td>エラーの原因</td>
+<td><code>Could not load module Data.Array</code></td>
+<td><code>Could not load module Data.Array.ST</code></td>
+</tr>
+<tr class="odd">
+<td>モジュールが定義されているパッケージ</td>
+<td><code>array-0.5.3.0</code></td>
+<td><code>array-0.5.3.0</code></td>
+</tr>
+</tbody>
+</table>
+<p>これらの情報から、壊れたビルドの直し方がわかります。</p>
+<p><strong>ghci</strong> の対話セッションから抜ける際は <strong>:q</strong> と入力します。</p>
+<pre class="shell"><code>*Main&gt; :q
+Leaving GHCi.</code></pre>
+<h2 id="パッケージの指定方法">パッケージの指定方法</h2>
+<p><strong>stack ghci</strong> コマンドを実行した場合 <strong>base</strong> パッケージが読み込まれます。そのため、それ以外のパッケージに含まれるモジュールを利用するためには明示的にパッケージを指定する必要があります。</p>
+<p>パッケージを追加して起動する場合は <code>--package</code> オプションを使います。</p>
+<pre class="shell"><code>$ stack ghci --package array
+...
+*Main Minfree&gt;</code></pre>
+<p>別のやり方として <strong>ghci</strong> を起動した後に <code>:set -package</code> コマンドを実行する方法があります。</p>
+<pre class="shell"><code>$ stack ghci
+...
+*Main&gt; :set -package array
+Prelude&gt; import Data.Array
+
+Prelude Data.Array&gt;</code></pre>
+<p>この場合 <strong>ghci</strong> のセッションが完全に初期化されるため、プロンプトの表示が <code>*Main Minfree&gt;</code> ではなく <code>Prelude&gt;</code> になります。そのため、実際のプロジェクトではあまり使わないかもしれません。</p>
+<h2 id="no-load-オプション">–no-load オプション</h2>
+<p>プロジェクト内で <strong>stack ghci</strong> を実行すると、プロジェクトのモジュールが読み込まれてしまいます。</p>
+<p>場合によっては、初期状態の <strong>ghci</strong> を起動したい時があるかもしれません。その場合は <code>--no-load</code> オプションを使います。</p>
+<pre class="shell"><code>$ stack ghci --no-load
+Prelude&gt;</code></pre>
+<h2 id="プロンプト文字列の変更">プロンプト文字列の変更</h2>
+<p><strong>stack ghci</strong> を起動した時のプロンプトの表示名は <code>Prelude&gt;</code> になっています。(何かモジュールを読み込んだ場合は、そのモジュール名が表示されます)</p>
+<pre class="shell"><code>$ stack ghci --no-load
+Prelude&gt;</code></pre>
+<p><strong>ghci</strong> で色々と試していると、モジュールをいくつも <strong>import</strong> したくなります。そうすると、プロンプトの表示名はインポートしたモジュール名が連なり、非常に使いづらいものになってしまいます。</p>
+<pre class="shell"><code>Prelude&gt; import Data.List
+Prelude Data.List&gt; import Data.Function 
+Prelude Data.List Data.Function&gt; import Control.Monad
+Prelude Data.List Data.Function Control.Monad&gt; import Data.Functor
+Prelude Data.List Data.Function Control.Monad Data.Functor&gt; 1+1
+2
+Prelude Data.List Data.Function Control.Monad Data.Functor&gt;</code></pre>
+<p>この問題を解決するためには <strong>:set prompto</strong> コマンドを使います。</p>
+<pre class="shell"><code>Prelude Data.List Data.Function Control.Monad Data.Functor&gt; :set prompt &quot;&gt; &quot;
+&gt; 1+1
+2
+&gt; import Data.Bool
+&gt; :set prompt &quot;λ &quot;
+λ 1+1
+2
+λ</code></pre>
+<p>こんな感じでスッキリさせることができます。</p>
+<p>特に大きなプロジェクトを <strong>stack ghci</strong> で読み込むとプロンプトがひどいことになってしまので、このようにして対処すると良いでしょう。</p>
+<h2 id="ghci-ファイル">.ghci ファイル</h2>
+<p>プロンプトの表示を毎回自分で変更するのが面倒な人は <code>.ghci</code> ファイルを作成しましょう。</p>
+<p>このファイルは <strong>ghci</strong> を起動した直後に実行するコマンドを並べたものです。プロジェクトのルートに作成します。</p>
+<pre class="shell"><code>$ echo ':set prompt &quot;λ &quot;' &gt; .ghci</code></pre>
+<p>実際に実行してみます。</p>
+<pre class="shell"><code>stack ghci --no-load
+PFAD&gt; initial-build-steps (lib + exe)
+The following GHC options are incompatible with GHCi and have not been passed to it: -threaded
+Configuring GHCi with the following packages: PFAD
+GHCi, version 8.6.5: http://www.haskell.org/ghc/  :? for help
+Loaded GHCi configuration from /Users/gupi/Desktop/PFAD/.ghci</code></pre>
+<p><code>Loaded GHCi configuration from /PFAD/.ghci</code> のような文字列が表示されれば、ちゃんと設定ファイルが読み込まれています。もし、設定ファイルの記述内容が間違っていた場合は <code>Some flags have not been recognized</code> のようなエラーが表示されるはずです。</p>
+<pre class="shell"><code># promptとtypoしてしまった場合のエラーメッセージ
+$ stack ghci
+...
+Some flags have not been recognized: prompto, λ
+Loaded GHCi configuration from /PFAD/.ghci
+...</code></pre>
+      </article>
+
+      <div class="pager">
+      
+        <a class="waves-effect waves-light btn white-text prev" href="./create-lib.html"><span>«</span>前</a>
+      
+      
+        <a class="waves-effect waves-light btn white-text next" href="./ghc.html">次<span>»</span></a>
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=repl 環境の使い方&url=https://haskell.e-bigmoon.com/stack/intro/repl.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/intro/repl.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/intro/repl.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
