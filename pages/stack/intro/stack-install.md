@@ -1,6 +1,6 @@
 ---
-title: stack について
-date: 2018/05/05
+title: stack のインストールと設定
+date: 2019/09/14
 prev: ./stackage.html
 next: ./hpack.html
 ---
@@ -17,7 +17,14 @@ $ curl -sSL https://get.haskellstack.org/ | sh
 $ wget -qO- https://get.haskellstack.org/ | sh
 ```
 
-## パスの追加
+これで **stack** が使えるようになったと思います。以下のようにバージョン情報が表示されれば大丈夫です。
+
+```shell
+$ stack --version
+Version 2.1.3, Git revision 0fa51b9925decd937e4a993ad90cb686f88fa282 (7739 commits) x86_64 hpack-0.31.2
+```
+
+### パスの追加
 
 このタイミングで `~/.local/bin` を環境変数 **PATH** に追加しておくことをおすすめします。
 
@@ -32,7 +39,7 @@ $ export PATH=~/.local/bin:$PATH
 $ echo 'export PATH=~/.local/bin:$PATH' >> ~/.bashrc
 ```
 
-## コマンドの自動補完設定
+### コマンドの自動補完設定
 
 これを設定しておくと、**stack** のサブコマンドを補完してくれるので、何かと便利です。
 
@@ -44,35 +51,38 @@ $ echo 'eval "$(stack --bash-completion-script stack)"' >> ~/.bashrc
 
 ## ~/.stack/ のディレクトリ構造
 
-**stack** をダウンロードしたら、初回だけ **stack update** を行い、グローバルプロジェクト用のディレクトリを生成しましょう。
+**stack** をインストールしたら、初回だけ **stack update** を行い、グローバルプロジェクト用のディレクトリを生成しましょう。
 
 ```shell
 $ stack update
 ...
 
 $ tree ~/.stack/
-/home/bm12/.stack/
-|-- config.yaml
-`-- indices
-    `-- Hackage
-        |-- 00-index.tar
-        |-- 00-index.tar.gz
-        |-- 00-index.tar.idx
-        |-- 01-index.tar
-        |-- mirrors.json
-        |-- root.json
-        |-- snapshot.json
-        `-- timestamp.json
+~/.stack/
+├── config.yaml
+├── pantry
+│   ├── hackage
+│   │   ├── 00-index.tar
+│   │   ├── 00-index.tar.gz
+│   │   ├── 00-index.tar.idx
+│   │   ├── hackage-security-lock
+│   │   ├── mirrors.json
+│   │   ├── root.json
+│   │   ├── snapshot.json
+│   │   └── timestamp.json
+│   ├── pantry.sqlite3
+│   └── pantry.sqlite3.pantry-write-lock
+├── stack.sqlite3
+└── stack.sqlite3.pantry-write-lock
 ```
 
-- **config.yaml** にプロジェクトで共通する設定を記述しておくことができます。
-- **indices** フォルダ以下を触ることはありません。
+**pantry** フォルダや **stack.sqlite3**, **stack.sqlite3.pantry-write-lock** ファイルを触ることは基本的にありません。
 
 ### config.yaml
 
 **config.yaml** には **stack new** でプロジェクトを生成する際の設定を記述します。
 
-僕は設定している項目は以下のとおりです。
+僕が設定している項目は以下のとおりです。
 
 ```yaml
 templates:

@@ -1,6 +1,6 @@
 ---
 title: イントロダクション
-date: 2018/05/05
+date: 2019/09/14
 next: ./why-stack.html
 ---
 
@@ -8,28 +8,58 @@ next: ./why-stack.html
 
 [Pearls of Functional Algorithm Design](https://www.amazon.co.jp/dp/0521513383) (訳本: [関数プログラミング 珠玉のアルゴリズムデザイン](https://www.amazon.co.jp/dp/4274050645)) の第1章を題材に **Haskell** プロジェクトの作り方を学びます。
 
-## 本チュートリアルで取り扱う内容
+プログラムの内容を理解できなくても、記事を最後まで読むことで `Haskell` プロジェクトの作り方を学ぶことができると思います。
 
-**ビルド**、**テスト**、**実行ファイルの作り方**など、**Haskell** プロジェクトにおいて必要な基礎知識を説明します。
+`Ubuntu 18.04 LTS` or `Mac` で動作確認を行っています。
 
-また、以下のパッケージ・ツールの利用方法についても解説を行います。
+### 本チュートリアルで取り扱う内容
 
-- stack (Stackage)
-- hpack
-- HSpec
-- QuickCheck
-- haddock
-- doctest
-- CI (travis)
+1. イントロダクション
+    - [なぜ stack を使うのか？](./why-stack.html)
+    - [Stackage とは何か？](./stackage.html)
+    - [stack のインストールと設定](./stack-install.html)
+    - [hpack とは何か？](./hpack.html)
+    - [stack 以外の選択肢について](./alt-stack.html)
+1. [プロジェクトの作成](./create-prj.html)
+1. [ライブラリの作成](./create-lib.html)
+    - [repl 環境の使い方](./repl.html)
+    - [GHC について](./ghc.html)
+    - [パッケージと依存関係](./package-and-deps.html)
+    - [extra-deps の指定方法](./extra-deps.html)
+1. [アプリケーションの作成](./create-app.html)
+1. [ドキュメントの作成](../doc/index.html)
+    - Haddock の基礎知識
+    - Haddock コメント形式
+    - 実際に使ってみよう！
+    - Haddock の設定
+    - 最終的なファイル
+1. テストの作成
+    - テストフレームワーク (hspec, tasty)
+    - 単体テスト
+    - ランダムテスト (QuickCheck)
+    - ドキュメントのテスト (doctest)
+1. ベンチマークの作成
+    - criterion
+    - gauge
+1. プログラムの配布方法
+1. Linter
+    - HLint
+1. フォーマッター
+    - ormolu
+1. CI
+    - Travis CI
+    - Circle CI
+    - AppVeyor
+    - GitHub Actions
 
-## 動作環境
+### 動作環境
 
 環境 | バージョン
 -----|--------
 OS | Ubuntu, macOS High Sierra
-stack | version 1.7.1
-hpack | 0.28.2
+stack | version 2.1.3
+hpack | 0.31.2
 
-## 参考サイト
+### 参考サイト
 
 **stack** 並びに各ツールに関して参考にしたサイトは [Links](/stack/etc/links.html) にまとめていますので、随時ご確認ください。

@@ -1,11 +1,9 @@
 ---
-title: hpack について
-date: 2018/05/05
+title: hpack とは何か？
+date: 2019/09/14
 prev: stack-install.html
-next: create-prj.html
+next: alt-stack.html
 ---
-
-## hpack の役割
 
 [hpack](https://github.com/sol/hpack) は **yaml** 形式の **package.yaml** という名前のファイルから `.cabal` を自動生成するためのツールです。
 
@@ -13,24 +11,23 @@ next: create-prj.html
 
 - **yaml** 形式なのでわかりやすい (**cabal** 形式を覚えなくて良い)
 - **exposed-modules** と **other-modules** を明示的に書かなくても自動的に推論してくれる
-- 共通する **dependencies** や **ghc-options** を一箇所に集約できる
+
+**stack** で管理されているプロジェクトは、**hpack** を利用していることが多いです。そのため、本記事でも **hpack** を利用します。
+
+ただ、最近では **hpack** を使わないプロジェクトも多いので、慣れてきたら **package.yaml** を削除して **cabal** だけでも良いかもしれません。
 
 ## インストール & 使い方
 
-**stack** と一緒にインストールされるため、別途 **hpack** をインストールする必要はありません。
+**stack** はライブラリとしての **hpack** に依存しているため、別途 **hpack** をインストールする必要はありません。**stack build** コマンドを実行すれば自動的に **package.yaml** から `.cabal` ファイルを生成してくれます。
 
-**stack build** コマンドを実行すれば自動的に **package.yaml** から `.cabal` ファイルを生成してくれます。
-
-自分の使っているバージョンを確認する場合は `stack --version` を使います。一番最後に表示されます。
+自分の使っているバージョンを確認する場合は `stack --hpack-numeric-version` を使います。
 
 ```shell
-$ stack --version
-Version 1.7.1, Git revision 681c800873816c022739ca7ed14755e85a579565 (5807 commits) x86_64 hpack-0.28.2
+$ stack --hpack-numeric-version 
+0.31.2
 ```
 
-もし、開発版の **hpack** を利用したい場合は `--with-hpack=<PATH>` オプションを利用します。
-
-また、手動で `.cabal` を変更した場合は **hpack** が変更を検知して `.cabal` を生成しないので、そちらもご注意ください。
+手動で `.cabal` を変更した場合は **hpack** が変更を検知して `.cabal` を生成しないので、そちらもご注意ください。その場合は単純に **cabal** ファイルを削除し、もう一度ビルドすれば良いです。
 
 ### .gitignore ファイルへの追加
 
@@ -49,3 +46,7 @@ Version 1.7.1, Git revision 681c800873816c022739ca7ed14755e85a579565 (5807 commi
 **hpack** は **package.yaml** がプロジェクトのルートに存在する場合のみ **package.yaml** から `.cabal` ファイルを生成します。
 
 そのため、**hpack** を利用したくない場合はプロジェクトから **package.yaml** を削除するだけで大丈夫です。
+
+```shell
+$ rm package.yaml
+```

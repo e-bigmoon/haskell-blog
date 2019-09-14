@@ -1,6 +1,6 @@
 ---
 title: Haskell Development
-date: 2019/02/22
+date: 2019/09/14
 ---
 
 <div class="row">
@@ -8,8 +8,6 @@ date: 2019/02/22
 
 ## Tips
 
-- [Stack の更新](tips/stack-upgrade.html)
-- [Stack の削除](tips/stack-uninstall.html)
 - [完全なリビルド](tips/full-rebuild.html)
 - [おすすめの開発方法](tips/recommend-dev.html)
 - [script interpreter + stack script でスクリプティング！](tips/script-interpreter.html)
@@ -69,6 +67,14 @@ date: 2019/02/22
 
 - [hoogle](etc/hoogle.html)
 
+## wip
+
+_ | stack | cabal
+-----|------|--------
+更新 | [stack upgrade](tips/stack-upgrade.html) | [ghcup, cabal, stack](tips/cabal-upgrade.html)
+バージョン確認 | [stack --version](tips/stack-version.html) | [cabal -V](tips/cabal-version.html)
+削除 | [stack clean --full](tips/stack-uninstall.html)
+
   </div>
   <div class="col s12 m6">
 
@@ -77,18 +83,20 @@ date: 2019/02/22
 - [イントロダクション](intro/)
   - [なぜ stack を使うのか？](intro/why-stack.html)
   - [Stackage とは何か？](intro/stackage.html)
-  - [stack について](intro/stack-install.html)
+  - [stack のインストールと設定](intro/stack-install.html)
   - [hpack について](intro/hpack.html)
-  - [プロジェクトの作成](intro/create-prj.html)
-  - [ライブラリの作成](intro/create-lib.html)
-  - [プログラムの実行](intro/exec-prg.html)
-  - [アプリケーションの作成](intro/create-app.html)
-
+  - [stack 以外の選択肢について](intro/alt-stack.html)
+- [プロジェクトの作成](intro/create-prj.html)
+- [ライブラリの作成](intro/create-lib.html)
+  - [repl 環境の使い方](intro/repl.html)
+  - [GHC について](intro/ghc.html)
+  - [パッケージと依存関係](intro/package-and-deps.html)
+  - [extra-deps の指定方法](intro/extra-deps.html)
+- [アプリケーションの作成](intro/create-app.html)
 - [ドキュメントの作成](doc/)
   - [haddockの基礎知識](doc/haddock-intro.html)
   - [haddockコメント形式](doc/haddock-comment.html)
   - [haddockのための設定](doc/haddock-settings.html)
-
 - [テストの作成](test/)
   - [HSpec](test/hspec.html)
   - [QuickCheck](test/quickcheck.html)
@@ -116,7 +124,7 @@ date: 2019/02/22
 
 - [VS Code で Ghcid を使う](/posts/2017/12-24-Ghcid-with-VS-Code.html)
 - [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
-- [VS Code と haskell-ide-engine で Haskell 開発環境を構築する](https://qiita.com/waddlaw/items/b83cd10311200095fe87)
+- [VS Code と haskell-ide-engine で Haskell 開発環境を構築する - Qiita](https://qiita.com/waddlaw/items/b83cd10311200095fe87)
 
 ## リンク
 

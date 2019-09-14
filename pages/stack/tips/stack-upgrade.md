@@ -1,6 +1,6 @@
 ---
 title: Stack の更新
-date: 2018/05/05
+date: 2019/09/14
 ---
 
 ## stack のアップグレード方法
@@ -36,10 +36,11 @@ $ stack upgrade --git --git-branch release
 - **stack** のバージョンを指定してアップグレードする場合は、`--binary-version` オプションを利用します。
 
 ```shell
-$ stack upgrade --binary-version 1.7.1
+# バージョン指定 (前のバージョンに戻したい場合などに便利)
+$ stack upgrade --binary-version 2.1.1
 ```
 
-同様に過去のバージョンを指定すれば、以前のバージョンにダウングレードさせることも可能です。
+過去のバージョンを指定することで、stack をダウングレードさせることも可能です。
 
 ## stack update コマンドについて
 
@@ -66,13 +67,20 @@ $ which stack
 基本的には、以下のような `PATH` の設定をしておいた方が良いと思います。
 
 ```shell
+# OK
 $ export PATH=~/.local/bin:$PATH
 ```
 
 順序を逆にしてしまうととすると、常に古い **stack** を参照してしまうため、注意が必要です。
 
 ```shell
+# NG
 $ export PATH=$PATH:~/.local/bin
 ```
 
-**stack** の更新が完了したら、常に **stack** のバージョンを確認しましょう。
+このようなミスを防ぐためには **stack** の更新が完了したら、常に **stack** のバージョンを確認しましょう。
+
+```shell
+$ stack --version
+Version 2.1.3, Git revision 0fa51b9925decd937e4a993ad90cb686f88fa282 (7739 commits) x86_64 hpack-0.31.2
+```
