@@ -1,25 +1,29 @@
 ---
-title: haddockのための設定
+title: Haddock の設定
+date: 2019/09/14
+prev: ./haddock-comment.html
+next: ../test/index.html
 ---
 
-ここまでである程度 `Haddock` に慣れてきたと思います！
+ここまでである程度 **Haddock** に慣れてきたと思います！この節では **Haddock** に関する設定オプションをいくつか見ていきます。
 
-しかし、毎回 `stack haddock --haddock-arguments --odir=haddock` を実行するのは面倒です。規模が小さいうちは処理もそんなに重たく無いのでビルドした際に一緒にドキュメントを生成したいと思うことがあるかもしれません。
+## stack.yaml の build フィールドを使う
 
-そういった時は `stack.yaml` をカスタマイズしてみましょう！
+しかし、毎回 `stack haddock --haddock-arguments --odir=haddock` を実行するのは面倒です。規模が小さいうちは **haddock** の生成処理も比較的短時間で終わるため、ビルド時に一緒にドキュメントも生成したいと思うことがあるかもしれません。
 
-`stack.yaml` のコメントを削除したものがこちらです。(慣れないうちはコメントが非常に有用なのですが、慣れてくると邪魔でしかないです。)
+そういった時は **stack.yaml** をカスタマイズしてみましょう！
 
-```yaml:stack.yaml
-resolver: lts-9.17
+```yaml
+# 初期状態の stack.yaml
+resolver: lts-14.5
 packages:
 - .
 ```
 
-ここで `Haddock` に関するデフォルトオプションを明示的に指定してみましょう。(デフォルト値を設定しているだけなので、何も無い場合と全く同じ動作をします)
+ここで **Haddock** に関するデフォルトオプションを明示的に指定してみましょう。(デフォルト値を設定しているだけなので、何も指定しない場合と全く同じ動作をします)
 
 ```yaml:stack.yaml
-resolver: lts-9.17
+resolver: lts-14.5
 packages:
 - .
 build:
@@ -31,17 +35,19 @@ build:
   haddock-hyperlink-source: true
 ```
 
-試しに `stack haddock` を実行して前と同じものが生成されていることを確認しましょう。
+試しに `stack haddock --haddock-arguments --odir=haddock` を実行して前と同じものが生成されていることを確認しましょう。
 
 ```shell-session
 $ stack clean
 $ stack haddock --haddock-arguments --odir=haddock
 ```
 
+### --haddock-arguments --odir=haddock の省略
+
 では、まずは `--haddock-arguments --odir=haddock` の指定を省略できるように、以下のように設定ファイルを書き換えましょう。
 
-```yaml:stack.yaml
-resolver: lts-9.17
+```yaml
+resolver: lts-14.5
 packages:
 - .
 build:
@@ -62,12 +68,14 @@ $ stack clean
 $ stack haddock
 ```
 
-オプションを指定していませんが、期待通り `haddock` ディレクトリが生成されました！
+オプションを指定していませんが、期待通り **haddock** ディレクトリが生成されました！
 
-では次に `stack build` で `haddock` を生成するようにしてみましょう。
+### stack build で Haddock を自動生成
+
+では次に **stack build** で **haddock** を生成するようにしてみましょう。
 
 ```yaml:stack.yaml
-resolver: lts-9.17
+resolver: lts-14.5
 packages:
 - .
 build:
@@ -88,25 +96,24 @@ $ stack clean
 $ stack build
 ```
 
-ちゃんと動いていますね。これはどういうことかと言うと実は `stack haddock` は `stack build --haddock` コマンドと同じです。`--haddock` オプションを渡すことで設定ファイルの `haddock: true` と同じ効果があります。
+ちゃんと動いていますね。これはどういうことかと言うと実は **stack haddock** は `stack build --haddock` コマンドと同じです。`--haddock` オプションを渡すことで設定ファイルの **haddock: true** と同じ効果があります。
 
-ちなみに `stack test` も同様に `stack build --test` と同じです。
+ちなみに **stack test** も同様に `stack build --test` と同じです。**stack install** は `stack build --copy-bins` です。
 
-これで `stack build` を行うだけでドキュメントの生成も自動的に行うようにカスタマイズすることができました。
+コマンド | stack build 形式で書いた場合
+--------|--------------------------
+stack build | `stack build`
+stack test | `stack build --test`
+stack install | `stack build --copy-bins`
+stack haddock | `stack build --haddock`
 
-##### open-haddocks オプション
+これで **stack build** を行うだけでドキュメントの生成も自動的に行うようにカスタマイズすることができました。
 
-このオプションはビルド完了時に `HTML` ファイルを自動的に開いてくれる設定です。
-
-`true` にしてビルドすると自動的にブラウザが立ち上がり、ドキュメントを開くでしょう。その時のファイルは `all/index.html` を開くため、`base` パッケージのドキュメントなども含まれています。
-
-`--odir` を指定しても、内部に生成された `haddock` を開いてしまうため、基本的にはあまり使いません。
-
-##### 最終的なファイル
+## 最終的なファイル
 
 コメントを以下のようにつけました。
 
-```haskell:src/Minfree.hs
+```haskell
 module Minfree (minfree, minfree') where
 
 import Data.Array (Array, elems, accumArray, assocs)
@@ -173,7 +180,3 @@ minfrom a (n, xs)
       b = a + 1 + n `div` 2
       m = length us
 ```
-
-##### haddock
-- [Haddock: A Haskell Documentation Tool](https://www.haskell.org/haddock/)
-- [Welcome to Haddock’s documentation!](http://haskell-haddock.readthedocs.io/en/latest/index.html)

@@ -1,11 +1,17 @@
 ---
-title: haddockのコメント形式
+title: Haddock コメント形式
+date: 2019/09/14
+prev: ./haddock-comment.html
+next: ./haddock-settings.html
 ---
+
 詳しい書式については以下のドキュメントを適宜参照してください。
 
 - [Documentation and Markup](http://haskell-haddock.readthedocs.io/en/latest/markup.html)
 
-`Haddock` 形式のコメントは非常に簡単です。
+## 最低限覚えておく形式
+
+**Haddock** 形式のコメントは非常に簡単です。
 
 ```haskell
 -- 通常のコメント
@@ -18,11 +24,15 @@ g = undefined
 --   直前の関数についてのコメント
 ```
 
-つまり、`-- |` か `-- ^` で始まるコメントが `Haddock` コメントということになります。慣習的に関数のコメントには `-- |` を使い、型のフィールドについては `-- ^` を使っているように思います。
+つまり、`-- |` か `-- ^` で始まるコメントが **Haddock** コメントということになります。
+
+慣習的に関数のコメントには `-- |` を使い、型のフィールドについては `-- ^` を使っているように思います。
+
+## もっとリッチな Haddock コメント
 
 以下は公式のドキュメントに載っている例をまとめたものです。
 
-これだけ知っていれば `Haddock` が書けると言って良いでしょう。強調のためのキーワードやモジュールのコメントなどはここでは紹介しないのでドキュメントをご参照ください。
+これだけ知っていれば **Haddock** が書けると言って良いでしょう。強調のためのキーワードやモジュールのコメントなどはここでは紹介しないのでドキュメントをご参照ください。
 
 ```haskell
 {-|
@@ -60,20 +70,18 @@ f  :: Int      -- ^ The 'Int' argument
 f = undefined
 ```
 
-`@since` メタデータは `Yesod` 関連のプロジェクトでは良く使われています。どのバージョンからこの関数が組み込まれたかをドキュメントに残すことができます。
+**@since** メタデータは **Yesod** 関連のプロジェクトでは良く使われています。どのバージョンからこの関数が組み込まれたかをドキュメントに残すことができます。
 
-##### 実際に使ってみよう！
+## 実際に使ってみよう
 
-練習として `minfree` 関数に `Haddock` コメントをつけてみましょう。
+練習として **minfree** 関数に **Haddock** コメントをつけてみましょう。
 
-```haskell:src/Minfree.hs
+```haskell
 -- |
 -- 与えられた自然数のリストに含まれない最小の自然数を求める関数
 -- 自然数は0を含む
 -- 前提条件1: 与えられたリストには順序がついていない
 -- 前提条件2: 要素は重複していない
-minfree :: [Int] -> Int
-minfree xs = head ([0..] \\ xs)
 minfree :: [Int] -> Int
 minfree xs = head ([0..] \\ xs)
 ```
@@ -82,15 +90,16 @@ minfree xs = head ([0..] \\ xs)
 
 ```shell-session
 $ stack haddock --haddock-arguments --odir=haddock
+$ firefox haddock/Minfree.html
 ```
 
-![スクリーンショット 2017-12-11 16.46.32.png](/images/haddock03.png)
+![](/images/haddock03.jpeg)
 
 失敗しました。流石に1行はちょっと読みづらいので、修正します。
 
 修正は簡単で、改行したい場所に空行を挟むだけです。
 
-```haskell:src:Minfree.hs
+```haskell
 -- |
 -- 与えられた自然数のリストに含まれない最小の自然数を求める関数
 --
@@ -103,10 +112,6 @@ minfree :: [Int] -> Int
 minfree xs = head ([0..] \\ xs)
 ```
 
-![スクリーンショット 2017-12-11 16.49.17.png](/images/haddock04.png)
+![](/images/haddock04.jpeg)
 
 それっぽくなりましたね！
-
-##### haddock
-- [Haddock: A Haskell Documentation Tool](https://www.haskell.org/haddock/)
-- [Welcome to Haddock’s documentation!](http://haskell-haddock.readthedocs.io/en/latest/index.html)
