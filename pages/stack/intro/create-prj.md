@@ -1,11 +1,9 @@
 ---
 title: プロジェクトの作成
-date: 2018/05/05
-prev: ./hpack.html
+date: 2019/09/14
+prev: ./alt-stack.html
 next: ./create-lib.html
 ---
-
-## プロジェクトの作り方
 
 **stack new** コマンドの後に**プロジェクト名**を指定することで、**Haskell** プロジェクトの雛形を作ることができます。
 
@@ -13,12 +11,13 @@ next: ./create-lib.html
 
 ```shell
 $ stack new PFAD
+...
+All done.
+
 $ cd PFAD
 ```
 
-### ビルド
-
-プロジェクトをビルドするためには **stack build** コマンドを実行します。
+また、プロジェクトをビルドするためには **stack build** コマンドを実行します。
 
 ```shell
 $ stack build
@@ -27,7 +26,7 @@ $ stack build
 
 ## 生成されたディレクトリとファイル
 
-プロジェクトを作った直後は以下のようなディレクトリとファイルが生成されています。
+プロジェクトの作成直後は以下のようなディレクトリとファイルが生成されています。
 
 ```shell
 $ tree .
@@ -45,8 +44,6 @@ $ tree .
 ├── stack.yaml
 └── test
     └── Spec.hs
-
-3 directories, 10 files
 ```
 
 これらのファイルの中身と役割を簡単に確認していきましょう。よく使う順に紹介しています。
@@ -56,11 +53,11 @@ $ tree .
 ```yaml
 name:                PFAD
 version:             0.1.0.0
-github:              "e-bigmoon/PFAD"
+github:              "waddlaw/PFAD"
 license:             BSD3
-author:              "BIG MOON"
+author:              "Shinya Yamguchi"
 maintainer:          "example@example.com"
-copyright:           "2018 BIG MOON"
+copyright:           "2019 Shinya Yamguchi"
 
 extra-source-files:
 - README.md
@@ -113,21 +110,18 @@ tests:
 - **ghc-options** の追加
 - ビルドフラグの追加
 
-本チュートリアルで頻繁に編集するファイルです。
-
-初期状態では **base** パッケージのみが利用可能です。
+本チュートリアルで頻繁に編集するファイルです。初期状態では **base** パッケージに含まれるモジュールのみが利用可能です。
 
 ### stack.yaml
 
 ```yaml
-resolver: lts-11.7
+# コメントは削除しました
+resolver: lts-14.5
 packages:
 - .
 ```
 
-上記は、コメントは削除した結果です。
-
-このファイルも非常に重要です。
+**stack.yaml** ファイルも非常に重要です。
 
 主に以下の作業を行う場合に編集します。
 
@@ -139,31 +133,32 @@ packages:
 ### PFAD.cabal
 
 ```
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9660bd5c46ca581a672c6c267336595fe7bd275fd4e774bd9b74cbfd70dce5e3
+-- hash: f04e2ae923fca8f3b4c22672f4a24ed1d088cfc9faafd914f923baeb9520ca73
 
 name:           PFAD
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/waddlaw/PFAD#readme>
 homepage:       https://github.com/waddlaw/PFAD#readme
 bug-reports:    https://github.com/waddlaw/PFAD/issues
-author:         BIG MOON
+author:         Shinya Yamguchi
 maintainer:     example@example.com
-copyright:      2018 BIG MOON
+copyright:      2019 Shinya Yamguchi
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-cabal-version:  >= 1.10
 extra-source-files:
-    ChangeLog.md
     README.md
+    ChangeLog.md
 
 source-repository head
   type: git
-  location: https://github.com/e-bigmoon/PFAD
+  location: https://github.com/waddlaw/PFAD
 
 library
   exposed-modules:
@@ -204,16 +199,14 @@ test-suite PFAD-test
 
 **hpack** を利用するため、本チュートリアルでは直接利用することはありません。
 
-このファイルに反映させたい内容については、後述の **package.yaml** を編集することになります。
-
-また、ファイルの先頭に **hapck** のバージョンが追記されます。
+このファイルに反映させたい内容については、**package.yaml** を編集することになります。また、ファイルの先頭に **hapck** のバージョンが追記されます。
 
 ```
--- This file has been generated from package.yaml by hpack version 0.28.2.
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9660bd5c46ca581a672c6c267336595fe7bd275fd4e774bd9b74cbfd70dce5e3
+-- hash: f04e2ae923fca8f3b4c22672f4a24ed1d088cfc9faafd914f923baeb9520ca73
 ```
 
 ### README.md
@@ -236,13 +229,12 @@ test-suite PFAD-test
 
 プロジェクトの変更履歴を管理するためのファイルです。
 
-本チュートリアルでは利用しませんが、実際のプロジェクトでは変更履歴をこのファイルに記録しておくことは非常に有用です。
-
+本チュートリアルでは利用しませんが、実際のプロジェクトでは変更履歴をこのファイルに記録します。
 
 ### LICENSE
 
 ```
-Copyright BIGMOON (c) 2018
+Copyright Shinya Yamguchi (c) 2019
 
 All rights reserved.
 
@@ -257,7 +249,7 @@ modification, are permitted provided that the following conditions are met:
       disclaimer in the documentation and/or other materials provided
       with the distribution.
 
-    * Neither the name of BIGMOON nor the names of other
+    * Neither the name of Shinya Yamguchi nor the names of other
       contributors may be used to endorse or promote products derived
       from this software without specific prior written permission.
 
@@ -287,15 +279,15 @@ main = defaultMain
 
 ## 準備
 
-**stack** で生成したプロジェクトの雛形を使う場合は慣習として、新たに作成するソースコードは **app**, **src**, **test** 以下にそれぞれ配置します。
+新たに作成するソースコードは **app**, **src**, **test** に以下にそれぞれ配置します。一応、以下のコマンドに対応するようにフォルダを分けることが多いです。
 
-各ディレクトリは以下の表のように **stack** のサブコマンドと関連しています。
-
-ディレクトリ | 関連するコマンド | 保存するソースコードの種類
+ディレクトリ | 関連するコマンド | 備考
 -------------|------------------|------------------------------
-app | stack exec | アプリケーション (`main` 関数を含むファイル)
-src | stack build | ライブラリ
-test | stack test | テスト
+app | stack exec, stack run
+bench | stack bench | デフォルトでは存在しない
+haddock | stack haddock | デフォルトでは存在しない
+src | stack build
+test | stack test
 
 **src/Lib.hs** ファイルは今回利用しないため削除しておきます。
 
@@ -303,58 +295,80 @@ test | stack test | テスト
 $ rm src/Lib.hs
 ```
 
-そうすると、このままビルドしようとすると **Lib.hs** が見つからないという理由でコンパイルエラーになってしまいます。
+そうすると当然 **Lib.hs** が無いのでコンパイルエラーになってしまいます。
 
 ```shell
 $ stack build
-Building all executables for `PFAD' once. After a successful build of all of them, only specified executables will be rebuilt.
-PFAD-0.1.0.0: configure (lib + exe)
-Configuring PFAD-0.1.0.0...
-PFAD-0.1.0.0: build (lib + exe)
-Preprocessing library for PFAD-0.1.0.0..
-Building library for PFAD-0.1.0.0..
-[1 of 1] Compiling Paths_PFAD       ( .stack-work/dist/x86_64-osx/Cabal-2.0.1.0/build/autogen/Paths_PFAD.hs, .stack-work/dist/x86_64-osx/Cabal-2.0.1.0/build/Paths_PFAD.o )
-Preprocessing executable 'PFAD-exe' for PFAD-0.1.0.0..
-Building executable 'PFAD-exe' for PFAD-0.1.0.0..
-[1 of 2] Compiling Main             ( app/Main.hs, .stack-work/dist/x86_64-osx/Cabal-2.0.1.0/build/PFAD-exe/PFAD-exe-tmp/Main.o )
-
-/Users/bm12/Desktop/PFAD/app/Main.hs:3:1: error:
-    Could not find module ‘Lib’
+/PFAD/app/Main.hs:3:1: error:
+    Could not load module `Lib'
+    It is a member of the hidden package `libiserv-8.6.3'.
+    Perhaps you need to add `libiserv' to the build-depends in your .cabal file.
     Use -v to see a list of the files searched for.
   |
 3 | import Lib
-  | ^^^^^^^^^^
-
-
---  While building custom Setup.hs for package PFAD-0.1.0.0 using:
-      /Users/bm12/.stack/setup-exe-cache/x86_64-osx/Cabal-simple_mPHDZzAJ_2.0.1.0_ghc-8.2.2 --builddir=.stack-work/dist/x86_64-osx/Cabal-2.0.1.0 build lib:PFAD exe:PFAD-exe --ghc-options " -ddump-hi -ddump-to-file -fdiagnostics-color=always"
-    Process exited with code: ExitFailure 1
+  | 
 ```
 
-とりあえず現状は **src/Main.hs** を以下のように書き換えておきましょう。
+とりあえず現状は **app/Main.hs** を以下のように書き換えておきましょう。
 
 ```hs
 module Main (main) where
 
+-- import Lib は削除
+
 main :: IO ()
-main = undefined
+main = print "Hello World"
 ```
 
-そうすればコンパイルが無事に通るようになります。
+これでビルドが通るようになりました。
 
 ```shell
 $ stack build
 Building all executables for `PFAD' once. After a successful build of all of them, only specified executables will be rebuilt.
-PFAD-0.1.0.0: build (lib + exe)
+PFAD> build (lib + exe)
 Preprocessing library for PFAD-0.1.0.0..
 Building library for PFAD-0.1.0.0..
 Preprocessing executable 'PFAD-exe' for PFAD-0.1.0.0..
 Building executable 'PFAD-exe' for PFAD-0.1.0.0..
-[1 of 2] Compiling Main             ( app/Main.hs, .stack-work/dist/x86_64-osx/Cabal-2.0.1.0/build/PFAD-exe/PFAD-exe-tmp/Main.o )
-[2 of 2] Compiling Paths_PFAD       ( .stack-work/dist/x86_64-osx/Cabal-2.0.1.0/build/PFAD-exe/autogen/Paths_PFAD.hs, .stack-work/dist/x86_64-osx/Cabal-2.0.1.0/build/PFAD-exe/PFAD-exe-tmp/Paths_PFAD.o )
-Linking .stack-work/dist/x86_64-osx/Cabal-2.0.1.0/build/PFAD-exe/PFAD-exe ...
-PFAD-0.1.0.0: copy/register
-Installing library in /Users/bm12/Desktop/PFAD/.stack-work/install/x86_64-osx/lts-11.7/8.2.2/lib/x86_64-osx-ghc-8.2.2/PFAD-0.1.0.0-J6iy8SXRSjD3dsGGyhgUYc
-Installing executable PFAD-exe in /Users/bm12/Desktop/PFAD/.stack-work/install/x86_64-osx/lts-11.7/8.2.2/bin
+[1 of 2] Compiling Main
+[2 of 2] Compiling Paths_PFAD
+Linking .stack-work/dist/x86_64-linux/Cabal-2.4.0.1/build/PFAD-exe/PFAD-exe ...
+PFAD> copy/register
+Installing library in /PFAD/.stack-work/install/x86_64-linux/754da54955212e5178bdb2a3208393df962e4e4e4998fe9886c862a9c58273a0/8.6.5/lib/x86_64-linux-ghc-8.6.5/PFAD-0.1.0.0-B1WTd1uDmyhGTpZWzSKOj5
+Installing executable PFAD-exe in /PFAD/.stack-work/install/x86_64-linux/754da54955212e5178bdb2a3208393df962e4e4e4998fe9886c862a9c58273a0/8.6.5/bin
 Registering library for PFAD-0.1.0.0..
 ```
+
+## stack.yaml.lock ファイル
+
+stack v2.1.3 から **stack.yaml.lock** ファイルというものが生成されるようになりました。
+
+例えば、現在の **stack.yaml.lock** ファイルの中身は以下のようになっていると思います。
+
+```yaml
+# This file was autogenerated by Stack.
+# You should not edit this file by hand.
+# For more information, please see the documentation at:
+#   https://docs.haskellstack.org/en/stable/lock_files
+
+packages: []
+snapshots:
+- completed:
+    size: 524104
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/5.yaml
+    sha256: 3c146eebc1b383211ea49d5422fb3d63d699da12307b4bc989107300eb579d60
+  original: lts-14.5
+```
+
+このファイルはビルドの**再現性**のため導入されました。
+
+詳細については以下を参照してください。
+
+- [Lock Files](https://docs.haskellstack.org/en/stable/lock_files/)
+- [DISCUSS: Policy on including lock files in repo #4795](https://github.com/commercialhaskell/stack/issues/4795)
+
+ここでの問題はこのファイルをリポジトリに含めるかどうかですが、今の所は **.gitignore** に追記しておいて良いです。
+
+たぶん今後、パッケージの場合は **.gitignore** に含め、end product の場合はリポジトリに含めておくという方針になると思います。
+
+このファイルは自動的に編集されるため、気にせず先に進みましょう。

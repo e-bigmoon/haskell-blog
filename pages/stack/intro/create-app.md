@@ -1,14 +1,35 @@
 ---
 title: アプリケーションの作成
-date: 2018/05/05
-prev: ./exec-prg.html
+date: 2019/09/14
+prev: ./extra-deps.html
+next: ../doc/index.html
 ---
+
+## 設定ファイルの内容確認
+
+前の章で **stack.yaml** と **package.yaml** を色々と修正したので、ここからは以下の状態で進めていきます。
+
+**stack.yaml** は以下の内容で進めていきます。
+
+```yaml
+resolver: lts-13.29
+packages:
+- .
+```
+
+また **package.yaml** の **dependencies** は以下のようになっています。
+
+```yaml
+dependencies:
+- base >= 4.7 && < 5
+- array
+```
 
 ## アプリケーションの作成
 
 ここまででライブラリ (**Minfree.hs**) の作成が終わりました。
 
-ここからは、そのライブラリを使って動く実行ファイルを作ってみましょう。
+ここからは、そのライブラリを使って動作する実行ファイルを作ってみましょう。
 
 **app/Main.hs** の内容を以下のように書き換えましょう。
 
@@ -48,7 +69,8 @@ $ stack exec -- PFAD-exe [0,1,2,3,5,6]
 ```yaml
 executables:
   minfree: # ここを変更します
-    main:                app/Main.hs
+    main:                Main.hs
+    source-dirs:         app
     ghc-options:
     - -threaded
     - -rtsopts
@@ -65,31 +87,28 @@ $ stack exec -- minfree [0,1,2,3,4,7]
 5
 ```
 
+また、**stack 1.9.1** からは **stack run** というサブコマンドが実装されたため、`build -> exec` のステップが1ステップに簡略化されました。
+
+```shell
+$ stack run [0,1,2,3,4,7]
+5
+```
+
 ## アプリケーションを複数作成する
 
 1つのプロジェクトでアプリケーションを複数作ることもできます。
 
 例えば今回 **minfree** 関数とそれを改良した **minfree'** 関数がありました。
 
-別のアプリケーションとして **minfree'** を利用するアプリケーション **minfree2** を作ってみましょう。
+別のアプリケーションとして **minfree'** を利用するアプリケーション **fastMinfree** を作ってみましょう。
 
-まずは **package.yaml** の **executables** に新しいアプリケーションの内容を追記します。
+まずは、複数のアプリケーションをビルドできるように **source-dirs** を削除し、**main** の指定を **app/Main.hs** のようにします。
 
 ```yaml
 executables:
   minfree:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - PFAD
-  # ここから下の行を追記しました
-  minfree2:
-    main:                minfree2/Main.hs
-    source-dirs:         app
+    main: app/Main.hs    # この行を変更
+                         # source-dirs: app は削除します
     ghc-options:
     - -threaded
     - -rtsopts
@@ -98,11 +117,33 @@ executables:
     - PFAD
 ```
 
-今回は **app/minfree2/Main.hs** にアプリケーションのコードを書きます。(**minfree2** というディレクトリを新たに作成する点に注意してください)
+次に **package.yaml** の **executables** に新しいアプリケーションの内容を追記します。
 
-先ほどのプログラムとほぼ同じですが、以下のように `app/minfree2/Main.hs` を作ってみましょう。
+```yaml
+executables:
+  minfree:
+    main: app/Main.hs
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - PFAD
+  # ここから下の行を追記しました
+  fastMinfree:
+    main: app/FastMinfreeApp.hs
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - PFAD
+```
+
+先ほどのプログラムとほぼ同じですが、以下のように `app/FastMinfreeApp.hs` を作ってみましょう。
 
 ```hs
+-- app/FastMinfreeApp.hs
 module Main (main) where
 
 import System.Environment (getArgs)
@@ -117,9 +158,16 @@ main = do
 実行してみます。
 
 ```shell
-$ stack exec -- minfree2 [0,1,2,3,4,7]
-5
-
-$ stack exec -- minfree [0,1,2,3,4,7]
-5
+$ stack build
+$ stack exec -- fastMinfree [1,2,3,4,5]
+0
 ```
+
+この場合も同様に **stack run** が使えますが、アプリケーションが2つになったため明示的にアプリケーション名を指定する必要があります。
+
+```shell
+$ stack run fastMinfree [1,2,3,4,5]
+0
+```
+
+アプリケーション名が省略された場合は、**package.yaml** の **executables** に書かれている一番上のアプリケーションが実行されます。

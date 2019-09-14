@@ -1,11 +1,9 @@
 ---
 title: ライブラリの作成
-date: 2018/05/05
+date: 2019/09/14
 prev: ./create-prj.html
-next: ./exec-prg.html
+next: ./repl.html
 ---
-
-## ライブラリの作成
 
 それでは以下のコードを **src/Minfree.hs** として保存しましょう。
 
@@ -73,7 +71,7 @@ module Minfree (minfree, minfree') where
 
 この場合 **minfree** と **minfree'** 関数を外部に公開することになります。
 
-仮に、このように省略した場合は全ての関数が外部に公開されます。
+仮に、以下のように省略した場合は全ての関数が外部に公開されます。
 
 ```hs
 module Minfree where
