@@ -4,7 +4,7 @@ tags: book,技術書典
 date: 2019/09/11
 ---
 
-「すみころもち」は[技術書典7](https://techbookfest.org/event/tbf07/circle/6222386688950272)に初参加します。本ページの情報は随時更新しています。
+「すみころもち」は<a href="https://techbookfest.org/event/tbf07/circle/6222386688950272" target="_blank">技術書典7</a>に初参加します。本ページの情報は随時更新しています。
 
 <img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px">
 
@@ -53,6 +53,10 @@ Haskell といいつつ普通でわかりやすい**正格評価な処理系**�
 <a href="/images/2019/09-11/maegaki.pdf">
   <img src="/images/2019/09-11/maegaki.png" alt ="目次2" width="400px">
 </a>
+
+#### まえがき
+
+
 
 ### (2) GHC API 入門 (仮)
 
