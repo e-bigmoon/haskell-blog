@@ -1,18 +1,18 @@
 ---
 title: 技術書典7
 tags: book,技術書典
-date: 2019/09/11
+date: 2019/09/15
 ---
 
 「すみころもち」は<a href="https://techbookfest.org/event/tbf07/circle/6222386688950272" target="_blank">技術書典7</a>に初参加します。本ページの情報は随時更新しています。
 
-<img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px">
+<img src="/images/2019/09-15/main.png" alt ="サークルカット" width="400px">
 
 サークルカットは[アルフォンス・ミュシャ](https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A9%E3%83%B3%E3%82%B9%E3%83%BB%E3%83%9F%E3%83%A5%E3%82%B7%E3%83%A3)っぽい感じを意識しています。ミュシャ風のポスターは至る所で目にしますが、ミュシャの最高傑作は「スラヴ叙事詩」なので興味のある人は是非調べてみてください。
 
 ## サークル場所
 
-<img src="/images/2019/09-11/map.png" alt ="配置場所">
+<img src="/images/2019/09-15/map.png" alt ="配置場所">
 
 「すみころもち」は「し05D」です！
 
@@ -23,7 +23,7 @@ date: 2019/09/11
 <img src="/images/2019/09-11/main.jpg" alt ="表紙" width="400px">
 
 【著者】
-[@gotoki_no_joe](https://twitter.com/gotoki_no_joe)
+[\@gotoki_no_joe](https://twitter.com/gotoki_no_joe)
 
 【概要】
 Haskell でプログラミングするのは楽しい。ところで「Haskell*を*プログラミングする」のも楽しいのでは？じゃあやってみよう。というわけで、Haskell からヒラヒラを全て削り落して削りすぎたような関数型言語を作ります。
@@ -54,14 +54,12 @@ Haskell といいつつ普通でわかりやすい**正格評価な処理系**�
   <img src="/images/2019/09-11/maegaki.png" alt ="目次2" width="400px">
 </a>
 
-#### まえがき
+### (2) GHC API 入門
 
-
-
-### (2) GHC API 入門 (仮)
+<img src="/images/2019/09-15/ver4.png" alt ="表紙" width="400px">
 
 【著者】
-[@waddlaw](https://twitter.com/waddlaw)
+[\@waddlaw](https://twitter.com/waddlaw)
 
 【概要】
 GHC API を使って具体的に動く何かを作る予定ですが、全然筆が進んでいないので内容未定・・・。(上記の書籍と比べると宣伝できるものが何も・・・)
