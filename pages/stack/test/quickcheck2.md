@@ -121,7 +121,6 @@ Finished in 0.0014 seconds
 
 ```haskell
 -- import 文を追記
--- import 文を追記
 import Data.List (nub)
 
 prop_Minfree :: [Positive Int] -> Property
