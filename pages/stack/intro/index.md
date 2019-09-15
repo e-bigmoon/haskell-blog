@@ -14,7 +14,7 @@ next: ./why-stack.html
 
 ### 本チュートリアルで取り扱う内容
 
-1. イントロダクション
+1. [イントロダクション](./)
     - [なぜ stack を使うのか？](./why-stack.html)
     - [Stackage とは何か？](./stackage.html)
     - [stack のインストールと設定](./stack-install.html)
@@ -40,16 +40,17 @@ next: ./why-stack.html
 1. [ベンチマークの作成](../bench/)
     - [criterion パッケージ](../bench/criterion.html)
     - [gauge パッケージ](../bench/gauge.html)
-1. プログラムの配布方法
-1. Linter
-    - HLint
-1. フォーマッター
-    - ormolu
-1. CI
-    - Travis CI
-    - Circle CI
-    - AppVeyor
-    - GitHub Actions
+1. [アプリケーションの配布](../dist/index.html)
+    - [docker integration](../dist/docker.html)
+    - [stack script](../dist/stack-script.html)
+1. より良いソフトウェアを作るために
+    - Linter (hlint)
+    - フォーマッター (ormolu)
+    - CI
+      - Travis CI
+      - Circle CI
+      - AppVeyor
+      - GitHub Actions
 
 ### 動作環境
 
