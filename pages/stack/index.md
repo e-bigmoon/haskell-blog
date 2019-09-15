@@ -101,7 +101,11 @@ _ | stack | cabal
   - [テストフレームワーク (hspec)](test/hspec.html)
   - [【基礎】ランダムテスト (QuickCheck)](test/quickcheck.html)
   - [【実践】ランダムテスト (QuickCheck)](test/quickcheck2.html)
-  - [doctest](test/doctest.html)
+  - [ドキュメントのテスト (doctest)](test/doctest.html)
+  - [テストフレームワーク (tasty)](test/tasty.html)
+- [ベンチマークの作成](bench/)
+  - [criterion パッケージ](bench/criterion.html)
+  - [gauge パッケージ](bench/gauge.html)
 
 ## プラクティス
 

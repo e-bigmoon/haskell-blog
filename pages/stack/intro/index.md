@@ -8,9 +8,9 @@ next: ./why-stack.html
 
 [Pearls of Functional Algorithm Design](https://www.amazon.co.jp/dp/0521513383) (訳本: [関数プログラミング 珠玉のアルゴリズムデザイン](https://www.amazon.co.jp/dp/4274050645)) の第1章を題材に **Haskell** プロジェクトの作り方を学びます。
 
-プログラムの内容を理解できなくても、記事を最後まで読むことで `Haskell` プロジェクトの作り方を学ぶことができると思います。
+プログラムの内容を理解できなくても、記事を最後まで読むことで **Haskell** プロジェクトの作り方を学ぶことができると思います。
 
-`Ubuntu 18.04 LTS` or `Mac` で動作確認を行っています。
+**Ubuntu 18.04 LTS** or **Mac** で動作確認を行っています。
 
 ### 本チュートリアルで取り扱う内容
 
@@ -35,11 +35,11 @@ next: ./why-stack.html
     - [テストフレームワーク (hspec)](../test/hspec.html)
     - [【基礎】ランダムテスト (QuickCheck)](../test/quickcheck.html)
     - [【実践】ランダムテスト (QuickCheck)](../test/quickcheck2.html)
-    - ドキュメントのテスト (doctest)
-    - テストフレームワーク (tasty)
-1. ベンチマークの作成
-    - criterion
-    - gauge
+    - [ドキュメントのテスト (doctest)](../test/doctest.html)
+    - [テストフレームワーク (tasty)](../test/tasty.html)
+1. [ベンチマークの作成](../bench/)
+    - [criterion パッケージ](../bench/criterion.html)
+    - [gauge パッケージ](../bench/gauge.html)
 1. プログラムの配布方法
 1. Linter
     - HLint
