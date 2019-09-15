@@ -175,15 +175,16 @@
       <article class="page-content">
         <p>前の章では <strong>QuickCheck</strong> の基本的な関数と使い方を見てきました。この章では実際のコードにテストを追加していきます。</p>
 <h2 id="実際に-quickcheck-のテストを書いてみる">実際に QuickCheck のテストを書いてみる</h2>
-<p><strong>Peals</strong> の問題は関数に制約をつけていることが多いため、良い練習になりそうです。今回の制約は次の通り</p>
+<p><strong>Peals</strong> の問題は関数に制約をつけていることが多いため、良い練習になりそうです。</p>
+<p>今回の制約は次の通りです。</p>
 <ul>
 <li>自然数</li>
 <li>重複しない</li>
 </ul>
 <p>上記を満たすリストが入力値となります。</p>
-<h6 id="素朴に思いつく定義">素朴に思いつく定義</h6>
-<p>慣習として <code>property</code> のための関数の接頭辞には <code>prop</code> をつけます。つけなくても問題は無いです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell:test/minfreespec.hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></span>
+<h3 id="素朴に思いつく定義">素朴に思いつく定義</h3>
+<p>慣習として <strong>property</strong> のための関数の接頭辞には <strong>prop</strong> をつけます。つけなくても問題は無いです。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="kw">import</span> <span class="dt">Test.Hspec</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
@@ -192,88 +193,74 @@
 <span id="cb1-7"><a href="#cb1-7"></a></span>
 <span id="cb1-8"><a href="#cb1-8"></a><span class="ot">spec ::</span> <span class="dt">Spec</span></span>
 <span id="cb1-9"><a href="#cb1-9"></a>spec <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>    it <span class="st">&quot;書籍の例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>      minfree [<span class="dv">8</span>, <span class="dv">23</span>, <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">11</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">13</span>, <span class="dv">7</span>, <span class="dv">41</span>, <span class="dv">4</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">5</span>, <span class="dv">17</span>, <span class="dv">3</span>, <span class="dv">19</span>, <span class="dv">2</span>, <span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>    it <span class="st">&quot;書籍の例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>      minfree' [<span class="dv">8</span>, <span class="dv">23</span>, <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">11</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">13</span>, <span class="dv">7</span>, <span class="dv">41</span>, <span class="dv">4</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">5</span>, <span class="dv">17</span>, <span class="dv">3</span>, <span class="dv">19</span>, <span class="dv">2</span>, <span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span>
-<span id="cb1-18"><a href="#cb1-18"></a></span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb1-20"><a href="#cb1-20"></a>prop_Minfree xs <span class="ot">=</span> minfree xs <span class="op">==</span> minfree' xs</span></code></pre></div>
-<p>このコードに対してテストを実行すると次のエラーが表示されます。</p>
-<pre class="shell-session"><code>Registering PFAD-0.1.0.0...
-PFAD-0.1.0.0: test (suite: PFAD-test)
-
+<span id="cb1-10"><a href="#cb1-10"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a></span>
+<span id="cb1-14"><a href="#cb1-14"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a></span>
+<span id="cb1-18"><a href="#cb1-18"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span>
+<span id="cb1-20"><a href="#cb1-20"></a></span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a>prop_Minfree xs <span class="ot">=</span> minfree xs <span class="op">==</span> minfree' xs</span></code></pre></div>
+<p>このコードに対してテストを実行すると次のようにテストが失敗しました。</p>
+<pre class="shell-session"><code>$ stack test
+...
 
 Minfree
   minfree
-    書籍の例
+    書籍の実行例
   minfree'
-    書籍の例
+    書籍の実行例
   minfree == minfree'
     minfree == minfree' FAILED [1]
 
 Failures:
 
-  test/MinfreeSpec.hs:17:
+  test/MinfreeSpec.hs:17:5:
   1) Minfree, minfree == minfree', minfree == minfree'
-       Falsifiable (after 4 tests and 2 shrinks):
-       [-1]
+       Falsifiable (after 3 tests and 2 shrinks):
+         [-1]
 
-Randomized with seed 1211983148
+  To rerun use: --match &quot;/Minfree/minfree == minfree'/minfree == minfree'/&quot;
 
-Finished in 0.0007 seconds
+Randomized with seed 901529074
+
+Finished in 0.0013 seconds
 3 examples, 1 failure
-
-PFAD-0.1.0.0: Test suite PFAD-test failed
-Completed 2 action(s).
-Test suite failure for package PFAD-0.1.0.0
-    PFAD-test:  exited with: ExitFailure 1
-Logs printed to console</code></pre>
-<p>エラーメッセージから、どうやらランダムに生成された値に <code>[-1]</code> が含まれてたようです。まずはこれを改良してみます。</p>
-<h6 id="自然数に限定する">自然数に限定する</h6>
-<p>やり方は色々とあると思いますが、今回は <code>Positive</code> 型を利用することにします。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell:test/minfree.hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+...</code></pre>
+<p>どうやらランダムに生成された値に <strong>[-1]</strong> が含まれてたようです。</p>
+<p>まずはこれを改良してみましょう。</p>
+<h3 id="自然数に限定する">自然数に限定する</h3>
+<p>やり方は色々とあると思いますが、今回は <strong>Positive</strong> 型を利用することにします。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>prop_Minfree xs <span class="ot">=</span> minfree ns <span class="op">==</span> minfree' ns</span>
 <span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">where</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span></code></pre></div>
-<p>この結果、また別のエラーが出るようになりました。</p>
-<pre class="shell-session"><code>Registering PFAD-0.1.0.0...
-PFAD-0.1.0.0: test (suite: PFAD-test)
-
-
-Minfree
-  minfree
-    書籍の例
-  minfree'
-    書籍の例
-  minfree == minfree'
-    minfree == minfree' FAILED [1]
-
+<p>この結果、また別の原因でテストが失敗してしまいました。</p>
+<pre class="shell-session"><code>$ stack test
+...
 Failures:
 
-  test/MinfreeSpec.hs:17:
+  test/MinfreeSpec.hs:17:5:
   1) Minfree, minfree == minfree', minfree == minfree'
-       Falsifiable (after 4 tests and 1 shrink):
-       [Positive {getPositive = 1},Positive {getPositive = 1}]
+       Falsifiable (after 5 tests and 2 shrinks):
+         [Positive {getPositive = 1},Positive {getPositive = 1}]
 
-Randomized with seed 398651692
+  To rerun use: --match &quot;/Minfree/minfree == minfree'/minfree == minfree'/&quot;
 
-Finished in 0.0028 seconds
+Randomized with seed 173572505
+
+Finished in 0.0014 seconds
 3 examples, 1 failure
-
-PFAD-0.1.0.0: Test suite PFAD-test failed
-Completed 2 action(s).
-Test suite failure for package PFAD-0.1.0.0
-    PFAD-test:  exited with: ExitFailure 1
-Logs printed to console</code></pre>
-<p>今回のエラーでは <code>[1,1]</code> のような重複した値の場合にテストが失敗しています。これも修正しましょう。</p>
-<h6 id="重複をなくす">重複をなくす</h6>
-<p><code>(==&gt;)</code> を使って <code>minfree</code> に適用する前に事前条件を設定しておくことにします。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell:test/minfree.hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- import 文を追記</span></span>
+...</code></pre>
+<p>今回は <strong>[1,1]</strong> のような重複した値の場合にテストが失敗しています。これも修正しましょう。</p>
+<h3 id="重複をなくす">重複をなくす</h3>
+<p><a href="https://hackage.haskell.org/package/QuickCheck-2.13.2/docs/Test-QuickCheck.html#v:-61--61--62-">(==&gt;)</a> を使って <strong>minfree</strong> に適用する前に事前条件を設定しておくことにします。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- import 文を追記</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
 <span id="cb5-3"><a href="#cb5-3"></a></span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
@@ -281,39 +268,45 @@ Logs printed to console</code></pre>
 <span id="cb5-6"><a href="#cb5-6"></a>  <span class="kw">where</span></span>
 <span id="cb5-7"><a href="#cb5-7"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
 <span id="cb5-8"><a href="#cb5-8"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span></code></pre></div>
-<p>これで <code>QuciCheck</code> を記述することができました。</p>
+<p>これで <strong>QuciCheck</strong> を使ったテストを記述することができました。</p>
+<h2 id="最終的なコード">最終的なコード</h2>
 <p><code>QuickCheck</code> を適用した最終的なコードは以下の通りです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell:test/minfreespec.hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">module</span> <span class="dt">MinfreeSpec</span> (spec) <span class="kw">where</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
 <span id="cb6-3"><a href="#cb6-3"></a><span class="kw">import</span> <span class="dt">Test.Hspec</span></span>
 <span id="cb6-4"><a href="#cb6-4"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
 <span id="cb6-5"><a href="#cb6-5"></a><span class="kw">import</span> <span class="dt">Test.Hspec.QuickCheck</span> (prop)</span>
 <span id="cb6-6"><a href="#cb6-6"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
-<span id="cb6-8"><a href="#cb6-8"></a></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="ot">spec ::</span> <span class="dt">Spec</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a>spec <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a>    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>      minfree [<span class="dv">8</span>, <span class="dv">23</span>, <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">11</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">13</span>, <span class="dv">7</span>, <span class="dv">41</span>, <span class="dv">4</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">5</span>, <span class="dv">17</span>, <span class="dv">3</span>, <span class="dv">19</span>, <span class="dv">2</span>, <span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a>    it <span class="st">&quot;本に載っている例&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a>      minfree' [<span class="dv">8</span>, <span class="dv">23</span>, <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">11</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">13</span>, <span class="dv">7</span>, <span class="dv">41</span>, <span class="dv">4</span>, <span class="dv">14</span>, <span class="dv">21</span>, <span class="dv">5</span>, <span class="dv">17</span>, <span class="dv">3</span>, <span class="dv">19</span>, <span class="dv">2</span>, <span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb6-17"><a href="#cb6-17"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="ot">spec ::</span> <span class="dt">Spec</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>spec <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a></span>
+<span id="cb6-16"><a href="#cb6-16"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb6-18"><a href="#cb6-18"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
 <span id="cb6-19"><a href="#cb6-19"></a></span>
-<span id="cb6-20"><a href="#cb6-20"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
-<span id="cb6-21"><a href="#cb6-21"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
-<span id="cb6-22"><a href="#cb6-22"></a>  <span class="kw">where</span></span>
-<span id="cb6-23"><a href="#cb6-23"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
-<span id="cb6-24"><a href="#cb6-24"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span></code></pre></div>
-<p><code>QuickCheck</code> は本当に優秀で、自分の書いたコードに安心感をあたえてくれます。しかし、導入までのハードルが少し高いと思うので、日本語による実践的なチュートリアルがもう少し増えて欲しいところです。</p>
+<span id="cb6-20"><a href="#cb6-20"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span>
+<span id="cb6-22"><a href="#cb6-22"></a></span>
+<span id="cb6-23"><a href="#cb6-23"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
+<span id="cb6-24"><a href="#cb6-24"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
+<span id="cb6-25"><a href="#cb6-25"></a>  <span class="kw">where</span></span>
+<span id="cb6-26"><a href="#cb6-26"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
+<span id="cb6-27"><a href="#cb6-27"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span></code></pre></div>
+<p><strong>QuickCheck</strong> は本当に優秀で、自分の書いたコードに安心感をあたえてくれます。しかし、導入までのハードルが少し高いと思うので、日本語による実践的なチュートリアルがもう少し増えて欲しいところです。</p>
       </article>
 
       <div class="pager">
       
         <a class="waves-effect waves-light btn white-text prev" href="./quickcheck.html"><span>«</span>前</a>
       
+      
+        <a class="waves-effect waves-light btn white-text next" href="./doctest.html">次<span>»</span></a>
       
       </div>
 
