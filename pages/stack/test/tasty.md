@@ -13,6 +13,30 @@ next: ../bench/index.html
 $ mkdir test-tasty
 ```
 
+## tasty と hspec の違い
+
+**tasty** は「**Haskell** のモダンテストフレームワークを作ろう！」ということで **hspec** よりも後に作られたテストフレームワークです。
+
+そのため、一般的なプロジェクトでは **hspec** が利用されていることが多いです。(**stack new** で作られるプロジェクトのデフォルトテンプレートも **hspec** になっています)
+
+どちらが優れているというわけではないですが、個人的には以下の理由で **tasty** が結構好きです。
+
+- プロンプトのテスト結果に色が付く
+- テスト結果のレポートを出力できる
+- **providers** と **ingredients** が別々に用意されているので拡張性が高い
+- **golden test** が書ける
+- **hspec** の形式も **tasty** に記述できる
+- **tasty-discover** が強力
+
+### tasty を採用しているプロジェクト
+
+- [cabal](https://github.com/haskell/cabal)
+- [attoparsec](https://github.com/bos/attoparsec)
+- [pandoc](https://github.com/jgm/pandoc)
+- [hakyll](https://github.com/jaspervdj/hakyll)
+
+**cabal** や **pandoc** といった大きなプロジェクトでも採用実績があります。
+
 ## tasty-discover について
 
 **hspec-discover** と同じような名前の [tasty-discover](https://hackage.haskell.org/package/tasty-discover) というツールがあります。
