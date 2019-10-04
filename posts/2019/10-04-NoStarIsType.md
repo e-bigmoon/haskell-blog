@@ -6,8 +6,6 @@ tags: bigmoon
 
 ## はじめに
 
-1つ前の GHC-8.6 から遭遇するかもしれないエラーの話です。
-
 ```haskell
 λ ghc -V
 The Glorious Glasgow Haskell Compilation System, version 8.8.1
@@ -76,7 +74,7 @@ Bool :: *
 Maybe :: * -> *
 ```
 
-[GHC 8.6](https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6) から **StarIsType** 言語拡張がデフォルトで有効になり、`*` カインドは `Type` カインドのシノニムとして定義されるようになりました。なので明示的に **StarIsType** を無効にすると直ります。(この辺りの話題については既に ["TypeOperators => NoStarIsType"の延期の提案](https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/) などにまとまっているため、気になる方はご参照ください)
+1つ前の [GHC 8.6](https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6) から **StarIsType** 言語拡張がデフォルトで有効になり、`*` カインドは `Type` カインドのシノニムとして定義されるようになりました。なので明示的に **StarIsType** を無効にすると直ります。(この辺りの話題については既に ["TypeOperators => NoStarIsType"の延期の提案](https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/) などにまとまっているため、気になる方はご参照ください)
 
 ```haskell
 λ :set -XNoStarIsType
