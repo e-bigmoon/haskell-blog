@@ -8,8 +8,87 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-09-09T00:00:00Z</updated>
+    <updated>2019-10-04T00:00:00Z</updated>
     <entry>
+    <title>NoStarIsType 言語拡張が必要になるとき</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html</id>
+    <published>2019-10-04T00:00:00Z</published>
+    <updated>2019-10-04T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>λ ghc <span class="op">-</span><span class="dt">V</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="dt">The</span> <span class="dt">Glorious</span> <span class="dt">Glasgow</span> <span class="dt">Haskell</span> <span class="dt">Compilation</span> <span class="dt">System</span>, version <span class="fl">8.8</span><span class="op">.</span><span class="dv">1</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">*</span><span class="dv">10</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>    • <span class="dt">Expected</span> kind ‘<span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> k0’, but ‘10’ has kind ‘<span class="dt">Nat</span>’</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    • <span class="dt">In</span> the <span class="kw">type</span> ‘<span class="dv">10</span> <span class="op">*</span> 10’</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XNoStarIsType</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">*</span><span class="dv">10</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="dv">10</span><span class="op">*</span><span class="dv">10</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="ot">=</span> <span class="dv">100</span></span></code></pre></div>
+<!--more-->
+<h2 id="型レベル四則演算">型レベル四則演算</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/GHC-TypeLits.html">GHC.TypeLits</a> に用意されている関数を使って型レベル自然数の四則演算を行ってみましょう。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span> <span class="op">-</span><span class="dt">XTypeOperators</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>λ <span class="kw">import</span> <span class="dt">GHC.TypeLits</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">1</span><span class="op">+</span><span class="dv">1</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="dv">1</span><span class="op">+</span><span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">-</span><span class="dv">1</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="dv">10</span><span class="op">-</span><span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="ot">=</span> <span class="dv">9</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dt">Div</span> <span class="dv">10</span> <span class="dv">2</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="dt">Div</span> <span class="dv">10</span> <span class="dv">2</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a></span>
+<span id="cb3-16"><a href="#cb3-16"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>    • <span class="dt">Expected</span> kind ‘<span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> k0’, but ‘10’ has kind ‘<span class="dt">Nat</span>’</span>
+<span id="cb3-19"><a href="#cb3-19"></a>    • <span class="dt">In</span> the <span class="kw">type</span> ‘<span class="dv">10</span> <span class="op">*</span> 10’</span></code></pre></div>
+<p>掛け算だけエラーになりましたね・・・。それぞれの演算子のカインドを確認してみましょう。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>λ <span class="op">:</span>k (<span class="op">+</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">(+) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>λ <span class="op">:</span>k (<span class="op">-</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">(-) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>λ <span class="op">:</span>k <span class="dt">Mod</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="dt">Mod</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>λ <span class="op">:</span>k (<span class="op">*</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="ot">(*) ::</span> <span class="op">*</span></span></code></pre></div>
+<p>1つだけ変ですね。これは <code>*</code> が <strong>Bool</strong> や <strong>Maybe</strong> などのよくある基本的な型 (lifted boxed types) のカインドの記号として割り当てられているためです。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>λ <span class="op">:</span>k <span class="dt">Bool</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a>λ <span class="op">:</span>k <span class="dt">Maybe</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
+<p>1つ前の <a href="https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6">GHC 8.6</a> から <strong>StarIsType</strong> 言語拡張がデフォルトで有効になり、<code>*</code> カインドは <code>Type</code> カインドのシノニムとして定義されるようになりました。なので明示的に <strong>StarIsType</strong> を無効にすると直ります。(この辺りの話題については既に <a href="https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/">“TypeOperators =&gt; NoStarIsType”の延期の提案</a> などにまとまっているため、気になる方はご参照ください)</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XNoStarIsType</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a>λ <span class="op">:</span>k <span class="dt">Bool</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>λ <span class="op">:</span>k <span class="dt">Maybe</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9"></a>λ <span class="op">:</span>k (<span class="op">*</span>)</span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="ot">(*) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span></code></pre></div>
+<p>ということでこれで無事に型レベルの掛け算ができるようになりました。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">=</span> <span class="dv">100</span></span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<p><code>kind!</code> のエイリアスとして <code>k!</code> コマンド欲しい。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://downloads.haskell.org/~ghc/8.8.1/docs/html/users_guide/glasgow_exts.html?highlight=nostaristype#extension-StarIsType">StarIsType - Glasgow Haskell Compiler User’s Guide</a></li>
+<li><a href="https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6">GHC 8.6.x Migration Guide</a></li>
+<li><a href="https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/">“TypeOperators =&gt; NoStarIsType”の延期の提案</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>AST を拡張しよう</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html</id>
@@ -3438,101 +3517,6 @@ PartialOptions
 <li><a href="https://www.schoolofhaskell.com/user/mgsloan/monoids-tour">Monoids Tour</a></li>
 <li><a href="https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html">Quick and Easy DSLs with Writer Endo</a></li>
 <li><a href="http://blog.ploeh.dk/2018/04/16/endomorphic-composite-as-a-monoid/">Endomorphic Composite as a monoid</a></li>
-</ul>]]></summary>
-</entry>
-<entry>
-    <title>Dual Monoid</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/02-02-dual-monoid.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/02-02-dual-monoid.html</id>
-    <published>2019-02-02T00:00:00Z</published>
-    <updated>2019-02-02T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Dual">Dual</a> 型が定義されています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">newtype</span> <span class="dt">Dual</span> a <span class="ot">=</span> <span class="dt">Dual</span> {<span class="ot"> getDual ::</span> a }</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> b <span class="ot">=</span> <span class="dt">Dual</span> (b <span class="op">&lt;&gt;</span> a)</span>
-<span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Dual</span> a) <span class="kw">where</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Dual</span> <span class="fu">mempty</span></span></code></pre></div>
-<p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>ghci<span class="op">&gt;</span> getDual <span class="op">$</span> <span class="dt">Dual</span> <span class="st">&quot;aaa&quot;</span> <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> <span class="st">&quot;bbb&quot;</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="st">&quot;bbbaaa&quot;</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a>ghci<span class="op">&gt;</span> getDual <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Dual</span> [<span class="st">&quot;aaa&quot;</span>, <span class="st">&quot;bbb&quot;</span>]</span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="st">&quot;bbbaaa&quot;</span></span></code></pre></div>
-<p>いつか使う時もあるかもしれないので、適当な例を作ってみます。</p>
-<!--more-->
-<h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
-<p>Semigroup Law</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>  <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> (<span class="dt">Dual</span> b <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> c)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">=</span> <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> (c <span class="op">&lt;&gt;</span> b)</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">=</span> <span class="dt">Dual</span> ((c <span class="op">&lt;&gt;</span> b) <span class="op">&lt;&gt;</span> a)</span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co">-- a, b, c は Semigroup なので</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">=</span> <span class="dt">Dual</span> (c <span class="op">&lt;&gt;</span> (b <span class="op">&lt;&gt;</span> a))</span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">=</span> <span class="dt">Dual</span> (b <span class="op">&lt;&gt;</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> c</span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="ot">=</span> (<span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> b) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> c</span></code></pre></div>
-<p>Monoid Law</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>  <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">=</span> <span class="dt">Dual</span> a <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a)</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">=</span> <span class="dt">Dual</span> ((<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="op">&lt;&gt;</span> a)</span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">-- a は Monoid なので</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="ot">=</span> <span class="dt">Dual</span> a</span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a>  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Dual</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> a</span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="ot">=</span> <span class="dt">Dual</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Dual</span> a</span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="ot">=</span> <span class="dt">Dual</span> (a <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> a))</span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="co">-- a は Monoid なので</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="ot">=</span> <span class="dt">Dual</span> a</span></code></pre></div>
-<h2 id="headmaybe">headMaybe</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">headMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span>
-<span id="cb5-2"><a href="#cb5-2"></a>headMaybe <span class="ot">=</span> getLast <span class="op">.</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">Last</span> <span class="op">.</span> <span class="fu">pure</span>)</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- First を使った定義</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="ot">headMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span>
-<span id="cb5-6"><a href="#cb5-6"></a>headMaybe <span class="ot">=</span> getFirst <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">First</span> <span class="op">.</span> <span class="fu">pure</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>ghci<span class="op">&gt;</span> headMaybe []</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="dt">Nothing</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a>ghci<span class="op">&gt;</span> headMaybe <span class="st">&quot;abcd&quot;</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="dt">Just</span> <span class="ch">&#39;a&#39;</span></span></code></pre></div>
-<h2 id="lastmaybe">lastMaybe</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">lastMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span>
-<span id="cb7-2"><a href="#cb7-2"></a>lastMaybe <span class="ot">=</span> getFirst <span class="op">.</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">First</span> <span class="op">.</span> <span class="fu">pure</span>)</span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="co">-- Last を使った定義</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="ot">lastMaybe ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span>
-<span id="cb7-6"><a href="#cb7-6"></a>lastMaybe <span class="ot">=</span> getLast <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Last</span> <span class="op">.</span> <span class="fu">pure</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a>ghci<span class="op">&gt;</span> lastMaybe []</span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="dt">Nothing</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a>ghci<span class="op">&gt;</span> lastMaybe <span class="st">&quot;abcd&quot;</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="dt">Just</span> <span class="ch">&#39;d&#39;</span></span></code></pre></div>
-<h2 id="last">last</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="ot">last&#39; ::</span> [a] <span class="ot">-&gt;</span> a</span>
-<span id="cb9-2"><a href="#cb9-2"></a>last&#39; <span class="ot">=</span> getAlt <span class="op">.</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">Alt</span> <span class="op">.</span> <span class="fu">pure</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a>ghci<span class="op">&gt;</span> <span class="fu">last</span> []</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="op">***</span> <span class="dt">Exception</span><span class="op">:</span> user <span class="fu">error</span> (mzero)</span>
-<span id="cb10-3"><a href="#cb10-3"></a></span>
-<span id="cb10-4"><a href="#cb10-4"></a>ghci<span class="op">&gt;</span> <span class="fu">last</span> <span class="st">&quot;abc&quot;</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="ch">&#39;c&#39;</span></span></code></pre></div>
-<h2 id="reverse">reverse</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="ot">rev ::</span> [a] <span class="ot">-&gt;</span> [a]</span>
-<span id="cb11-2"><a href="#cb11-2"></a>rev <span class="ot">=</span> getDual <span class="op">.</span> <span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="fu">pure</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a>ghci<span class="op">&gt;</span> rev [<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">7</span>]</span>
-<span id="cb12-2"><a href="#cb12-2"></a>[<span class="dv">7</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">5</span>]</span>
-<span id="cb12-3"><a href="#cb12-3"></a></span>
-<span id="cb12-4"><a href="#cb12-4"></a>ghci<span class="op">&gt;</span> rev <span class="st">&quot;Hello World&quot;</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="st">&quot;dlroW olleH&quot;</span></span></code></pre></div>
-<h2 id="foldl">foldl</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">foldl</span><span class="ot"> ::</span> (b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">foldl</span> f z t <span class="ot">=</span> appEndo (getDual (<span class="fu">foldMap</span> (<span class="dt">Dual</span> <span class="op">.</span> <span class="dt">Endo</span> <span class="op">.</span> <span class="fu">flip</span> f) t)) z</span></code></pre></div>
-<h2 id="参考">参考</h2>
-<ul>
-<li><a href="https://riptutorial.com/haskell/example/2555/folding-a-structure-in-reverse">Folding a structure in reverse</a></li>
-<li><a href="https://medium.com/@sjsyrek/five-minutes-to-monoid-fe6f364d0bba">Five Minutes to Monoid</a></li>
-<li><a href="http://ozark.hendrix.edu/~yorgey/pub/monoid-pearl.pdf">Monoids: Theme and Variations (Functional Pearl)</a></li>
-<li><a href="https://www.stackage.org/haddock/lts-13.5/base-4.12.0.0/Prelude.html#t:Foldable">Foldable</a></li>
 </ul>]]></summary>
 </entry>
 
