@@ -8,8 +8,207 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-10-04T00:00:00Z</updated>
+    <updated>2019-10-07T00:00:00Z</updated>
     <entry>
+    <title>cabal-fmt の紹介</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html</id>
+    <published>2019-10-07T00:00:00Z</published>
+    <updated>2019-10-07T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/cabal-fmt">cabal-fmt</a> でできること。</p>
+<ul>
+<li><strong>cabal</strong> ファイルの整形</li>
+<li>フォルダを指定して自動でモジュールを expand できる</li>
+<li>以下のフィールドをアルファベット順で自動的に並べ替え&amp;重複を削除
+<ul>
+<li><strong>exposed-modules</strong></li>
+<li><strong>other-modules</strong></li>
+<li><strong>default-extensions</strong></li>
+<li><strong>other-extensions</strong></li>
+<li><strong>build-depends</strong></li>
+</ul></li>
+</ul>
+<pre class="shell"><code>λ cabal-fmt --version
+0.1.1.1
+
+λ cabal -V
+cabal-install version 3.0.0.0
+compiled using version 3.0.0.0 of the Cabal library
+
+# 使い方
+λ cabal-fmt &lt;proj&gt;.cabal -i</code></pre>
+<p>作者の記事: <a href="http://oleg.fi/gists/posts/2019-08-11-cabal-fmt.html">ANN: cabal-fmt</a></p>
+<!--more-->
+<h2 id="具体例">具体例</h2>
+<h3 id="適用前">適用前</h3>
+<pre class="cabal"><code>cabal-version: 2.4
+name:test
+version:0.1.0.0
+tested-with:
+  GHC ==8.8.1 || ==8.6.5 || ==8.4.4 || ==8.2.2 || ==8.0.2 || ==7.10.3
+  GHCJS ==8.4
+
+executable site
+  main-is:          site.hs
+  other-modules:
+    Config
+    Hakyll.Ext
+  hs-source-dirs:   app
+  ghc-options:
+    -Wcompat -Wall
+    -Wnoncanonical-monad-instances
+    -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -Wtabs -threaded
+  build-depends:
+      base, lens
+    , blaze-html, conduit-combinators
+    , containers      , filepath
+          , bytestring
+    , extensible
+    
+    
+    , yaml, time
+
+  if !os(windows)
+    build-depends: hakyll-sass
+
+  default-language: Haskell2010</code></pre>
+<h3 id="適用後">適用後</h3>
+<pre class="cabal"><code>cabal-version: 2.4
+name:          test
+version:       0.1.0.0
+tested-with:
+    GHC ==7.10.3
+     || ==8.0.2
+     || ==8.2.2
+     || ==8.4.4
+     || ==8.6.5
+     || ==8.8.1
+  , GHCJS ==8.4
+
+executable site
+  main-is:          site.hs
+  other-modules:
+    Config
+    Hakyll.Ext
+
+  hs-source-dirs:   app
+  ghc-options:
+    -Wcompat -Wall -Wnoncanonical-monad-instances
+    -Wincomplete-uni-patterns -Wincomplete-record-updates
+    -Wredundant-constraints -Wtabs -threaded
+
+  build-depends:
+    , base
+    , blaze-html
+    , bytestring
+    , conduit-combinators
+    , containers
+    , extensible
+    , filepath
+    , lens
+    , time
+    , yaml
+
+  if !os(windows)
+    build-depends: hakyll-sass
+
+  default-language: Haskell2010
+</code></pre>
+<h2 id="インストール">インストール</h2>
+<pre class="shell"><code>λ cabal v2-update
+λ cabal v2-install cabal-fmt
+
+λ cabal-fmt --help
+λ cabal-fmt - .cabal file reformatter
+
+Usage: cabal-fmt [-i|--inplace] [--Werror | --Wno-error | --indent N | --tabular
+                 | --no-tabular] [FILE...] [--version]
+  Reformat .cabal files
+
+Available options:
+  -i,--inplace             process files in-place
+  --Werror                 Treat warnings as errors
+  --indent N               Indentation
+  --tabular                Tabular formatting
+  FILE...                  input files
+  -h,--help                Show this help text
+  --version                Show version</code></pre>
+<h2 id="使い方">使い方</h2>
+<p>基本的には以下のコマンドで終わりです。(<code>&lt;proj&gt;</code> は各自のファイル名に置き換えてください)</p>
+<pre class="shell"><code>λ cabal-fmt &lt;proj&gt;.cabal -i</code></pre>
+<p><code>-i</code> オプション (<code>--inplace</code>) で既存ファイルを上書きするので、結果だけ見たい場合は外しましょう。</p>
+<h3 id="モジュールの自動展開">モジュールの自動展開</h3>
+<p>僕が <code>cabal-fmt</code> を使う理由の最大のポイントはモジュールの自動展開機能です。</p>
+<pre class="cabal"><code>library
+  -- cabal-fmt: expand src
+  exposed-modules:</code></pre>
+<p>記法としては、上記のようにしてモジュールを探索するディレクトリ (今回の場合は <strong>src</strong>) を指定します。</p>
+<p>実際に使ってみましょう。ここでは例として <strong>test-dir</strong> を作りますが、実際には <strong>src</strong>, <strong>app</strong>, <strong>test</strong> などが展開の対象となることが多いと思います。</p>
+<p>また、意図的に <strong>C.md</strong> としている点にも注意してください。</p>
+<pre class="shell"><code>λ mkdir test-dir
+λ touch test-dir/A.hs test-dir/B.hs test-dir/C.md
+λ tree test-dir
+test-dir
+├── A.hs
+├── B.hs
+└── C.md</code></pre>
+<p>適用する <strong>cabal</strong> ファイル (<strong>test.cabal</strong>) の中身は以下の通りです。</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir
+  exposed-modules:</code></pre>
+<p>この状態で <code>cabal-fmt test.cabal -i</code> を実行すると結果は以下のようになります。</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir
+  exposed-modules:
+    A
+    B
+    C
+</code></pre>
+<p><code>.hs</code> ファイルだけ列挙して欲しいところですが、指定したディレクトリ以下の全てを列挙します。そのため、公開したいモジュールと非公開のモジュールはディレクトリを分けて運用するなど、少しだけ工夫する必要があります。</p>
+<p>一応、除外したいモジュールを <code>-Module</code> の形式で指定することもできます。</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir -C
+  exposed-modules:</code></pre>
+<p>適用後</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir -C
+  exposed-modules:
+    A
+    B
+</code></pre>
+<p>この方法を使えば <strong>hspec-discover</strong> や <strong>tasty-discover</strong> のためのファイルなどを除外することができます。</p>
+<h2 id="cabal-format-コマンド">cabal format コマンド</h2>
+<p><code>cabal</code> についてあまり詳しく無いので良くわかりませんが、一応 <strong>cabal format</strong> というコマンドが存在します。(<a href="https://github.com/haskell/cabal/issues/2460"><code>cabal format</code> is not listed in –help message #2460</a>)</p>
+<pre class="shell"><code>λ cabal format --help
+Reformat the .cabal file using the standard style.
+
+Usage: cabal format [FILE]
+
+Flags for format:
+ -h --help Show this help text</code></pre>
+<p>実際にこのコマンドでも整形だけなら可能みたいです。ただし、<a href="https://github.com/haskell/cabal/issues/5734"><code>cabal format</code> inlines and removes <code>common</code> stanzas #5734</a> にもある通り <code>common</code> stanza が削除されたりします。</p>
+<p>そのため、<strong>cabal format</strong> コマンドよりも <strong>cabal-fmt</strong> を利用した方が良いと思います。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>便利なので最近良く使ってます。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="http://oleg.fi/gists/posts/2019-08-11-cabal-fmt.html">ANN: cabal-fmt</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>NoStarIsType 言語拡張が必要になるとき</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html</id>
@@ -3368,155 +3567,6 @@ PartialOptions
 <li><a href="https://medium.com/@jonathangfischoff/the-partial-options-monoid-pattern-31914a71fc67">The Partial Options Monoid</a></li>
 <li><a href="https://kazu-yamamoto.hatenablog.jp/entry/2018/11/29/155311">SemigroupがMonoidに恋するとき</a></li>
 <li><a href="https://qiita.com/philopon/items/a29717af62831d3c8c07">optparse-applicativeをふわっと使う</a></li>
-</ul>]]></summary>
-</entry>
-<entry>
-    <title>Endo Monoid</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html</id>
-    <published>2019-02-04T00:00:00Z</published>
-    <updated>2019-02-04T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Endo">Endo</a> 型が定義されています。</p>
-<p><code>Endo</code> という名前は <code>自己準同型 (Endomorphism)</code> に由来します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">newtype</span> <span class="dt">Endo</span> a <span class="ot">=</span> <span class="dt">Endo</span> {<span class="ot"> appEndo ::</span> a <span class="ot">-&gt;</span> a }</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g <span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g)</span>
-<span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span></span></code></pre></div>
-<p>使い方は簡単。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>ghci<span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="op">+</span><span class="dv">1</span>), (<span class="op">*</span><span class="dv">2</span>), <span class="fu">negate</span>]</span>
-<span id="cb2-2"><a href="#cb2-2"></a>ghci<span class="op">&gt;</span> <span class="fu">print</span> <span class="op">$</span> appEndo f <span class="dv">5</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="op">-</span><span class="dv">9</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a>ghci<span class="op">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>) <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="st">&quot;Hello, Haskell!&quot;</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a></span>
-<span id="cb2-8"><a href="#cb2-8"></a>ghci<span class="op">&gt;</span> (appEndo <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>), <span class="fu">id</span>, (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)]) <span class="st">&quot;Haskell&quot;</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="st">&quot;Hello, Haskell!&quot;</span></span></code></pre></div>
-<p><code>appEndo</code> すると関数が出てくるところがポイントですね。2つ目の評価の流れをざっくり追うとこんな感じです。</p>
-<pre class="haskll"><code>  appEndo (Endo (&quot;Hello, &quot; ++) &lt;&gt; Endo (++ &quot;!&quot;)) &quot;Haskell&quot;
-= appEndo (Endo ((&quot;Hello, &quot; ++ ) . (++ &quot;!&quot;))) &quot;Haskell&quot;
-= (&quot;Hello, &quot; ++ ) . (++ &quot;!&quot;) $ &quot;Haskell&quot;
-= &quot;Hello, &quot; ++ (&quot;Haskell&quot; ++ &quot;!&quot;)
-= &quot;Hello, &quot; ++ &quot;Haskell!&quot;
-= &quot;Hello, Haskell!&quot;</code></pre>
-<p><code>Endo</code> は意外と色んなところで使える便利なモノイドです。</p>
-<!--more-->
-<h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
-<p>Semigroup Law</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="dt">Endo</span> g <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (g <span class="op">.</span> h)</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> (g <span class="op">.</span> h))</span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">-- Category の定義より f . (g . h) == (f . g) . h</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="ot">=</span> <span class="dt">Endo</span> ((f <span class="op">.</span> g) <span class="op">.</span> h)</span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="ot">=</span> (<span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</span></code></pre></div>
-<p>Monoid Law</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> <span class="fu">id</span>)</span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- Category の定義より f . id == f</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="ot">=</span> <span class="dt">Endo</span> f</span>
-<span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a>  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> f</span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="ot">=</span> <span class="dt">Endo</span> (<span class="fu">id</span> <span class="op">.</span> f)</span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="co">-- Category の定義より id . f == f</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a><span class="ot">=</span> <span class="dt">Endo</span> f</span></code></pre></div>
-<h3 id="f-.-g-.-h-f-.-g-.-h"><code>f . (g . h) == (f . g) . h</code></h3>
-<p><code>(.)</code> の定義</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</span>
-<span id="cb6-2"><a href="#cb6-2"></a>f <span class="op">.</span> g <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g x)</span></code></pre></div>
-<p>証明</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a>(<span class="dt">LHS</span>)</span>
-<span id="cb7-2"><a href="#cb7-2"></a>  f <span class="op">.</span> (g <span class="op">.</span> h)</span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((g <span class="op">.</span> h) x)</span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((\y <span class="ot">-&gt;</span> g (h y)) x)</span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</span>
-<span id="cb7-6"><a href="#cb7-6"></a></span>
-<span id="cb7-7"><a href="#cb7-7"></a>(<span class="dt">RHS</span>)</span>
-<span id="cb7-8"><a href="#cb7-8"></a>  (f <span class="op">.</span> g) <span class="op">.</span> h</span>
-<span id="cb7-9"><a href="#cb7-9"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> (f <span class="op">.</span> g) (h x)</span>
-<span id="cb7-10"><a href="#cb7-10"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> (\y <span class="ot">-&gt;</span> f (g y)) (h x)</span>
-<span id="cb7-11"><a href="#cb7-11"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</span></code></pre></div>
-<h3 id="id-.-f-f"><code>id . f == f</code></h3>
-<p><code>id</code> の定義</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">id</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> a</span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">id</span> x <span class="ot">=</span> x</span></code></pre></div>
-<p>証明</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a>  <span class="fu">id</span> <span class="op">.</span> f</span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="fu">id</span> (f x)</span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f x</span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="ot">=</span> f</span></code></pre></div>
-<h2 id="例1-write-endo-パターン">例1) Write Endo パターン</h2>
-<p><a href="https://hackage.haskell.org/package/yesod-core">yesod-core</a> パッケージの <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Handler.html#t:ProvidedRep">ProvideRep</a> を扱う関数は <code>Endo</code> を利用しています。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="ot">selectRep ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) () <span class="ot">-&gt;</span> m <span class="dt">TypedContent</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="ot">provideRep ::</span> (<span class="dt">Monad</span> m, <span class="dt">HasContentType</span> a) <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="ot">provideRepType ::</span> (<span class="dt">Monad</span> m, <span class="dt">ToContent</span> a) <span class="ot">=&gt;</span> <span class="dt">ContentType</span> <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</span></code></pre></div>
-<p>また <code>Yesod</code> には <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Types.html#t:GHState">GHState</a> 型がありますが、そこでも <code>Endo</code> を使っています。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">data</span> <span class="dt">GHState</span> <span class="ot">=</span> <span class="dt">GHState</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a>    {<span class="ot"> ghsSession ::</span> <span class="op">!</span><span class="dt">SessionMap</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a>    ,<span class="ot"> ghsRBC     ::</span> <span class="op">!</span>(<span class="dt">Maybe</span> <span class="dt">RequestBodyContents</span>)</span>
-<span id="cb11-4"><a href="#cb11-4"></a>    ,<span class="ot"> ghsIdent   ::</span> <span class="op">!</span><span class="dt">Int</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a>    ,<span class="ot"> ghsCache   ::</span> <span class="op">!</span><span class="dt">TypeMap</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>    ,<span class="ot"> ghsCacheBy ::</span> <span class="op">!</span><span class="dt">KeyedTypeMap</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a>    ,<span class="ot"> ghsHeaders ::</span> <span class="op">!</span>(<span class="dt">Endo</span> [<span class="dt">Header</span>])</span>
-<span id="cb11-8"><a href="#cb11-8"></a>    }</span></code></pre></div>
-<p>このような <code>Writer</code> と <code>Endo</code> を使った実装パターンは <a href="https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html">Quick and Easy DSLs with Writer Endo</a> で紹介されている <code>Writer Endo</code> パターンとして知られているようです。</p>
-<h2 id="例2-データの更新">例2) データの更新</h2>
-<p>こんな感じで設定等を更新する際にも使えるかもしれません。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="kw">import</span> <span class="dt">Control.Lens</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a></span>
-<span id="cb12-9"><a href="#cb12-9"></a><span class="kw">type</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Record</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a>  &#39;[ <span class="st">&quot;name&quot;</span> <span class="op">&gt;:</span> <span class="dt">String</span></span>
-<span id="cb12-11"><a href="#cb12-11"></a>   , <span class="st">&quot;age&quot;</span>  <span class="op">&gt;:</span> <span class="dt">Int</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a>   ]</span>
-<span id="cb12-13"><a href="#cb12-13"></a></span>
-<span id="cb12-14"><a href="#cb12-14"></a><span class="ot">update ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>] <span class="ot">-&gt;</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span></span>
-<span id="cb12-15"><a href="#cb12-15"></a>update fs <span class="ot">=</span> appEndo (<span class="fu">foldMap</span> <span class="dt">Endo</span> fs)</span>
-<span id="cb12-16"><a href="#cb12-16"></a></span>
-<span id="cb12-17"><a href="#cb12-17"></a><span class="ot">me ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>]</span>
-<span id="cb12-18"><a href="#cb12-18"></a>me <span class="ot">=</span></span>
-<span id="cb12-19"><a href="#cb12-19"></a>  [ (<span class="op">&amp;</span> <span class="op">#</span>name <span class="op">.~</span> <span class="st">&quot;guchi&quot;</span>)</span>
-<span id="cb12-20"><a href="#cb12-20"></a>  , (<span class="op">&amp;</span> <span class="op">#</span>age <span class="op">.~</span> <span class="dv">20</span>)</span>
-<span id="cb12-21"><a href="#cb12-21"></a>  ]</span>
-<span id="cb12-22"><a href="#cb12-22"></a></span>
-<span id="cb12-23"><a href="#cb12-23"></a><span class="ot">defaultPerson ::</span> <span class="dt">Person</span></span>
-<span id="cb12-24"><a href="#cb12-24"></a>defaultPerson <span class="ot">=</span> <span class="op">#</span>name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span></span>
-<span id="cb12-25"><a href="#cb12-25"></a>             <span class="op">&lt;:</span> <span class="op">#</span>age  <span class="op">@=</span> <span class="dv">0</span></span>
-<span id="cb12-26"><a href="#cb12-26"></a>             <span class="op">&lt;:</span> nil</span></code></pre></div>
-<p>実行結果</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a>λ<span class="op">&gt;</span> stack repl <span class="co">--package extensible --package lens EndoExample.hs</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a></span>
-<span id="cb13-3"><a href="#cb13-3"></a>ghci<span class="op">&gt;</span> defaultPerson</span>
-<span id="cb13-4"><a href="#cb13-4"></a>name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">0</span> <span class="op">&lt;:</span> nil</span>
-<span id="cb13-5"><a href="#cb13-5"></a></span>
-<span id="cb13-6"><a href="#cb13-6"></a>ghci<span class="op">&gt;</span> update me defaultPerson</span>
-<span id="cb13-7"><a href="#cb13-7"></a>name <span class="op">@=</span> <span class="st">&quot;guchi&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">20</span> <span class="op">&lt;:</span> nil</span></code></pre></div>
-<h2 id="例3-パターンマッチの実装">例3) パターンマッチの実装</h2>
-<p>僕はあまり <code>Endo</code> モノイドを使いこなせていませんが、良い感じに使えたと思える例としては TAPL 11章でレコードパターンを実装する際です。</p>
-<p>レコードのパターンマッチは代入の合成で書くことができるので、<code>Endo</code> がちょうどぴったり適用できました。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="ot">match ::</span> <span class="dt">Pattern</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> (<span class="dt">Term</span> <span class="ot">-&gt;</span> <span class="dt">Term</span>)</span>
-<span id="cb14-2"><a href="#cb14-2"></a>match (<span class="dt">PtVar</span> _ n) v <span class="ot">=</span> subst n v</span>
-<span id="cb14-3"><a href="#cb14-3"></a>match p<span class="op">@</span>(<span class="dt">PtRecord</span> fs) v<span class="op">@</span>(<span class="dt">TmRecord</span> fs&#39;)</span>
-<span id="cb14-4"><a href="#cb14-4"></a>  <span class="op">|</span> isRecordValue v <span class="op">&amp;&amp;</span> sameFieldLength p v</span>
-<span id="cb14-5"><a href="#cb14-5"></a>      <span class="ot">=</span> appEndo <span class="op">$</span> <span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="op">.</span> <span class="fu">uncurry</span> match) <span class="op">$</span> <span class="fu">zip</span> (<span class="fu">map</span> <span class="fu">snd</span> fs) (<span class="fu">map</span> <span class="fu">snd</span> fs&#39;)</span>
-<span id="cb14-6"><a href="#cb14-6"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: pattern match failure&quot;</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a>match <span class="dt">PtRecord</span>{} _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: v is not Rrcord&quot;</span></span></code></pre></div>
-<h2 id="参考">参考</h2>
-<ul>
-<li><a href="https://www.schoolofhaskell.com/user/mgsloan/monoids-tour">Monoids Tour</a></li>
-<li><a href="https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html">Quick and Easy DSLs with Writer Endo</a></li>
-<li><a href="http://blog.ploeh.dk/2018/04/16/endomorphic-composite-as-a-monoid/">Endomorphic Composite as a monoid</a></li>
 </ul>]]></summary>
 </entry>
 
