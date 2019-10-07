@@ -231,6 +231,24 @@ library
 
 この方法を使えば **hspec-discover** や **tasty-discover** のためのファイルなどを除外することができます。
 
+## cabal format コマンド
+
+`cabal` についてあまり詳しく無いので良くわかりませんが、一応 **cabal format** というコマンドが存在します。([`cabal format` is not listed in --help message #2460](https://github.com/haskell/cabal/issues/2460))
+
+```shell
+λ cabal format --help
+Reformat the .cabal file using the standard style.
+
+Usage: cabal format [FILE]
+
+Flags for format:
+ -h --help Show this help text
+```
+
+実際にこのコマンドでも整形だけなら可能みたいです。ただし、[`cabal format` inlines and removes `common` stanzas #5734](https://github.com/haskell/cabal/issues/5734) にもある通り `common` stanza が削除されたりします。
+
+そのため、**cabal format** コマンドよりも **cabal-fmt** を利用した方が良いと思います。
+
 ## まとめ
 
 便利なので最近良く使ってます。
