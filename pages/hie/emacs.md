@@ -56,7 +56,7 @@ M-x package-install [RET] lsp-mode [RET]
 次に、`lsp-ui`と`lsp-haskell`をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
 
 ```sh
-$ cd /path/to/install
+$ cd ~/.emacs.d/elisp
 $ git clone https://github.com/emacs-lsp/lsp-ui
 $ git clone https://github.com/emacs-lsp/lsp-haskell
 ```
