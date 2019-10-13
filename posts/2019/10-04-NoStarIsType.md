@@ -27,7 +27,7 @@ The Glorious Glasgow Haskell Compilation System, version 8.8.1
 
 ## 型レベル四則演算
 
-[GHC.TypeLits](https://hackage.haskell.org/package/base-4.12.0.0/docs/GHC-TypeLits.html) に用意されている関数を使って型レベル自然数の四則演算を行ってみましょう。
+[GHC.TypeLits][TypeLits] に用意されている関数を使って型レベル自然数の四則演算を行ってみましょう。
 
 ```haskell
 λ :set -XDataKinds -XTypeOperators
@@ -74,7 +74,7 @@ Bool :: *
 Maybe :: * -> *
 ```
 
-1つ前の [GHC 8.6](https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6) から **StarIsType** 言語拡張がデフォルトで有効になり、`*` カインドは `Type` カインドのシノニムとして定義されるようになりました。なので明示的に **StarIsType** を無効にすると直ります。(この辺りの話題については既に ["TypeOperators => NoStarIsType"の延期の提案](https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/) などにまとまっているため、気になる方はご参照ください)
+1つ前の [GHC 8.6][GHC-migration] から **StarIsType** 言語拡張がデフォルトで有効になり、`*` カインドは `Type` カインドのシノニムとして定義されるようになりました。なので明示的に **StarIsType** を無効にすると直ります。(この辺りの話題については既に ["TypeOperators => NoStarIsType"の延期の提案][reddit] などにまとまっているため、気になる方はご参照ください)
 
 ```haskell
 λ :set -XNoStarIsType
@@ -101,8 +101,33 @@ Maybe :: Type -> Type
 
 `kind!` のエイリアスとして `k!` コマンド欲しい。
 
+## 追記
+
+`k!` コマンドのマージリクエストが作られました [Allow completion for GHCi commands with option `!` (#17345)][MR]
+
+ありがとうございます :)
+
+GHC に組み込まれるまでは、`~/.ghci` や `<proj>/.ghci` に以下の内容を記述しておけば `:kind!` のエイリアスとして `:k!` が使えるようになります。
+
+```
+:def! k! (\e -> return (":kind! " ++ e))
+```
+
+実行結果
+
+```
+> :k! 1+1
+1+1 :: Nat
+= 2
+```
+
 ## 参考リソース
 
 - [StarIsType - Glasgow Haskell Compiler User's Guide](https://downloads.haskell.org/~ghc/8.8.1/docs/html/users_guide/glasgow_exts.html?highlight=nostaristype#extension-StarIsType)
 - [GHC 8.6.x Migration Guide](https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6)
 - ["TypeOperators => NoStarIsType"の延期の提案](https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/)
+
+[TypeLits]:https://hackage.haskell.org/package/base-4.12.0.0/docs/GHC-TypeLits.html
+[GHC-migration]:https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6
+[reddit]:https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/
+[MR]:https://gitlab.haskell.org/ghc/ghc/merge_requests/1934
