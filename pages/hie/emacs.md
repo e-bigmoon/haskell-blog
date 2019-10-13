@@ -47,7 +47,7 @@ EmacsでHIEを使うには次の３つのパッケージが必要です。
 - [lsp-ui](https://github.com/emacs-lsp/lsp-ui)
 - [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
 
-`lsp-mode` は `package.el` でのインストールが推奨されているので、emacs を起動して以下のコマンドでインストールしましょう。
+`lsp-mode` は `package.el` でのインストールが推奨されているので、Emacs を起動して以下のコマンドでインストールしましょう。
 
 ```
 M-x package-install [RET] lsp-mode [RET]
@@ -65,7 +65,7 @@ $ git clone https://github.com/emacs-lsp/lsp-haskell
 
 最後に設定ファイルを更新します。Emacs の設定ファイル名は `~/.emacs`, `~/.emacs.el`, `~/.emacs.d/init.el` のどれか１つなら大丈夫です。
 設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。
-最初の2行でで先程インストールした２つのパッケージの場所を指定してください。
+最初の2行で先程インストールした２つのパッケージの場所を指定してください。
 
 ```elisp
 (add-to-list 'load-path "~/.emacs.d/elisp/lsp-ui")
