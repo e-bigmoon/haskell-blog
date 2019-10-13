@@ -1,16 +1,16 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2019/03/03
+date: 2019/10/13
 ---
 
 ## 実行環境
 
 | 環境  | バージョン   |
 |:-----:|:-------------|
-| OS    | Ubuntu 17.10 |
-| Stack |        1.9.3 |
-| HIE   |      0.6.0.0 |
-| Emacs |         26.1 |
+| OS    | Ubuntu 18.04 |
+| Stack |        2.1.3 |
+| HIE   |     0.12.0.0 |
+| Emacs |         26.3 |
 
 ## 導入手順
 
@@ -30,12 +30,13 @@ $ stack install cabal-install
 $ sudo apt install libicu-dev libtinfo-dev libgmp-dev
 ```
 
-準備ができたらHIEをリポジトリからクローンしてインストールしましょう。
+準備ができたらHIEをリポジトリからクローンしてインストールしましょう。(以下の例では GHC8.6.5 を対象としています。)
 
 ```sh
 $ git clone https://github.com/haskell/haskell-ide-engine --recursive
 $ cd haskell-ide-engine
-$ make build-all
+$ stack ./install.hs stack-hie-8.6.5
+$ stack ./install.hs stack-build-data
 ```
 
 ### 2. 必要なパッケージの入手
@@ -46,11 +47,16 @@ EmacsでHIEを使うには次の３つのパッケージが必要です。
 - [lsp-ui](https://github.com/emacs-lsp/lsp-ui)
 - [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
 
-これらのパッケージをインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
+`lsp-mode` は `package.el` でのインストールが推奨されているので、Emacs を起動して以下のコマンドでインストールしましょう。
+
+```
+M-x package-install [RET] lsp-mode [RET]
+```
+
+次に、`lsp-ui`と`lsp-haskell`をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
 
 ```sh
-$ cd /path/to/install
-$ git clone https://github.com/emacs-lsp/lsp-mode
+$ cd ~/.emacs.d/elisp
 $ git clone https://github.com/emacs-lsp/lsp-ui
 $ git clone https://github.com/emacs-lsp/lsp-haskell
 ```
@@ -59,20 +65,21 @@ $ git clone https://github.com/emacs-lsp/lsp-haskell
 
 最後に設定ファイルを更新します。Emacs の設定ファイル名は `~/.emacs`, `~/.emacs.el`, `~/.emacs.d/init.el` のどれか１つなら大丈夫です。
 設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。
-最初の３行でで先程インストールした３つのパッケージの場所を指定してください。
+最初の2行で先程インストールした２つのパッケージの場所を指定してください。
 
 ```elisp
-(add-to-list 'load-path "/path/to/lsp-mode")
-(add-to-list 'load-path "/path/to/lsp-ui")
-(add-to-list 'load-path "/path/to/lsp-haskell")
+(add-to-list 'load-path "~/.emacs.d/elisp/lsp-ui")
+(add-to-list 'load-path "~/.emacs.d/elisp/lsp-haskell")
 
 (require 'lsp-mode)
-(require 'lsp-ui)
-(require 'lsp-haskell)
+(setq lsp-prefer-flymake nil)
+(add-hook 'haskell-mode-hook #'lsp)
 
+(require 'lsp-ui)
 (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-(add-hook 'haskell-mode-hook #'lsp-haskell-enable)
 (add-hook 'haskell-mode-hook 'flycheck-mode)
+
+(require 'lsp-haskell)
 ```
 
 ### 補足1 : Emacs26を使ってドキュメントをきれいに表示する
