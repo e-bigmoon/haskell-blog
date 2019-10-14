@@ -168,7 +168,7 @@
       <div class="post-heading">
         <h1 class="post-title">Emacs で Haskell IDE Engine を使う</h1>
         
-        <span>最終更新日: 2019/10/13</span>
+        <span>最終更新日: 2019/10/14</span>
         
       </div>
 
@@ -232,20 +232,20 @@
 <span id="cb4-3"><a href="#cb4-3"></a>$ <span class="fu">git</span> clone https://github.com/emacs-lsp/lsp-haskell</span></code></pre></div>
 <h3 id="emacs-の設定ファイルを更新">3. Emacs の設定ファイルを更新</h3>
 <p>最後に設定ファイルを更新します。Emacs の設定ファイル名は <code>~/.emacs</code>, <code>~/.emacs.el</code>, <code>~/.emacs.d/init.el</code> のどれか１つなら大丈夫です。 設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。 最初の2行で先程インストールした２つのパッケージの場所を指定してください。</p>
-<pre class="elisp"><code>(add-to-list 'load-path &quot;~/.emacs.d/elisp/lsp-ui&quot;)
-(add-to-list 'load-path &quot;~/.emacs.d/elisp/lsp-haskell&quot;)
-
-(require 'lsp-mode)
-(setq lsp-prefer-flymake nil)
-(add-hook 'haskell-mode-hook #'lsp)
-
-(require 'lsp-ui)
-(add-hook 'lsp-mode-hook 'lsp-ui-mode)
-(add-hook 'haskell-mode-hook 'flycheck-mode)
-
-(require 'lsp-haskell)</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>(add<span class="op">-</span>to<span class="op">-</span>list 'load<span class="op">-</span>path <span class="st">&quot;~/.emacs.d/elisp/lsp-ui&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>(add<span class="op">-</span>to<span class="op">-</span>list 'load<span class="op">-</span>path <span class="st">&quot;~/.emacs.d/elisp/lsp-haskell&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a>(require 'lsp<span class="op">-</span>mode)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>(setq lsp<span class="op">-</span>prefer<span class="op">-</span>flymake nil)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>(add<span class="op">-</span>hook 'haskell<span class="op">-</span>mode<span class="op">-</span>hook <span class="op">#</span>'lsp)</span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a>(require 'lsp<span class="op">-</span>ui)</span>
+<span id="cb5-9"><a href="#cb5-9"></a>(add<span class="op">-</span>hook 'lsp<span class="op">-</span>mode<span class="op">-</span>hook 'lsp<span class="op">-</span>ui<span class="op">-</span>mode)</span>
+<span id="cb5-10"><a href="#cb5-10"></a>(add<span class="op">-</span>hook 'haskell<span class="op">-</span>mode<span class="op">-</span>hook 'flycheck<span class="op">-</span>mode)</span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a>(require 'lsp<span class="op">-</span>haskell)</span></code></pre></div>
 <h3 id="補足1-emacs26を使ってドキュメントをきれいに表示する">補足1 : Emacs26を使ってドキュメントをきれいに表示する</h3>
-<p>HIEがドキュメントなどを表示とする時、現在編集しているバッファ割り込んで表示しようとしますが、Emacs26で追加された機能 <code>child flame</code> を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。</p>
+<p>HIEがドキュメントなどを表示する時、現在編集しているバッファに割り込んで表示しようとしますが、Emacs26で追加された機能 <code>child flame</code> を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a>$ <span class="fu">sudo</span> add-apt-repository ppa:kelleyk/emacs</span>
 <span id="cb6-2"><a href="#cb6-2"></a>$ <span class="fu">sudo</span> apt update</span>
 <span id="cb6-3"><a href="#cb6-3"></a>$ <span class="fu">sudo</span> apt install emacs26</span></code></pre></div>
@@ -274,6 +274,11 @@ ghc-mod: GMEProcess &quot;readProcessStderrChan&quot; &quot;/home/yamada/.stack/
 $ rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
 $ stack clean --full
 $ make build-all</code></pre>
+<h2 id="補足3-エラーが出てhieの起動に失敗する">補足3 : エラーが出てHIEの起動に失敗する</h2>
+<p><code>*Messages*</code> バッファに次のようなエラーが出てしまうことがあります．</p>
+<pre><code>error in process filter: or: Symbol's value as variable is void: method
+error in process filter: Symbol's value as variable is void: method</code></pre>
+<p>このエラーはemacs <code>dash</code> パッケージが古いことが原因で起こります．最新版の <code>dash</code> をインストールしましょう．</p>
 <h3 id="参考">参考</h3>
 <ul>
 <li><a href="https://github.com/haskell/haskell-ide-engine">haskell-ide-engine</a></li>
