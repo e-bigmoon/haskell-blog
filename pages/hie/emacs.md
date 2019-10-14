@@ -1,6 +1,6 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2019/10/13
+date: 2019/10/14
 ---
 
 ## 実行環境
@@ -67,7 +67,7 @@ $ git clone https://github.com/emacs-lsp/lsp-haskell
 設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。
 最初の2行で先程インストールした２つのパッケージの場所を指定してください。
 
-```elisp
+```haskell
 (add-to-list 'load-path "~/.emacs.d/elisp/lsp-ui")
 (add-to-list 'load-path "~/.emacs.d/elisp/lsp-haskell")
 
@@ -84,7 +84,7 @@ $ git clone https://github.com/emacs-lsp/lsp-haskell
 
 ### 補足1 : Emacs26を使ってドキュメントをきれいに表示する
 
-HIEがドキュメントなどを表示とする時、現在編集しているバッファ割り込んで表示しようとしますが、Emacs26で追加された機能 `child flame` を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。
+HIEがドキュメントなどを表示する時、現在編集しているバッファに割り込んで表示しようとしますが、Emacs26で追加された機能 `child flame` を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。
 
 ```sh
 $ sudo add-apt-repository ppa:kelleyk/emacs
@@ -128,6 +128,17 @@ $ rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
 $ stack clean --full
 $ make build-all
 ```
+
+## 補足3 : エラーが出てHIEの起動に失敗する
+
+`*Messages*` バッファに次のようなエラーが出てしまうことがあります．
+
+```
+error in process filter: or: Symbol's value as variable is void: method
+error in process filter: Symbol's value as variable is void: method
+```
+
+このエラーはemacs `dash` パッケージが古いことが原因で起こります．最新版の `dash` をインストールしましょう．
 
 ### 参考
 
