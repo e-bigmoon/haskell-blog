@@ -224,8 +224,8 @@ instance YesodAuth App where
         x <- insertBy $ User (credsIdent creds) Nothing Nothing False
         return $ Authenticated $liftHandler $ 
             case x of
-                Left (Entity userid _) -> userid -- newly added user
-                Right userid -> userid -- existing user
+                Left (Entity userid _) -> userid -- existing user
+                Right userid -> userid -- newly added user
 
 instance YesodAuthPersist App
 
