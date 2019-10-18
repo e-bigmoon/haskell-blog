@@ -1,6 +1,6 @@
 ---
 title: 認証と認可
-date: 2019/06/14
+date: 2019/10/18
 ---
 
 認証と認可はとても良く似ていますが、それぞれ異なる概念です。認証はユーザを識別し、認可はユーザの権限を決定します。残念なことに、これらの用語はどちらも "auth" と省略されるため、両者の概念を混同してしまう場合があります。
@@ -255,8 +255,8 @@ instance YesodAuthEmail App where
         textPart = Part
             { partType = "text/plain; charset=utf-8"
             , partEncoding = None
-            , partFilename = Nothing
-            , partContent = Data.Text.Lazy.Encoding.encodeUtf8
+            , partDisposition = DefaultDisposition
+            , partContent = PartContent $ Data.Text.Lazy.Encoding.encodeUtf8
                 [stext|
                     Please confirm your email address by clicking on the link below.
 
@@ -269,8 +269,8 @@ instance YesodAuthEmail App where
         htmlPart = Part
             { partType = "text/html; charset=utf-8"
             , partEncoding = None
-            , partFilename = Nothing
-            , partContent = renderHtml
+            , partDisposition = DefaultDisposition
+            , partContent = PartContent $ renderHtml
                 [shamlet|
                     <p>Please confirm your email address by clicking on the link below.
                     <p>
