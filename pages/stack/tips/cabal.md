@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/03/03
+date: 2019/10/28
 ---
 
 ## 注意点
@@ -11,10 +11,10 @@ date: 2019/03/03
 
 ```shell
 $ stack --numeric-version
-1.9.3
+2.1.3
 
 $ cabal --numeric-version
-2.4.1.0
+3.0.0.0
 ```
 
 　| stack | cabal
@@ -42,35 +42,40 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 - `cabal v2-build` は [Nix-style Local Builds](https://cabal.readthedocs.io/en/latest/nix-local-build-overview.html)
 - `cabal build` は `cabal v1-build` のエイリアス
 - `cabal new-build` は `cabal v2-build` のエイリアス
-- `cabal v3.0.0.0` からは `cabal v2-build` が `cabal build` のエイリアスになる予定 [#5800](https://github.com/haskell/cabal/pull/5800)
+- `cabal v3.0.0.0` からは `cabal v2-build` が `cabal build` のエイリアス ([#5800](https://github.com/haskell/cabal/pull/5800))
+
+cabal version | cabal build | cabal new-build
+--------------|-------------|-----------------
+v3.0.0.0 | v2-build | v2-build
+v2.4.1.0 | **v1**-build | v2-build
 
 ## コマンド対応表
 
 stack | cabal | 備考
 ------|--------|-------
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
-`stack build` | `cabal new-build`
-`stack build --static` | `cabal new-build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
-`stack test` | `cabal new-test --enable-tests` <br> `cabal new-test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
-`stack repl` <br> `stack ghci` | `cabal new-repl`
-`stack repl --package <pkg1> <pkg2>` | `cabal new-repl --build-dep <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
-`stack clean` | `cabal new-clean`
-`stack run` | `cabal new-run`
+`stack build` | `cabal build`
+`stack build --static` | `cabal build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
+`stack test` | `cabal test --enable-tests` <br> `cabal test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
+`stack repl` <br> `stack ghci` | `cabal repl`
+`stack repl --package <pkg1> <pkg2>` | `cabal repl --build-dep <pkg1>, <pkg2>` <br> `cabal repl -b <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
+`stack clean` | `cabal clean`
+`stack run` | `cabal run`
 `stack --version` | `cabal --version`
 `stack --numeric-version` | `cabal --numeric-version`
-`stack upgrade` | `cabal new-install cabal-install`<br>`cabal new-install cabal-install --overwrite-policy=always`
- ? | `cabal new-haddock`
- ? | `cabal new-sdist`
+`stack upgrade` | `cabal install cabal-install`<br>`cabal install cabal-install --overwrite-policy=always`
+ ? | `cabal haddock`
+ ? | `cabal sdist`
  ? | `cabal check`
  ? | `cabal upload` <br> `cabal upload --publish`
-`stack update` | `cabal new-update`
+`stack update` | `cabal update`
 
 ### どちらか一方にしかないコマンドやオプション
 
 stack | cabal | 備考
 ------|--------|-------
 `stack build --file-watch` | [#5252](https://github.com/haskell/cabal/issues/5252)
-- | `cabal format` | [#2460](https://github.com/haskell/cabal/issues/2460), [#5306](https://github.com/haskell/cabal/issues/5306), [#5734](https://github.com/haskell/cabal/issues/5734)
+- | `cabal format` | [#2460](https://github.com/haskell/cabal/issues/2460), [#5306](https://github.com/haskell/cabal/issues/5306), [#5734](https://github.com/haskell/cabal/issues/5734), [cabal-fmt の紹介](https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html)
 `stack path` | [#3850](https://github.com/haskell/cabal/issues/3850), [#4661](https://github.com/haskell/cabal/issues/4661) |
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 
@@ -142,12 +147,12 @@ packages:
 
 ```shell
 # 全てのパッケージ
-$ cabal new-build all
-$ cabal new-repl
+$ cabal build all
+$ cabal repl
 
 # 個別のパッケージ
-$ cabal new-build package1
-$ cabal new-repl basic
+$ cabal build package1
+$ cabal repl basic
 ```
 
 ### リモートリポジトリ
@@ -242,7 +247,7 @@ $ stack build --profile
 profiling: True
 ```
 
-`cabal.project.local` に上記の内容を追加し、`cabal new-build` すれば良い。
+`cabal.project.local` に上記の内容を追加し、`cabal build` すれば良い。
 
 - [How can I profile my library/application?](https://cabal.readthedocs.io/en/latest/nix-local-build.html#how-can-i-profile-my-library-application)
 
@@ -258,6 +263,7 @@ with-compiler: ghc-8.6.2
 
 ### build-depends で利用するバージョン制約の指定方法
 
+- [Cabal Version Calculator](https://cabal-version-calculator.netlify.com/)
 - [3.3.2.9. Build information](https://www.haskell.org/cabal/users-guide/developing-packages.html#build-information)
 
 利用可能な演算子 | 記号
@@ -315,7 +321,7 @@ build-depends: network ^>= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }
 ### cabal.project.local の設定
 
 ```shell
-$ cabal new-configure -j
+$ cabal configure -j
 ```
 
 ### スクリプト形式
@@ -391,13 +397,17 @@ main = warp 3000 HelloWorld
 実行方法
 
 ```shell
-$ cabal new-run Script.hs
-$ cabal new-run Script.hs -- --arg1 # 引数有り
+$ cabal run Script.hs
+$ cabal run Script.hs -- --arg1 # 引数有り
 ```
 
 ## 便利ツール
 
 - [cabal-plan list-bins](http://hackage.haskell.org/package/cabal-plan)
+- [cabal-fmt](https://hackage.haskell.org/package/cabal-fmt)
+- cabal-env
+  - [phadej/cabal-env](https://github.com/phadej/cabal-env)
+  - [hvr/cabal-env](https://github.com/hvr/cabal-env)
 
 ## 参考
 
