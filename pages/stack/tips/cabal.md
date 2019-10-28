@@ -55,7 +55,6 @@ stack | cabal | 備考
 ------|--------|-------
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
 `stack build` | `cabal build`
-`stack build --static` | `cabal build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
 `stack test` | `cabal test --enable-tests` <br> `cabal test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
 `stack repl` <br> `stack ghci` | `cabal repl`
 `stack repl --package <pkg1> <pkg2>` | `cabal repl --build-dep <pkg1>, <pkg2>` <br> `cabal repl -b <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
@@ -78,6 +77,7 @@ stack | cabal | 備考
 - | `cabal format` | [#2460](https://github.com/haskell/cabal/issues/2460), [#5306](https://github.com/haskell/cabal/issues/5306), [#5734](https://github.com/haskell/cabal/issues/5734), [cabal-fmt の紹介](https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html)
 `stack path` | [#3850](https://github.com/haskell/cabal/issues/3850), [#4661](https://github.com/haskell/cabal/issues/4661) |
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
+[#3420](https://github.com/commercialhaskell/stack/issues/3420) | `cabal build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
 
 ## 設定ファイル等のパス対応表 (初期値)
 
