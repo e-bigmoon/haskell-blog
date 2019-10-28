@@ -168,7 +168,7 @@
       <div class="post-heading">
         <h1 class="post-title">cabal コマンドとの対応表</h1>
         
-        <span>最終更新日: 2019/03/03</span>
+        <span>最終更新日: 2019/10/28</span>
         
       </div>
 
@@ -177,10 +177,10 @@
 <p>このページの内容は <code>cabal HEAD</code> を追っているため、最新版の <code>cabal</code> ではまだ利用不可能な内容も含まれる場合があります。</p>
 <h2 id="stack-と-cabal">stack と cabal</h2>
 <pre class="shell"><code>$ stack --numeric-version
-1.9.3
+2.1.3
 
 $ cabal --numeric-version
-2.4.1.0</code></pre>
+3.0.0.0</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -230,8 +230,29 @@ $ cabal --numeric-version
 <li><code>cabal v2-build</code> は <a href="https://cabal.readthedocs.io/en/latest/nix-local-build-overview.html">Nix-style Local Builds</a></li>
 <li><code>cabal build</code> は <code>cabal v1-build</code> のエイリアス</li>
 <li><code>cabal new-build</code> は <code>cabal v2-build</code> のエイリアス</li>
-<li><code>cabal v3.0.0.0</code> からは <code>cabal v2-build</code> が <code>cabal build</code> のエイリアスになる予定 <a href="https://github.com/haskell/cabal/pull/5800">#5800</a></li>
+<li><code>cabal v3.0.0.0</code> からは <code>cabal v2-build</code> が <code>cabal build</code> のエイリアス (<a href="https://github.com/haskell/cabal/pull/5800">#5800</a>)</li>
 </ul>
+<table>
+<thead>
+<tr class="header">
+<th>cabal version</th>
+<th>cabal build</th>
+<th>cabal new-build</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>v3.0.0.0</td>
+<td>v2-build</td>
+<td>v2-build</td>
+</tr>
+<tr class="even">
+<td>v2.4.1.0</td>
+<td><strong>v1</strong>-build</td>
+<td>v2-build</td>
+</tr>
+</tbody>
+</table>
 <h2 id="コマンド対応表">コマンド対応表</h2>
 <table>
 <colgroup>
@@ -254,77 +275,72 @@ $ cabal --numeric-version
 </tr>
 <tr class="even">
 <td><code>stack build</code></td>
-<td><code>cabal new-build</code></td>
+<td><code>cabal build</code></td>
 <td></td>
 </tr>
 <tr class="odd">
-<td><code>stack build --static</code></td>
-<td><code>cabal new-build --enable-executable-static</code></td>
-<td><a href="https://github.com/haskell/cabal/pull/5446">#5446</a></td>
-</tr>
-<tr class="even">
 <td><code>stack test</code></td>
-<td><code>cabal new-test --enable-tests</code> <br> <code>cabal new-test all</code></td>
+<td><code>cabal test --enable-tests</code> <br> <code>cabal test all</code></td>
 <td><a href="https://github.com/haskell/cabal/issues/5079">#5079</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>stack repl</code> <br> <code>stack ghci</code></td>
-<td><code>cabal new-repl</code></td>
+<td><code>cabal repl</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>stack repl --package &lt;pkg1&gt; &lt;pkg2&gt;</code></td>
-<td><code>cabal new-repl --build-dep &lt;pkg1&gt;, &lt;pkg2&gt;</code></td>
+<td><code>cabal repl --build-dep &lt;pkg1&gt;, &lt;pkg2&gt;</code> <br> <code>cabal repl -b &lt;pkg1&gt;, &lt;pkg2&gt;</code></td>
 <td><a href="https://github.com/haskell/cabal/pull/5845">#5845</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>stack clean</code></td>
-<td><code>cabal new-clean</code></td>
+<td><code>cabal clean</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack run</code></td>
+<td><code>cabal run</code></td>
 <td></td>
 </tr>
 <tr class="even">
-<td><code>stack run</code></td>
-<td><code>cabal new-run</code></td>
-<td></td>
-</tr>
-<tr class="odd">
 <td><code>stack --version</code></td>
 <td><code>cabal --version</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>stack --numeric-version</code></td>
 <td><code>cabal --numeric-version</code></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>stack upgrade</code></td>
-<td><code>cabal new-install cabal-install</code><br><code>cabal new-install cabal-install --overwrite-policy=always</code></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>?</td>
-<td><code>cabal new-haddock</code></td>
+<td><code>cabal install cabal-install</code><br><code>cabal install cabal-install --overwrite-policy=always</code></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>?</td>
-<td><code>cabal new-sdist</code></td>
+<td><code>cabal haddock</code></td>
 <td></td>
 </tr>
 <tr class="even">
+<td>?</td>
+<td><code>cabal sdist</code></td>
+<td></td>
+</tr>
+<tr class="odd">
 <td>?</td>
 <td><code>cabal check</code></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>?</td>
 <td><code>cabal upload</code> <br> <code>cabal upload --publish</code></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>stack update</code></td>
-<td><code>cabal new-update</code></td>
+<td><code>cabal update</code></td>
 <td></td>
 </tr>
 </tbody>
@@ -347,7 +363,7 @@ $ cabal --numeric-version
 <tr class="even">
 <td>-</td>
 <td><code>cabal format</code></td>
-<td><a href="https://github.com/haskell/cabal/issues/2460">#2460</a>, <a href="https://github.com/haskell/cabal/issues/5306">#5306</a>, <a href="https://github.com/haskell/cabal/issues/5734">#5734</a></td>
+<td><a href="https://github.com/haskell/cabal/issues/2460">#2460</a>, <a href="https://github.com/haskell/cabal/issues/5306">#5306</a>, <a href="https://github.com/haskell/cabal/issues/5734">#5734</a>, <a href="https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html">cabal-fmt の紹介</a></td>
 </tr>
 <tr class="odd">
 <td><code>stack path</code></td>
@@ -358,6 +374,11 @@ $ cabal --numeric-version
 <td><code>stack setup</code></td>
 <td>_</td>
 <td><a href="https://github.com/haskell/ghcup">ghcup</a> を利用する</td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/commercialhaskell/stack/issues/3420">#3420</a></td>
+<td><code>cabal build --enable-executable-static</code></td>
+<td><a href="https://github.com/haskell/cabal/pull/5446">#5446</a></td>
 </tr>
 </tbody>
 </table>
@@ -418,12 +439,12 @@ packages:
   package3</code></pre>
 <p>実行方法</p>
 <pre class="shell"><code># 全てのパッケージ
-$ cabal new-build all
-$ cabal new-repl
+$ cabal build all
+$ cabal repl
 
 # 個別のパッケージ
-$ cabal new-build package1
-$ cabal new-repl basic</code></pre>
+$ cabal build package1
+$ cabal repl basic</code></pre>
 <h3 id="リモートリポジトリ">リモートリポジトリ</h3>
 <h4 id="stack-2">stack</h4>
 <ul>
@@ -486,7 +507,7 @@ source-repository-package
 <pre class="shell"><code>$ stack build --profile</code></pre>
 <h4 id="cabal-3">cabal</h4>
 <pre><code>profiling: True</code></pre>
-<p><code>cabal.project.local</code> に上記の内容を追加し、<code>cabal new-build</code> すれば良い。</p>
+<p><code>cabal.project.local</code> に上記の内容を追加し、<code>cabal build</code> すれば良い。</p>
 <ul>
 <li><a href="https://cabal.readthedocs.io/en/latest/nix-local-build.html#how-can-i-profile-my-library-application">How can I profile my library/application?</a></li>
 </ul>
@@ -496,6 +517,7 @@ source-repository-package
 <pre><code>with-compiler: ghc-8.6.2</code></pre>
 <h3 id="build-depends-で利用するバージョン制約の指定方法">build-depends で利用するバージョン制約の指定方法</h3>
 <ul>
+<li><a href="https://cabal-version-calculator.netlify.com/">Cabal Version Calculator</a></li>
 <li><a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#build-information">3.3.2.9. Build information</a></li>
 </ul>
 <table>
@@ -577,7 +599,7 @@ build-depends: network ^&gt;= 2.6.3.6 || ^&gt;= 2.7.0.2 || ^&gt;= 2.8.0.0 || ^&g
 
 build-depends: network ^&gt;= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }</code></pre>
 <h3 id="cabal.project.local-の設定">cabal.project.local の設定</h3>
-<pre class="shell"><code>$ cabal new-configure -j</code></pre>
+<pre class="shell"><code>$ cabal configure -j</code></pre>
 <h3 id="スクリプト形式">スクリプト形式</h3>
 <h4 id="stack-4">stack</h4>
 <ul>
@@ -638,11 +660,17 @@ build-depends: network ^&gt;= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }</code></pre
 <span id="cb23-24"><a href="#cb23-24"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
 <span id="cb23-25"><a href="#cb23-25"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
 <p>実行方法</p>
-<pre class="shell"><code>$ cabal new-run Script.hs
-$ cabal new-run Script.hs -- --arg1 # 引数有り</code></pre>
+<pre class="shell"><code>$ cabal run Script.hs
+$ cabal run Script.hs -- --arg1 # 引数有り</code></pre>
 <h2 id="便利ツール">便利ツール</h2>
 <ul>
 <li><a href="http://hackage.haskell.org/package/cabal-plan">cabal-plan list-bins</a></li>
+<li><a href="https://hackage.haskell.org/package/cabal-fmt">cabal-fmt</a></li>
+<li>cabal-env
+<ul>
+<li><a href="https://github.com/phadej/cabal-env">phadej/cabal-env</a></li>
+<li><a href="https://github.com/hvr/cabal-env">hvr/cabal-env</a></li>
+</ul></li>
 </ul>
 <h2 id="参考">参考</h2>
 <ul>
