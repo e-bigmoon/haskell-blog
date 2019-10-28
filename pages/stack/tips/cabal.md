@@ -50,7 +50,7 @@ stack | cabal | 備考
 ------|--------|-------
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
 `stack build` | `cabal new-build`
-`stack build --static` | `stack new-build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
+`stack build --static` | `cabal new-build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
 `stack test` | `cabal new-test --enable-tests` <br> `cabal new-test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
 `stack repl` <br> `stack ghci` | `cabal new-repl`
 `stack repl --package <pkg1> <pkg2>` | `cabal new-repl --build-dep <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
