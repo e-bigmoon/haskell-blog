@@ -78,6 +78,7 @@ stack | cabal | 備考
 `stack path` | [#3850](https://github.com/haskell/cabal/issues/3850), [#4661](https://github.com/haskell/cabal/issues/4661) |
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
 [#3420](https://github.com/commercialhaskell/stack/issues/3420) | `cabal build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
+- | `-w` オプション。`cabal repl -w ghc-8.6.5` | コンパイラを指定できる
 
 ## 設定ファイル等のパス対応表 (初期値)
 
