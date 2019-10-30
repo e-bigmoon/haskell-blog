@@ -168,7 +168,7 @@
       <div class="post-heading">
         <h1 class="post-title">cabal コマンドとの対応表</h1>
         
-        <span>最終更新日: 2019/10/28</span>
+        <span>最終更新日: 2019/10/30</span>
         
       </div>
 
@@ -316,7 +316,7 @@ $ cabal --numeric-version
 <tr class="even">
 <td><code>stack upgrade</code></td>
 <td><code>cabal install cabal-install</code><br><code>cabal install cabal-install --overwrite-policy=always</code></td>
-<td></td>
+<td>ghcup を使う</td>
 </tr>
 <tr class="odd">
 <td>?</td>
@@ -379,6 +379,11 @@ $ cabal --numeric-version
 <td><a href="https://github.com/commercialhaskell/stack/issues/3420">#3420</a></td>
 <td><code>cabal build --enable-executable-static</code></td>
 <td><a href="https://github.com/haskell/cabal/pull/5446">#5446</a></td>
+</tr>
+<tr class="even">
+<td>-</td>
+<td><code>-w</code> オプション。<code>cabal repl -w ghc-8.6.5</code></td>
+<td>コンパイラを指定できる</td>
 </tr>
 </tbody>
 </table>
@@ -489,7 +494,14 @@ source-repository-package
   location: https://github.com/gtk2hs/gtk2hs
   tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
   subdir: cairo</code></pre>
-<p>複数のパッケージを指定する場合は <code>stack</code> の <code>subdirs</code> のような書き方はできないため、<code>source-repository-package</code> を複数記述する。(<a href="https://github.com/haskell/cabal/issues/5472">#5472</a>)</p>
+<p>複数のパッケージを指定する場合、<code>cabal-3.1.0.0</code> からは以下のように <code>subdir</code> に複数のパッケージを並べて書けるようになった。</p>
+<pre class="cabal"><code># cabal.project
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: cairo gtk</code></pre>
+<p><code>cabal-3.0.0.0</code>以前は<code>stack</code> の <code>subdirs</code> のような書き方はできないため、<code>source-repository-package</code> を複数記述しなければならない。(<a href="https://github.com/haskell/cabal/issues/5472">#5472</a>)</p>
 <pre class="cabal"><code># cabal.project
 source-repository-package
   type: git
@@ -605,27 +617,27 @@ build-depends: network ^&gt;= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }</code></pre
 <ul>
 <li><a href="https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html">script interpreter + stack script でスクリプティング！</a></li>
 </ul>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a></span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb21-5"><a href="#cb21-5"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb21-6"><a href="#cb21-6"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb21-7"><a href="#cb21-7"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb21-8"><a href="#cb21-8"></a></span>
-<span id="cb21-9"><a href="#cb21-9"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
-<span id="cb21-10"><a href="#cb21-10"></a></span>
-<span id="cb21-11"><a href="#cb21-11"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
-<span id="cb21-12"><a href="#cb21-12"></a>/ HomeR GET</span>
-<span id="cb21-13"><a href="#cb21-13"></a>|]</span>
-<span id="cb21-14"><a href="#cb21-14"></a></span>
-<span id="cb21-15"><a href="#cb21-15"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
-<span id="cb21-16"><a href="#cb21-16"></a></span>
-<span id="cb21-17"><a href="#cb21-17"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb21-18"><a href="#cb21-18"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
-<span id="cb21-19"><a href="#cb21-19"></a></span>
-<span id="cb21-20"><a href="#cb21-20"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb21-21"><a href="#cb21-21"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a></span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a></span>
+<span id="cb22-11"><a href="#cb22-11"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
+<span id="cb22-12"><a href="#cb22-12"></a>/ HomeR GET</span>
+<span id="cb22-13"><a href="#cb22-13"></a>|]</span>
+<span id="cb22-14"><a href="#cb22-14"></a></span>
+<span id="cb22-15"><a href="#cb22-15"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
+<span id="cb22-16"><a href="#cb22-16"></a></span>
+<span id="cb22-17"><a href="#cb22-17"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
+<span id="cb22-19"><a href="#cb22-19"></a></span>
+<span id="cb22-20"><a href="#cb22-20"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb22-21"><a href="#cb22-21"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
 <p>実行方法</p>
 <pre class="shell"><code>$ stack script --resolver lts-13.1 Script.hs</code></pre>
 <h4 id="cabal-5">cabal</h4>
@@ -634,31 +646,31 @@ build-depends: network ^&gt;= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }</code></pre
 <li><a href="https://github.com/haskell/cabal/issues/3843">RFC: Add support for "#! /usr/bin/env cabal #3843</a></li>
 <li><a href="https://github.com/haskell/cabal/pull/5483">Add cabal scripting support #5483</a></li>
 </ul>
-<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1"></a><span class="pp">#!/usr/bin/env cabal</span></span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="co">{- cabal:</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="co">build-depends: base   ^&gt;= 4.12</span></span>
-<span id="cb23-4"><a href="#cb23-4"></a><span class="co">             , yesod  ^&gt;= 1.6.0</span></span>
-<span id="cb23-5"><a href="#cb23-5"></a><span class="co">-}</span></span>
-<span id="cb23-6"><a href="#cb23-6"></a></span>
-<span id="cb23-7"><a href="#cb23-7"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb23-8"><a href="#cb23-8"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb23-9"><a href="#cb23-9"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb23-10"><a href="#cb23-10"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb23-11"><a href="#cb23-11"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb23-12"><a href="#cb23-12"></a></span>
-<span id="cb23-13"><a href="#cb23-13"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
-<span id="cb23-14"><a href="#cb23-14"></a></span>
-<span id="cb23-15"><a href="#cb23-15"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
-<span id="cb23-16"><a href="#cb23-16"></a>/ HomeR GET</span>
-<span id="cb23-17"><a href="#cb23-17"></a>|]</span>
-<span id="cb23-18"><a href="#cb23-18"></a></span>
-<span id="cb23-19"><a href="#cb23-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
-<span id="cb23-20"><a href="#cb23-20"></a></span>
-<span id="cb23-21"><a href="#cb23-21"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb23-22"><a href="#cb23-22"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
-<span id="cb23-23"><a href="#cb23-23"></a></span>
-<span id="cb23-24"><a href="#cb23-24"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb23-25"><a href="#cb23-25"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="pp">#!/usr/bin/env cabal</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="co">{- cabal:</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="co">build-depends: base   ^&gt;= 4.12</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="co">             , yesod  ^&gt;= 1.6.0</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co">-}</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a></span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb24-11"><a href="#cb24-11"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb24-12"><a href="#cb24-12"></a></span>
+<span id="cb24-13"><a href="#cb24-13"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
+<span id="cb24-14"><a href="#cb24-14"></a></span>
+<span id="cb24-15"><a href="#cb24-15"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
+<span id="cb24-16"><a href="#cb24-16"></a>/ HomeR GET</span>
+<span id="cb24-17"><a href="#cb24-17"></a>|]</span>
+<span id="cb24-18"><a href="#cb24-18"></a></span>
+<span id="cb24-19"><a href="#cb24-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
+<span id="cb24-20"><a href="#cb24-20"></a></span>
+<span id="cb24-21"><a href="#cb24-21"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb24-22"><a href="#cb24-22"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
+<span id="cb24-23"><a href="#cb24-23"></a></span>
+<span id="cb24-24"><a href="#cb24-24"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb24-25"><a href="#cb24-25"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
 <p>実行方法</p>
 <pre class="shell"><code>$ cabal run Script.hs
 $ cabal run Script.hs -- --arg1 # 引数有り</code></pre>
