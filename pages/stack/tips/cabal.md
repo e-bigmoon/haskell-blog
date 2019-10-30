@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/10/28
+date: 2019/10/30
 ---
 
 ## 注意点
@@ -62,7 +62,7 @@ stack | cabal | 備考
 `stack run` | `cabal run`
 `stack --version` | `cabal --version`
 `stack --numeric-version` | `cabal --numeric-version`
-`stack upgrade` | `cabal install cabal-install`<br>`cabal install cabal-install --overwrite-policy=always`
+`stack upgrade` | `cabal install cabal-install`<br>`cabal install cabal-install --overwrite-policy=always` | ghcup を使う
  ? | `cabal haddock`
  ? | `cabal sdist`
  ? | `cabal check`
