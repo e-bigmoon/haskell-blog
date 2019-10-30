@@ -217,7 +217,18 @@ source-repository-package
   subdir: cairo
 ```
 
-複数のパッケージを指定する場合は `stack` の `subdirs` のような書き方はできないため、`source-repository-package` を複数記述する。([#5472](https://github.com/haskell/cabal/issues/5472))
+複数のパッケージを指定する場合、`cabal-3.1.0.0` からは以下のように `subdir` に複数のパッケージを並べて書けるようになった。
+
+```cabal
+# cabal.project
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: cairo gtk
+```
+
+`cabal-3.0.0.0`以前は`stack` の `subdirs` のような書き方はできないため、`source-repository-package` を複数記述しなければならない。([#5472](https://github.com/haskell/cabal/issues/5472))
 
 ```cabal
 # cabal.project
