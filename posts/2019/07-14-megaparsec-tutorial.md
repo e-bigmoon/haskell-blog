@@ -42,6 +42,8 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
   - [パースエラーを通知する方法](#SigErr)
   - [パースエラーの表示](#DispErr)
   - [パーサ実行時にパースエラーをキャッチする](#CatchErr)
+  - [パースエラー位置のコントロール](#Control)
+  - [複数のパースエラーを報告する](#Multi)
 - [Megaparsecパーサのテスト](#Testing)
 - [カスタム入力ストリームの操作](#CustomInput)
 
@@ -55,9 +57,9 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 
 - [trifecta](https://hackage.haskell.org/package/trifecta) は優れたエラーメッセージを特徴としていますが、あまり文書化されておらず、理解するのが難しいです。 `String` と `ByteString` はそのままではパースできますが、`Text` はパースできません。
 
-- [megaparsec](https://hackage.haskell.org/package/megaparsec) は、ここ数年で積極的に開発されてきた `parsec` のフォークです。現在のバージョンは、速度、エラーメッセージの品質、そして柔軟性の間で素晴らしいバランスを取っています。 `parsec` の非公式の後継者として、`parsec` ライブラリを使用したことがあるか、チュートリアルを読んだことがあるユーザにとっては慣習的でなじみのあるものです。
+- [megaparsec](https://hackage.haskell.org/package/megaparsec) は、ここ数年で積極的に開発されてきた `parsec` のフォークです。現在のバージョンは、速度、柔軟性、エラーメッセージの品質の間で素晴らしいバランスを取ろうとしました。 `parsec` の非公式の後継者として、`parsec` ライブラリを使用したことがあるか、チュートリアルを読んだことがあるユーザにとっては慣習的でなじみのあるものです。
 
-これらすべてのライブラリを網羅しようとするのは実用的ではないため、 `megaparsec` に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン7をカバーするつもりです。
+これらすべてのライブラリを網羅しようとするのは実用的ではないため、 `megaparsec` に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン8をカバーするつもりです。
 
 <a name="ParsecT"></a>
 
@@ -276,7 +278,7 @@ unexpected 'a'
 なぜなら、
 `satisfy` の呼び出し元が提供する関数を分析することができないからです。
 あまり一般的ではないですが、
-代わりにもっと有用なエラーメッセージを生成することができる
+もっと有用なエラーメッセージを生成することができる
 他のコンビネータがあります。
 例えば、`single` (`Text.Megaparsec.Byte` と `Text.Megaparsec.Char` では `char` と呼ばれる型制約のあるシノニムを使用する) は特定のトークン値にマッチします。
 
@@ -317,7 +319,7 @@ newline = single '\n'
 ```
 
 2つ目のプリミティブは`tokens`と呼ばれ、
-`Tokens` をパースすることを可能にします。
+`Tokens s` をパースすることを可能にします。
 つまり、入力の固定されたチャンクに一致させるために使用できます。
 
 ```bash
@@ -623,7 +625,7 @@ Uri {uriScheme = "irc"}
 
 しかし、このスキームのパーサは完成していません。
 良い Haskell のプログラマーは、
-正しくないデータを単純に表現できないように型を定義しようとします。
+正しくないデータを表現できないように型を定義しようとします。
 すべての `Text` の値が有効なスキームであるとは限りません。
 スキームを表すためにデータ型を定義し、
 `pScheme` パーサにその型の値を返させます。
@@ -879,7 +881,7 @@ expecting '.', ':', alphanumeric character, or end of input
 
 ## パーサのデバッグ
 
-面白いことが起こっていることに気付くかもしれません。
+問題が起こっていることに気付くかもしれません。
 
 ```haskell
 λ> parseTest (pUri <* eof) "https://mark:@example.com"
@@ -986,7 +988,7 @@ scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
 注意深く見れば、二重スラッシュ`//`が、URIに認証情報の部分があることを示す記号であることがわかります。
 `//` のマッチはアトミックパーサ（`string`）が使われていることにより、
 マッチは自動的にバックトラックするので、
-`//` にマッチした後は恐れずに、認証情報の部分を要求することができます。
+`//` にマッチした後は必ず、認証情報の部分を要求することができます。
 最初の`try`を`pUri`から削除しましょう。
 
 ```haskell
@@ -1153,7 +1155,7 @@ type Parsec e s = ParsecT e s Identity
 ```
 
 `runParser` には、`runParser'`、`runParserT`、
-および `runParserT'` の3つの姉妹がいます。
+および `runParserT'` の3つの兄弟がいます。
 接尾辞 `T` の付いたバージョンは `PrasecT` モナド変換子を実行し、
 「プライム」バージョンはパーサの状態を受け取り、返します。
 すべての関数を表にまとめましょう。
@@ -1166,7 +1168,7 @@ type Parsec e s = ParsecT e s Identity
 
 タブの幅を標準以外の値(デフォルトの値は8)に設定したい場合など、
 カスタム初期状態が必要な場合があります。
-`runParser'` はこのようになっています。
+例として、`runParser'` の型シグネチャはこのようになっています。
 
 ```haskell
 runParser'
@@ -1179,7 +1181,7 @@ runParser'
 ここでは説明しません。
 
 `ParseErrorBundle` とは何かについて疑問に思う場合は、
-[この後の章のいずれか](#Error)で説明します。
+[この後の節のいずれか](#Error)で説明します。
 
 <a name="MonadParsec"></a>
 
@@ -1500,10 +1502,10 @@ sc = L.space
 
 ```haskell
 lexeme :: Parser a -> Parser a
-lexeme = L.lexeme sc -- (1)
+lexeme = L.lexeme sc
 
 symbol :: Text -> Parser Text
-symbol = L.symbol sc -- (2)
+symbol = L.symbol sc
 ```
 
 - `lexeme` は、供給されたスペースコンシューマを使用してすべての末尾の空白を取る、語彙素のラッパーです。
@@ -1571,7 +1573,7 @@ manyTill p end = go
 
 ```haskell
 decimal, octal, hexadecimal
-  :: (MonadParsec e s m, Token s ~ Char, Integral a) => m a
+  :: (MonadParsec e s m, Token s ~ Char, Num a) => m a
 ```
 
 それらを使うのは簡単です。
@@ -1594,7 +1596,8 @@ unexpected 'a'
 expecting end of input or the rest of integer
 ```
 
-`scientific` と `float` は整数と小数の文法を受け入れます。
+`scientific` は整数と小数の文法を受理し、
+`float` は小数の文法のみ受理します。
 `scientific` は`scientific`パッケージの `Scientific`型を返しますが、
 `float` はその結果の型が多相的であり、
 `RealFloat` の任意のインスタンスを返すことができます。
@@ -1734,7 +1737,10 @@ withPredicate2 f msg p = do
 `p` を実行する前の状態に設定してから失敗します。
 未消費の残りとオフセットの位置に不一致がありますが、
 `fail` を呼び出してすぐにパースを終了するので、
-この場合は問題になりません。
+この場合では問題になりません。
+他の場合で問題になるかもしれませんが、
+そのような状況でより良くする方法については、
+この章の後半で説明します。
 
 
 <a name="Expr"></a>
@@ -1756,7 +1762,7 @@ a * (b + 2)
 
 式のパーサを書くには時間がかかるかもしれません。
 これ手助けするために、
-`megaparsec` には `Text.Megaparsec.Expr` モジュールが付属しています。
+[`parser-combinators`](https://hackage.haskell.org/package/parser-combinators)パッケージ には `Control.Monad.Combinators.Expr` モジュールが付属しています。
 これは、`Operator`データ型と`makeExprParser`ヘルパーの
 2つのだけをエクスポートします。
 
@@ -1811,7 +1817,8 @@ pTerm :: Parser Expr
 pTerm = choice
   [ parens pExpr
   , pVariable
-  , pInteger ]
+  , pInteger
+  ]
 
 pExpr :: Parser Expr
 pExpr = makeExprParser pTerm operatorTable
@@ -1851,11 +1858,13 @@ data Operator m a -- 注意
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
   [ [ prefix "-" Negation
-    , prefix "+" id ]
+    , prefix "+" id
+    ]
   , [ binary "*" Product
-    , binary "/" Division ]
-  , [ binary "+" Sum
-    , binary "-" Subtr ]
+    , binary "/" Division
+    ]
+    , binary "-" Subtr
+    ]
   ]
 
 binary :: Text -> (Expr -> Expr -> Expr) -> Operator Parser Expr
@@ -2098,7 +2107,6 @@ incorrect indentation (got 2, should be equal to 3)
 ("something",["one","two","three"])
 ```
 
-これは確かにうまくいきそうです。
 `IndentMany` を `IndentSome` に、`Nothing` を`Just (mkPos 5)`に
 置き換えます（インデントレベルは1から数えられるため、
 インデントされる項目の前に4つのスペースが必要になります）。
@@ -2181,7 +2189,9 @@ Right
   ( "first-chapter"
   , [ ("paragraph-one",   ["note-A","note-B"])
     , ("paragraph-two",   ["note-1","note-2"])
-    , ("paragraph-three", []) ] )
+    , ("paragraph-three", [])
+    ]
+  )
 ```
 
 これは、このアプローチがネストされたインデントのある構造に対して
@@ -2288,7 +2298,7 @@ user <- takeWhile1P (Just "alpha num character") isAlphaNum
 `T.pack`は不要になりました。
 
 以下の式は、`takeWhileP` と `takeWhile1P` の `Maybe String`
-引数の意味を理解するのに役立ちます。
+引数の意味を理解するのに役立つかもしれません。
 
 ```haskell
 takeWhileP  (Just "foo") f = many (satisfy f <?> "foo")
@@ -2378,7 +2388,7 @@ data ErrorFancy e
 この情報は通常、パーサが失敗した場合にのみ役立つので、
 パースを高速化するために行われます。
 古いバージョンのライブラリのもう1つの問題は、
-一度に複数のパースエラーを表示する場合（高度な使用法の一例）では、
+一度に複数のパースエラーを表示する場合では、
 正しい行を取得するために毎回入力を再びトラバースする必要があることです。
 
 この問題は`ParseErrorBundle`データ型で解決されます。
@@ -2423,7 +2433,7 @@ I'm failing, help me!
 これが`String`があまり便利ではないところです。
 
 自明なパースエラーは通常 `megaparsec` によって生成されますが、
-プリミティブ`failure`を使って自分自身でそのようなエラーを
+`failure`コンビネータを使って自分自身でそのようなエラーを
 知らせることができます。
 
 ```haskell
@@ -2454,7 +2464,7 @@ expecting 'a' or 'b'
 簡単なパースエラーはパターンマッチによる検査や変更が容易です。
 
 ファンシーエラーについては、
-プリミティブ`fancyFaliure`で対応します。
+`fancyFaliure`コンビネータで対応します。
 
 ```haskell
 fancyFailure :: MonadParsec e s m
@@ -2545,7 +2555,7 @@ errorBundlePretty
   => ParseErrorBundle s e -- ^ 表示するパースエラーバンドル
   -> String               -- ^ バンドルのテキスト表現
 ```
-95％のケースで、あなたはこの1つの関数だけを必要とするでしょう。
+99％のケースで、あなたはこの1つの関数だけを必要とするでしょう。
 
 <a name="ChatchErr"></a>
 
@@ -2664,10 +2674,9 @@ in foo, in bar
 
 ```haskell
 -- | 内部のラッパーで発生する 'ParseError'の処理方法を指定します。
--- 現在の実装の副作用として、このコンビネータで 'errorPos' を変更すると、
--- 最終的にパーサの状態 'statePos'も変更されま('statePos' が
--- 入力ストリームの実際の位置と同期しなくなるので、それを避けてください。
--- 直後にパースを終了すれば、おそらく問題ありませんが、注意してください)。
+-- これは、通常と遅延の両方の 'ParseError'に適用されます。
+-- 実装の副作用として、内部計算は遅延エラーの空のコレクションから始まり、
+-- それらは 'region' から出る途中で更新され、「復元」されます。
 
 region :: MonadParsec e s m
   => (ParseError s e -> ParseError s e)
@@ -2678,14 +2687,7 @@ region :: MonadParsec e s m
 region f m = do
   r <- observing m
   case r of
-    Left err ->
-      case f err of
-        TrivialError o us ps -> do
-          updateParserState $ \st -> st { stateOffset = o }
-          failure us ps
-        FancyError o xs -> do
-          updateParserState $ \st -> st { stateOffset = o }
-          fancyFailure xs
+    Left err -> parseError (f err) -- 次の章を見てください
     Right x -> return x
 ```
 
@@ -2714,6 +2716,166 @@ processErrorFancy location (ErrorCustom (TrivialWithLocation ps us es)) =
 processErrorFancy location (ErrorCustom (FancyWithLocation ps cs)) =
   ErrorCustom $ FancyWithLocation (location:ps) cs
 ```
+
+<a name="Control"></a>
+
+### パースエラー位置のコントロール
+
+`region` の定義では、プリミティブ `parseError` が使われていました。
+
+```haskell
+parseError :: MonadParsec e s m => ParseError s e -> m a
+```
+
+これはエラーを報告する基本的なプリミティブであり、
+これまで見てきた他の関数は `parseError` を使用して定義されています。
+
+```haskell
+  :: MonadParsec e s m
+  => Maybe (ErrorItem (Token s)) -- ^ Unexpected item (if any)
+  -> Set (ErrorItem (Token s)) -- ^ Expected items
+  -> m a
+failure us ps = do
+  o <- getOffset
+  parseError (TrivialError o us ps)
+
+fancyFailure
+  :: MonadParsec e s m
+  => Set (ErrorFancy e) -- ^ Fancy error components
+  -> m a
+fancyFailure xs = do
+  o <- getOffset
+  parseError (FancyError o xs)
+```
+
+`parseError`ができることの1つは、エラーオフセット（つまり、位置）を
+入力ストリームの現在の位置以外に設定することです。
+構文解析の結果をさかのぼって拒否する例に戻りましょう。
+
+```haskell
+withPredicate2
+  :: (a -> Bool)       -- ^ パースした入力に行うチェック
+  -> String            -- ^ チェックが失敗したときに表示するメッセージ
+  -> Parser a          -- ^ 実行するパーサ
+  -> Parser a          -- ^ チェックを実行するパーサ
+withPredicate2 f msg p = do
+  o <- getOffset
+  r <- p
+  if f r
+    then return r
+    else do
+      setOffset o
+      fail msg
+```
+
+`setOffset o`はエラーの位置を正しく設定しますが、
+副作用としてパーサーの状態も無効になり、
+オフセットは現実を反映しなくなります。
+これは、より複雑なパーサーでは実際の問題になる可能性があります。
+たとえば、`withPredicate2`を`observing`で囲み、
+`fail`の後に実行されるコードがあることを想像してください。
+
+
+最終的に`parseError`と`region`により問題の適切な解決策が得られます。
+`parseError`を使用して解析エラーの場所をリセットするか、
+最初に`parseError`を使用します。
+
+
+```haskell
+withPredicate3
+  :: (a -> Bool)       -- ^ パースした入力に行うチェック
+  -> String            -- ^ チェックが失敗したときに表示するメッセージ
+  -> Parser a          -- ^ 実行するパーサ
+  -> Parser a          -- ^ チェックを実行するパーサ
+withPredicate3 f msg p = do
+  o <- getOffset
+  r <- p
+  if f r
+    then return r
+    else region (setErrorOffset o) (fail msg)
+
+withPredicate4
+  :: (a -> Bool)       -- ^ パースした入力に行うチェック
+  -> String            -- ^ チェックが失敗したときに表示するメッセージ
+  -> Parser a          -- ^ 実行するパーサ
+  -> Parser a          -- ^ チェックを実行するパーサ
+withPredicate4 f msg p = do
+  o <- getOffset
+  r <- p
+  if f r
+    then return r
+    else parseError (FancyError o (Set.singleton (ErrorFail msg)))
+```
+
+<a name="Multi"></a>
+
+### 複数のパースエラーを報告する
+
+最終的に、`megaparsec`は1回の実行で複数の解析エラーを通知できます。
+これによって複数の問題を一度に修正できるため、
+パーサをより少ない回数で実行する必要のある
+エンドユーザにとって役立つ場合があります。
+
+
+マルチエラーパーサを使用するための前提条件の1つは、
+入力の問題のある部分をスキップして、
+正常であることがわかっている位置からパースを再開できることです。
+この部分は、`withRecovery`プリミティブを使用して実現されます。
+
+```haskell
+-- | @'withRecovery' r p@ は、パーサー @p@ が失敗した場合でも解析を続行できます。
+-- この場合、実際の 'ParseError' を引数とする @r@ が呼び出されます。
+-- よくある使い方として、特定のオブジェクトのパースの失敗を意味する値を返すことで、
+-- その入力の一部を消費し次のオブジェクトの開始位置に移動します。
+--
+-- @r@ が失敗すると、元のエラーメッセージが 'withRecovery' なしで報告されることに注意してください。
+-- パーサ @r@ を回復してもエラーメッセージに影響することはありません。
+
+
+withRecovery
+  :: (ParseError s e -> m a) -- ^ 失敗の回復方法
+  -> m a             -- ^ オリジナルのパーサ
+  -> m a             -- ^ 失敗から回復できるパーサ
+```
+
+Megaparsec 8 までのユーザーは、成功と失敗の可能性を含む直和型になるように型`a`を選択する必要がありました。
+たとえば、`Either (ParseError s e) Result` です。
+パースエラーを収集し、後で表示する前に手動で`ParseErrorBundle`に追加する必要がありました。
+言うまでもなく、これらはすべて、ユーザーフレンドリーではない高度な使用例です。
+
+Megaparsec 8 は、遅延パースエラーのサポートを追加します。
+
+```haskell
+-- | 後で報告するために 'ParseError'を登録します。
+-- このアクションはパースを終了せず、パースの最後に考慮される
+-- 「遅延」'ParseError'のコレクションに特定の「ParseError」を
+-- 追加する以外は効果がありません。 このコレクションが空の場合のみ、
+-- パーサは成功します。 これは、複数のパースエラーを一度に報告する
+-- 主な方法です。
+
+registerParseError :: MonadParsec e s m => ParseError s e -> m ()
+
+-- | 'failure'に似ていますが、 遅延'ParseError'のためのものです。
+
+registerFailure
+  :: MonadParsec e s m
+  => Maybe (ErrorItem (Token s)) -- ^ 期待しないアイテム (あれば)
+  -> Set (ErrorItem (Token s)) -- ^ 期待するアイテム
+  -> m ()
+
+-- | 'fancyFailure'に似ていますが、 遅延'ParseError'のためのものです。
+
+registerFancyFailure
+  :: MonadParsec e s m
+  => Set (ErrorFancy e) -- ^ Fancy error components
+  -> m ()
+```
+
+これらのエラーは `withRecovery` のエラー処理コールバックに登録でき、結果の型は `Maybe Result` になります。
+これにより、遅延エラーが最終的な `ParseErrorBundle` に含まれるようになり、遅延エラーのコレクションが空でない場合に
+パーサが最終的に失敗するようになります。
+
+以上のことから、マルチエラーパーサを書く習慣がユーザ間でより一般的になることを願っています。
 
 <a name="Testing"></a>
 
@@ -2856,6 +3018,7 @@ runParserT' :: Monad m
 ```haskell
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecoedWildCards   #-}
 {-# LANGUAGE TypeFamilies      #-}
 
 module Main (main) where
@@ -2879,13 +3042,14 @@ data MyToken
 ```
 
 パースエラーを報告するために、
-トークンの開始位置と終了位置を知る方法が必要なので、
+トークンの開始位置、終了位置、長さを知る方法が必要なので、
 `WithPos` を追加しましょう。
 
 ```haskell
 data WithPos a = WithPos
   { startPos :: SourcePos
-  , endPos   :: SourcePos
+  , endPos :: SourcePos
+  , tokenLength :: Int
   , tokenVal :: a
   } deriving (Eq, Ord, Show)
 ```
@@ -2894,7 +3058,8 @@ data WithPos a = WithPos
 
 ```haskell
 newtype MyStream = MyStream
-  { unMyStream :: [WithPos MyToken]
+  { myStreamInput :: String -- 問題のある行を表示するため
+  , unMyStream :: [WithPos MyToken]
   }
 ```
 
@@ -2914,38 +3079,67 @@ instance Stream MyStream where
 足りないメソッドを定義していきましょう。
 
 ```haskell
--- …
+  -- …
   tokenToChunk Proxy x = [x]
   tokensToChunk Proxy xs = xs
   chunkToTokens Proxy = id
   chunkLength Proxy = length
   chunkEmpty Proxy = null
-  take1_ (MyStream []) = Nothing
-  take1_ (MyStream (t:ts)) = Just (t, MyStream ts)
-  takeN_ n (MyStream s)
-    | n <= 0    = Just ([], MyStream s)
+  take1_ (MyStream _ []) = Nothing
+  take1_ (MyStream str (t:ts)) = Just
+    ( t
+    , MyStream (drop (tokensLength pxy (t:|[])) str) ts
+    )
+  takeN_ n (MyStream str s)
+    | n <= 0    = Just ([], MyStream str s)
     | null s    = Nothing
     | otherwise =
         let (x, s') = splitAt n s
-        in Just (x, MyStream s')
-  takeWhile_ f (MyStream s) =
+        in case NE.nonEmpty x of
+          Nothing -> Just (x, MyStream str s')
+          Just nex -> Just (x, MyStream (drop (tokensLength pxy nex) str) s')
+  takeWhile_ f (MyStream str s) =
     let (x, s') = DL.span f s
-    in (x, MyStream s')
-  showTokens Proxy = DL.intercalate ", "
+    in case NE.nonEmpty x of
+      Nothing -> (x, MyStream str s')
+      Just nex -> (x, MyStream (drop (tokensLength pxy nex) str) s')
+  showTokens Proxy = DL.intercalate " "
     . NE.toList
     . fmap (showMyToken . tokenVal)
-  reachOffset o pst@PosState {..} =
-    case drop (o - pstateOffset) (unMyStream pstateInput) of
-      [] ->
-        ( pstateSourcePos
-        , "<missing input>"
-        , pst { pstateInput = MyStream [] }
-        )
-      (x:xs) ->
-        ( startPos x
-        , "<missing input>"
-        , pst { pstateInput = MyStream (x:xs) }
-        )
+  tokensLength Proxy xs = sum (tokenLength <$> xs)
+  reachOffset o PosState {..} =
+    ( prefix ++ restOfLine
+    , PosState
+        { pstateInput = MyStream
+            { myStreamInput = postStr
+            , unMyStream = post
+            }
+        , pstateOffset = max pstateOffset o
+        , pstateSourcePos = newSourcePos
+        , pstateTabWidth = pstateTabWidth
+        , pstateLinePrefix = prefix
+        }
+    )
+    where
+      prefix =
+        if sameLine
+          then pstateLinePrefix ++ preStr
+          else preStr
+      sameLine = sourceLine newSourcePos == sourceLine pstateSourcePos
+      newSourcePos =
+        case post of
+          [] -> pstateSourcePos
+          (x:_) -> startPos x
+      (pre, post) = splitAt (o - pstateOffset) (unMyStream pstateInput)
+      (preStr, postStr) = splitAt tokensConsumed (myStreamInput pstateInput)
+      tokensConsumed =
+        case NE.nonEmpty pre of
+          Nothing -> 0
+          Just nePre -> tokensLength pxy nePre
+      restOfLine = takeWhile (/= '\n') postStr
+
+pxy :: Proxy MyStream
+pxy = Proxy
 
 showMyToken :: MyToken -> String
 showMyToken = \case
@@ -2961,9 +3155,6 @@ showMyToken = \case
 (そしてなぜこのようになっているのか)は
 [このブログ記事](https://markkarpov.com/post/megaparsec-more-speed-more-power.html)
 に書いてあります。
-`reachOffset` 関数では、元の入力ストリームが不足しているため、
-問題のある行を実際に表示することはできません。
-これは解決できますが、解決策はこの記事の範囲外です。
 
 これで `Parser` 型が定義できます。
 
@@ -2980,14 +3171,14 @@ type Parser = Parsec Void MyStream
 
 ```haskell
 liftMyToken :: MyToken -> WithPos MyToken
-liftMyToken myToken = WithPos pos pos myToken
+liftMyToken myToken = WithPos pos pos 0 myToken
   where
     pos = initialPos ""
 
 pToken :: MyToken -> Parser MyToken
 pToken c = token test (Set.singleton . Tokens . nes . liftMyToken $ c)
   where
-    test wpos@(WithPos _ _ x) =
+    test wpos@(WithPos _ _ _ x) =
       if x == c
         then Just x
         else Nothing
@@ -2996,7 +3187,7 @@ pToken c = token test (Set.singleton . Tokens . nes . liftMyToken $ c)
 pInt :: Parser Int
 pInt = token test Set.empty <?> "integer"
   where
-    test (WithPos _ _ (Int n)) = Just n
+    test (WithPos _ _ _ (Int n)) = Just n
     test _ = Nothing
 ```
 
@@ -3016,11 +3207,12 @@ pSum = do
 ```haskell
 exampleStream :: MyStream
 exampleStream = MyStream
+  "5 + 6"
   [ at 1 1 (Int 5)
   , at 1 3 Plus         -- (1)
   , at 1 5 (Int 6) ]
   where
-    at  l c = WithPos (at' l c) (at' l (c + 1))
+    at  l c = WithPos (at' l c) (at' l (c + 1)) 2
     at' l c = SourcePos "" (mkPos l) (mkPos c)
 ```
 
@@ -3037,8 +3229,8 @@ exampleStream = MyStream
 λ> parseTest (pSum <* eof) exampleStream
 1:3:
   |
-1 | <missing input>
-  |   ^
+1 | 5 + 6
+  |   ^^
 unexpected /
 expecting +
 ```
