@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/10/30
+date: 2019/11/22
 ---
 
 ## 注意点
@@ -55,7 +55,7 @@ stack | cabal | 備考
 ------|--------|-------
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
 `stack build` | `cabal build`
-`stack test` | `cabal test --enable-tests` <br> `cabal test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
+`stack test` | `cabal test`
 `stack repl` <br> `stack ghci` | `cabal repl`
 `stack repl --package <pkg1> <pkg2>` | `cabal repl --build-dep <pkg1>, <pkg2>` <br> `cabal repl -b <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
 `stack clean` | `cabal clean`
@@ -85,6 +85,8 @@ stack | cabal | 備考
 stack | cabal
 ------|-------
 `~/.stack/` | `~/.cabal/`
+`~/.local/bin` | `~/.cabal/bin`
+? | `~/.cabal/store`
 `~/.stack/config.yaml`, `~/.stack/global-project/stack.yaml` | `~/.cabal/config`
 
 ## Tips
