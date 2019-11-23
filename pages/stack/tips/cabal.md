@@ -134,7 +134,7 @@ packages:
 `cabal install app pkg1 pkg2` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
 `cabal install all` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2` | 全てのパッケージに `executable` が含まれている場合に限り実行可能
 `cabal install exes` | `mainExe1`, `mainExe2`
-`cabal install all:exes` | `mainExe1`, `mainExe2` | `stack install` に相当するコマンド
+`cabal install all:exes` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2` | `stack install` に相当するコマンド
 
 - `cabal install all` で `executable` が含まれていないパッケージがある場合は以下のエラーが出る
 
