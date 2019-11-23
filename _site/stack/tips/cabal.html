@@ -168,7 +168,7 @@
       <div class="post-heading">
         <h1 class="post-title">cabal コマンドとの対応表</h1>
         
-        <span>最終更新日: 2019/11/22</span>
+        <span>最終更新日: 2019/11/23</span>
         
       </div>
 
@@ -345,6 +345,23 @@ $ cabal --numeric-version
 </tr>
 </tbody>
 </table>
+<h3 id="オプション対応表">オプション対応表</h3>
+<table>
+<thead>
+<tr class="header">
+<th>stack</th>
+<th>cabal</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>local-bin-path</code></td>
+<td><code>installdir</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <h3 id="どちらか一方にしかないコマンドやオプション">どちらか一方にしかないコマンドやオプション</h3>
 <table>
 <thead>
@@ -415,20 +432,154 @@ $ cabal --numeric-version
 </tbody>
 </table>
 <h2 id="tips">Tips</h2>
-<h3 id="コマンドの自動補完">コマンドの自動補完</h3>
+<h3 id="install-コマンドの挙動">install コマンドの挙動</h3>
+<p>例えば、<code>cabal.project</code>が以下のようなパッケージ構成になっていて、<code>executable</code> (mainExe1, mainExe2, subExe1, subExe2) が定義されているとする。</p>
+<pre><code>packages:
+  ./              -- name: app,  executable: mainExe1, executable: mainExe2
+  ./subs/pkg1     -- name: pkg1, executable: subExe1
+  ./subs/pkg2     -- name: pkg2, executable: subExe2</code></pre>
 <h4 id="stack">stack</h4>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th>インストールされるもの</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>stack install</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code>, <code>subExe1</code>, <code>subExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install .</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code>, <code>subExe1</code>, <code>subExe2</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install app</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install pkg1</code></td>
+<td><code>subExe1</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install pkg2</code></td>
+<td><code>subExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install . pkg1 pkg2</code></td>
+<td>-</td>
+<td>パーズエラーで実行できない</td>
+</tr>
+<tr class="odd">
+<td><code>stack install app pkg1 pkg2</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code>, <code>subExe1</code>, <code>subExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install all</code></td>
+<td>-</td>
+<td><code>Unknown package: all</code> となる。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="cabal">cabal</h4>
+<table>
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 54%" />
+<col style="width: 24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th>インストールされるもの</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cabal install</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install .</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code></td>
+<td><code>cabal install</code> と同じ</td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code></td>
+<td><code>cabal install</code> と同じ</td>
+</tr>
+<tr class="even">
+<td><code>cabal install pkg1</code></td>
+<td><code>subExe1</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install pkg2</code></td>
+<td><code>subExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install . pkg1 pkg2</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code>, <code>subExe1</code>, <code>subExe2</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app pkg1 pkg2</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code>, <code>subExe1</code>, <code>subExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install all</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code>, <code>subExe1</code>, <code>subExe2</code></td>
+<td>全てのパッケージに <code>executable</code> が含まれている場合に限り実行可能</td>
+</tr>
+<tr class="odd">
+<td><code>cabal install exes</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install all:exes</code></td>
+<td><code>mainExe1</code>, <code>mainExe2</code></td>
+<td><code>stack install</code> に相当するコマンド</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>cabal install all</code> で <code>executable</code> が含まれていないパッケージがある場合は以下のエラーが出る</li>
+</ul>
+<pre><code>cabal: Cannot build the executables in the package pkg2 because it does not
+contain any executables. Check the .cabal file for the package and make sure
+that it properly declares the components that you expect.</code></pre>
+<ul>
+<li><code>--install-method=copy</code> を指定するとシンボリックリンクではなく、実体がコピーされる。(Windows などで有用らしい)</li>
+</ul>
+<h3 id="コマンドの自動補完">コマンドの自動補完</h3>
+<h4 id="stack-1">stack</h4>
 <ul>
 <li><a href="https://docs.haskellstack.org/en/stable/shell_autocompletion/#shell-auto-completion">Shell Auto-completion</a></li>
 </ul>
 <pre class="shell"><code>$ echo 'eval &quot;$(stack --bash-completion-script stack)&quot;' &gt;&gt; ~/.bashrc</code></pre>
-<h4 id="cabal">cabal</h4>
+<h4 id="cabal-1">cabal</h4>
 <ul>
 <li><a href="https://github.com/haskell/cabal/blob/master/cabal-install/bash-completion/cabal">bash-completion script</a></li>
 </ul>
 <pre class="shell"><code>$ curl https://raw.githubusercontent.com/haskell/cabal/master/cabal-install/bash-completion/cabal -O
 $ sudo mv cabal /usr/share/bash-completion/completions/</code></pre>
 <h3 id="マルチパッケージプロジェクト">マルチパッケージプロジェクト</h3>
-<h4 id="stack-1">stack</h4>
+<h4 id="stack-2">stack</h4>
 <pre class="shell"><code># stack.yaml
 packages:
 - .
@@ -443,7 +594,7 @@ $ stack repl
 # 個別のパッケージ
 $ stack build package1
 $ stack repl package1</code></pre>
-<h4 id="cabal-1">cabal</h4>
+<h4 id="cabal-2">cabal</h4>
 <pre class="shell"><code>-- cabal.project
 packages:
   ./
@@ -459,30 +610,30 @@ $ cabal repl
 $ cabal build package1
 $ cabal repl basic</code></pre>
 <h3 id="リモートリポジトリ">リモートリポジトリ</h3>
-<h4 id="stack-2">stack</h4>
+<h4 id="stack-3">stack</h4>
 <ul>
 <li><a href="https://docs.haskellstack.org/en/stable/yaml_configuration/#git-and-mercurial-repos">Git and Mercurial repos</a></li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># stack.yaml</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> fumieval/extensible</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 81ccac73f7480ea66e6008e660972bfee9e83976</span></span></code></pre></div>
-<p>複数パッケージになっている場合は <code>subdirs</code> を指定する</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># stack.yaml</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> gtk2hs/gtk2hs</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 7bccd432e2f962d80b2b804fa2a59712e402753c</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="at">  </span><span class="kw">-</span><span class="at"> cairo</span></span></code></pre></div>
-<p>複数のパッケージを指定する場合は <code>subdirs</code> に追加するだけで良い。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># stack.yaml</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> gtk2hs/gtk2hs</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 7bccd432e2f962d80b2b804fa2a59712e402753c</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="at">  </span><span class="kw">-</span><span class="at"> cairo</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="at">  </span><span class="kw">-</span><span class="at"> gtk</span></span></code></pre></div>
-<h4 id="cabal-2">cabal</h4>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> fumieval/extensible</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 81ccac73f7480ea66e6008e660972bfee9e83976</span></span></code></pre></div>
+<p>複数パッケージになっている場合は <code>subdirs</code> を指定する</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># stack.yaml</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> gtk2hs/gtk2hs</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 7bccd432e2f962d80b2b804fa2a59712e402753c</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="at">  </span><span class="kw">-</span><span class="at"> cairo</span></span></code></pre></div>
+<p>複数のパッケージを指定する場合は <code>subdirs</code> に追加するだけで良い。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># stack.yaml</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> gtk2hs/gtk2hs</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 7bccd432e2f962d80b2b804fa2a59712e402753c</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="at">  </span><span class="kw">-</span><span class="at"> cairo</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="at">  </span><span class="kw">-</span><span class="at"> gtk</span></span></code></pre></div>
+<h4 id="cabal-3">cabal</h4>
 <ul>
 <li><a href="https://cabal.readthedocs.io/en/latest/nix-local-build.html#specifying-packages-from-remote-version-control-locations">Specifying Packages from Remote Version Control Locations</a></li>
 <li>リポジトリに <code>cabal</code> ファイルが含まれていない場合は <code>NoCabalFileFound</code> となる。リポジトリに含めるしかない。
@@ -523,16 +674,16 @@ source-repository-package
   tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
   subdir: gtk</code></pre>
 <h3 id="プロファイリング">プロファイリング</h3>
-<h4 id="stack-3">stack</h4>
+<h4 id="stack-4">stack</h4>
 <pre class="shell"><code>$ stack build --profile</code></pre>
-<h4 id="cabal-3">cabal</h4>
+<h4 id="cabal-4">cabal</h4>
 <pre><code>profiling: True</code></pre>
 <p><code>cabal.project.local</code> に上記の内容を追加し、<code>cabal build</code> すれば良い。</p>
 <ul>
 <li><a href="https://cabal.readthedocs.io/en/latest/nix-local-build.html#how-can-i-profile-my-library-application">How can I profile my library/application?</a></li>
 </ul>
 <h3 id="プロジェクトで利用する-ghc-を強制する方法">プロジェクトで利用する ghc を強制する方法</h3>
-<h4 id="cabal-4">cabal</h4>
+<h4 id="cabal-5">cabal</h4>
 <p><code>cabal.project</code> に <code>with-compiler</code> を追記する</p>
 <pre><code>with-compiler: ghc-8.6.2</code></pre>
 <h3 id="build-depends-で利用するバージョン制約の指定方法">build-depends で利用するバージョン制約の指定方法</h3>
@@ -621,64 +772,64 @@ build-depends: network ^&gt;= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }</code></pre
 <h3 id="cabal.project.local-の設定">cabal.project.local の設定</h3>
 <pre class="shell"><code>$ cabal configure -j</code></pre>
 <h3 id="スクリプト形式">スクリプト形式</h3>
-<h4 id="stack-4">stack</h4>
+<h4 id="stack-5">stack</h4>
 <ul>
 <li><a href="https://haskell.e-bigmoon.com/stack/tips/script-interpreter.html">script interpreter + stack script でスクリプティング！</a></li>
 </ul>
-<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a></span>
-<span id="cb22-3"><a href="#cb22-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb22-4"><a href="#cb22-4"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb22-5"><a href="#cb22-5"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb22-6"><a href="#cb22-6"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb22-7"><a href="#cb22-7"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb22-8"><a href="#cb22-8"></a></span>
-<span id="cb22-9"><a href="#cb22-9"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
-<span id="cb22-10"><a href="#cb22-10"></a></span>
-<span id="cb22-11"><a href="#cb22-11"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
-<span id="cb22-12"><a href="#cb22-12"></a>/ HomeR GET</span>
-<span id="cb22-13"><a href="#cb22-13"></a>|]</span>
-<span id="cb22-14"><a href="#cb22-14"></a></span>
-<span id="cb22-15"><a href="#cb22-15"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
-<span id="cb22-16"><a href="#cb22-16"></a></span>
-<span id="cb22-17"><a href="#cb22-17"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb22-18"><a href="#cb22-18"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
-<span id="cb22-19"><a href="#cb22-19"></a></span>
-<span id="cb22-20"><a href="#cb22-20"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb22-21"><a href="#cb22-21"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a></span>
+<span id="cb24-11"><a href="#cb24-11"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
+<span id="cb24-12"><a href="#cb24-12"></a>/ HomeR GET</span>
+<span id="cb24-13"><a href="#cb24-13"></a>|]</span>
+<span id="cb24-14"><a href="#cb24-14"></a></span>
+<span id="cb24-15"><a href="#cb24-15"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
+<span id="cb24-16"><a href="#cb24-16"></a></span>
+<span id="cb24-17"><a href="#cb24-17"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb24-18"><a href="#cb24-18"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
+<span id="cb24-19"><a href="#cb24-19"></a></span>
+<span id="cb24-20"><a href="#cb24-20"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb24-21"><a href="#cb24-21"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
 <p>実行方法</p>
 <pre class="shell"><code>$ stack script --resolver lts-13.1 Script.hs</code></pre>
-<h4 id="cabal-5">cabal</h4>
+<h4 id="cabal-6">cabal</h4>
 <ul>
 <li><a href="https://www.haskell.org/cabal/users-guide/nix-local-build.html#cabal-new-run">5.4.5. cabal new-run</a></li>
 <li><a href="https://github.com/haskell/cabal/issues/3843">RFC: Add support for "#! /usr/bin/env cabal #3843</a></li>
 <li><a href="https://github.com/haskell/cabal/pull/5483">Add cabal scripting support #5483</a></li>
 </ul>
-<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="pp">#!/usr/bin/env cabal</span></span>
-<span id="cb24-2"><a href="#cb24-2"></a><span class="co">{- cabal:</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="co">build-depends: base   ^&gt;= 4.12</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a><span class="co">             , yesod  ^&gt;= 1.6.0</span></span>
-<span id="cb24-5"><a href="#cb24-5"></a><span class="co">-}</span></span>
-<span id="cb24-6"><a href="#cb24-6"></a></span>
-<span id="cb24-7"><a href="#cb24-7"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb24-8"><a href="#cb24-8"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb24-9"><a href="#cb24-9"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb24-10"><a href="#cb24-10"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb24-11"><a href="#cb24-11"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb24-12"><a href="#cb24-12"></a></span>
-<span id="cb24-13"><a href="#cb24-13"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
-<span id="cb24-14"><a href="#cb24-14"></a></span>
-<span id="cb24-15"><a href="#cb24-15"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
-<span id="cb24-16"><a href="#cb24-16"></a>/ HomeR GET</span>
-<span id="cb24-17"><a href="#cb24-17"></a>|]</span>
-<span id="cb24-18"><a href="#cb24-18"></a></span>
-<span id="cb24-19"><a href="#cb24-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
-<span id="cb24-20"><a href="#cb24-20"></a></span>
-<span id="cb24-21"><a href="#cb24-21"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb24-22"><a href="#cb24-22"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
-<span id="cb24-23"><a href="#cb24-23"></a></span>
-<span id="cb24-24"><a href="#cb24-24"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb24-25"><a href="#cb24-25"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1"></a><span class="pp">#!/usr/bin/env cabal</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="co">{- cabal:</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a><span class="co">build-depends: base   ^&gt;= 4.12</span></span>
+<span id="cb26-4"><a href="#cb26-4"></a><span class="co">             , yesod  ^&gt;= 1.6.0</span></span>
+<span id="cb26-5"><a href="#cb26-5"></a><span class="co">-}</span></span>
+<span id="cb26-6"><a href="#cb26-6"></a></span>
+<span id="cb26-7"><a href="#cb26-7"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb26-8"><a href="#cb26-8"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb26-9"><a href="#cb26-9"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb26-10"><a href="#cb26-10"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb26-11"><a href="#cb26-11"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb26-12"><a href="#cb26-12"></a></span>
+<span id="cb26-13"><a href="#cb26-13"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
+<span id="cb26-14"><a href="#cb26-14"></a></span>
+<span id="cb26-15"><a href="#cb26-15"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
+<span id="cb26-16"><a href="#cb26-16"></a>/ HomeR GET</span>
+<span id="cb26-17"><a href="#cb26-17"></a>|]</span>
+<span id="cb26-18"><a href="#cb26-18"></a></span>
+<span id="cb26-19"><a href="#cb26-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
+<span id="cb26-20"><a href="#cb26-20"></a></span>
+<span id="cb26-21"><a href="#cb26-21"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb26-22"><a href="#cb26-22"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
+<span id="cb26-23"><a href="#cb26-23"></a></span>
+<span id="cb26-24"><a href="#cb26-24"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb26-25"><a href="#cb26-25"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
 <p>実行方法</p>
 <pre class="shell"><code>$ cabal run Script.hs
 $ cabal run Script.hs -- --arg1 # 引数有り</code></pre>
