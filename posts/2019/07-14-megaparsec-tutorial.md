@@ -57,9 +57,9 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 
 - [trifecta](https://hackage.haskell.org/package/trifecta) は優れたエラーメッセージを特徴としていますが、あまり文書化されておらず、理解するのが難しいです。 `String` と `ByteString` はそのままではパースできますが、`Text` はパースできません。
 
-- [megaparsec](https://hackage.haskell.org/package/megaparsec) は、ここ数年で積極的に開発されてきた `parsec` のフォークです。現在のバージョンは、速度、柔軟性、エラーメッセージの品質の間で素晴らしいバランスを取ろうとしました。 `parsec` の非公式の後継者として、`parsec` ライブラリを使用したことがあるか、チュートリアルを読んだことがあるユーザにとっては慣習的でなじみのあるものです。
+- [megaparsec](https://hackage.haskell.org/package/megaparsec) は、ここ数年で積極的に開発されてきた `parsec` のフォークです。現在のバージョンは、速度、柔軟性、パースエラーの品質の間で素晴らしいバランスを取ろうとしました。 `parsec` の非公式の後継者として、`parsec` ライブラリを使用したことがあるか、チュートリアルを読んだことがあるユーザにとっては慣習的でなじみのあるものです。
 
-これらすべてのライブラリを網羅しようとするのは実用的ではないため、 `megaparsec` に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン8をカバーするつもりです。
+これらすべてのライブラリを網羅しようとするのは現実的ではないため、 `megaparsec` に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン8をカバーするつもりです。
 
 <a name="ParsecT"></a>
 
@@ -1155,7 +1155,7 @@ type Parsec e s = ParsecT e s Identity
 ```
 
 `runParser` には、`runParser'`、`runParserT`、
-および `runParserT'` の3つの兄弟がいます。
+および `runParserT'` の3つの変種があります。
 接尾辞 `T` の付いたバージョンは `PrasecT` モナド変換子を実行し、
 「プライム」バージョンはパーサの状態を受け取り、返します。
 すべての関数を表にまとめましょう。
@@ -1863,6 +1863,7 @@ operatorTable =
   , [ binary "*" Product
     , binary "/" Division
     ]
+  , [ binary "+" Sum
     , binary "-" Subtr
     ]
   ]
@@ -2675,14 +2676,14 @@ in foo, in bar
 ```haskell
 -- | 内部のラッパーで発生する 'ParseError'の処理方法を指定します。
 -- これは、通常と遅延の両方の 'ParseError'に適用されます。
+--
 -- 実装の副作用として、内部計算は遅延エラーの空のコレクションから始まり、
--- それらは 'region' から出る途中で更新され、「復元」されます。
+-- それらは更新され、 'region' から出て行くときに「復元」されます。
 
 region :: MonadParsec e s m
   => (ParseError s e -> ParseError s e)
      -- ^ 'ParseError' を処理する方法
-  -> m a
-     -- ^ 処理を適用する 「領域」
+  -> m a     -- ^ 処理を適用する 「領域」
   -> m a
 region f m = do
   r <- observing m
@@ -2721,7 +2722,7 @@ processErrorFancy location (ErrorCustom (FancyWithLocation ps cs)) =
 
 ### パースエラー位置のコントロール
 
-`region` の定義では、プリミティブ `parseError` が使われていました。
+`region` の定義では、 `parseError` プリミティブが使われていました。
 
 ```haskell
 parseError :: MonadParsec e s m => ParseError s e -> m a
@@ -2731,6 +2732,7 @@ parseError :: MonadParsec e s m => ParseError s e -> m a
 これまで見てきた他の関数は `parseError` を使用して定義されています。
 
 ```haskell
+failure
   :: MonadParsec e s m
   => Maybe (ErrorItem (Token s)) -- ^ Unexpected item (if any)
   -> Set (ErrorItem (Token s)) -- ^ Expected items
@@ -2750,14 +2752,14 @@ fancyFailure xs = do
 
 `parseError`ができることの1つは、エラーオフセット（つまり、位置）を
 入力ストリームの現在の位置以外に設定することです。
-構文解析の結果をさかのぼって拒否する例に戻りましょう。
+パースの結果をさかのぼって拒否する例に戻りましょう。
 
 ```haskell
 withPredicate2
   :: (a -> Bool)       -- ^ パースした入力に行うチェック
   -> String            -- ^ チェックが失敗したときに表示するメッセージ
   -> Parser a          -- ^ 実行するパーサ
-  -> Parser a          -- ^ チェックを実行するパーサ
+  -> Parser a          -- ^ チェックを実行するパーサを返す
 withPredicate2 f msg p = do
   o <- getOffset
   r <- p
@@ -2768,16 +2770,16 @@ withPredicate2 f msg p = do
       fail msg
 ```
 
-`setOffset o`はエラーの位置を正しく設定しますが、
-副作用としてパーサーの状態も無効になり、
+`setOffset o`はエラーの位置を適切に設定しますが、
+副作用としてパーサの状態も無効になり、
 オフセットは現実を反映しなくなります。
-これは、より複雑なパーサーでは実際の問題になる可能性があります。
+これは、より複雑なパーサでは現実的な問題になる可能性があります。
 たとえば、`withPredicate2`を`observing`で囲み、
 `fail`の後に実行されるコードがあることを想像してください。
 
 
 最終的に`parseError`と`region`により問題の適切な解決策が得られます。
-`parseError`を使用して解析エラーの場所をリセットするか、
+`parseError`を使用してパースエラーの場所をリセットするか、
 最初に`parseError`を使用します。
 
 
@@ -2786,7 +2788,7 @@ withPredicate3
   :: (a -> Bool)       -- ^ パースした入力に行うチェック
   -> String            -- ^ チェックが失敗したときに表示するメッセージ
   -> Parser a          -- ^ 実行するパーサ
-  -> Parser a          -- ^ チェックを実行するパーサ
+  -> Parser a          -- ^ チェックを実行するパーサを返す
 withPredicate3 f msg p = do
   o <- getOffset
   r <- p
@@ -2798,7 +2800,7 @@ withPredicate4
   :: (a -> Bool)       -- ^ パースした入力に行うチェック
   -> String            -- ^ チェックが失敗したときに表示するメッセージ
   -> Parser a          -- ^ 実行するパーサ
-  -> Parser a          -- ^ チェックを実行するパーサ
+  -> Parser a          -- ^ チェックを実行するパーサを返す
 withPredicate4 f msg p = do
   o <- getOffset
   r <- p
@@ -2811,7 +2813,7 @@ withPredicate4 f msg p = do
 
 ### 複数のパースエラーを報告する
 
-最終的に、`megaparsec`は1回の実行で複数の解析エラーを通知できます。
+最終的に、`megaparsec`は1回の実行で複数のパースエラーを通知できます。
 これによって複数の問題を一度に修正できるため、
 パーサをより少ない回数で実行する必要のある
 エンドユーザにとって役立つ場合があります。
@@ -2823,7 +2825,7 @@ withPredicate4 f msg p = do
 この部分は、`withRecovery`プリミティブを使用して実現されます。
 
 ```haskell
--- | @'withRecovery' r p@ は、パーサー @p@ が失敗した場合でも解析を続行できます。
+-- | @'withRecovery' r p@ は、パーサ @p@ が失敗した場合でもパースを続行できます。
 -- この場合、実際の 'ParseError' を引数とする @r@ が呼び出されます。
 -- よくある使い方として、特定のオブジェクトのパースの失敗を意味する値を返すことで、
 -- その入力の一部を消費し次のオブジェクトの開始位置に移動します。
@@ -2838,18 +2840,18 @@ withRecovery
   -> m a             -- ^ 失敗から回復できるパーサ
 ```
 
-Megaparsec 8 までのユーザーは、成功と失敗の可能性を含む直和型になるように型`a`を選択する必要がありました。
+Megaparsec 8 より前のユーザは、成功と失敗の可能性を含む直和型になるように型`a`を選択する必要がありました。
 たとえば、`Either (ParseError s e) Result` です。
 パースエラーを収集し、後で表示する前に手動で`ParseErrorBundle`に追加する必要がありました。
-言うまでもなく、これらはすべて、ユーザーフレンドリーではない高度な使用例です。
+言うまでもなく、これらはすべて、ユーザフレンドリーではない高度な使用例です。
 
-Megaparsec 8 は、遅延パースエラーのサポートを追加します。
+Megaparsec 8 は、遅延パースエラーをサポートします。
 
 ```haskell
 -- | 後で報告するために 'ParseError'を登録します。
 -- このアクションはパースを終了せず、パースの最後に考慮される
--- 「遅延」'ParseError'のコレクションに特定の「ParseError」を
--- 追加する以外は効果がありません。 このコレクションが空の場合のみ、
+-- 「遅延」'ParseError'のコレクションに与えられた「ParseError」を
+-- 追加するだけです。 このコレクションが空の場合のみ、
 -- パーサは成功します。 これは、複数のパースエラーを一度に報告する
 -- 主な方法です。
 
@@ -3178,7 +3180,7 @@ liftMyToken myToken = WithPos pos pos 0 myToken
 pToken :: MyToken -> Parser MyToken
 pToken c = token test (Set.singleton . Tokens . nes . liftMyToken $ c)
   where
-    test wpos@(WithPos _ _ _ x) =
+    test (WithPos _ _ _ x) =
       if x == c
         then Just x
         else Nothing
@@ -3210,7 +3212,8 @@ exampleStream = MyStream
   "5 + 6"
   [ at 1 1 (Int 5)
   , at 1 3 Plus         -- (1)
-  , at 1 5 (Int 6) ]
+  , at 1 5 (Int 6)
+  ]
   where
     at  l c = WithPos (at' l c) (at' l (c + 1)) 2
     at' l c = SourcePos "" (mkPos l) (mkPos c)
