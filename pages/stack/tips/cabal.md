@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/10/30
+date: 2019/11/23
 ---
 
 ## 注意点
@@ -55,7 +55,7 @@ stack | cabal | 備考
 ------|--------|-------
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
 `stack build` | `cabal build`
-`stack test` | `cabal test --enable-tests` <br> `cabal test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
+`stack test` | `cabal test`
 `stack repl` <br> `stack ghci` | `cabal repl`
 `stack repl --package <pkg1> <pkg2>` | `cabal repl --build-dep <pkg1>, <pkg2>` <br> `cabal repl -b <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
 `stack clean` | `cabal clean`
@@ -68,6 +68,12 @@ stack | cabal | 備考
  ? | `cabal check`
  ? | `cabal upload` <br> `cabal upload --publish`
 `stack update` | `cabal update`
+
+### オプション対応表
+
+stack | cabal | 備考
+------|-------|-------
+`local-bin-path` | `installdir`
 
 ### どちらか一方にしかないコマンドやオプション
 
@@ -85,9 +91,60 @@ stack | cabal | 備考
 stack | cabal
 ------|-------
 `~/.stack/` | `~/.cabal/`
+`~/.local/bin` | `~/.cabal/bin`
+? | `~/.cabal/store`
 `~/.stack/config.yaml`, `~/.stack/global-project/stack.yaml` | `~/.cabal/config`
 
 ## Tips
+
+### install コマンドの挙動
+
+例えば、`cabal.project`が以下のようなパッケージ構成になっていて、`executable` (mainExe1, mainExe2, subExe1, subExe2) が定義されているとする。
+
+```
+packages:
+  ./              -- name: app,  executable: mainExe1, executable: mainExe2
+  ./subs/pkg1     -- name: pkg1, executable: subExe1
+  ./subs/pkg2     -- name: pkg2, executable: subExe2
+```
+
+#### stack
+
+コマンド | インストールされるもの | 備考
+--------|--------------------|---------
+`stack install` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`stack install .` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`stack install app` | `mainExe1`, `mainExe2`
+`stack install pkg1` | `subExe1`
+`stack install pkg2` | `subExe2`
+`stack install . pkg1 pkg2` | - | パーズエラーで実行できない
+`stack install app pkg1 pkg2` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`stack install all` | - | `Unknown package: all` となる。
+
+#### cabal
+
+コマンド | インストールされるもの | 備考
+--------|--------------------|---------
+`cabal install` | `mainExe1`, `mainExe2`
+`cabal install .` | `mainExe1`, `mainExe2` | `cabal install` と同じ
+`cabal install app` | `mainExe1`, `mainExe2` | `cabal install` と同じ
+`cabal install pkg1` | `subExe1`
+`cabal install pkg2` | `subExe2`
+`cabal install . pkg1 pkg2` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`cabal install app pkg1 pkg2` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`cabal install all` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2` | 全てのパッケージに `executable` が含まれている場合に限り実行可能
+`cabal install exes` | `mainExe1`, `mainExe2`
+`cabal install all:exes` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2` | `stack install` に相当するコマンド
+
+- `cabal install all` で `executable` が含まれていないパッケージがある場合は以下のエラーが出る
+
+```
+cabal: Cannot build the executables in the package pkg2 because it does not
+contain any executables. Check the .cabal file for the package and make sure
+that it properly declares the components that you expect.
+```
+
+- `--install-method=copy` を指定するとシンボリックリンクではなく、実体がコピーされる。(Windows などで有用らしい)
 
 ### コマンドの自動補完
 

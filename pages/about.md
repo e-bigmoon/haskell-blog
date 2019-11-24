@@ -11,7 +11,6 @@ Shinya Yamaguchi | [waddlaw](https://github.com/waddlaw) | [waddlaw](https://twi
 Hiroki Asano | [asanoH](https://github.com/asanoH) |
 Wataru Yamada | [wataru86](https://github.com/wataru86) |
 Fumiaki Kinoshita | [fumieval](https://github.com/fumieval) | [fumieval](https://twitter.com/fumieval)
-Tatsuki Ikeda | [Tatsuki-I](https://github.com/Tatsuki-I) | [ttk_vim](https://twitter.com/ttk_vim)
 
 ---
 
