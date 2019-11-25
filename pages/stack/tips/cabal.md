@@ -1,6 +1,6 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/11/23
+date: 2019/11/25
 ---
 
 ## 注意点
@@ -144,7 +144,10 @@ contain any executables. Check the .cabal file for the package and make sure
 that it properly declares the components that you expect.
 ```
 
-- `--install-method=copy` を指定するとシンボリックリンクではなく、実体がコピーされる。(Windows などで有用らしい)
+オプション | 内容
+----------|-----------
+`--install-method=copy` | シンボリックリンクではなく、実体がコピーされる。Docker にバイナリをコピーする際などで利用することがある。
+`--overwrite-policy=always` | すでにファイルが存在する場合でも、常に上書きする
 
 ### コマンドの自動補完
 
