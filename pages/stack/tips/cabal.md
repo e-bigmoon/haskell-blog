@@ -62,7 +62,7 @@ stack | cabal | 備考
 `stack run` | `cabal run`
 `stack --version` | `cabal --version`
 `stack --numeric-version` | `cabal --numeric-version`
-`stack upgrade` | `cabal install cabal-install`<br>`cabal install cabal-install --overwrite-policy=always` | ghcup を使う
+`stack upgrade` | `cabal install cabal-install` | ghcup を使う
  ? | `cabal haddock`
  ? | `cabal sdist`
  ? | `cabal check`
@@ -148,6 +148,8 @@ that it properly declares the components that you expect.
 ----------|-----------
 `--install-method=copy` | シンボリックリンクではなく、実体がコピーされる。Docker にバイナリをコピーする際などで利用することがある。
 `--overwrite-policy=always` | すでにファイルが存在する場合でも、常に上書きする
+
+`--overwrite-policy=always` を毎回指定するのが面倒な場合は `cabal user-config update -a overwrite-policy:always` とすることで `~/.cabal/config` に設定できる。
 
 ### コマンドの自動補完
 
