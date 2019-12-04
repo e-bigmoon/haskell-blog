@@ -146,6 +146,7 @@ that it properly declares the components that you expect.
 
 オプション | 内容
 ----------|-----------
+`--installdir=<path>` | インストール先のパスを
 `--install-method=copy` | シンボリックリンクではなく、実体がコピーされる。Docker にバイナリをコピーする際などで利用することがある。
 `--overwrite-policy=always` | すでにファイルが存在する場合でも、常に上書きする
 
