@@ -8,9 +8,170 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2019-11-10T00:00:00Z</updated>
+    <updated>2019-12-24T00:00:00Z</updated>
     <entry>
-    <title>Megaparsec 8</title>
+    <title>Ap Monoid</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/12-24-ap-monoid.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/12-24-ap-monoid.html</id>
+    <published>2019-12-24T00:00:00Z</published>
+    <updated>2019-12-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>まずは以下の関数 <code>f</code> を考えます。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">.</span> <span class="fu">sequence</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&gt;</span> f e1</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="op">&gt;</span> f e2</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="dt">Nothing</span></span></code></pre></div>
+<p>次に、この <code>f = fmap concat . sequence</code> をもっと短くカッコよく書けないかな？と考えます。</p>
+<p>何となく <code>mconcat</code> で置き換えれそうな気がしたんですよ・・・。 だけど、動作が変わってしまうんです・・・。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;</span> <span class="fu">mconcat</span> e1</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="op">&gt;</span> <span class="fu">mconcat</span> e2</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span></code></pre></div>
+<p>ここで問題です。なぜ <code>mconcat</code> にすると結果が異なるのでしょうか？ また、<code>f = fmap concat . sequence</code> という定義を畳み込みを使って書き直すことはできるのでしょうか？</p>
+<p>このことを考えていたら <code>Ap</code> モノイドにたどり着きました。</p>
+<!--more-->
+<h2 id="関数-f-は何を行っているのか">関数 f は何を行っているのか？</h2>
+<p>まずは <code>f = fmap concat . sequence</code> がどのように動作するか確認してみましょう。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>f e1</span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">$</span> <span class="fu">sequence</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">$</span> <span class="dt">Just</span> [[<span class="dv">1</span>,<span class="dv">2</span>], [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> <span class="fu">concat</span> [[<span class="dv">1</span>,<span class="dv">2</span>], [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>f e2</span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">$</span> <span class="fu">sequence</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="dt">Nothing</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>ここまでは簡単ですね。では <code>f = mconcat</code> の場合も確認します。(ここでの定義はデフォルト実装の <code>mconcat = foldr (&lt;&gt;) mempty</code> を使います)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>f e1</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="ot">=</span> <span class="fu">mconcat</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="ot">=</span> <span class="fu">foldr</span> (<span class="op">&lt;&gt;</span>) <span class="fu">mempty</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="fu">mempty</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="co">-- ココ!!!</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb4-8"><a href="#cb4-8"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span></code></pre></div>
+<p>どうやら <code>mconcat</code> に変更すると <code>Just [3,4] &lt;&gt; Nothing</code> の計算で結果が変わってくるということがわかります。 つまり、求めている計算は <code>Monoid</code> の演算ではなく <code>Monad (Applicative)</code> の <code>Effect</code> なのです。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- 雰囲気でいえば、こんな感じになれば良いかも？</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span> <span class="co">-- mconcat で行われる演算</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span> <span class="co">-- 期待しているのは Maybe モナドの Effect</span></span></code></pre></div>
+<h2 id="畳み込んでみる">畳み込んでみる</h2>
+<p>何となく方向性は掴めました。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">-- 計算の途中で出てきたこの形を</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">-- (とりあえず) こうしたい</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&gt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span>)</span></code></pre></div>
+<p>形だけ見れば <code>foldr (&gt;&gt;) mempty</code> とすれば良さげです。試してみましょう。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldr</span> (<span class="op">&gt;&gt;</span>) <span class="fu">mempty</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="op">&gt;</span> f e1</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="dt">Nothing</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="op">&gt;</span> f e2</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="dt">Nothing</span></span></code></pre></div>
+<p><code>f e2</code> は良い感じですが、今度は <code>f e1</code> の結果がおかしくなりました・・・。 それはそうですよね。<code>Maybe</code> モナドの <code>Effect</code> で畳み込んでいるため、どこかで <code>Nothing</code> が出てきたら計算全体は <code>Nothing</code> になりますよね。</p>
+<p>これってつまり、<code>Maybe</code> モナドの <code>Effect</code> と <code>リスト</code> モノイドの演算の両方が必要ってことになりますね・・・。 オリジナルの <code>f = fmap concat . sequence</code> の定義も確かにそんな感じです。</p>
+<h2 id="自分で定義しよう">自分で定義しよう！</h2>
+<p>もう一度整理しましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- 計算対象のリスト</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>[ m_a1, m_a2, m_a3, me ]</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">-- まずは Effect を実行したい</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>m_a1 <span class="op">&gt;&gt;</span> m_a2 <span class="op">&gt;&gt;</span> m_a3 <span class="op">&gt;&gt;</span> me</span>
+<span id="cb8-6"><a href="#cb8-6"></a></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">-- m_a1, m_a2, m_a3, me の結果をそれぞれ a1, a2, a3, e として</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">-- Monoid の演算を行いたい</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e</span>
+<span id="cb8-10"><a href="#cb8-10"></a></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">------------------------------------------------</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">-- 具体的に、値が全部 Just でラップされていると考えた場合</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a2 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">-- 期待する結果</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e</span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">-- どこか一箇所に Nothing がある (この場合 m_a2 が Nothing) と考えた場合</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">-- 期待する結果</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="dt">Nothing</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="co">-- 以下のようになってはダメ</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a>a1 <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e</span>
+<span id="cb8-24"><a href="#cb8-24"></a></span>
+<span id="cb8-25"><a href="#cb8-25"></a><span class="co">------------------------------------------------</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a><span class="co">-- こんな感じで計算が進むモノイドが欲しい</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a2 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-28"><a href="#cb8-28"></a>  <span class="ot">=</span> <span class="dt">Just</span> (a1 <span class="op">&lt;&gt;</span> a2) <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-29"><a href="#cb8-29"></a>  <span class="ot">=</span> <span class="dt">Just</span> (a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3) <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-30"><a href="#cb8-30"></a>  <span class="ot">=</span> <span class="dt">Just</span> (a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e)</span>
+<span id="cb8-31"><a href="#cb8-31"></a></span>
+<span id="cb8-32"><a href="#cb8-32"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-33"><a href="#cb8-33"></a>  <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-34"><a href="#cb8-34"></a>  <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-35"><a href="#cb8-35"></a>  <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>上記のような挙動を行う <code>Monoid</code> を新しく定義してみます！</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">newtype</span> <span class="dt">Sequence</span> m a <span class="ot">=</span> <span class="dt">Sequence</span> {<span class="ot"> getSequence ::</span> m a }</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">instance</span> (<span class="dt">Monad</span> m, <span class="dt">Semigroup</span> a) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sequence</span> m a) <span class="kw">where</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  ma <span class="op">&lt;&gt;</span> mb <span class="ot">=</span> <span class="dt">Sequence</span> <span class="op">$</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>    <span class="kw">do</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>      a <span class="ot">&lt;-</span> getSequence ma</span>
+<span id="cb9-8"><a href="#cb9-8"></a>      b <span class="ot">&lt;-</span> getSequence mb</span>
+<span id="cb9-9"><a href="#cb9-9"></a>      <span class="fu">return</span> (a <span class="op">&lt;&gt;</span> b)</span>
+<span id="cb9-10"><a href="#cb9-10"></a></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="kw">instance</span> (<span class="dt">Monad</span> m, <span class="dt">Monoid</span> a) <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sequence</span> m a) <span class="kw">where</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sequence</span> (<span class="fu">return</span> <span class="fu">mempty</span>)</span></code></pre></div>
+<p>実際に確かめてみましょう。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- (&lt;&gt;) に変更した。</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldr</span> (<span class="op">&lt;&gt;</span>) <span class="fu">mempty</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb10-5"><a href="#cb10-5"></a></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="op">&gt;</span> f (<span class="fu">map</span> <span class="dt">Sequence</span> e1)</span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]}</span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="op">&gt;</span> f (<span class="fu">map</span> <span class="dt">Sequence</span> e2)</span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Nothing</span>}</span></code></pre></div>
+<p>期待通りに動いていますね。<code>foldMap</code> を使うともう少し短くかけます。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Sequence</span> e1</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]}</span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Sequence</span> e2</span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Nothing</span>}</span></code></pre></div>
+<h2 id="ap-モノイド">Ap モノイド</h2>
+<p>ここまでで定義した <code>Sequence</code> モノイドは <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Ap">Ap</a> という名前で定義されています。</p>
+<p>今回は <code>Monad</code> で話を進めましたが、実際は <code>Applicative</code> でも成り立ちます。 最初の例を <code>Ap</code> モノイドで置き換えれば以下のようになります。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Monoid</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Ap</span> e1</span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="dt">Ap</span> {getAp <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]}</span>
+<span id="cb12-7"><a href="#cb12-7"></a></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Ap</span> e2</span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="dt">Ap</span> {getAp <span class="ot">=</span> <span class="dt">Nothing</span>}</span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>Ap</code> モノイドの使い道がわかった</li>
+<li><a href="https://blog.miz-ar.info/2019/02/monoid-for-haskellers/">Haskellerのためのモノイド完全ガイド</a> でも解説されているので、気になった方はこちらもどうぞ</li>
+<li><code>fmap fold . sequenceA</code> と <code>getAp . foldMap Ap</code> を比較すると型制約が若干違う</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;</span> <span class="op">:</span>t <span class="fu">fmap</span> fold <span class="op">.</span> <span class="fu">sequenceA</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">fmap</span> fold <span class="op">.</span><span class="ot"> sequenceA ::</span> (<span class="dt">Monoid</span> a, <span class="dt">Traversable</span> t, <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> t (f a) <span class="ot">-&gt;</span> f a</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="op">&gt;</span> <span class="op">:</span>t getAp <span class="op">.</span> <span class="fu">foldMap</span> <span class="dt">Ap</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>getAp <span class="op">.</span> <span class="fu">foldMap</span> <span class="dt">Ap</span><span class="ot">    ::</span> (<span class="dt">Monoid</span> a, <span class="dt">Foldable</span> t, <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> t (f a) <span class="ot">-&gt;</span> f a</span></code></pre></div>]]></summary>
+</entry>
+<entry>
+    <title>Megaparsec 8 (翻訳)</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html</id>
     <published>2019-11-10T00:00:00Z</published>
@@ -1124,7 +1285,7 @@ Flags for format:
 <p>応援よろしくお願いします〜。</p>]]></summary>
 </entry>
 <entry>
-    <title>Megaparsec tutorial from IH book</title>
+    <title>Megaparsec tutorial from IH book (翻訳)</title>
     <link href="https://haskell.e-bigmoon.com/posts/2019/07-14-megaparsec-tutorial.html" />
     <id>https://haskell.e-bigmoon.com/posts/2019/07-14-megaparsec-tutorial.html</id>
     <published>2019-07-14T00:00:00Z</published>
@@ -3548,121 +3709,6 @@ Options
 <li><a href="https://kazu-yamamoto.hatenablog.jp/entry/2018/11/29/155311">SemigroupがMonoidに恋するとき</a></li>
 <li><a href="https://qiita.com/philopon/items/a29717af62831d3c8c07">optparse-applicativeをふわっと使う</a></li>
 </ul>]]></summary>
-</entry>
-<entry>
-    <title>Lambdabot for Slack</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/02-11-lambdabot.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/02-11-lambdabot.html</id>
-    <published>2019-02-11T00:00:00Z</published>
-    <updated>2019-02-11T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>最近 slack で <a href="https://github.com/lambdabot/lambdabot">Lambdabot</a> というツールを知りました。こいつを導入するとこんな事ができます。</p>
-<figure>
-<img src="/images/2019/02-11/1.png" alt="" /><figcaption>Lambdabot と遊んでいる図</figcaption>
-</figure>
-<p>実務で本格的に使えるものではありませんが、入れてみると楽しいですよ。(カスタマイズして改良すれば、かなり使えるかもしれない)</p>
-<!--more-->
-<h2 id="lambdabot-の導入">Lambdabot の導入</h2>
-<p>導入はとても簡単で slack app から Lambdabot をインストールするだけです！</p>
-<figure>
-<img src="/images/2019/02-11/2.png" alt="" /><figcaption>Slack app で検索</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/3.png" alt="" /><figcaption>Lambdabot のインストール画面</figcaption>
-</figure>
-<p>検索するのが面倒な人は <a href="https://lambdabot.brianmckenna.org/slack/install.html">Add Lambdabot to Slack</a> の App ボタンからもインストール可能です。</p>
-<p>アプリのソースコード等は <a href="https://github.com/markandrus/slack-lambdabot">markandrus/slack-lambdabot</a> にありますので、気になる方はこちらもご参照ください。</p>
-<p>自分でビルドしてホスティングする場合は fork の <a href="https://github.com/ezoerner/slack-lambdabot">ezoerner/slack-lambdabot</a> の方が良いかもしれません。(要検証)</p>
-<h2 id="lambdabot-for-slack-でできること">Lambdabot for Slack でできること</h2>
-<p>どうやら本家の Lambdabot の機能全てが使えるわけではないようです。</p>
-<p>また、利用可能な機能のうち <code>type</code> や <code>hoogle</code>等はちゃんと使えるようですが、<code>run</code> や <code>check</code> などは結果がおかしい場合があります。</p>
-<h3 id="hoogle">hoogle</h3>
-<p>どうやら結果は3件しか返さないようです。</p>
-<figure>
-<img src="/images/2019/02-11/hoogle-1.png" alt="" /><figcaption>関数名で検索</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/hoogle-2.png" alt="" /><figcaption>型名で検索</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/hoogle-3.png" alt="" /><figcaption>型で検索 (型変数有り)</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/hoogle-4.png" alt="" /><figcaption>型で検索 (型変数無し)</figcaption>
-</figure>
-<h3 id="type">type</h3>
-<p>どのパッケージが含まれているかわかりませんが、lens の演算子を試したところだめでした。</p>
-<figure>
-<img src="/images/2019/02-11/type-1.png" alt="" /><figcaption>関数</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/type-2.png" alt="" /><figcaption>メソッド</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/type-3.png" alt="" /><figcaption>複雑な式</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/type-4.png" alt="" /><figcaption>演算子</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/type-5.png" alt="" /><figcaption>セクション</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/type-6.png" alt="" /><figcaption>エラー</figcaption>
-</figure>
-<h3 id="run">run</h3>
-<p>式を実行することができるようですが、全然動かないです。</p>
-<figure>
-<img src="/images/2019/02-11/run-1.png" alt="" /><figcaption>print はエラー</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/run-2.png" alt="" /><figcaption>奇跡的に動いた例</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/run-3.png" alt="" /><figcaption>文字列を含む場合にはエラーになる</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/run-4.png" alt="" /><figcaption>無限リストは適当に打ち切り</figcaption>
-</figure>
-<h3 id="check">check</h3>
-<p>QuickCheck も実行可能ですが、上手く行く例が作れません・・・。</p>
-<figure>
-<img src="/images/2019/02-11/check-1.png" alt="" /><figcaption>実行時間の制約に引っかかってるっぽい</figcaption>
-</figure>
-<h3 id="free">free</h3>
-<p>たぶん実装は <a href="https://github.com/lambdabot/lambdabot/blob/0b26cb6ca0e0389bcff68d360c18775a787c9d52/lambdabot-haskell-plugins/src/Lambdabot/Plugin/Haskell/Free/FreeTheorem.hs">FreeTheorem.hs</a> です。</p>
-<p>良くわからないので解説できません。実行結果だけ貼っておきます。</p>
-<figure>
-<img src="/images/2019/02-11/free-1.png" alt="" /><figcaption>reverse</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/free-2.png" alt="" /><figcaption>const</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/free-3.png" alt="" /><figcaption>id</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/free-4.png" alt="" /><figcaption>flip</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/free-5.png" alt="" /><figcaption>filter</figcaption>
-</figure>
-<h3 id="pl">pl</h3>
-<p>ポイントフリーにしてくれます。また fusion もいくつか可能っぽいです。</p>
-<figure>
-<img src="/images/2019/02-11/pl-1.png" alt="" /><figcaption>ポイントフリー化1</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/pl-2.png" alt="" /><figcaption>ポイントフリー化2</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/pl-3.png" alt="" /><figcaption>f . id = id</figcaption>
-</figure>
-<figure>
-<img src="/images/2019/02-11/pl-4.png" alt="" /><figcaption>map f . map g = map (f . g)</figcaption>
-</figure>
-<h2 id="終わりに">終わりに</h2>
-<p>ちゃんと作り込んだら結構使えそうな気がします。</p>]]></summary>
 </entry>
 
 </feed>
