@@ -198,7 +198,7 @@ Sequence {getSequence = Nothing}
 ここまでで定義した `Sequence` モノイドは [Data.Monoid](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html) に [Ap](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Ap) という名前で定義されています。
 
 今回は `Monad` で話を進めましたが、実際は `Applicative` でも成り立ちます。
-最初の例を **Ap** モノイドで置き換えれば以下のようになります。
+最初の例を `Ap` モノイドで置き換えれば以下のようになります。
 
 ```haskell
 > import Data.Monoid
