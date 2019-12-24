@@ -1,5 +1,5 @@
 ---
-title: Megaparsec 8
+title: Megaparsec 8 (翻訳)
 author: Mark Karpov
 translator: Wataru Yamada
 tags: megaparsec, package, 翻訳

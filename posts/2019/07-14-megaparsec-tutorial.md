@@ -1,5 +1,5 @@
 ---
-title: Megaparsec tutorial from IH book
+title: Megaparsec tutorial from IH book (翻訳)
 author: Mark Karpov
 translator: Wataru Yamada
 tags: megaparsec, package, 翻訳
