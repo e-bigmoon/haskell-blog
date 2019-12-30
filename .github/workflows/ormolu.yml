@@ -30,24 +30,15 @@ jobs:
         key: v0-ormolu-v0.0.2.0
         restore-keys: |
           v0-ormolu-
-    - name: Cache ~/.cabal/store
-      uses: actions/cache@v1.0.3
-      id: cache
-      with:
-        path: ~/.cabal/store
-        key: v0-ormolu-store-v0.0.2.0
-        restore-keys: |
-          v0-ormolu-store-
+
     - name: Install ormolu
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
         cabal v2-update
         cabal v2-install ormolu --overwrite-policy=always
+
     - name: Apply ormolu
-      env:
-        ORMOLU_OPTIONS: "-o -XTypeApplications -o -XBangPatterns --mode inplace"
       run: |
         export PATH=~/.cabal/bin/:$PATH
-        
-        ormolu $ORMOLU_OPTIONS $(find app -type f -name "*.hs")
+        ormolu --mode inplace $(find app -type f -name "*.hs")
         git --no-pager diff --exit-code
