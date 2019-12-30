@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedLabels  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -11,10 +10,7 @@ import           Data.Monoid     ((<>))
 import           Hakyll          hiding (dateFieldWith)
 import           Hakyll.Ext
 import           System.FilePath (takeBaseName, takeDirectory, takeFileName)
-
-#if !(defined(mingw32_HOST_OS))
 import           Hakyll.Web.Sass (sassCompiler)
-#endif
 
 main :: IO ()
 main = do
@@ -27,15 +23,9 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     route idRoute
     compile copyFileCompiler
 
-#ifdef mingw32_HOST_OS
-  match "css/*.css" $ do
-    route idRoute
-    compile compressCssCompiler
-#else
   match "css/*.scss" $ do
     route $ setExtension "css"
     compile (fmap compressCss <$> sassCompiler)
-#endif
 
 -- TODO:watchで反映されない件byやまだ
   match (fromGlob "pages/**.md") $ do
