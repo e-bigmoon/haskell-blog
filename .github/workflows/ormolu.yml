@@ -24,15 +24,16 @@ jobs:
         cabal-version: "3.0"
 
     - name: Cache ~/.cabal/bin
+      id: cache-bin
       uses: actions/cache@v1.0.3
       with:
         path: ~/.cabal/bin
-        key: v0-ormolu-v0.0.2.0
+        key: v1-ormolu-v0.0.2.0
         restore-keys: |
-          v0-ormolu-
+          v1-ormolu-
 
     - name: Install ormolu
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache-bin.outputs.cache-hit != 'true'
       run: |
         cabal v2-update
         cabal v2-install ormolu --overwrite-policy=always
