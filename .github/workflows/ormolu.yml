@@ -1,0 +1,44 @@
+name: ormolu
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  schedule:
+    - cron: "00 15 * * *"
+
+jobs:
+  format:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        ghc-version: "8.6.5"
+        cabal-version: "3.0"
+
+    - name: Cache ~/.cabal/bin
+      uses: actions/cache@v1.0.3
+      with:
+        path: ~/.cabal/bin
+        key: v0-ormolu-v0.0.2.0
+        restore-keys: |
+          v0-ormolu-
+
+    - name: Install ormolu
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        cabal v2-update
+        cabal v2-install ormolu --overwrite-policy=always
+
+    - name: Apply ormolu
+      run: |
+        export PATH=~/.cabal/bin/:$PATH
+        ormolu --mode inplace $(find app -type f -name "*.hs")
+        git --no-pager diff --exit-code
