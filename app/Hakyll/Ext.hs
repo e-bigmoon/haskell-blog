@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Hakyll.Ext where
 
@@ -8,6 +9,7 @@ import Hakyll
 import Text.Blaze.Html ((!), toHtml, toValue)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
+import RIO
 
 dateFieldWith :: (Identifier -> String) -> String -> String -> Context a
 dateFieldWith f key format = field key $ \item -> do

@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -10,7 +11,12 @@ import Data.Monoid ((<>))
 import Hakyll hiding (dateFieldWith)
 import Hakyll.Ext
 import Hakyll.Web.Sass (sassCompiler)
+import RIO hiding ((^.))
+import qualified RIO.List as L
+import qualified RIO.List.Partial as L'
+import qualified RIO.Text as Text
 import System.FilePath (takeBaseName, takeDirectory, takeFileName)
+import HTMLEntities.Text
 
 main :: IO ()
 main = do
@@ -44,8 +50,8 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   createTagsRules categories (\xs -> "Posts categorised as \"" ++ xs ++ "\"")
   postIDs <- sortChronological' =<< getMatches "posts/**"
   let prevPosts = Nothing : map Just postIDs
-      nextPosts = tail $ map Just postIDs ++ [Nothing]
-  forM_ (zip3 postIDs prevPosts nextPosts) $
+      nextPosts = L'.tail $ map Just postIDs ++ [Nothing]
+  forM_ (L.zip3 postIDs prevPosts nextPosts) $
     \(postID, mprevPost, mnextPost) -> create [postID] $ do
       let prevPageCtx = case mprevPost of
             Just i ->
@@ -100,7 +106,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     route idRoute
     compile $ do
       let feedConfig = siteConfig ^. #feed
-          feedCtx = postCtx <> bodyField "description"
+          feedCtx = mapContext (Text.unpack . text . Text.pack) postCtx <> bodyField "description"
       posts <-
         fmap (take 10) . recentFirst'
           =<< loadAllSnapshots

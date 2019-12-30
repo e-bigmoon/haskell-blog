@@ -1,10 +1,12 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Config where
 
 import Data.Extensible
 import Data.Yaml (FromJSON, ParseException, decodeFileEither)
+import RIO
 
 fromConfig :: (FromJSON a) => FilePath -> IO (Either ParseException a)
 fromConfig = decodeFileEither
