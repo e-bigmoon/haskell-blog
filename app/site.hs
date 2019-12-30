@@ -16,6 +16,7 @@ import qualified RIO.List as L
 import qualified RIO.List.Partial as L'
 import qualified RIO.Text as Text
 import System.FilePath (takeBaseName, takeDirectory, takeFileName)
+import HTMLEntities.Text
 
 main :: IO ()
 main = do
@@ -105,7 +106,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     route idRoute
     compile $ do
       let feedConfig = siteConfig ^. #feed
-          feedCtx = postCtx <> bodyField "description"
+          feedCtx = mapContext (Text.unpack . text . Text.pack) postCtx <> bodyField "description"
       posts <-
         fmap (take 10) . recentFirst'
           =<< loadAllSnapshots
