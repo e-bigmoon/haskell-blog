@@ -85,16 +85,11 @@ jobs:
             stack clean
             stack test --pedantic --fast --no-run-tests
 
-  check:
-    docker:
-      - image: quay.io/haskell_works/stack-build-minimal
-    steps:
-      - checkout
-      - run:
-          name: Run HLint
-          command: |
-            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version
-            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s app
+  # check:
+  #   docker:
+  #     - image: quay.io/haskell_works/stack-build-minimal
+  #   steps:
+  #     - checkout
       # - run:
       #     name: Run stylish-haskell
       #     command: |
@@ -145,7 +140,6 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-      - check
       - preview:
           requires:
             - build
