@@ -23,14 +23,17 @@ jobs:
         ghc-version: "8.6.5"
         cabal-version: "3.0"
 
-    - name: Cache ~/.cabal/bin
+    - uses: actions/cache@v1.0.3
+      name: Cache ~/.cabal/bin
       id: cache-bin
-      uses: actions/cache@v1.0.3
       with:
         path: ~/.cabal/bin
-        key: v2-ormolu-v0.0.2.0
-        restore-keys: |
-          v2-ormolu-
+        key: v3-ormolu-v0.0.2.0
+
+    - name: Display ghc & cabal version
+      run: |
+        ghc -V
+        cabal -V
 
     - name: Install ormolu
       if: steps.cache-bin.outputs.cache-hit != 'true'
