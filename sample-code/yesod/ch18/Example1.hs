@@ -1,59 +1,88 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.22
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE TemplateHaskell   #-}
-{-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE ViewPatterns      #-}
-import qualified Data.ByteString.Lazy.Char8 as L8
-import           Network.HTTP.Types         (status200)
-import           Network.Wai                (pathInfo, rawPathInfo,
-                                             requestMethod, responseLBS)
+-- stack script --resolver lts-14.19
+{-# LANGUAGE EmptyDataDecls             #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE ViewPatterns               #-}
+import           Control.Monad.Logger
+import           Data.Text               (Text)
+import           Database.Persist.Sqlite
 import           Yesod
 
-data App = App
-
-mkYesod "App" [parseRoutes|
-/only-get       OnlyGetR   GET
-/any-method     AnyMethodR
-/has-param/#Int HasParamR  GET
-/my-subsite     MySubsiteR WaiSubsite getMySubsite
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+Author
+    name Text
+Blog
+    author AuthorId
+    title Text
+    content Html
 |]
 
+data App = App
+    { persistConfig :: SqliteConf
+    , connPool      :: ConnectionPool
+    }
 instance Yesod App
+instance YesodPersist App where
+    type YesodPersistBackend App = SqlBackend
+    runDB = defaultRunDB persistConfig connPool
+instance YesodPersistRunner App where
+    getDBRunner = defaultGetDBRunner connPool
 
-getOnlyGetR :: Handler Html
-getOnlyGetR = defaultLayout
-    [whamlet|
-        <p>Accessed via GET method
-        <form method=post action=@{AnyMethodR}>
-            <button>POST to /any-method
-    |]
+mkYesod "App" [parseRoutes|
+/ HomeR GET
+/blog/#BlogId BlogR GET
+|]
 
-handleAnyMethodR :: Handler Html
-handleAnyMethodR = do
-    req <- waiRequest
-    defaultLayout
+getHomeR :: Handler Html
+getHomeR = do
+    blogs <- runDB $ selectList [] []
+
+    defaultLayout $ do
+        setTitle "Blog posts"
         [whamlet|
-            <p>In any-method, method == #{show $ requestMethod req}
+            <ul>
+                $forall Entity blogid blog <- blogs
+                    <li>
+                        <a href=@{BlogR blogid}>
+                            #{blogTitle blog} by #{show $ blogAuthor blog}
         |]
 
-getHasParamR :: Int -> Handler String
-getHasParamR i = return $ show i
-
-getMySubsite :: App -> WaiSubsite
-getMySubsite _ =
-    WaiSubsite app
-  where
-    app req sendResponse = sendResponse $ responseLBS
-        status200
-        [("Content-Type", "text/plain")]
-        $ L8.pack $ concat
-            [ "pathInfo == "
-            , show $ pathInfo req
-            , ", rawPathInfo == "
-            , show $ rawPathInfo req
-            ]
+getBlogR :: BlogId -> Handler Html
+getBlogR id = do 
+          mBlog <- runDB $ get id
+          defaultLayout $ do
+            [whamlet|
+              $maybe blog <- mBlog
+                <p>Your title is #{blogTitle $ blog}
+              $nothing
+                <p>Hello
+            |]
 
 main :: IO ()
-main = warp 3000 App
+main = do
+    -- Use an in-memory database with 1 connection. Terrible for production,
+    -- but useful for testing.
+    let conf = SqliteConf ":memory:" 1
+    pool <- createPoolConfig conf
+    flip runSqlPersistMPool pool $ do
+        runMigration migrateAll
+
+        -- Fill in some testing data
+        alice <- insert $ Author "Alice"
+        bob   <- insert $ Author "Bob"
+
+        insert_ $ Blog alice "Alice's first post" "Hello World!"
+        insert_ $ Blog bob "Bob's first post" "Hello World!!!"
+        insert_ $ Blog alice "Alice's second post" "Goodbye World!"
+
+    warp 3000 App
+        { persistConfig = conf
+        , connPool      = pool
+        }

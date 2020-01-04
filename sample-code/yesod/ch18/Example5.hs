@@ -14,6 +14,10 @@ import           Control.Monad.Logger
 import           Data.Text               (Text)
 import           Database.Persist.Sqlite
 import           Yesod
+import qualified Database.Esqueleto      as E
+import           Database.Esqueleto      ((^.))
+import qualified Data.Conduit.List as CL
+import Data.Conduit ((.|))
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Author
@@ -40,26 +44,29 @@ mkYesod "App" [parseRoutes|
 /blog/#BlogId BlogR GET
 |]
 
-getHomeR :: Handler Html
+getHomeR :: Handler TypedContent
 getHomeR = do
-    blogs <- runDB $ selectList [] []
+    let blogsSrc =
+             E.selectSource
+           $ E.from $ \(blog `E.InnerJoin` author) -> do
+                E.on $ blog ^. BlogAuthor E.==. author ^. AuthorId
+                return
+                    ( blog   ^. BlogId
+                    , blog   ^. BlogTitle
+                    , author ^. AuthorName
+                    )
 
-    defaultLayout $ do
-        setTitle "Blog posts"
-        [whamlet|
-            <ul>
-                $forall blogEntity <- blogs
-                    ^{showBlogLink blogEntity}
-        |]
-
-showBlogLink :: Entity Blog -> Widget
-showBlogLink (Entity blogid blog) = do
-    author <- liftHandler $ runDB $ get404 $ blogAuthor blog
-    [whamlet|
-        <li>
-            <a href=@{BlogR blogid}>
-                #{blogTitle blog} by #{authorName author}
-    |]
+    render <- getUrlRenderParams
+    respondSourceDB typeHtml $ do
+        sendChunkText "<html><head><title>Blog posts</title></head><body><ul>"
+        blogsSrc .| CL.map (\(E.Value blogid, E.Value title, E.Value name) ->
+            toFlushBuilder $
+            [hamlet|
+                <li>
+                    <a href=@{BlogR blogid}>#{title} by #{name}
+            |] render
+            )
+        sendChunkText "</ul></body></html>"
 
 getBlogR :: BlogId -> Handler Html
 getBlogR id = do 

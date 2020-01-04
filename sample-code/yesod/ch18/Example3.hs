@@ -42,24 +42,21 @@ mkYesod "App" [parseRoutes|
 
 getHomeR :: Handler Html
 getHomeR = do
-    blogs <- runDB $ selectList [] []
+    blogs <- runDB $ rawSql
+        "SELECT ??, ?? \
+        \FROM blog INNER JOIN author \
+        \ON blog.author=author.id"
+        []
 
     defaultLayout $ do
         setTitle "Blog posts"
         [whamlet|
             <ul>
-                $forall blogEntity <- blogs
-                    ^{showBlogLink blogEntity}
+                $forall (Entity blogid blog, Entity _ author) <- blogs
+                    <li>
+                        <a href=@{BlogR blogid}>
+                            #{blogTitle blog} by #{authorName author}
         |]
-
-showBlogLink :: Entity Blog -> Widget
-showBlogLink (Entity blogid blog) = do
-    author <- liftHandler $ runDB $ get404 $ blogAuthor blog
-    [whamlet|
-        <li>
-            <a href=@{BlogR blogid}>
-                #{blogTitle blog} by #{authorName author}
-    |]
 
 getBlogR :: BlogId -> Handler Html
 getBlogR id = do 

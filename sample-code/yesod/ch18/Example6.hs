@@ -11,13 +11,19 @@
 {-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE ViewPatterns               #-}
 import           Control.Monad.Logger
+import           Control.Monad.Extra (maybeM)
 import           Data.Text               (Text)
+import qualified Database.Esqueleto      as E
+import           Database.Esqueleto      ((^.))
 import           Database.Persist.Sqlite
 import           Yesod
+import qualified Data.Conduit.List as CL
+import Data.Conduit ((.|))
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Author
     name Text
+    deriving Show
 Blog
     author AuthorId
     title Text
@@ -40,37 +46,46 @@ mkYesod "App" [parseRoutes|
 /blog/#BlogId BlogR GET
 |]
 
-getHomeR :: Handler Html
+getHomeR :: Handler TypedContent
 getHomeR = do
-    blogs <- runDB $ selectList [] []
+    let blogsSrc =
+             E.selectSource
+           $ E.from $ \(blog `E.InnerJoin` author) -> do
+                E.on $ blog ^. BlogAuthor E.==. author ^. AuthorId
+                return
+                    ( blog   ^. BlogId
+                    , blog   ^. BlogTitle
+                    , author ^. AuthorName
+                    )
 
-    defaultLayout $ do
-        setTitle "Blog posts"
-        [whamlet|
-            <ul>
-                $forall blogEntity <- blogs
-                    ^{showBlogLink blogEntity}
-        |]
-
-showBlogLink :: Entity Blog -> Widget
-showBlogLink (Entity blogid blog) = do
-    author <- liftHandler $ runDB $ get404 $ blogAuthor blog
-    [whamlet|
-        <li>
-            <a href=@{BlogR blogid}>
-                #{blogTitle blog} by #{authorName author}
-    |]
+    render <- getUrlRenderParams
+    respondSourceDB typeHtml $ do
+        sendChunkText "<html><head><title>Blog posts</title></head><body><ul>"
+        blogsSrc .| CL.map (\(E.Value blogid, E.Value title, E.Value name) ->
+            toFlushBuilder $
+            [hamlet|
+                <li>
+                    <a href=@{BlogR blogid}>#{title} by #{name}
+            |] render
+            )
+        sendChunkText "</ul></body></html>"
 
 getBlogR :: BlogId -> Handler Html
-getBlogR id = do 
-          mBlog <- runDB $ get id
-          defaultLayout $ do
-            [whamlet|
-              $maybe blog <- mBlog
-                <p>Your title is #{blogTitle $ blog}
-              $nothing
-                <p>Hello
-            |]
+getBlogR blogId = do 
+  mBlog <- runDB $ get blogId
+  mAuthor <- maybeM (pure Nothing) (runDB . get . blogAuthor) $ pure mBlog
+  defaultLayout
+    [whamlet|
+        <p>Hello World!
+        #{show mAuthor}
+        $maybe blog <- mBlog
+          <p>Your blog is #{blogContent blog}
+        $nothing
+          <p>I don't know your blog.
+    |]
+
+-- getBlogR :: BlogId -> Handler Html
+-- getBlogR _ = error "Implementation left as exercise to reader"
 
 main :: IO ()
 main = do

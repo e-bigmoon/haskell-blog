@@ -14,6 +14,8 @@ import           Control.Monad.Logger
 import           Data.Text               (Text)
 import           Database.Persist.Sqlite
 import           Yesod
+import qualified Database.Esqueleto      as E
+import           Database.Esqueleto      ((^.))
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Author
@@ -42,24 +44,24 @@ mkYesod "App" [parseRoutes|
 
 getHomeR :: Handler Html
 getHomeR = do
-    blogs <- runDB $ selectList [] []
+    blogs <- runDB
+           $ E.select
+           $ E.from $ \(blog `E.InnerJoin` author) -> do
+                E.on $ blog ^. BlogAuthor E.==. author ^. AuthorId
+                return
+                    ( blog   ^. BlogId
+                    , blog   ^. BlogTitle
+                    , author ^. AuthorName
+                    )
 
     defaultLayout $ do
         setTitle "Blog posts"
         [whamlet|
             <ul>
-                $forall blogEntity <- blogs
-                    ^{showBlogLink blogEntity}
+                $forall (E.Value blogid, E.Value title, E.Value name) <- blogs
+                    <li>
+                        <a href=@{BlogR blogid}>#{title} by #{name}
         |]
-
-showBlogLink :: Entity Blog -> Widget
-showBlogLink (Entity blogid blog) = do
-    author <- liftHandler $ runDB $ get404 $ blogAuthor blog
-    [whamlet|
-        <li>
-            <a href=@{BlogR blogid}>
-                #{blogTitle blog} by #{authorName author}
-    |]
 
 getBlogR :: BlogId -> Handler Html
 getBlogR id = do 
