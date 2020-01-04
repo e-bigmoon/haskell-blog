@@ -1,6 +1,6 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 import qualified Config as C
 import Control.Lens ((^.))
@@ -8,6 +8,7 @@ import Control.Monad (forM_)
 import Data.List (stripPrefix)
 import Data.Maybe
 import Data.Monoid ((<>))
+import HTMLEntities.Text
 import Hakyll hiding (dateFieldWith)
 import Hakyll.Ext
 import Hakyll.Web.Sass (sassCompiler)
@@ -16,7 +17,6 @@ import qualified RIO.List as L
 import qualified RIO.List.Partial as L'
 import qualified RIO.Text as Text
 import System.FilePath (takeBaseName, takeDirectory, takeFileName)
-import HTMLEntities.Text
 
 main :: IO ()
 main = do

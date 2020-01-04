@@ -6,10 +6,10 @@ module Hakyll.Ext where
 import Data.List
 import Data.Time
 import Hakyll
+import RIO
 import Text.Blaze.Html ((!), toHtml, toValue)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
-import RIO
 
 dateFieldWith :: (Identifier -> String) -> String -> String -> Context a
 dateFieldWith f key format = field key $ \item -> do
