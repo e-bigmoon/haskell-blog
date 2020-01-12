@@ -32,17 +32,29 @@ jobs:
         ghc -V
         cabal -V
 
-    - uses: actions/cache@v1.0.3
-      name: Cache ~/.cabal/store
+    - name: Cache ~/.cabal/store
+      uses: actions/cache@v1.1.0
       with:
         path: ~/.cabal/store
-        key: v2-cabal-${{ hashFiles('**/*.cabal') }}
+        key: v2-cabal-store-${{ hashFiles('**/*.cabal') }}
+
+    - name: Cache ~/.cabal/packages
+      uses: actions/cache@v1.1.0
+      with:
+        path: ~/.cabal/packages
+        key: v2-cabal-packages-${{ hashFiles('**/*.cabal') }}
+
+    - name: Cache dist-newstyle
+      uses: actions/cache@v1.1.0
+      with:
+        path: dist-newstyle
+        key: v2-cabal-dist-${{ hashFiles('**/*.cabal') }}
 
     - name: Install dependencies
       run: |
-        cabal v2-update
-        cabal v2-configure --write-ghc-environment-files=always -j2
-        cabal v2-build --only-dependencies
+        cabal update
+        cabal configure --write-ghc-environment-files=always -j2
+        cabal build --only-dependencies
 
-    - name: Build & Test
-      run: cabal v2-build
+    - name: Build
+      run: cabal build
