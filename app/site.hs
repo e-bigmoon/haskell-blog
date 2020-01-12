@@ -204,13 +204,14 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         Nothing -> fail "no route"
 
 atomFeedConfiguration :: C.Feed -> FeedConfiguration
-atomFeedConfiguration fs = FeedConfiguration
-  { feedTitle = fs ^. #title,
-    feedDescription = fs ^. #description,
-    feedAuthorName = fs ^. #authorName,
-    feedAuthorEmail = fs ^. #authorEmail,
-    feedRoot = fs ^. #root
-  }
+atomFeedConfiguration fs =
+  FeedConfiguration
+    { feedTitle = fs ^. #title,
+      feedDescription = fs ^. #description,
+      feedAuthorName = fs ^. #authorName,
+      feedAuthorEmail = fs ^. #authorEmail,
+      feedRoot = fs ^. #root
+    }
 
 -- Friendlier config when using docker
 hakyllConfig :: Configuration
