@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ghc: ["8.6.5"]
@@ -22,6 +22,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
     - uses: actions/setup-haskell@v1
       with:
         ghc-version: ${{ matrix.ghc }}
@@ -36,25 +37,19 @@ jobs:
       uses: actions/cache@v1.1.0
       with:
         path: ~/.cabal/store
-        key: v2-cabal-store-${{ hashFiles('**/*.cabal') }}
-
-    - name: Cache ~/.cabal/packages
-      uses: actions/cache@v1.1.0
-      with:
-        path: ~/.cabal/packages
-        key: v2-cabal-packages-${{ hashFiles('**/*.cabal') }}
+        key: ${{ runner.os }}-${{ matrix.ghc }}-v1-cabal-store-${{ hashFiles('**/*.cabal') }}
 
     - name: Cache dist-newstyle
       uses: actions/cache@v1.1.0
       with:
         path: dist-newstyle
-        key: v2-cabal-dist-${{ hashFiles('**/*.cabal') }}
+        key: ${{ runner.os }}-${{ matrix.ghc }}-v1-haskell-blog-dist-${{ hashFiles('**/*.cabal') }}
 
     - name: Install dependencies
       run: |
         cabal update
-        cabal configure --write-ghc-environment-files=always -j2
-        cabal build --only-dependencies
+        cabal configure --disable-optimization --write-ghc-environment-files=always -j2
+        cabal build all --only-dependencies
 
     - name: Build
       run: cabal build
