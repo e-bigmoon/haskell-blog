@@ -20,7 +20,7 @@ compiled using version 3.0.0.0 of the Cabal library
 
 全体のディレクトリ構成は以下のようになっているとしましょう。
 
-```
+```shell
 $ tree .
 .
 ├── example.cabal
@@ -91,7 +91,7 @@ packages:
 現時点では `hspec-discover` の実行ファイルは存在していません。
 
 ```shell
-λ hspec-discover
+$ hspec-discover
 bash: hspec-discover: コマンドが見つかりません
 ```
 
@@ -100,7 +100,7 @@ bash: hspec-discover: コマンドが見つかりません
 `hspec-discover` の実行ファイルが無い状態で `stack test` を実行すると以下のようにエラーになります。
 
 ```shell
-λ stack test
+$ stack test
 ...
 
 ghc: could not execute: hspec-discover
@@ -109,16 +109,16 @@ ghc: could not execute: hspec-discover
 ### hspec-discover をインストールした場合
 
 ```shell
-λ stack install hspec-discover
+$ stack install hspec-discover
 
-λ hspec-discover
+$ hspec-discover
 Usage: hspec-discover SRC CUR DST [--module-name=NAME]
 ```
 
 上記のようにインストールした場合は、問題無く動作します。
 
 ```shell
-λ stack test
+$ stack test
 ...
 
 example/test/LibSpec.hs:3:9: error:
@@ -133,7 +133,7 @@ example/test/LibSpec.hs:3:9: error:
 次に進む前に実行ファイルを削除しておきます。
 
 ```shell
-λ rm ~/.local/bin/hspec-discover 
+$ rm ~/.local/bin/hspec-discover
 ```
 
 ### build-depends に追加した場合
@@ -156,8 +156,8 @@ test-suite example-test
 
 では `stack test` を実行してみます。
 
-```
-λ stack test
+```shell
+$ stack test
 ...
 
 example/test/LibSpec.hs:3:9: error:
@@ -176,7 +176,7 @@ example/test/LibSpec.hs:3:9: error:
 同様に `cabal` の場合も確かめてみましょう。(`example.cabal` ファイルから `hspec-discover` を削除しておきます)
 
 ```shell
-λ cabal test
+$ cabal test
 ...
 
 ghc: could not execute: hspec-discover
@@ -187,16 +187,16 @@ ghc: could not execute: hspec-discover
 ### hspec-discover をインストールした場合
 
 ```shell
-λ cabal install hspec-discover
+$ cabal install hspec-discover
 
-λ hspec-discover
+$ hspec-discover
 Usage: hspec-discover SRC CUR DST [--module-name=NAME]
 ```
 
 同様に `cabal test` を実行してみます。
 
 ```shell
-λ cabal test
+$ cabal test
 ...
 
 test/LibSpec.hs:3:9: error:
@@ -213,15 +213,15 @@ test/LibSpec.hs:3:9: error:
 まずはバイナリファイルを削除しておきます。
 
 ```shell
-λ rm ~/.cabal/bin/hspec-discover
+$ rm ~/.cabal/bin/hspec-discover
 ```
 
 `example.cabal` ファイルは先ほどと同じように `build-depends` に `hspec-discover` を追加した状態です。
 
 テストを実行してみましょう。
 
-```
-λ cabal test
+```shell
+$ cabal test
 ...
 
 ghc: could not execute: hspec-discover
@@ -264,7 +264,7 @@ hspec-discover:hspec-discover ^>=2.7
 これでテストを実行してみましょう。
 
 ```shell
-λ cabal test
+$ cabal test
 ...
 
 test/LibSpec.hs:3:9: error:
