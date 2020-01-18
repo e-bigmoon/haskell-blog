@@ -169,16 +169,16 @@ example/test/LibSpec.hs:3:9: error:
 
 実行ファイルがローカル環境に存在しなくても自動的に `hspec-discover` が動作しています。
 
-そのため、`stack` プロジェクトでは `hspec-discover` を依存関係に追加するだけで良い感じにテストが進みます。
-
+そのため、`stack` プロジェクトでは `hspec-discover` を依存関係 (`build-depends`) に追加するだけで良い感じにテストが進みます。
 
 ## cabal
 
-同様に `cabal` の場合も確かめてみましょう。(`example.cabal` ファイルから追加した依存関係を削除しておきます)
+同様に `cabal` の場合も確かめてみましょう。(`example.cabal` ファイルから `hspec-discover` を削除しておきます)
 
 ```shell
 λ cabal test
 ...
+
 ghc: could not execute: hspec-discover
 ```
 
@@ -198,6 +198,7 @@ Usage: hspec-discover SRC CUR DST [--module-name=NAME]
 ```shell
 λ cabal test
 ...
+
 test/LibSpec.hs:3:9: error:
     Not in scope: type constructor or class ‘Spec’
   |
@@ -286,4 +287,4 @@ test/LibSpec.hs:3:9: error:
 
 ## 参考リソース
 
-- [cabal user guide] (https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-tool-depends)
+- [cabal user guide](https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-tool-depends)
