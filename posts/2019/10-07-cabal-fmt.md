@@ -1,7 +1,7 @@
 ---
 title: cabal-fmt の紹介
 author: Shinya Yamaguchi
-tags: bigmoon, tool
+tags: bigmoon, tool, cabal
 ---
 
 ## はじめに

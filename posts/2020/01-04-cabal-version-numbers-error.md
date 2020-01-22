@@ -1,7 +1,7 @@
 ---
 title: Memo - unexpected At most 9 numbers are allowed per version number part
 author: Shinya Yamaguchi
-tags: bigmoon
+tags: bigmoon, cabal
 ---
 
 GHC-8.8 への移行中に GitHub Actions で以下のようなエラーが発生しました。

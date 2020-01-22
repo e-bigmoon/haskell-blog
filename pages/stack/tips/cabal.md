@@ -1,11 +1,16 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/11/25
+date: 2020/01/22
 ---
 
 ## 注意点
 
 このページの内容は `cabal HEAD` を追っているため、最新版の `cabal` ではまだ利用不可能な内容も含まれる場合があります。
+
+## 参考となるサイト&記事
+
+- [AWESOME-CABAL](https://kowainik.github.io/projects/awesome-cabal)
+- [Why Not Both?](https://medium.com/@fommil/why-not-both-8adadb71a5ed)
 
 ## stack と cabal
 
@@ -25,17 +30,7 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 
 ## stack と cabal の違い
 
-- `extra-lib-dirs` や `extra-include-dirs` などで依存するライブラリが変化した時
-  - stack: `~/.stack/snapshots/` 以下を手動で削除し、リビルドする必要がある
-  - cabal: `nix-style` を採用しているため、リビルドするだけで良い
-- パッケージをリビルドするタイミング
-  - stack: `resolver` が変化した際に、パッケージを新たに全てリビルドする必要がある
-  - cabal: `compiler` が変化した際に、パッケージを新たに全てリビルドする必要がある
-  
-### 個人的な意見
-
-- stack はエラーメッセージ等が初心者に優しい (ユーザフレンドリー)
-- cabal は stack よりも明らかにビルドが速い
+- [[RFC] Switch from `stack` to `cabal-install` for building Haskell code #3280](https://github.com/hasura/graphql-engine/issues/3280) に良くまとまっています。
 
 ## v1-build と v2-build コマンドの違い
 
@@ -97,11 +92,23 @@ stack | cabal
 
 ## Tips
 
+### Stackage のスナップショットから project.cabal.freeze ファイルを生成する方法
+
+`URL` の後ろに `cabal.config` を付けると [cabal.project.freeze](https://www.stackage.org/lts-14.21/cabal.config) ファイルが取得できる。
+
+```shell
+# lts-14.21 の例
+$ curl https://www.stackage.org/lts-14.21/cabal.config > cabal.project.freeze
+
+# nightly-2020-01-21 の例
+$ https://www.stackage.org/nightly-2020-01-21/cabal.config > cabal.project.freeze
+```
+
 ### install コマンドの挙動
 
 例えば、`cabal.project`が以下のようなパッケージ構成になっていて、`executable` (mainExe1, mainExe2, subExe1, subExe2) が定義されているとする。
 
-```
+```cabal
 packages:
   ./              -- name: app,  executable: mainExe1, executable: mainExe2
   ./subs/pkg1     -- name: pkg1, executable: subExe1
