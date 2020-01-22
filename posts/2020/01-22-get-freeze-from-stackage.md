@@ -66,6 +66,10 @@ $ stack build --dry-run
 $ git clone https://github.com/arcticmatt/dino-brick.git
 $ cd dino-brick
 $ cabal update
+Downloading the latest package list from hackage.haskell.org
+To revert to previous state run:
+    cabal v2-update 'hackage.haskell.org,2020-01-19T06:12:36Z'
+
 $ cabal build
 ...
 
@@ -193,7 +197,7 @@ constraints: any.Cabal ==2.4.0.1,
              any.binary ==0.8.6.0,
              any.binary-orphans ==1.0.1,
              any.blaze-builder ==0.4.1.0,
-             any.brick ==0.47,
+             any.brick ==0.46,
              brick -demos,
              any.bytes ==0.16,
              bytes +test-doctests,
