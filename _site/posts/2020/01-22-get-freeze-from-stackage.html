@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>stack で管理されたプロジェクトを cabal でビルドするために</title>
+  <meta name="description" content="Haskell のビルドツールといえば cabal と stack です。ちょっと前までは cabal より stack の方が流行っていたのですが、最近は開発も落ち着いているようであまり動きがありません。それよりも cabal の nix-style local build が非常に使いやすく、近頃では stack">
+  <link rel="canonical" href="../../posts/2020/01-22-get-freeze-from-stackage.html">
+  <link rel="alternate" type="application/atom+xml" title="stack で管理されたプロジェクトを cabal でビルドするために" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="stack で管理されたプロジェクトを cabal でビルドするために" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2020/01-22-get-freeze-from-stackage.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="stack で管理されたプロジェクトを cabal でビルドするために" />
+  <meta property="og:description" content="Haskell のビルドツールといえば cabal と stack です。ちょっと前までは cabal より stack の方が流行っていたのですが、最近は開発も落ち着いているようであまり動きがありません。それよりも cabal の nix-style local build が非常に使いやすく、近頃では stack" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on January 22, 2020
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">stack で管理されたプロジェクトを cabal でビルドするために</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a href="../../tags/bigmoon.html">bigmoon</a>, <a href="../../tags/cabal.html">cabal</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=stack で管理されたプロジェクトを cabal でビルドするために&url=https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <p>Haskell のビルドツールといえば <strong>cabal</strong> と <strong>stack</strong> です。ちょっと前までは <strong>cabal</strong> より <strong>stack</strong> の方が流行っていたのですが、最近は開発も落ち着いているようであまり動きがありません。それよりも <strong>cabal</strong> の <strong>nix-style local build</strong> が非常に使いやすく、近頃では <strong>stack</strong> から <strong>cabal</strong> に移行しているプロジェクトも多くあります。</p>
+<p><strong>stack</strong> を使っていて改善したら良いなぁと思う部分としては、新しい <strong>GHC</strong> やライブラリをすぐに使おうと思っても <strong>LTS</strong> や <strong>nightly</strong> に入っていないため使えなかったり、<strong>Backpack</strong> が未だに使えなかったりするところでしょうか。</p>
+<p>ただ、ビルドの再現性という点においては <strong>stack</strong> の方が優秀だと思っているので今は両方使っています。(<strong>index-state</strong> と <strong>freeze</strong> ファイルを組み合わせれば <strong>cabal</strong> でも再現性が保証されそうな気がしますが、どうなんだろう)</p>
+<p>今回は <strong>stack</strong> で管理されたプロジェクトを確実に <strong>cabal</strong> でビルドするための方法についてまとめました。</p>
+<ul>
+<li><a href="https://medium.com/@fommil/why-not-both-8adadb71a5ed">Why Not Both?</a> に載ってた <strong>Stackage</strong> の使い方の紹介でもあります。</li>
+</ul>
+<!--more-->
+<h2 id="モチベーション">モチベーション</h2>
+<p>ここでは <code>stack</code> で管理されていて、<code>cabal</code> ファイルにバージョン制約が明記されていないという、良くあるシチュエーションを考えます。</p>
+<p>どんなプロジェクトでも良いのですが、具体的には <a href="https://github.com/arcticmatt/dino-brick">arcticmatt/dino-brick</a> のようなプロジェクトです。<code>stack.yaml</code> は以下のようになっています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-8.23</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">-</span><span class="at"> </span><span class="st">'.'</span></span></code></pre></div>
+<p><code>dino.cabal</code> の <code>dependencies</code> には、ほとんどバージョンが明記されていません。(stack の場合はスナップショットが決まると自動的にパッケージのバージョンが決まるため、明示する必要はあまり無いのです)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="at">    , brick</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="at">    , containers</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="at">    , linear</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="at">    , microlens</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="at">    , microlens-th</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="at">    , random</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="at">    , vty</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
+<p>このプロジェクトを <code>cabal</code> でビルドするためにはどうしたら良いんだろうか？というお話です。何もしなくてもビルドできるプロジェクトも結構あるんですが、ハマる時もあります・・・。</p>
+<h2 id="package.yaml-から-cabal-ファイルを生成する">package.yaml から cabal ファイルを生成する</h2>
+<p>リポジトリに <code>package.yaml</code> しか含まれていない場合は、<code>package.yaml</code> から <code>cabal</code> ファイルを生成しましょう。</p>
+<p>以下のコマンドでビルドすることなくすぐに生成できます。</p>
+<pre class="shell"><code>$ stack build --dry-run</code></pre>
+<p>今回は <code>dino.cabal</code> が最初からリポジトリに含まれているため何もしなくても良さそうですね。</p>
+<h2 id="cabal-でビルドしてみよう">cabal でビルドしてみよう</h2>
+<p>とりあえずビルドしてみましょう。</p>
+<pre class="shell"><code>$ git clone https://github.com/arcticmatt/dino-brick.git
+$ cd dino-brick
+$ cabal update
+Downloading the latest package list from hackage.haskell.org
+To revert to previous state run:
+    cabal v2-update 'hackage.haskell.org,2020-01-19T06:12:36Z'
+
+$ cabal build
+...
+
+src/UI.hs:142:56: error:
+    • Couldn't match expected type ‘App s0 e0 n0’
+                  with actual type ‘Game’
+    • In the fourth argument of ‘customMain’, namely ‘g’
+      In a stmt of a 'do' block:
+        customMain (V.mkVty V.defaultConfig) (Just chan) app g
+      In the expression:
+        do chan &lt;- newBChan 10
+           forkIO
+             $ forever
+                 $ do modifyIORef counter (+ 1)
+                      c' &lt;- readIORef counter
+                      ....
+           g &lt;- initGame 0
+           customMain (V.mkVty V.defaultConfig) (Just chan) app g
+    |
+142 |   customMain (V.mkVty V.defaultConfig) (Just chan) app g
+    |                                                        ^
+cabal: Failed to build dino-0.1.0.0 (which is required by exe:dino from
+dino-0.1.0.0).</code></pre>
+<p>エラーがいくつも出てしまいました。上記の結果はそのうちの最後の1つだけを表示しています。</p>
+<p>ちなみに <code>stack build</code> だとビルドできます。</p>
+<h3 id="問題点">問題点</h3>
+<p><code>stack</code> だとビルドできて、<code>cabal</code> だと失敗してしまう原因はビルド時にパッケージのバージョンにあります。どのパッケージが原因かと言うと、今回は <a href="https://hackage.haskell.org/package/brick">brick</a> です。</p>
+<p><code>stack</code> の場合は <a href="https://www.stackage.org/lts-8.23">LTS-8.23</a> に含まれるバージョンを利用することになるので <a href="https://www.stackage.org/lts-8.23/package/brick-0.17.2">brick-0.17.2</a> を利用します。</p>
+<p>一方で <code>cabal</code> の場合は <code>cabal update</code> を最後に実行した時の <code>Hackage</code> の最新バージョンが利用されます。これは明示的なバージョン制約が <code>cabal</code> ファイルに記述されていないためです。そのため <a href="https://hackage.haskell.org/package/brick-0.50.1">brick-0.50.1</a> などが利用されます。</p>
+<p>バージョンアップによって後方互換性が保たれている場合は何も考えずにビルドが通るのですが、GHC のバージョンが変わるタイミングなどでは破壊的変更が含まれている場合も多いため、どこかでビルドが壊れます。</p>
+<p>今回のプロジェクトでは <a href="https://github.com/jtdaugherty/brick/blob/master/CHANGELOG.md#047">brick-0.47</a> の変更によって <code>Brick.Main.customMain</code> の型が変わり、その結果ビルドエラーになりました。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- 0.46</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span>        <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- 0.47</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span></code></pre></div>
+<p>このように、原因が特定できれば、修正は簡単です。<code>brick</code> にバージョン制約を付けるだけです。(0.47 でビルドできるようにコードを修正する方法ももちろん考えられます)</p>
+<pre class="cabal"><code>library:
+  build-depends:
+      base &gt;= 4.7 &amp;&amp; &lt; 5
+    , brick == 0.46       -- 破壊的変更が起きる前のバージョンを指定
+    , containers
+    , linear
+    , microlens
+    , microlens-th
+    , random
+    , vty
+    , MonadRandom</code></pre>
+<p>このプロジェクトはこれで上手く動きました。</p>
+<p>しかし、どのバージョンで壊れたかどうかを毎回調べるのはかなりつらいです。そのため、もっと良い方法として <code>LTS-8.23</code> のバージョン制約を使ってみましょう。</p>
+<h2 id="cabal-freeze-コマンド">cabal freeze コマンド</h2>
+<p><code>cabal</code> には <code>cabal freeze</code> というコマンドがあります。アプリケーション開発で便利な機能です。</p>
+<p>コマンドを実行すると <code>cabal.project.freeze</code> というファイルが作られます。</p>
+<pre class="shell"><code>$ cabal freeze
+Wrote freeze file: dino-brick/cabal.project.freeze</code></pre>
+<p>このファイルは一言でいえば <code>npm</code> の <code>package-lock.json</code> ファイルと同じです。ビルドの再現性を保証するためのものです。</p>
+<p>例えば、先ほどの <code>dino.cabal</code> ファイルで <code>brick</code> のバージョンを <code>^&gt;= 0.46</code> のように指定した場合を考えてみましょう。この指定方法は <code>brick &gt;= 0.46 &amp;&amp; &lt; 0.47</code> と同じ意味になります。(cabal 2.0 から使えます)</p>
+<pre class="cabal"><code>library:
+  build-depends:
+      base &gt;= 4.7 &amp;&amp; &lt; 5
+    , brick ^&gt;= 0.46      -- brick &gt;= 0.46 &amp;&amp; &lt; 0.47 と同じ意味
+    , containers
+    , linear
+    , microlens
+    , microlens-th
+    , random
+    , vty
+    , MonadRandom</code></pre>
+<p>例えば、会社のデスクトップPCでビルドしたときに <code>brick-0.46</code> がインストールされたとしましょう。</p>
+<p>次の日の朝、バグフィックスされた <code>brick-0.46.1</code> が Hackage にアップロードされました。</p>
+<p>その日の午後、自宅のノートPCで <code>cabal update &amp;&amp; cabal build</code> を行った場合、インストールされるのは <code>brick-0.46.1</code> になります。</p>
+<p>つまり、<code>brick ^&gt;= 0.46</code> という指定方法では環境ごとに同じバージョンが使われていることを保証できません。そのため、<code>cabal freeze</code> コマンドで <code>cabal.project.freeze</code> を生成し、コマンドを実行した環境で実際に利用されている具体的なバージョンを記録しておきます。これは <code>stack</code> のスナップショットと同じようなものです。</p>
+<p>実際に生成されたファイルの中身はこんな感じです。</p>
+<pre class="cabal"><code>constraints: any.Cabal ==2.4.0.1,
+             any.MonadRandom ==0.5.1.2,
+             any.QuickCheck ==2.13.2,
+             QuickCheck +templatehaskell,
+             any.StateVar ==1.2,
+             any.adjunctions ==4.4,
+             any.ansi-terminal ==0.10.2,
+             ansi-terminal -example,
+             any.ansi-wl-pprint ==0.6.9,
+             ansi-wl-pprint -example,
+             any.array ==0.5.3.0,
+             any.base ==4.12.0.0,
+             any.base-orphans ==0.8.1,
+             any.bifunctors ==5.5.6,
+             bifunctors +semigroups +tagged,
+             any.binary ==0.8.6.0,
+             any.binary-orphans ==1.0.1,
+             any.blaze-builder ==0.4.1.0,
+             any.brick ==0.46,
+             brick -demos,
+             any.bytes ==0.16,
+             bytes +test-doctests,
+             any.bytestring ==0.10.8.2,
+             any.cabal-doctest ==1.0.8,
+             any.call-stack ==0.2.0,
+             any.case-insensitive ==1.2.1.0,
+             any.cereal ==0.5.8.1,
+             cereal -bytestring-builder,
+             any.colour ==2.3.5,
+             any.comonad ==5.0.6,
+             comonad +containers +distributive +test-doctests,
+             any.config-ini ==0.2.4.0,
+             config-ini -enable-doctests,
+             any.containers ==0.6.0.1,
+             any.contravariant ==1.5.2,
+             contravariant +semigroups +statevar +tagged,
+             any.data-clist ==0.1.2.3,
+             any.deepseq ==1.4.4.0,
+             any.directory ==1.3.3.0,
+             any.distributive ==0.6.1,
+             distributive +semigroups +tagged,
+             any.dlist ==0.8.0.7,
+             any.exceptions ==0.10.4,
+             exceptions +transformers-0-4,
+             any.filepath ==1.4.2.1,
+             any.free ==5.1.3,
+             any.ghc-boot-th ==8.6.5,
+             any.ghc-prim ==0.5.3,
+             any.hashable ==1.3.0.0,
+             hashable -examples +integer-gmp +sse2 -sse41,
+             any.integer-gmp ==1.0.2.0,
+             any.integer-logarithms ==1.0.3,
+             integer-logarithms -check-bounds +integer-gmp,
+             any.invariant ==0.5.3,
+             any.kan-extensions ==5.2,
+             any.lens ==4.18.1,
+             lens -benchmark-uniplate -dump-splices +inlining -j -old-inline-pragmas -safe +test-doctests +test-hunit +test-properties +test-templates +trustworthy,
+             any.linear ==1.20.9,
+             linear -herbie +template-haskell,
+             any.megaparsec ==7.0.5,
+             megaparsec -dev,
+             any.microlens ==0.4.11.2,
+             any.microlens-mtl ==0.2.0.1,
+             any.microlens-th ==0.4.3.2,
+             any.mtl ==2.2.2,
+             any.optparse-applicative ==0.15.1.0,
+             any.parallel ==3.2.2.0,
+             any.parsec ==3.1.13.0,
+             any.parser-combinators ==1.2.1,
+             parser-combinators -dev,
+             any.pretty ==1.1.3.6,
+             any.primitive ==0.7.0.0,
+             any.process ==1.6.5.0,
+             any.profunctors ==5.5.1,
+             any.random ==1.1,
+             any.reflection ==2.1.5,
+             reflection -slow +template-haskell,
+             any.rts ==1.0,
+             any.scientific ==0.3.6.2,
+             scientific -bytestring-builder -integer-simple,
+             any.semigroupoids ==5.3.4,
+             semigroupoids +comonad +containers +contravariant +distributive +doctests +tagged +unordered-containers,
+             any.semigroups ==0.19.1,
+             semigroups +binary +bytestring -bytestring-builder +containers +deepseq +hashable +tagged +template-haskell +text +transformers +unordered-containers,
+             any.splitmix ==0.0.3,
+             splitmix -optimised-mixer +random,
+             any.stm ==2.5.0.0,
+             any.tagged ==0.8.6,
+             tagged +deepseq +transformers,
+             any.template-haskell ==2.14.0.0,
+             any.terminfo ==0.4.1.2,
+             any.text ==1.2.3.1,
+             any.text-zipper ==0.10.1,
+             any.th-abstraction ==0.3.1.0,
+             any.time ==1.8.0.2,
+             any.transformers ==0.5.6.2,
+             any.transformers-base ==0.4.5.2,
+             transformers-base +orphaninstances,
+             any.transformers-compat ==0.6.5,
+             transformers-compat -five +five-three -four +generic-deriving +mtl -three -two,
+             any.type-equality ==1,
+             any.unix ==2.7.2.2,
+             any.unordered-containers ==0.2.10.0,
+             unordered-containers -debug,
+             any.utf8-string ==1.0.1.1,
+             any.vector ==0.12.0.3,
+             vector +boundschecks -internalchecks -unsafechecks -wall,
+             any.void ==0.7.3,
+             void -safe,
+             any.vty ==5.26,
+             any.word-wrap ==0.4.1</code></pre>
+<p><code>cabal.project.freeze</code> ファイルと <code>&lt;project&gt;.cabal</code> ファイルでバージョンが異なる場合は <code>&lt;project&gt;.cabal</code> のバージョンが優先されるようです。</p>
+<pre class="cabal"><code>library:
+  build-depends:
+      base &gt;= 4.7 &amp;&amp; &lt; 5
+    , brick ^&gt;= 0.47      -- ビルドが失敗するバージョン制約を指定
+    , containers
+    , linear
+    , microlens
+    , microlens-th
+    , random
+    , vty
+    , MonadRandom</code></pre>
+<pre class="shell"><code>$ ls cabal.project.freeze 
+cabal.project.freeze
+$ cabal build
+...
+[__1] fail (backjumping, conflict set: brick, dino)
+After searching the rest of the dependency tree exhaustively, these were the
+goals I've had most trouble fulfilling: brick, dino
+
+$ cabal freeze
+...
+[__1] fail (backjumping, conflict set: brick, dino)
+After searching the rest of the dependency tree exhaustively, these were the
+goals I've had most trouble fulfilling: brick, dino</code></pre>
+<p>そもそも制約を満たさない場合は <code>cabal freeze</code> が失敗するみたいです。</p>
+<h2 id="スナップショットに対応した-freeze-ファイルを使おう">スナップショットに対応した freeze ファイルを使おう</h2>
+<p>さて、それではリポジトリを <code>clone</code> した直後に戻しましょう。こんな状態です。</p>
+<pre class="shell"><code>$ git clone https://github.com/arcticmatt/dino-brick.git
+$ cd dino-brick
+$ cabal update</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="at">    , brick</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="at">    , containers</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="at">    , linear</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="at">    , microlens</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="at">    , microlens-th</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="at">    , random</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="at">    , vty</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
+<p><code>Stackage</code> のスナップショットの <code>URL</code> の後ろに <code>cabal.config</code> を付けた <a href="https://www.stackage.org/lts-8.23/cabal.config">https://www.stackage.org/lts-8.23/cabal.config</a> にアクセスすると <code>cabal.project.freeze</code> ファイルとして利用可能なテキストファイルが表示されます。</p>
+<p>これをそのまま保存してビルドするだけで全てが上手くいきます。</p>
+<pre class="shell"><code>$ curl https://www.stackage.org/lts-8.23/cabal.config &gt; cabal.project.freeze
+$ cabal build
+[__2] fail (backjumping, conflict set: base, dino, optparse-applicative)
+After searching the rest of the dependency tree exhaustively, these were the
+goals I've had most trouble fulfilling: optparse-applicative, base, dino</code></pre>
+<p>おっと忘れていました。<code>LTS-8.23</code> は <code>GHC-8.0.2</code> でしたね。</p>
+<p><code>-w</code> (<code>with-compiler</code> の頭文字) オプションで利用する <code>GHC</code> を切り替えてビルドしましょう！</p>
+<pre class="shell"><code>$ cabal build -w ghc-8.0.2</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>stack</code> でビルドが通っていれば、<code>cabal</code> でも通る</li>
+<li><code>cabal freeze</code> を使うとスナップショットのようにバージョンを記録できる</li>
+<li><code>Stackage</code> のスナップショットの URL の最後に <code>cabal.config</code> を付けると <code>freeze</code> ファイルを取得できる</li>
+</ul>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/cabal/users-guide/nix-local-build.html#cabal-v2-freeze">5.4.6. cabal v2-freeze</a></li>
+<li><a href="https://medium.com/@fommil/why-not-both-8adadb71a5ed">Why Not Both?</a></li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2020/01-18-cabal-build-tool-depends.html"><i class="material-icons left">navigate_before</i>cabal の build-tool-depends フィールド</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=stack で管理されたプロジェクトを cabal でビルドするために&url=https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
