@@ -1,6 +1,6 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2019/10/14
+date: 2020/1/26
 ---
 
 ## 実行環境
@@ -9,7 +9,7 @@ date: 2019/10/14
 |:-----:|:-------------|
 | OS    | Ubuntu 18.04 |
 | Stack |        2.1.3 |
-| HIE   |     0.12.0.0 |
+| HIE   |     1.0.0.0 |
 | Emacs |         26.3 |
 
 ## 導入手順
@@ -30,13 +30,12 @@ $ stack install cabal-install
 $ sudo apt install libicu-dev libtinfo-dev libgmp-dev
 ```
 
-準備ができたらHIEをリポジトリからクローンしてインストールしましょう。(以下の例では GHC8.6.5 を対象としています。)
+準備ができたらHIEをリポジトリからクローンしてインストールしましょう。(以下の例では GHC8.8.1 を対象としています。)
 
 ```sh
-$ git clone https://github.com/haskell/haskell-ide-engine --recursive
-$ cd haskell-ide-engine
-$ stack ./install.hs stack-hie-8.6.5
-$ stack ./install.hs stack-build-data
+$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine$ stack ./install.hs stack-hie-8.6.5
+$ stack ./install.hs data
 ```
 
 ### 2. 必要なパッケージの入手
