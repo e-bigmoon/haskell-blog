@@ -1,6 +1,6 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2019/10/14
+date: 2020/1/26
 ---
 
 ## 実行環境
@@ -9,7 +9,7 @@ date: 2019/10/14
 |:-----:|:-------------|
 | OS    | Ubuntu 18.04 |
 | Stack |        2.1.3 |
-| HIE   |     0.12.0.0 |
+| HIE   | Version 1.0.0.0, Git revision 0fd7e3f7bed42173c671f53b93095c731d16ffbb (3704 commits) x86_64 ghc-8.8.1 |
 | Emacs |         26.3 |
 
 ## 導入手順
@@ -18,25 +18,23 @@ date: 2019/10/14
 
 インストールには以下のものが必要です。
 
-- `stack` (バージョン1.7.1以上)
-- `cabal-install` (cabal で管理されたプロジェクトにも対応させたい場合)
+- `stack` (バージョン2.1.1以上)
+  - または、`cabal-install` (cabal で管理されたプロジェクトにも対応させたい場合)
 - `icu` のライブラリなど
 
 必要に応じてインストールしておきましょう。
 
 ```sh
 $ stack upgrade
-$ stack install cabal-install
-$ sudo apt install libicu-dev libtinfo-dev libgmp-dev
+$ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev
 ```
 
-準備ができたらHIEをリポジトリからクローンしてインストールしましょう。(以下の例では GHC8.6.5 を対象としています。)
+準備ができたらHIEをリポジトリからクローンしてインストールしましょう。(以下の例では GHC-8.8.1 を対象としています。)
 
 ```sh
-$ git clone https://github.com/haskell/haskell-ide-engine --recursive
+$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
 $ cd haskell-ide-engine
-$ stack ./install.hs stack-hie-8.6.5
-$ stack ./install.hs stack-build-data
+$ stack ./install.hs hie
 ```
 
 ### 2. 必要なパッケージの入手
