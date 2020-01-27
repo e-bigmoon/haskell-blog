@@ -169,7 +169,7 @@
       <div class="post-heading">
         <h1 class="post-title">Emacs で Haskell IDE Engine を使う</h1>
         
-        <span>最終更新日: 2020/1/26</span>
+        <span>最終更新日: 2020/01/27</span>
         
       </div>
 
@@ -209,19 +209,20 @@
 <h3 id="hie-のインストール">1. HIE のインストール</h3>
 <p>インストールには以下のものが必要です。</p>
 <ul>
-<li><code>stack</code> (バージョン2.1.1以上)
+<li><a href="https://docs.haskellstack.org/en/stable/README/">stack</a> (バージョン2.1.1以上)
 <ul>
-<li>または、<code>cabal-install</code> (cabal で管理されたプロジェクトにも対応させたい場合)</li>
+<li>または、<a href="https://www.haskell.org/cabal/users-guide/">cabal</a></li>
 </ul></li>
 <li><code>icu</code> のライブラリなど</li>
 </ul>
 <p>必要に応じてインストールしておきましょう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a>$ <span class="ex">stack</span> upgrade</span>
-<span id="cb1-2"><a href="#cb1-2"></a>$ <span class="fu">sudo</span> apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev</span></code></pre></div>
-<p>準備ができたらHIEをリポジトリからクローンしてインストールしましょう。(以下の例では GHC-8.8.1 を対象としています。)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a>$ <span class="fu">git</span> clone https://github.com/haskell/haskell-ide-engine --recurse-submodules</span>
-<span id="cb2-2"><a href="#cb2-2"></a>$ <span class="bu">cd</span> haskell-ide-engine</span>
-<span id="cb2-3"><a href="#cb2-3"></a>$ <span class="ex">stack</span> ./install.hs hie</span></code></pre></div>
+<pre class="shell"><code>$ stack upgrade
+$ sudo apt update
+$ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev</code></pre>
+<p>準備ができたらHIEを<a href="https://github.com/haskell/haskell-ide-engine">リポジトリ</a>からクローンしてインストールしましょう。(以下の例では GHC-8.8.1 を対象としています。)</p>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie</code></pre>
 <h3 id="必要なパッケージの入手">2. 必要なパッケージの入手</h3>
 <p>EmacsでHIEを使うには次の３つのパッケージが必要です。</p>
 <ul>
@@ -231,31 +232,33 @@
 </ul>
 <p><code>lsp-mode</code> は <code>package.el</code> でのインストールが推奨されているので、Emacs を起動して以下のコマンドでインストールしましょう。</p>
 <pre><code>M-x package-install [RET] lsp-mode [RET]</code></pre>
-<p>次に、<code>lsp-ui</code>と<code>lsp-haskell</code>をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは <code>~/.emacs.d/elisp</code> です。インストールはクローンするだけです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a>$ <span class="bu">cd</span> ~/.emacs.d/elisp</span>
-<span id="cb4-2"><a href="#cb4-2"></a>$ <span class="fu">git</span> clone https://github.com/emacs-lsp/lsp-ui</span>
-<span id="cb4-3"><a href="#cb4-3"></a>$ <span class="fu">git</span> clone https://github.com/emacs-lsp/lsp-haskell</span></code></pre></div>
+<p>次に、<code>lsp-ui</code> と <code>lsp-haskell</code> をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは <code>~/.emacs.d/elisp</code> です。インストールはクローンするだけです。</p>
+<pre class="shell"><code>$ cd ~/.emacs.d/elisp
+$ git clone https://github.com/emacs-lsp/lsp-ui
+$ git clone https://github.com/emacs-lsp/lsp-haskell</code></pre>
 <h3 id="emacs-の設定ファイルを更新">3. Emacs の設定ファイルを更新</h3>
-<p>最後に設定ファイルを更新します。Emacs の設定ファイル名は <code>~/.emacs</code>, <code>~/.emacs.el</code>, <code>~/.emacs.d/init.el</code> のどれか１つなら大丈夫です。 設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。 最初の2行で先程インストールした２つのパッケージの場所を指定してください。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>(add<span class="op">-</span>to<span class="op">-</span>list 'load<span class="op">-</span>path <span class="st">&quot;~/.emacs.d/elisp/lsp-ui&quot;</span>)</span>
-<span id="cb5-2"><a href="#cb5-2"></a>(add<span class="op">-</span>to<span class="op">-</span>list 'load<span class="op">-</span>path <span class="st">&quot;~/.emacs.d/elisp/lsp-haskell&quot;</span>)</span>
+<p>最後に設定ファイルを更新します。Emacs の設定ファイル名は <code>~/.emacs</code>, <code>~/.emacs.el</code>, <code>~/.emacs.d/init.el</code> のどれか１つなら大丈夫です。</p>
+<p>設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。</p>
+<p>最初の2行で先程インストールした２つのパッケージの場所を指定してください。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb5-1"><a href="#cb5-1"></a>(add-to-list 'load-path <span class="st">&quot;~/.emacs.d/elisp/lsp-ui&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>(add-to-list 'load-path <span class="st">&quot;~/.emacs.d/elisp/lsp-haskell&quot;</span>)</span>
 <span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a>(require 'lsp<span class="op">-</span>mode)</span>
-<span id="cb5-5"><a href="#cb5-5"></a>(setq lsp<span class="op">-</span>prefer<span class="op">-</span>flymake nil)</span>
-<span id="cb5-6"><a href="#cb5-6"></a>(add<span class="op">-</span>hook 'haskell<span class="op">-</span>mode<span class="op">-</span>hook <span class="op">#</span>'lsp)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>(<span class="kw">require</span> 'lsp-mode)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>(<span class="kw">setq</span> lsp-prefer-flymake <span class="kw">nil</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>(add-hook 'haskell-mode-hook #'lsp)</span>
 <span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a>(require 'lsp<span class="op">-</span>ui)</span>
-<span id="cb5-9"><a href="#cb5-9"></a>(add<span class="op">-</span>hook 'lsp<span class="op">-</span>mode<span class="op">-</span>hook 'lsp<span class="op">-</span>ui<span class="op">-</span>mode)</span>
-<span id="cb5-10"><a href="#cb5-10"></a>(add<span class="op">-</span>hook 'haskell<span class="op">-</span>mode<span class="op">-</span>hook 'flycheck<span class="op">-</span>mode)</span>
+<span id="cb5-8"><a href="#cb5-8"></a>(<span class="kw">require</span> 'lsp-ui)</span>
+<span id="cb5-9"><a href="#cb5-9"></a>(add-hook 'lsp-mode-hook 'lsp-ui-mode)</span>
+<span id="cb5-10"><a href="#cb5-10"></a>(add-hook 'haskell-mode-hook 'flycheck-mode)</span>
 <span id="cb5-11"><a href="#cb5-11"></a></span>
-<span id="cb5-12"><a href="#cb5-12"></a>(require 'lsp<span class="op">-</span>haskell)</span></code></pre></div>
+<span id="cb5-12"><a href="#cb5-12"></a>(<span class="kw">require</span> 'lsp-haskell)</span></code></pre></div>
 <h3 id="補足1-emacs26を使ってドキュメントをきれいに表示する">補足1 : Emacs26を使ってドキュメントをきれいに表示する</h3>
 <p>HIEがドキュメントなどを表示する時、現在編集しているバッファに割り込んで表示しようとしますが、Emacs26で追加された機能 <code>child flame</code> を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a>$ <span class="fu">sudo</span> add-apt-repository ppa:kelleyk/emacs</span>
-<span id="cb6-2"><a href="#cb6-2"></a>$ <span class="fu">sudo</span> apt update</span>
-<span id="cb6-3"><a href="#cb6-3"></a>$ <span class="fu">sudo</span> apt install emacs26</span></code></pre></div>
+<pre class="shell"><code>$ sudo add-apt-repository ppa:kelleyk/emacs
+$ sudo apt update
+$ sudo apt install emacs26</code></pre>
 <p>すでにEmacs25などがインストール済みで <code>emacs</code> コマンドで <code>emacs26</code> が開けない場合は次のコマンドで変更しましよう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a>$ <span class="fu">sudo</span> update-alternatives --config emacs</span></code></pre></div>
+<pre class="shell"><code>$ sudo update-alternatives --config emacs</code></pre>
 <figure>
 <img src="../images/hie-emacs.png" alt /><figcaption>きれいに表示されたHIEの画像</figcaption>
 </figure>
@@ -281,7 +284,7 @@ $ stack clean --full
 $ make build-all</code></pre>
 <h2 id="補足3-エラーが出てhieの起動に失敗する">補足3 : エラーが出てHIEの起動に失敗する</h2>
 <p><code>*Messages*</code> バッファに次のようなエラーが出てしまうことがあります．</p>
-<pre><code>error in process filter: or: Symbol's value as variable is void: method
+<pre class="shell"><code>error in process filter: or: Symbol's value as variable is void: method
 error in process filter: Symbol's value as variable is void: method</code></pre>
 <p>このエラーはemacs <code>dash</code> パッケージが古いことが原因で起こります．最新版の <code>dash</code> をインストールしましょう．</p>
 <h3 id="参考">参考</h3>
