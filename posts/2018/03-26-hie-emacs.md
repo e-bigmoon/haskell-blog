@@ -10,6 +10,8 @@ tags: bigmoon, package
 
 本記事では、導入手順を紹介します。
 
+追記 (2020/01/27): 本記事の内容は古くなっている可能性があるため、継続的にメンテナンスしている「[Emacs で Haskell IDE Engine を使う](/hie/emacs.html)」ページを参照してください。
+
 <!--more-->
 
 ## 導入手順
