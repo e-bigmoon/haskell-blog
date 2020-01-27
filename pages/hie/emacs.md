@@ -1,6 +1,6 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2020/1/26
+date: 2020/01/27
 ---
 
 ## 実行環境
@@ -18,20 +18,21 @@ date: 2020/1/26
 
 インストールには以下のものが必要です。
 
-- `stack` (バージョン2.1.1以上)
-  - または、`cabal-install` (cabal で管理されたプロジェクトにも対応させたい場合)
+- [stack](https://docs.haskellstack.org/en/stable/README/) (バージョン2.1.1以上)
+  - または、[cabal](https://www.haskell.org/cabal/users-guide/)
 - `icu` のライブラリなど
 
 必要に応じてインストールしておきましょう。
 
-```sh
+```shell
 $ stack upgrade
+$ sudo apt update
 $ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev
 ```
 
-準備ができたらHIEをリポジトリからクローンしてインストールしましょう。(以下の例では GHC-8.8.1 を対象としています。)
+準備ができたらHIEを[リポジトリ](https://github.com/haskell/haskell-ide-engine)からクローンしてインストールしましょう。(以下の例では GHC-8.8.1 を対象としています。)
 
-```sh
+```shell
 $ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
 $ cd haskell-ide-engine
 $ stack ./install.hs hie
@@ -51,9 +52,9 @@ EmacsでHIEを使うには次の３つのパッケージが必要です。
 M-x package-install [RET] lsp-mode [RET]
 ```
 
-次に、`lsp-ui`と`lsp-haskell`をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
+次に、`lsp-ui` と `lsp-haskell` をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
 
-```sh
+```shell
 $ cd ~/.emacs.d/elisp
 $ git clone https://github.com/emacs-lsp/lsp-ui
 $ git clone https://github.com/emacs-lsp/lsp-haskell
@@ -62,10 +63,12 @@ $ git clone https://github.com/emacs-lsp/lsp-haskell
 ### 3. Emacs の設定ファイルを更新
 
 最後に設定ファイルを更新します。Emacs の設定ファイル名は `~/.emacs`, `~/.emacs.el`, `~/.emacs.d/init.el` のどれか１つなら大丈夫です。
+
 設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。
+
 最初の2行で先程インストールした２つのパッケージの場所を指定してください。
 
-```haskell
+```lisp
 (add-to-list 'load-path "~/.emacs.d/elisp/lsp-ui")
 (add-to-list 'load-path "~/.emacs.d/elisp/lsp-haskell")
 
@@ -84,7 +87,7 @@ $ git clone https://github.com/emacs-lsp/lsp-haskell
 
 HIEがドキュメントなどを表示する時、現在編集しているバッファに割り込んで表示しようとしますが、Emacs26で追加された機能 `child flame` を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。
 
-```sh
+```shell
 $ sudo add-apt-repository ppa:kelleyk/emacs
 $ sudo apt update
 $ sudo apt install emacs26
@@ -92,7 +95,7 @@ $ sudo apt install emacs26
 
 すでにEmacs25などがインストール済みで `emacs` コマンドで `emacs26` が開けない場合は次のコマンドで変更しましよう。
 
-```sh
+```shell
 $ sudo update-alternatives --config emacs
 ```
 
@@ -131,7 +134,7 @@ $ make build-all
 
 `*Messages*` バッファに次のようなエラーが出てしまうことがあります．
 
-```
+```shell
 error in process filter: or: Symbol's value as variable is void: method
 error in process filter: Symbol's value as variable is void: method
 ```
