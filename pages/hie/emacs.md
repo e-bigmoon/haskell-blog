@@ -1,16 +1,16 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2019/03/03
+date: 2020/01/27
 ---
 
 ## 実行環境
 
 | 環境  | バージョン   |
 |:-----:|:-------------|
-| OS    | Ubuntu 17.10 |
-| Stack |        1.9.3 |
-| HIE   |      0.6.0.0 |
-| Emacs |         26.1 |
+| OS    | Ubuntu 18.04 |
+| Stack |        2.1.3 |
+| HIE   | Version 1.0.0.0, Git revision 0fd7e3f7bed42173c671f53b93095c731d16ffbb (3704 commits) x86_64 ghc-8.8.1 |
+| Emacs |         26.3 |
 
 ## 導入手順
 
@@ -18,24 +18,24 @@ date: 2019/03/03
 
 インストールには以下のものが必要です。
 
-- `stack` (バージョン1.7.1以上)
-- `cabal-install` (cabal で管理されたプロジェクトにも対応させたい場合)
+- [stack](https://docs.haskellstack.org/en/stable/README/) (バージョン2.1.1以上)
+  - または、[cabal](https://www.haskell.org/cabal/users-guide/)
 - `icu` のライブラリなど
 
 必要に応じてインストールしておきましょう。
 
-```sh
+```shell
 $ stack upgrade
-$ stack install cabal-install
-$ sudo apt install libicu-dev libtinfo-dev libgmp-dev
+$ sudo apt update
+$ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev
 ```
 
-準備ができたらHIEをリポジトリからクローンしてインストールしましょう。
+準備ができたらHIEを[リポジトリ](https://github.com/haskell/haskell-ide-engine)からクローンしてインストールしましょう。(以下の例では GHC-8.8.1 を対象としています。)
 
-```sh
-$ git clone https://github.com/haskell/haskell-ide-engine --recursive
+```shell
+$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
 $ cd haskell-ide-engine
-$ make build-all
+$ stack ./install.hs hie
 ```
 
 ### 2. 必要なパッケージの入手
@@ -46,11 +46,16 @@ EmacsでHIEを使うには次の３つのパッケージが必要です。
 - [lsp-ui](https://github.com/emacs-lsp/lsp-ui)
 - [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
 
-これらのパッケージをインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
+`lsp-mode` は `package.el` でのインストールが推奨されているので、Emacs を起動して以下のコマンドでインストールしましょう。
 
-```sh
-$ cd /path/to/install
-$ git clone https://github.com/emacs-lsp/lsp-mode
+```
+M-x package-install [RET] lsp-mode [RET]
+```
+
+次に、`lsp-ui` と `lsp-haskell` をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
+
+```shell
+$ cd ~/.emacs.d/elisp
 $ git clone https://github.com/emacs-lsp/lsp-ui
 $ git clone https://github.com/emacs-lsp/lsp-haskell
 ```
@@ -58,28 +63,31 @@ $ git clone https://github.com/emacs-lsp/lsp-haskell
 ### 3. Emacs の設定ファイルを更新
 
 最後に設定ファイルを更新します。Emacs の設定ファイル名は `~/.emacs`, `~/.emacs.el`, `~/.emacs.d/init.el` のどれか１つなら大丈夫です。
-設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。
-最初の３行でで先程インストールした３つのパッケージの場所を指定してください。
 
-```elisp
-(add-to-list 'load-path "/path/to/lsp-mode")
-(add-to-list 'load-path "/path/to/lsp-ui")
-(add-to-list 'load-path "/path/to/lsp-haskell")
+設定ファイルに以下の内容を記述すれば Emacs で HIE が使えるようになります。
+
+最初の2行で先程インストールした２つのパッケージの場所を指定してください。
+
+```lisp
+(add-to-list 'load-path "~/.emacs.d/elisp/lsp-ui")
+(add-to-list 'load-path "~/.emacs.d/elisp/lsp-haskell")
 
 (require 'lsp-mode)
-(require 'lsp-ui)
-(require 'lsp-haskell)
+(setq lsp-prefer-flymake nil)
+(add-hook 'haskell-mode-hook #'lsp)
 
+(require 'lsp-ui)
 (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-(add-hook 'haskell-mode-hook #'lsp-haskell-enable)
 (add-hook 'haskell-mode-hook 'flycheck-mode)
+
+(require 'lsp-haskell)
 ```
 
 ### 補足1 : Emacs26を使ってドキュメントをきれいに表示する
 
-HIEがドキュメントなどを表示とする時、現在編集しているバッファ割り込んで表示しようとしますが、Emacs26で追加された機能 `child flame` を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。
+HIEがドキュメントなどを表示する時、現在編集しているバッファに割り込んで表示しようとしますが、Emacs26で追加された機能 `child flame` を使うことで割り込まずにきれいに表示できます。次のコマンドでインストールできます。
 
-```sh
+```shell
 $ sudo add-apt-repository ppa:kelleyk/emacs
 $ sudo apt update
 $ sudo apt install emacs26
@@ -87,7 +95,7 @@ $ sudo apt install emacs26
 
 すでにEmacs25などがインストール済みで `emacs` コマンドで `emacs26` が開けない場合は次のコマンドで変更しましよう。
 
-```sh
+```shell
 $ sudo update-alternatives --config emacs
 ```
 
@@ -121,6 +129,17 @@ $ rm -rf ~/.stack/snapshots/x86_64-linux/lts-9.18
 $ stack clean --full
 $ make build-all
 ```
+
+## 補足3 : エラーが出てHIEの起動に失敗する
+
+`*Messages*` バッファに次のようなエラーが出てしまうことがあります．
+
+```shell
+error in process filter: or: Symbol's value as variable is void: method
+error in process filter: Symbol's value as variable is void: method
+```
+
+このエラーはemacs `dash` パッケージが古いことが原因で起こります．最新版の `dash` をインストールしましょう．
 
 ### 参考
 

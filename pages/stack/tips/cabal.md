@@ -1,20 +1,25 @@
 ---
 title: cabal コマンドとの対応表
-date: 2019/03/03
+date: 2020/01/22
 ---
 
 ## 注意点
 
 このページの内容は `cabal HEAD` を追っているため、最新版の `cabal` ではまだ利用不可能な内容も含まれる場合があります。
 
+## 参考となるサイト&記事
+
+- [AWESOME-CABAL](https://kowainik.github.io/projects/awesome-cabal)
+- [Why Not Both?](https://medium.com/@fommil/why-not-both-8adadb71a5ed)
+
 ## stack と cabal
 
 ```shell
 $ stack --numeric-version
-1.9.3
+2.1.3
 
 $ cabal --numeric-version
-2.4.1.0
+3.0.0.0
 ```
 
 　| stack | cabal
@@ -25,63 +30,134 @@ repo | [commercialhaskell/stack](https://github.com/commercialhaskell/stack/tree
 
 ## stack と cabal の違い
 
-- `extra-lib-dirs` や `extra-include-dirs` などで依存するライブラリが変化した時
-  - stack: `~/.stack/snapshots/` 以下を手動で削除し、リビルドする必要がある
-  - cabal: `nix-style` を採用しているため、リビルドするだけで良い
-- パッケージをリビルドするタイミング
-  - stack: `resolver` が変化した際に、パッケージを新たに全てリビルドする必要がある
-  - cabal: `compiler` が変化した際に、パッケージを新たに全てリビルドする必要がある
-  
-### 個人的な意見
-
-- stack はエラーメッセージ等が初心者に優しい (ユーザフレンドリー)
-- cabal は stack よりも明らかにビルドが速い
+- [[RFC] Switch from `stack` to `cabal-install` for building Haskell code #3280](https://github.com/hasura/graphql-engine/issues/3280) に良くまとまっています。
 
 ## v1-build と v2-build コマンドの違い
 
 - `cabal v2-build` は [Nix-style Local Builds](https://cabal.readthedocs.io/en/latest/nix-local-build-overview.html)
 - `cabal build` は `cabal v1-build` のエイリアス
 - `cabal new-build` は `cabal v2-build` のエイリアス
-- `cabal v3.0.0.0` からは `cabal v2-build` が `cabal build` のエイリアスになる予定 [#5800](https://github.com/haskell/cabal/pull/5800)
+- `cabal v3.0.0.0` からは `cabal v2-build` が `cabal build` のエイリアス ([#5800](https://github.com/haskell/cabal/pull/5800))
+
+cabal version | cabal build | cabal new-build
+--------------|-------------|-----------------
+v3.0.0.0 | v2-build | v2-build
+v2.4.1.0 | **v1**-build | v2-build
 
 ## コマンド対応表
 
 stack | cabal | 備考
 ------|--------|-------
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707](https://github.com/haskell/cabal/pull/5707), [#5759](https://github.com/haskell/cabal/pull/5759), [#5864](https://github.com/haskell/cabal/pull/5864)
-`stack build` | `cabal new-build`
-`stack build --static` | `stack new-build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
-`stack test` | `cabal new-test --enable-tests` <br> `cabal new-test all` | [#5079](https://github.com/haskell/cabal/issues/5079)
-`stack repl` <br> `stack ghci` | `cabal new-repl`
-`stack repl --package <pkg1> <pkg2>` | `cabal new-repl --build-dep <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
-`stack clean` | `cabal new-clean`
-`stack run` | `cabal new-run`
+`stack build` | `cabal build`
+`stack test` | `cabal test`
+`stack repl` <br> `stack ghci` | `cabal repl`
+`stack repl --package <pkg1> <pkg2>` | `cabal repl --build-dep <pkg1>, <pkg2>` <br> `cabal repl -b <pkg1>, <pkg2>` | [#5845](https://github.com/haskell/cabal/pull/5845)
+`stack clean` | `cabal clean`
+`stack run` | `cabal run`
 `stack --version` | `cabal --version`
 `stack --numeric-version` | `cabal --numeric-version`
-`stack upgrade` | `cabal new-install cabal-install`<br>`cabal new-install cabal-install --overwrite-policy=always`
- ? | `cabal new-haddock`
- ? | `cabal new-sdist`
+`stack upgrade` | `cabal install cabal-install` | ghcup を使う
+ ? | `cabal haddock`
+ ? | `cabal sdist`
  ? | `cabal check`
  ? | `cabal upload` <br> `cabal upload --publish`
-`stack update` | `cabal new-update`
+`stack update` | `cabal update`
+
+### オプション対応表
+
+stack | cabal | 備考
+------|-------|-------
+`local-bin-path` | `installdir`
 
 ### どちらか一方にしかないコマンドやオプション
 
 stack | cabal | 備考
 ------|--------|-------
 `stack build --file-watch` | [#5252](https://github.com/haskell/cabal/issues/5252)
-- | `cabal format` | [#2460](https://github.com/haskell/cabal/issues/2460), [#5306](https://github.com/haskell/cabal/issues/5306), [#5734](https://github.com/haskell/cabal/issues/5734)
+- | `cabal format` | [#2460](https://github.com/haskell/cabal/issues/2460), [#5306](https://github.com/haskell/cabal/issues/5306), [#5734](https://github.com/haskell/cabal/issues/5734), [cabal-fmt の紹介](https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html)
 `stack path` | [#3850](https://github.com/haskell/cabal/issues/3850), [#4661](https://github.com/haskell/cabal/issues/4661) |
 `stack setup` | _ | [ghcup](https://github.com/haskell/ghcup) を利用する
+[#3420](https://github.com/commercialhaskell/stack/issues/3420) | `cabal build --enable-executable-static` | [#5446](https://github.com/haskell/cabal/pull/5446)
+- | `-w` オプション。`cabal repl -w ghc-8.6.5` | コンパイラを指定できる
 
 ## 設定ファイル等のパス対応表 (初期値)
 
 stack | cabal
 ------|-------
 `~/.stack/` | `~/.cabal/`
+`~/.local/bin` | `~/.cabal/bin`
+? | `~/.cabal/store`
 `~/.stack/config.yaml`, `~/.stack/global-project/stack.yaml` | `~/.cabal/config`
 
 ## Tips
+
+### Stackage のスナップショットから project.cabal.freeze ファイルを生成する方法
+
+`URL` の後ろに `cabal.config` を付けると [cabal.project.freeze](https://www.stackage.org/lts-14.21/cabal.config) ファイルが取得できる。
+
+```shell
+# lts-14.21 の例
+$ curl https://www.stackage.org/lts-14.21/cabal.config > cabal.project.freeze
+
+# nightly-2020-01-21 の例
+$ https://www.stackage.org/nightly-2020-01-21/cabal.config > cabal.project.freeze
+```
+
+### install コマンドの挙動
+
+例えば、`cabal.project`が以下のようなパッケージ構成になっていて、`executable` (mainExe1, mainExe2, subExe1, subExe2) が定義されているとする。
+
+```cabal
+packages:
+  ./              -- name: app,  executable: mainExe1, executable: mainExe2
+  ./subs/pkg1     -- name: pkg1, executable: subExe1
+  ./subs/pkg2     -- name: pkg2, executable: subExe2
+```
+
+#### stack
+
+コマンド | インストールされるもの | 備考
+--------|--------------------|---------
+`stack install` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`stack install .` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`stack install app` | `mainExe1`, `mainExe2`
+`stack install pkg1` | `subExe1`
+`stack install pkg2` | `subExe2`
+`stack install . pkg1 pkg2` | - | パーズエラーで実行できない
+`stack install app pkg1 pkg2` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`stack install all` | - | `Unknown package: all` となる。
+
+#### cabal
+
+コマンド | インストールされるもの | 備考
+--------|--------------------|---------
+`cabal install` | `mainExe1`, `mainExe2`
+`cabal install .` | `mainExe1`, `mainExe2` | `cabal install` と同じ
+`cabal install app` | `mainExe1`, `mainExe2` | `cabal install` と同じ
+`cabal install pkg1` | `subExe1`
+`cabal install pkg2` | `subExe2`
+`cabal install . pkg1 pkg2` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`cabal install app pkg1 pkg2` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2`
+`cabal install all` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2` | 全てのパッケージに `executable` が含まれている場合に限り実行可能
+`cabal install exes` | `mainExe1`, `mainExe2`
+`cabal install all:exes` | `mainExe1`, `mainExe2`, `subExe1`, `subExe2` | `stack install` に相当するコマンド
+
+- `cabal install all` で `executable` が含まれていないパッケージがある場合は以下のエラーが出る
+
+```
+cabal: Cannot build the executables in the package pkg2 because it does not
+contain any executables. Check the .cabal file for the package and make sure
+that it properly declares the components that you expect.
+```
+
+オプション | 内容
+----------|-----------
+`--installdir=<path>` | インストール先のパスを
+`--install-method=copy` | シンボリックリンクではなく、実体がコピーされる。Docker にバイナリをコピーする際などで利用することがある。
+`--overwrite-policy=always` | すでにファイルが存在する場合でも、常に上書きする
+
+`--overwrite-policy=always` を毎回指定するのが面倒な場合は `cabal user-config update -a overwrite-policy:always` とすることで `~/.cabal/config` に設定できる。
 
 ### コマンドの自動補完
 
@@ -142,12 +218,12 @@ packages:
 
 ```shell
 # 全てのパッケージ
-$ cabal new-build all
-$ cabal new-repl
+$ cabal build all
+$ cabal repl
 
 # 個別のパッケージ
-$ cabal new-build package1
-$ cabal new-repl basic
+$ cabal build package1
+$ cabal repl basic
 ```
 
 ### リモートリポジトリ
@@ -211,7 +287,18 @@ source-repository-package
   subdir: cairo
 ```
 
-複数のパッケージを指定する場合は `stack` の `subdirs` のような書き方はできないため、`source-repository-package` を複数記述する。([#5472](https://github.com/haskell/cabal/issues/5472))
+複数のパッケージを指定する場合、`cabal-3.1.0.0` からは以下のように `subdir` に複数のパッケージを並べて書けるようになった。
+
+```cabal
+# cabal.project
+source-repository-package
+  type: git
+  location: https://github.com/gtk2hs/gtk2hs
+  tag: 7bccd432e2f962d80b2b804fa2a59712e402753c
+  subdir: cairo gtk
+```
+
+`cabal-3.0.0.0`以前は`stack` の `subdirs` のような書き方はできないため、`source-repository-package` を複数記述しなければならない。([#5472](https://github.com/haskell/cabal/issues/5472))
 
 ```cabal
 # cabal.project
@@ -242,7 +329,7 @@ $ stack build --profile
 profiling: True
 ```
 
-`cabal.project.local` に上記の内容を追加し、`cabal new-build` すれば良い。
+`cabal.project.local` に上記の内容を追加し、`cabal build` すれば良い。
 
 - [How can I profile my library/application?](https://cabal.readthedocs.io/en/latest/nix-local-build.html#how-can-i-profile-my-library-application)
 
@@ -258,6 +345,7 @@ with-compiler: ghc-8.6.2
 
 ### build-depends で利用するバージョン制約の指定方法
 
+- [Cabal Version Calculator](https://cabal-version-calculator.netlify.com/)
 - [3.3.2.9. Build information](https://www.haskell.org/cabal/users-guide/developing-packages.html#build-information)
 
 利用可能な演算子 | 記号
@@ -315,7 +403,7 @@ build-depends: network ^>= { 2.6.3.6, 2.7.0.2, 2.8.0.0, 3.0.1.0 }
 ### cabal.project.local の設定
 
 ```shell
-$ cabal new-configure -j
+$ cabal configure -j
 ```
 
 ### スクリプト形式
@@ -391,13 +479,17 @@ main = warp 3000 HelloWorld
 実行方法
 
 ```shell
-$ cabal new-run Script.hs
-$ cabal new-run Script.hs -- --arg1 # 引数有り
+$ cabal run Script.hs
+$ cabal run Script.hs -- --arg1 # 引数有り
 ```
 
 ## 便利ツール
 
 - [cabal-plan list-bins](http://hackage.haskell.org/package/cabal-plan)
+- [cabal-fmt](https://hackage.haskell.org/package/cabal-fmt)
+- cabal-env
+  - [phadej/cabal-env](https://github.com/phadej/cabal-env)
+  - [hvr/cabal-env](https://github.com/hvr/cabal-env)
 
 ## 参考
 

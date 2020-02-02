@@ -1,34 +1,39 @@
 ---
-title: doctest
+title: ドキュメントのテスト (doctest)
+date: 2019/09/14
+prev: ./quickcheck2.html
+next: ./tasty.html
 ---
 
-`doctest` は一言で言えば、`Haddock` にテストを埋め込んだものです。
+**doctest** は一言で言えば、**Haddock** にテストを埋め込んだものです。
 
 例として、以下のような関数とコメントがあった場合に
 
 ```haskell
 -- 与えられた価格の消費税を計算する
--- calcSalseTax 100.0 == 8.0
+--
+-- calcSalesTax 100.0 == 8.0
 calcSalseTax :: Num a => a -> a
 calcSalseTax = (*0.08)
 ```
 
-消費税が`10%`に変更になったとしたらプログラムは以下のように修正されるでしょう。
+消費税が **10%** に変更になったとしたらプログラムは以下のように修正されるでしょう。
 
 ```haskell
 -- 与えられた価格の消費税を計算する
--- calcSalseTax 100.0 == 8.0
-calcSalseTax :: Num a => a -> a
-calcSalseTax = (*0.1)
+--
+-- calcSalesTax 100.0 == 8.0
+calcSalesTax :: Num a => a -> a
+calcSalesTax = (*0.1)
 ```
 
-この時、ドキュメントも同様に修正されるべきですが、その保証はどこにもありません。この問題に対する有効な解決策が `doctest` です。
+この時、ドキュメントも同様に修正されるべきですが、その保証はどこにもありません。この問題に対する有効な解決策が **doctest** です。
 
-###### doctest の準備
+## doctest の準備
 
-まずは `package.yaml` に `doctest` のための記述を追加しましょう。
+まずは **package.yaml** に **doctest** のための記述を追加しましょう。
 
-```yaml:package.yaml
+```yaml
 tests:
   PFAD-test:
     main:                Spec.hs
@@ -53,42 +58,74 @@ tests:
     - doctest
 ```
 
-このままでは `doctests.hs` が見つからずにエラーになるため、以下のファイルを作成します。このファイルに `doctest` の対象ファイルを記述します。
+このままでは **doctests.hs** が見つからずにエラーになるため、以下のファイルを作成します。このファイルに **doctest** の対象ファイルを記述します。
 
-```haskell:test/doctests.hs
+```haskell
+module Main (main) where
+
 import Test.DocTest
+
+main :: IO ()
 main = doctest ["-isrc", "src/Minfree.hs"]
 ```
 
 これで準備は完了です。
 
-`doctest` を実行するためには以下のように `stack test` コマンドを実行します。
+## doctest の実行
+
+**doctest** を実行するためには以下のように **stack test** コマンドを実行します。
 
 ```shell-session
 $ stack clean
 $ stack test
+ビルドのために少し時間がかかります。
+...
 ```
-コマンド実行時に以下のようなエラーが出る場合があります。
 
-```bash
-    [16 of 16] Compiling Test.DocTest     ( src/Test/DocTest.hs, .stack-work/dist/x86_64-linux-nopie/Cabal-2.0.1.0/build/Test/DocTest.o )
-    /usr/bin/ld.gold: エラー: -ltinfo が見つかりません
+### test コンポーネントの個別実行
+
+**stack test** コマンドを実行した場合、前の章で定義した **hspec** や **QuickCheck** のテストも実行されてしまいます。そのため、**doctest** のテストのみを実行したい場合は、以下のようにします。
+
+```shell
+$ stack test PFAD:test:PFAD-doctest
+...
+PFAD-0.1.0.0: test (suite: PFAD-doctest)
+
+Progress 1/2: PFAD-0.1.0.0Examples: 0  Tried: 0  Errors: 0  Failures: 0
+
+PFAD-0.1.0.0: Test suite PFAD-doctest passed
+...
+```
+
+現時点では **doctest** を書いていないため、何も起きません。
+
+### コマンド実行時エラーが出た時の対処法
+
+また、環境によっては以下のビルドエラーが出る場合があります。
+
+```shell
+/usr/bin/ld.gold: error: cannot find -ltinfo
     collect2: error: ld returned 1 exit status
     `gcc' failed in phase `Linker'. (Exit code: 1)
-
 ```
 
-上記のエラーが出た場合は以下のように必要なパッケージをインストールしてください。
+上記のエラーが出た場合は以下のように必要なパッケージをインストールしてから、もう一度 **stack test** を行いましょう。
 
 ```bash
 $ sudo apt install libtinfo-dev
+
+$ stack test
+...
+PFAD-0.1.0.0: test (suite: PFAD-doctest)
+
+Progress 1/2: PFAD-0.1.0.0Examples: 0  Tried: 0  Errors: 0  Failures: 0
+
+PFAD-0.1.0.0: Test suite PFAD-doctest passed
 ```
 
-##### doctest の書き方
+## doctest の書き方
 
-`doctest` は以下のように、非常に直感的に記述することができます。
-
-`doctest` は `>>>` に続く文字列が `ghci` によって処理され、その下の行の結果と等しいかどうかをテストするだけです。
+**doctest** は以下のように、非常に直感的に記述することができます。`>>>` に続く文字列が **ghci** によって処理され、その次の行の結果と等しいかどうかをテストするだけです。
 
 ```haskell
 -- |
@@ -97,9 +134,9 @@ $ sudo apt install libtinfo-dev
 add x y = x + y
 ```
 
-それでは `minfree` 関数に `doctest` を記述してみましょう。また、最初なので、間違ったテスト結果を書いてみます。
+それでは **minfree** 関数に **doctest** を記述してみましょう。また、最初なので、間違ったテスト結果を書いてみます。
 
-```haskell:src/Minfree.hs
+```haskell
 -- |
 -- 与えられた自然数のリストに含まれない最小の自然数を求める関数
 --
@@ -118,13 +155,18 @@ minfree xs = head ([0..] \\ xs)
 本当にテストが失敗するか確認します。
 
 ```shell-session
-$ stack test
+$ stack test PFAD:test:PFAD-doctest
 ...
-PFAD-0.1.0.0: Test suite PFAD-test passed
-Completed 2 action(s).
-Test suite failure for package PFAD-0.1.0.0
-    PFAD-doctest:  exited with: ExitFailure 1
-Logs printed to console
+PFAD-0.1.0.0: test (suite: PFAD-doctest)
+
+src/Minfree.hs:15: failure in expression `minfree [8, 23, 9, 0, 12, 11, 1, 10, 13, 7, 41, 4, 14, 21, 5, 17, 3, 19, 2, 6]'
+expected: "abcde"
+ but got: 15
+
+Examples: 1  Tried: 1  Errors: 0  Failures: 1
+
+PFAD-0.1.0.0: Test suite PFAD-doctest failed
+...
 ```
 
 確かに失敗していることが確認できました。では、正しいテスト結果を記述してみましょう。
@@ -148,20 +190,28 @@ minfree xs = head ([0..] \\ xs)
 もう一度テストしてみます。
 
 ```shell-session
-$ stack test
+$ stack test PFAD:test:PFAD-doctest
 ...
 
-$ stack haddock
+PFAD-0.1.0.0: test (suite: PFAD-doctest)
+
+Examples: 1  Tried: 1  Errors: 0  Failures: 0 0  Errors: 0  Failures: 0
+
+PFAD-0.1.0.0: Test suite PFAD-doctest passed
+
+$ firefox haddock/Minfree.html
 ```
 
 今度はちゃんとテストをパスし、以下のようなドキュメントが生成されると思います。
 
-![スクリーンショット 2017-12-11 18.27.52.png](/images/doctest01.png)
+![](/images/doctest01.jpeg)
 
-また `QuichCheck` を使った書き方もできます。その場合は `>>>` を `prop>` にするだけです。
+### QuickCheck を使う場合
 
-```haskell:src/Minfree.hs
--- Haddock に表示させたいのでエクスポートしています
+また **QuichCheck** を使った書き方もできます。その場合は `>>>` を `prop>` にするだけです。
+
+```haskell
+-- Haddock に表示させるために、エクスポートしています
 module Minfree (minfree, minfree', (\\)) where
 
 ...
@@ -173,25 +223,26 @@ module Minfree (minfree, minfree', (\\)) where
 us \\ vs = filter (`notElem` vs) us
 ```
 
-この性質は満たされないためテストに失敗します。
+この性質は満たさないためテストに失敗します。
 
 ```shell-session
-$ stack test
-### Failure in src/Minfree.hs:21: expression `(as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ bs)'
-*** Failed! Falsifiable (after 3 tests and 3 shrinks):
+$ stack test PFAD:test:PFAD-doctest
+PFAD-0.1.0.0: test (suite: PFAD-doctest)
+
+src/Minfree.hs:22: failure in expression `(as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ bs)'
+*** Failed! Falsifiable (after 3 tests and 1 shrink):
 []
 [0]
 []
+
+Examples: 2  Tried: 2  Errors: 0  Failures: 1
+
+PFAD-0.1.0.0: Test suite PFAD-doctest failed
 ```
 
-正しく書き換えた場合はテストに通ります。ついでに、残りのプロパティテストも追加しておきます。
+ちゃんとテストに失敗したので、正しく書き換えます。ついでに、残りのプロパティテストも追加しておきましょう。
 
-```haskell:src/Minfree.hs
--- Haddock に表示させたいのでエクスポートしています
-module Minfree (minfree, minfree', (\\)) where
-
-...
-
+```haskell
 -- | リスト us から vs に含まれる要素をすべて除いた残りの要素のリストを返す
 --
 -- prop> (as ++ bs) \\ cs == (as \\ cs) ++ (bs \\ cs)
@@ -206,14 +257,18 @@ us \\ vs = filter (`notElem` vs) us
 実行するとちゃんとテストをパスしてドキュメントを生成していると思います。
 
 ```shell-session
-$ stack test
+$ stack test PFAD:test:PFAD-doctest
+...
+PFAD-0.1.0.0: test (suite: PFAD-doctest)
+
+Examples: 4  Tried: 4  Errors: 0  Failures: 0 0  Errors: 0  Failures: 0
+
+PFAD-0.1.0.0: Test suite PFAD-doctest passed
+...
 ```
 
-![スクリーンショット 2017-12-11 18.57.01.png](/images/doctest02.png)
+![](/images/doctest02.jpeg)
 
 なんかかっこいい感じのドキュメントになってきました！
 
-こんな感じでドキュメントも手軽にテストできるので、ぜひアプリケーションを開発する際に利用してください。
-
-##### doctest
-- [sol/doctest](https://github.com/sol/doctest)
+こんな感じでドキュメントも手軽にテストできるので、ぜひアプリケーションを開発する際に利用してみてください。

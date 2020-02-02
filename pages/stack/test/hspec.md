@@ -1,10 +1,27 @@
 ---
-title: HSpec
+title: テストフレームワーク (hspec)
+date: 2019/09/14
+prev: ./index.html
+next: ./quickcheck.html
 ---
 
-まずは `HSpec` を使うために、`package.yaml` の `tests` に `hspec` パッケージを追記します。
+この章ではテストフレームワークの **hspec** を使ったテストの書き方を学習します。
 
-```yaml:package.yaml
+## hspec-discover のインストール
+
+[hspec-discover](https://hackage.haskell.org/package/hspec-discover) を利用することで、それぞれのソースファイルと一対一に対応した **Spec** ファイルを自動的に読み込んでテストしてくれるようになります。
+
+```shell
+$ stack install hspec-discover
+$ hspec-discover
+Usage: hspec-discover SRC CUR DST [--module-name=NAME]
+```
+
+## テストの作成
+
+まずは **hspec** を使うために、**package.yaml** の **tests** に **hspec** パッケージを追記します。
+
+```yaml
 tests:
   PFAD-test:
     main:                Spec.hs
@@ -18,15 +35,20 @@ tests:
     - hspec # ここを追記
 ```
 
-ここで、`test/Spec.hs` の内容を以下のように書き換えます。`hspec-discover` を利用することで、それぞれのソースファイルと一対一に対応した `Spec` ファイルを自動的に読み込んでテストしてくれるようになります。
+つぎに、**hspec-discover** を利用するため `test/Spec.hs` の内容を以下のように書き換えます。
 
-```:test/Spec.hs
+```haskell
 {-# OPTIONS_GHC -F -pgmF hspec-discover #-}
 ```
 
-Spec ファイルの命名規則は、 `src/Minfree.hs` に対しては `test/MinfreeSpec.hs` という感じです。
+### ファイルの命名規則
 
-```:test/MinfreeSpec.hs
+**hspec-discover** を利用する場合、テスト対象のファイルを自動的に見つけるために命名規則が決まっています。
+
+**Spec** ファイルの命名規則は、**src/Minfree.hs** に対しては **test/MinfreeSpec.hs** という感じです。
+
+```haskell
+-- test/MinfreeSpec.hs
 module MinfreeSpec (spec) where
 
 import Test.Hspec
@@ -34,16 +56,18 @@ import Minfree
 
 spec :: Spec
 spec = do
-  describe "minfree" $ do
-    it "本に載っている例" $ do
+  describe "minfree" $
+    it "書籍の実行例" $
       minfree [8,23,9,0,12,11,1,10,13,7,41,4,14,21,5,17,3,19,2,6] `shouldBe` 15
 
-  describe "minfree'" $ do
-    it "本に載っている例" $ do
+  describe "minfree'" $
+    it "書籍の実行例" $
       minfree' [8,23,9,0,12,11,1,10,13,7,41,4,14,21,5,17,3,19,2,6] `shouldBe` 15
 ```
 
-上記の書き方で `minfree` 関数と `minfree'` 関数の入力と出力の振る舞いがテストできるようになりました。
+上記の書き方で **minfree** 関数と **minfree'** 関数の入力と出力の振る舞いがテストできるようになりました。
+
+## テストの実行
 
 最後に以下のコマンドでテストを実行します。
 
@@ -55,9 +79,9 @@ PFAD-0.1.0.0: test (suite: PFAD-test)
 Progress: 1/2
 Minfree
   minfree
-    本に載っている例
+    書籍の実行例
   minfree'
-    本に載っている例
+    書籍の実行例
 
 Finished in 0.0003 seconds
 2 examples, 0 failures
@@ -66,6 +90,3 @@ PFAD-0.1.0.0: Test suite PFAD-test passed
 Completed 2 action(s).
 ExitSuccess
 ```
-##### hspec
-- [Hspecベストプラクティス](http://fujimura.hatenablog.com/entry/2015/12/15/214332)
-- [hspec/hspec-example on github](https://github.com/hspec/hspec-example)

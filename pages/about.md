@@ -9,8 +9,8 @@ Name | github | twitter
 -----|--------|-------
 Shinya Yamaguchi | [waddlaw](https://github.com/waddlaw) | [waddlaw](https://twitter.com/waddlaw)
 Hiroki Asano | [asanoH](https://github.com/asanoH) |
-pythonissam | [pythonissam](https://github.com/pythonissam) |
 Wataru Yamada | [wataru86](https://github.com/wataru86) |
+Fumiaki Kinoshita | [fumieval](https://github.com/fumieval) | [fumieval](https://twitter.com/fumieval)
 
 ---
 
@@ -21,5 +21,6 @@ Wataru Yamada | [wataru86](https://github.com/wataru86) |
 - [Neil Mitchell's Haskell Blog](http://neilmitchell.blogspot.jp/)
 - [Matt Parsons's blog](http://www.parsonsmatt.org/)
 - [Yesod Web Framework Blog](https://www.yesodweb.com/blog/)
+- [Mark Karpov](https://markkarpov.com)
 
 訳の間違い、誤字脱字のご指摘に関しては [github issue](https://github.com/e-bigmoon/haskell-blog/issues) にて、ご連絡ください。

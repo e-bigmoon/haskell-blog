@@ -1,5 +1,5 @@
 ---
-title: Yesod の破壊的変更予定
+title: Yesod の破壊的変更予定 (翻訳)
 author: Michael Snoyman
 translator: pythonissam
 tags: Yesod Web Framework, 翻訳

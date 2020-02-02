@@ -103,8 +103,8 @@ instance YesodAuthEmail App where
         textPart = Part
             { partType = "text/plain; charset=utf-8"
             , partEncoding = None
-            , partFilename = Nothing
-            , partContent = Data.Text.Lazy.Encoding.encodeUtf8
+            , partDisposition = DefaultDisposition
+            , partContent = PartContent $ Data.Text.Lazy.Encoding.encodeUtf8
                 [stext|
                     Please confirm your email address by clicking on the link below.
 
@@ -117,8 +117,8 @@ instance YesodAuthEmail App where
         htmlPart = Part
             { partType = "text/html; charset=utf-8"
             , partEncoding = None
-            , partFilename = Nothing
-            , partContent = renderHtml
+            , partDisposition = DefaultDisposition
+            , partContent = PartContent $ renderHtml
                 [shamlet|
                     <p>Please confirm your email address by clicking on the link below.
                     <p>
