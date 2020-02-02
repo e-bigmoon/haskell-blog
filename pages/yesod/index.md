@@ -56,31 +56,87 @@ $ stack exec -- yesod devel
 
 原文 | 日本語訳 | 補足資料 | 練習問題
 -----|----------|:----------:|:----------:
-[Introduction](https://www.yesodweb.com/book/introduction) | [イントロダクション](book/ch01-introduction.html) | - | -
-[Haskell](https://www.yesodweb.com/book/haskell) | [Haskell](book/ch02-haskell.html) | - | -
-[Basics](https://www.yesodweb.com/book/basics) | [Basics](book/ch03-basics.html) | [スライド](https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing) | [練習問題](exercise/ch03/)
-[Shakespearean Templates](https://www.yesodweb.com/book/shakespearean-templates) | [シェイクスピア テンプレート](book/ch04-shakespearen-templates.html) | [スライド](https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing) | [練習問題](exercise/ch04/)
-[Widgets](https://www.yesodweb.com/book/widgets) | [ウィジェット](book/ch05-widgets.html) | [スライド](https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing) | [練習問題](exercise/ch05/)
-[Yesod Typeclass](https://www.yesodweb.com/book/yesod-typeclass) | [Yesod 型クラス](book/ch06-yesod-typeclass.html) | [スライド](https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing)
-[Routing and Handlers](https://www.yesodweb.com/book/routing-and-handlers) | [ルーティングとハンドラ](book/ch07-routing-and-handlers.html) | [スライド](https://docs.google.com/presentation/d/1asqcwxIfDoligvqMWD3aKW7Q0oFRH9KqfXKyvNxk52U/edit?usp=sharing) | [練習問題](exercise/ch07/)
-[Forms](https://www.yesodweb.com/book/forms) | [Forms](book/ch08-forms.html) | [スライド](https://docs.google.com/presentation/d/1S8kPog8pK0iyx7DpjRQGO_6hgn3vDoCyI_WYz2IzaJo/edit?usp=sharing) | [練習問題](exercise/ch08/) |  |
-[Sessions](https://www.yesodweb.com/book/sessions) | [Sessions](book/ch09-sessions.html) | | |  |
-[Persistent](https://www.yesodweb.com/book/persistent) | [Persistent](book/ch10-persistent.html) | [ノート](contents/resume/ch10_r.md) | |  |
-| [Deploying your Webapp](https://www.yesodweb.com/book/deploying-your-webapp) | Deploying your Webapp | | |  |
+[Introduction][en-ch1] | [イントロダクション][ja-ch1] | - | -
+[Haskell][en-ch2] | [Haskell][ja-ch2] | - | -
+[Basics][en-ch3] | [Basics][ja-ch3] | [スライド][slide-ch3] | [練習問題][ex-ch3]
+[Shakespearean Templates][en-ch4] | [シェイクスピア テンプレート][ja-ch4] | [スライド][slide-ch4] | [練習問題][ex-ch4]
+[Widgets][en-ch5] | [ウィジェット][ja-ch5] | [スライド][slide-ch5] | [練習問題][ex-ch5]
+[Yesod Typeclass][en-ch6] | [Yesod 型クラス][ja-ch6] | [スライド][slide-ch6]
+[Routing and Handlers][en-ch7] | [ルーティングとハンドラ][ja-ch7] | [スライド][slide-ch7] | [練習問題][ex-ch7]
+[Forms][en-ch8] | [Forms][ja-ch8] | [スライド][slide-ch8] | [練習問題][ex-ch8]
+[Sessions][en-ch9] | [Sessions][ja-ch9]
+[Persistent][en-ch10] | [Persistent][ja-ch10] | [ノート][note-ch10]
+[Deploying your Webapp][en-ch11] | Deploying your Webapp
+
+[en-ch1]:https://www.yesodweb.com/book/introduction
+[en-ch2]:https://www.yesodweb.com/book/haskell
+[en-ch3]:https://www.yesodweb.com/book/basics
+[en-ch4]:https://www.yesodweb.com/book/shakespearean-templates
+[en-ch5]:https://www.yesodweb.com/book/widgets
+[en-ch6]:https://www.yesodweb.com/book/yesod-typeclass
+[en-ch7]:https://www.yesodweb.com/book/routing-and-handlers
+[en-ch8]:https://www.yesodweb.com/book/forms
+[en-ch9]:https://www.yesodweb.com/book/sessions
+[en-ch10]:https://www.yesodweb.com/book/persistent
+[en-ch11]:https://www.yesodweb.com/book/deploying-your-webapp
+
+[ja-ch1]:book/ch01-introduction.html
+[ja-ch2]:book/ch02-haskell.html
+[ja-ch3]:book/ch03-basics.html
+[ja-ch4]:book/ch04-shakespearen-templates.html
+[ja-ch5]:book/ch05-widgets.html
+[ja-ch6]:book/ch06-yesod-typeclass.html
+[ja-ch7]:book/ch07-routing-and-handlers.html
+[ja-ch8]:book/ch08-forms.html
+[ja-ch9]:book/ch09-sessions.html
+[ja-ch10]:book/ch10-persistent.html
+
+[slide-ch3]:https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing
+[slide-ch4]:https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing
+[slide-ch5]:https://docs.google.com/presentation/d/1txTox5MevucuzRAFB63FsU4-A3ZlwfcoEWEFof1JMfw/edit?usp=sharing
+[slide-ch6]:https://docs.google.com/presentation/d/1SPc87YVMVwUc1OJvQLFGAzLp5c-PB5trkIbfUdJPrlY/edit?usp=sharing
+[slide-ch7]:https://docs.google.com/presentation/d/1asqcwxIfDoligvqMWD3aKW7Q0oFRH9KqfXKyvNxk52U/edit?usp=sharing
+[slide-ch8]:https://docs.google.com/presentation/d/1S8kPog8pK0iyx7DpjRQGO_6hgn3vDoCyI_WYz2IzaJo/edit?usp=sharing
+
+[ex-ch3]:exercise/ch03/
+[ex-ch4]:exercise/ch04/
+[ex-ch5]:exercise/ch05/
+[ex-ch7]:exercise/ch07/
+[ex-ch8]:exercise/ch08/
+
+[note-ch10]:contents/resume/ch10_r.md
 
 ### Advanced
 
 原文 | 日本語訳 | 補足資料 | 練習問題
 -----|----------|----------|----------
-[RESTful Content](https://www.yesodweb.com/book/restful-content) | [RESTful コンテンツ](book/ch12-restful-content.html) | |
-[Yesod’s Monads](https://www.yesodweb.com/book/yesods-monads) | [Yesod のモナドたち](book/ch13-yesods-monads.html)
-[Authentication and Authorization](https://www.yesodweb.com/book/authentication-and-authorization) | [認証と認可](book/ch14-authentication-and-authorization.html)
-[Scaffolding and the Site Template](https://www.yesodweb.com/book/scaffolding-and-the-site-template) | [Scaffolding とサイトテンプレート](book/ch15-scaffolding-and-the-site-template.html)
-[Internationalization](https://www.yesodweb.com/book/internationalization) | [国際化](book/ch16-internationalization.html)
-[Creating a Subsite](https://www.yesodweb.com/book/creating-a-subsite) | [Creating a Subsite](book/ch17-creating-a-subsite.html)
-[Understanding a Request](https://www.yesodweb.com/book/understanding-request) | Understanding a Request
-[SQL Joins](https://www.yesodweb.com/book/sql-joins) | SQL Joins
-[Yesod for Haskellers](https://www.yesodweb.com/book/yesod-for-haskellers) | Yesod for Haskellers
+[RESTful Content][en-ch12] | [RESTful コンテンツ][ja-ch12]
+[Yesod’s Monads][en-ch13] | [Yesod のモナドたち][ja-ch13]
+[Authentication and Authorization][en-ch14] | [認証と認可][ja-ch14]
+[Scaffolding and the Site Template][en-ch15] | [Scaffolding とサイトテンプレート][ja-ch15]
+[Internationalization][en-ch16] | [国際化][ja-ch16]
+[Creating a Subsite][en-ch17] | [Creating a Subsite][ja-ch17]
+[Understanding a Request][en-ch18] | [リクエストを理解する][ja-ch18]
+[SQL Joins][en-ch19] | SQL Joins
+[Yesod for Haskellers][en-ch20] | Yesod for Haskellers
+
+[en-ch12]:https://www.yesodweb.com/book/restful-content
+[en-ch13]:https://www.yesodweb.com/book/yesods-monads
+[en-ch14]:https://www.yesodweb.com/book/authentication-and-authorization
+[en-ch15]:https://www.yesodweb.com/book/scaffolding-and-the-site-template
+[en-ch16]:https://www.yesodweb.com/book/internationalization
+[en-ch17]:https://www.yesodweb.com/book/creating-a-subsite
+[en-ch18]:https://www.yesodweb.com/book/understanding-request
+[en-ch19]:https://www.yesodweb.com/book/sql-joins
+[en-ch20]:https://www.yesodweb.com/book/yesod-for-haskellers
+
+[ja-ch12]:book/ch12-restful-content.html
+[ja-ch13]:book/ch13-yesods-monads.html
+[ja-ch14]:book/ch14-authentication-and-authorization.html
+[ja-ch15]:book/ch15-scaffolding-and-the-site-template.html
+[ja-ch16]:book/ch16-internationalization.html
+[ja-ch17]:book/ch17-creating-a-subsite.html
+[ja-ch18]:book/ch18-understanding-a-request.html
 
 ### Examples
 

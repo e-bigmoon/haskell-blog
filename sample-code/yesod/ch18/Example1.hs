@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-13.26
+-- stack script --resolver lts-14.22
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
