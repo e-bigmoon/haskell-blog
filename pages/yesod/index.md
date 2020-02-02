@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2019/10/18
+date: 2020/02/02
 ---
 
 ## Yesod クイックスタートガイド
@@ -9,7 +9,7 @@ date: 2019/10/18
 
 ### 1. Stack をインストールしましょう
 
-[haskell-lang get started guide](https://haskell-lang.org/get-started) を参考に、ビルドツール `Stack` をインストールしましょう。
+[FP Complete get started guide](https://tech.fpcomplete.com/haskell/get-started) を参考に、ビルドツール `Stack` をインストールしましょう。
 
 POSIX システムでは以下のコマンドでインストールが完了します。
 
@@ -20,9 +20,11 @@ $ curl -sSL https://get.haskellstack.org/ | sh
 ### 2. プロジェクトの雛形を用意しましょう
 
 ```shell
-$ stack new my-project yesod-sqlite
+$ stack new my-project yesodweb/sqlite
 $ cd my-project
 ```
+
+その他の雛形については [GitHub](https://github.com/yesodweb/stack-templates) を確認してください。
 
 ### 3. yesod コマンドをインストールしましょう
 
@@ -42,11 +44,55 @@ $ stack build
 $ stack exec -- yesod devel
 ```
 
+もしここで `GHC_PACKAGE_PATH` というエラーメッセージが表示された人は、最新の `yesod-bin` をインストールする必要があります。
+
+以下のコマンドを実行してみてください。
+
+```shell
+$ stack build yesod-bin-1.4.11
+$ stack exec -- yesod devel
+```
+
+また、プロジェクトの雛形に `minimal` を選択した場合、`yesod devel` コマンドは動作しないと思うので注意してください。
+
 ### 6. Yesod サーバーへアクセスしてみましょう
 
 [http://localhost:3000/](http://localhost:3000/) にアクセスすれば Yesod アプリケーションを体験できます。
 
-## Yesod ブック (@2af82cc1c8ec5569f443ba5f0e3fd1eacd131627)
+## システムライブラリ
+
+上記のステップを実行するためにはいくつかのシステムライブラリの開発版が必要になると思います。
+
+例えば Ubuntu では以下のコマンドを実行する必要があるでしょう。
+
+```shell
+$ sudo apt-get install -y build-essential zlib1g-dev
+```
+
+もし、データベースを利用しているのであれば、データベースと通信するためにシステムライブラリのインストールが必要になります。
+
+Ubuntu では以下のようになります。
+
+```shell
+$ sudo apt-get install -y libmysqlclient-dev
+$ sudo apt-get install -y libpq-dev
+```
+
+## もっと詳しく知りたい人へ
+
+コーディングを始めましょう！
+
+すぐにコードを書き始めることもできますが、もっと Yesod について知りたい人は、以下のリソースをチェックしてみてください。
+
+- [Yesod book](https://www.yesodweb.com/book)
+- [Community](https://www.yesodweb.com/page/community)
+- [The Wiki](https://github.com/yesodweb/yesod-cookbook)
+- [Haskell Documentation](https://haskell-lang.org/documentation)
+- [Screencasts](https://www.yesodweb.com/page/screencasts)
+- [Cloning FluxBB](https://siskam.link/2018-04-14-cloning-fluxbb.html) (Yesod と Esqueleto を使ってフォーラムを作るというブログ記事です)
+- [Yesod tutorial](http://yannesposito.com/Scratch/en/blog/Yesod-tutorial-for-newbies/) (これは少し古くなっています。書籍ではより最新の内容に更新されています)
+
+## Yesod ブック (@0b03860af842486b52345d592f25c76c2ac46941)
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
