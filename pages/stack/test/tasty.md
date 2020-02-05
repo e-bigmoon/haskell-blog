@@ -1,6 +1,6 @@
 ---
 title: テストフレームワーク (tasty)
-date: 2019/09/15
+date: 2020/01/24
 prev: ./doctest.html
 next: ../bench/index.html
 ---
@@ -23,6 +23,7 @@ $ mkdir test-tasty
 
 - プロンプトのテスト結果に色が付く
 - テスト結果のレポートを出力できる
+- テストの実行が速い
 - **providers** と **ingredients** が別々に用意されているので拡張性が高い
 - **golden test** が書ける
 - **hspec** の形式も **tasty** に記述できる
@@ -34,6 +35,7 @@ $ mkdir test-tasty
 - [attoparsec](https://github.com/bos/attoparsec)
 - [pandoc](https://github.com/jgm/pandoc)
 - [hakyll](https://github.com/jaspervdj/hakyll)
+- [github/semantic](https://github.com/github/semantic)
 
 **cabal** や **pandoc** といった大きなプロジェクトでも採用実績があります。
 
