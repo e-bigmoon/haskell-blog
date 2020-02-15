@@ -56,7 +56,7 @@ next: ./why-stack.html
 
 環境 | バージョン
 -----|--------
-OS | Ubuntu, macOS High Sierra
+OS | Ubuntu 18.04, macOS Catalina (10.15.3)
 stack | version 2.1.3
 hpack | 0.31.2
 
