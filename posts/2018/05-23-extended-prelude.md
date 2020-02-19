@@ -1,7 +1,7 @@
 ---
 title: Prelude を カスタムPrelude で置き換える
 author: Shinya Yamaguchi
-tags: bigmoon, extensible
+tags: bigmoon
 ---
 
 ## はじめに
