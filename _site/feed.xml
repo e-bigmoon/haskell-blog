@@ -8,8 +8,91 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>2020-01-22T00:00:00Z</updated>
+    <updated>2020-02-19T00:00:00Z</updated>
     <entry>
+    <title>HUnit で日本語が文字化けする問題</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/02-19-hunit-show-unicode.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/02-19-hunit-show-unicode.html</id>
+    <published>2020-02-19T00:00:00Z</published>
+    <updated>2020-02-19T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p><code>HUnit</code> で日本語を扱おうとすると、以下のように文字化けしますよね。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span></code></pre></div>
+<p>この問題は簡単に回避できるので、その方法を紹介します。やり方は <a href="https://github.com/hspec/hspec/issues/384">Human-readable output of unicode characters in expectation results #384</a> の方法そのまんまです。</p>
+<!--more-->
+<h2 id="問題が発生している原因">問題が発生している原因</h2>
+<p>今回使うコードはとてもシンプルです。依存しているパッケージは <a href="https://hackage.haskell.org/package/HUnit">HUnit</a> です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- Main.hs</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-7"><a href="#cb2-7"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
+<p>上記のコードを実行すると、以下のような結果になります。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">$</span> stack repl <span class="co">--package HUnit ./Main.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> bad</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">### Failure:                              </span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">6</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
+<p>この問題は何故発生するかと言うと、<code>HUnit</code> 内部で <code>show</code> 関数を利用しているためです。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="st">&quot;\12495\12473\12465\12523&quot;</span></span></code></pre></div>
+<p>上記のような文字化けに対応するには <a href="https://hackage.haskell.org/package/unicode-show">unicode-show</a> パッケージの <strong>ushow</strong> 関数が便利です。より詳しい紹介は「<a href="https://haskell.jp/blog/posts/2019/unicode-show.html">日本語をshowしてうまく表示されなかったらunicode-showの紹介（と、pretty-simpleを少し）</a>」を参照してください。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">$</span> stack repl <span class="co">--package HUnit --package unicode-show ./Main.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="op">*</span><span class="dt">Main</span> <span class="dt">Text.Show.Unicode</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> ushow <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="st">&quot;ハスケル&quot;</span></span></code></pre></div>
+<p>ということで、<strong>HUnit</strong> を <strong>ushow</strong> を使うようにしてみましょう。</p>
+<h2 id="解決策">解決策</h2>
+<p>やり方はとても簡単です。<strong>(@?=)</strong> を以下のように再定義するだけです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">HUnit.Assertion</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span></code></pre></div>
+<p>コード全体は以下の通りです。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-6"><a href="#cb7-6"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
+<span id="cb7-9"><a href="#cb7-9"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
+<span id="cb7-13"><a href="#cb7-13"></a></span>
+<span id="cb7-14"><a href="#cb7-14"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Assertion</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span>
+<span id="cb7-16"><a href="#cb7-16"></a></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="ot">good ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-18"><a href="#cb7-18"></a>good <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
+<p>実行してみましょう！</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;</span> good</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="pp">### Failure:</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">15</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>expected<span class="op">:</span> <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
+<p>こんな感じで他の関数も同様に定義してしまえば良い感じです。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>日本語の文字化けで困っている人向け情報でした。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://iwamototakashi.hatenadiary.jp/entry/20100722/p1">HUnitで日本語を出力してみる→成功</a></li>
+<li><a href="https://github.com/hspec/hspec/issues/384">Human-readable output of unicode characters in expectation results #384</a></li>
+<li><a href="https://haskell.jp/blog/posts/2019/unicode-show.html">日本語をshowしてうまく表示されなかったらunicode-showの紹介（と、pretty-simpleを少し）</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>stack で管理されたプロジェクトを cabal でビルドするために</title>
     <link href="https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html" />
     <id>https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html</id>
@@ -1647,163 +1730,6 @@ Flags for format:
 <p><a href="https://techbookfest.org/event/tbf07">技術書典7</a>に初参加します。</p>
 <p><img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px"></p>
 <p>進捗・詳細については <a href="/ad/techbookfest7.html">技術書典7特設ページ</a> をご確認ください。</p>]]></summary>
-</entry>
-<entry>
-    <title>extensible-0.6.1 マイグレーションガイド</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/08-19-extensible-migration.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/08-19-extensible-migration.html</id>
-    <published>2019-08-19T00:00:00Z</published>
-    <updated>2019-08-19T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><a href="https://hackage.haskell.org/package/extensible">extensible</a> のバージョンを最新の <strong>0.6.1</strong> に更新した際にいくつかコードの修正が必要になったので、メモ程度に残しておきます。</p>
-<p>今回の記事では一部の変更点にしか触れないため、完全な変更点については <a href="https://github.com/fumieval/extensible/blob/master/CHANGELOG.md">CHANGELOG</a> を参照してください。</p>
-<!--more-->
-<h3 id="section">0.5</h3>
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible-0.4.10.1/docs/Data-Extensible-Wrapper.html#t:Const-39-">Const’</a> が削除されました。</li>
-</ul>
-<p>今後は <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html#t:Const">Control.Applicative.Const</a> を利用しましょう。</p>
-<h3 id="section-1">0.5.1</h3>
-<ul>
-<li><a href="https://hackage.haskell.org/package/membership">membership</a> パッケージが依存関係に追加されました。(<code>Data.Extensible.HList</code> と <code>Data.Extensible.Internal</code> が membership パッケージに移動した形です)</li>
-</ul>
-<hr />
-<ul>
-<li><code>AssocKey</code>, <code>AssocValue</code>, <code>ValueIs</code>, <code>KeyValue</code> が廃止予定になりました。</li>
-</ul>
-<p>今後はそれぞれ以下の型を利用しましょう。</p>
-<table>
-<thead>
-<tr class="header">
-<th>0.5.1 より前</th>
-<th>0.5.1 以降</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:AssocKey">AssocKey</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyOf">KeyOf</a></td>
-</tr>
-<tr class="even">
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:AssocValue">AssocValue</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:TargetOf">TargetOf</a></td>
-</tr>
-<tr class="odd">
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:ValueIs">ValueIs</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:TargetIs">TargetIs</a></td>
-</tr>
-<tr class="even">
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyValue">KeyValue</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#t:KeyTargetAre">KeyTargetAre</a></td>
-</tr>
-</tbody>
-</table>
-<hr />
-<ul>
-<li><code>proxyAssocKey</code>, <code>stringAssocKey</code>, <code>proxyAssocValue</code> も同様に廃止予定になりました。</li>
-</ul>
-<p>今後はそれぞれ以下の関数を利用しましょう。</p>
-<table>
-<thead>
-<tr class="header">
-<th>0.5.1 より前</th>
-<th>0.5.1 以降</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyAssocKey">proxyAssocKey</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyKeyOf">proxyKeyOf</a></td>
-</tr>
-<tr class="even">
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:stringAssocKey">stringAssocKey</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:stringKeyOf">stringKeyOf</a></td>
-</tr>
-<tr class="odd">
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyAssocValue">proxyAssocValue</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Field.html#v:proxyTargetOf">proxyTargetOf</a></td>
-</tr>
-</tbody>
-</table>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Class.html#t:Associate">Associate</a> が廃止予定になりました。</li>
-</ul>
-<p>今後は <a href="https://hackage.haskell.org/package/extensible-0.5.1/docs/Data-Extensible-Class.html#t:Lookup">Lookup</a> を利用しましょう。</p>
-<p>引数の順番が変わる点に注意してください。そのままではコンパイルエラーになります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">type</span> <span class="dt">Associate</span> k v xs <span class="ot">=</span> <span class="dt">Lookup</span> xs k v</span></code></pre></div>
-<h3 id="section-2">0.6</h3>
-<ul>
-<li><code>(:*)</code> と <code>(:|)</code> がそれぞれ廃止予定になりました。</li>
-</ul>
-<p>今後はそれぞれ以下の関数を利用しましょう。その際、引数の順番が逆になっているので注意してください。</p>
-<table>
-<thead>
-<tr class="header">
-<th>0.6 より前</th>
-<th>0.6 以降</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Struct.html#t::-42-">(:*)</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Struct.html#t::-38-">(:&amp;)</a></td>
-</tr>
-<tr class="even">
-<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-124-">(:|)</a></td>
-<td><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Sum.html#t::-47-">(:/)</a></td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">type</span> (<span class="op">:*</span>) h xs <span class="ot">=</span> xs <span class="op">:&amp;</span> h</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">type</span> (<span class="op">:|</span>) h xs <span class="ot">=</span> xs <span class="op">:/</span> h</span></code></pre></div>
-<hr />
-<ul>
-<li><a href="https://hackage.haskell.org/package/extensible-0.6/docs/Data-Extensible-Tangle.html#t:TangleT">TangleT</a> の引数の順番が入れ替わりました。</li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- 0.6 より前の定義</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">newtype</span> <span class="dt">TangleT</span> h xs m a</span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co">-- 0.6 以降の定義</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">newtype</span> <span class="dt">TangleT</span> xs h m a</span></code></pre></div>
-<h3 id="section-3">0.6.1</h3>
-<ul>
-<li><code>0.5.1</code> で廃止予定となっていた <code>deriveIsRecord</code> が削除されました。</li>
-</ul>
-<p>今後は <code>Generics</code> のインスタンスであれば導出可能です。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- 0.6.1 より前</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>deriveIsRecord &#39;<span class="dt">&#39;Foo</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">-- 0.6.1 以降の定義 (Foo が Generics のインスタンスであればOK)</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">instance</span> <span class="dt">IsRecord</span> <span class="dt">Foo</span></span></code></pre></div>
-<h2 id="終わりに">終わりに</h2>
-<p><code>extensible-0.6.1</code> に一気に更新しましたが、特にハマることも無くスムーズに更新が完了しました。</p>
-<p>いくつか新しい関数などが追加されているので、その辺りも要チェックですね。</p>
-<h2 id="宣伝">宣伝</h2>
-<p><a href="https://techbookfest.org/event/tbf07">技術書典7</a>に初参加します。</p>
-<p><img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px"></p>
-<p>サークルカットは<a href="https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%AB%E3%83%95%E3%82%A9%E3%83%B3%E3%82%B9%E3%83%BB%E3%83%9F%E3%83%A5%E3%82%B7%E3%83%A3">アルフォンス・ミュシャ</a>っぽい感じを意識しています。ミュシャ風のポスターは至る所で目にしますが、ミュシャの最高傑作は「スラヴ叙事詩」なので興味のある人は是非調べてみてください。</p>
-<hr />
-<p>現時点で Haskell 本を「2冊」販売予定です。(値段や配布数については未定です)</p>
-<h3 id="すごいhaskell自分で作ろう-write-your-haskell-for-great-good">(1) すごいHaskell自分で作ろう！ Write Your Haskell for Great Good!</h3>
-<p><img src="/images/2019/08-19/main.jpg" alt ="表紙" width="400px"></p>
-<p>【著者】 <span class="citation" data-cites="gotoki_no_joe">@gotoki_no_joe</span></p>
-<p>【概要】 Haskell でプログラミングするのは楽しい。ところで「Haskell<em>を</em>プログラミングする」のも楽しいのでは？じゃあやってみよう。というわけで、Haskell からヒラヒラを全て削り落して削りすぎたような関数型言語を作ります。</p>
-<p>構文を設計し、意味を定義し、それらに従ってインタプリタを <strong>Haskell</strong> と <strong>TypeScript</strong> で実装します。</p>
-<p>Haskell といいつつ普通でわかりやすい<strong>正格評価な処理系</strong>から始めて、その後で<strong>遅延評価をする処理系</strong>に取り組みます。必要になった部分だけを計算する遅延評価の仕組みが、組み込み演算やパターンマッチと協調する様子を自作して理解します。</p>
-<p>おまけに TypeScript によるパーサコンビネータの作り方が付いています。</p>
-<p>ごめんなさい！Haskell らしさの重要な柱である型システムについて執筆が間に合いませんでした。インデント構文、JavaScript を出力するコンパイラとともに、後編での執筆を予定しています。</p>
-<p>【目次 (仮)】</p>
-<p>クリックすると <code>pdf</code> が開きます。</p>
-<p><a href="/images/2019/08-19/toc1.pdf"> <img src="/images/2019/08-19/toc1.png" alt ="目次1" width="400px"> </a> <a href="/images/2019/08-19/toc2.pdf"> <img src="/images/2019/08-19/toc2.png" alt ="目次2" width="400px"> </a></p>
-<h3 id="ghc-api-入門-仮">(2) GHC API 入門 (仮)</h3>
-<p>【著者】 <span class="citation" data-cites="waddlaw">@waddlaw</span></p>
-<p>【概要】 GHC API を使って具体的に動く何かを作る予定ですが、全然筆が進んでいないので内容未定・・・。(上記の書籍と比べると宣伝できるものが何も・・・)</p>
-<p>頑張ります！</p>
-<h3 id="おすすめポイント">おすすめポイント</h3>
-<p>Haskell の処理系を作ってみたいなーって思っている人は「すごいHaskell自分で作ろう！ Write Your Haskell for Great Good!」がおすすめです！！！</p>
-<p><code>TypeScript</code> と <code>Haskell</code> という異なるパラダイムの言語による実装が一冊に収まっているので、とてもお得ですね。</p>
-<p>応援よろしくお願いします〜。</p>]]></summary>
 </entry>
 
 </feed>
