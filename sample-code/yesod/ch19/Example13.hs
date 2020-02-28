@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.19
+-- stack script --resolver lts-14.27
 {-# LANGUAGE QuasiQuotes #-}
 import           Data.Text   (Text, pack)
 import           Text.Julius (Javascript)

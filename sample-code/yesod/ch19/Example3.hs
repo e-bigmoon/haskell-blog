@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.19
+-- stack script --resolver lts-14.27
 {-# LANGUAGE OverloadedStrings #-}
 import           Blaze.ByteString.Builder (fromByteString)
 import qualified Data.ByteString          as S

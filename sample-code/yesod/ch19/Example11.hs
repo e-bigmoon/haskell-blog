@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.19
+-- stack script --resolver lts-14.27
 import           Data.Text  (pack)
 import           Yesod.Core (LiteHandler, dispatchTo, dispatchTo, liteApp,
                              onStatic, redirect, warp, withDynamic)

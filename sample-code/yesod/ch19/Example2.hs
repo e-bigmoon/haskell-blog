@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.19
+-- stack script --resolver lts-14.27
 {-# LANGUAGE OverloadedStrings #-}
 import           Network.HTTP.Types            (status200)
 import           Network.Wai                   (Application, responseBuilder)
