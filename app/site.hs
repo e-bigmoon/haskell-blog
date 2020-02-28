@@ -4,10 +4,8 @@
 
 import qualified Config as C
 import Control.Lens ((^.))
-import Control.Monad (forM_)
 import Data.List (stripPrefix)
 import Data.Maybe
-import Data.Monoid ((<>))
 import HTMLEntities.Text
 import Hakyll hiding (dateFieldWith)
 import Hakyll.Ext

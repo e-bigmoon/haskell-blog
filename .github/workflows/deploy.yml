@@ -1,0 +1,43 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "00 15 * * *"
+
+jobs:
+  netlify:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        ghc-version: "8.8.2"
+        cabal-version: "3.0"
+
+    - name: Cache ~/.cabal/store
+      uses: actions/cache@v1.1.2
+      with:
+        path: ~/.cabal/store
+        key: ${{ runner.os }}-${{ matrix.ghc }}-v1-cabal-store
+
+    - name: Build
+      run: |
+        cabal update
+        cabal configure -j2
+        cabal run site rebuild
+        cp -r ../_site .
+
+    - name: Commit files
+      run: |
+        git config --local user.email "bot@e-bigmoon.com"
+        git config --local user.name "BOT MOON"
+        git commit -m "by Github Action" -a
+
+    - name: Push changes
+      uses: e-bigmoon/haskell-blog@site
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN_DEPLOY }}
