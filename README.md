@@ -1,5 +1,10 @@
 # BIG MOON Haskeller's blog
 
+![cabal](https://github.com/e-bigmoon/haskell-blog/workflows/cabal/badge.svg)
+![stack](https://github.com/e-bigmoon/haskell-blog/workflows/stack/badge.svg)
+![format](https://github.com/e-bigmoon/haskell-blog/workflows/format/badge.svg)
+![lint](https://github.com/e-bigmoon/haskell-blog/workflows/lint/badge.svg)
+![deploy](https://github.com/e-bigmoon/haskell-blog/workflows/deploy/badge.svg)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/9fdf0837-5e38-4dc5-a035-bde11f5d0b83/deploy-status)](https://app.netlify.com/sites/haskell/deploys)
 
 ## ページ
