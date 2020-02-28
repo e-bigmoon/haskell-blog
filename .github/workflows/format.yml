@@ -1,4 +1,4 @@
-name: ormolu
+name: format
 
 on:
   push:
@@ -13,7 +13,36 @@ on:
     - cron: "00 15 * * *"
 
 jobs:
-  format:
+  cabal-fmt:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        ghc-version: "8.8.2"
+        cabal-version: "3.0"
+
+    - uses: actions/cache@v1.1.2
+      name: Cache ~/.cabal/bin
+      id: cache-bin
+      with:
+        path: ~/.cabal/bin
+        key: v5-cabal-fmt-v0.1.2
+
+    - name: Install cabal-fmt
+      if: steps.cache-bin.outputs.cache-hit != 'true'
+      run: |
+        cabal update
+        cabal install cabal-fmt --overwrite-policy=always --install-method=copy
+
+    - name: Apply cabal-fmt
+      run: |
+        export PATH=~/.cabal/bin/:$PATH
+        cabal-fmt -i bigmoon-haskellers-blog.cabal
+        git --no-pager diff --exit-code
+
+  ormolu:
     runs-on: ubuntu-18.04
 
     steps:
