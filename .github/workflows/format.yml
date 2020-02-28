@@ -34,12 +34,12 @@ jobs:
       if: steps.cache-bin.outputs.cache-hit != 'true'
       run: |
         cabal update
-        cabal install cabal-fmt --overwrite-policy=always --install-method=copy
+        cabal install cabal-fmt --overwrite-policy=always --install-method=copy -j2
 
     - name: Apply cabal-fmt
       run: |
         export PATH=~/.cabal/bin/:$PATH
-        cabal-fmt -i bigmoon-haskellers-blog.cabal
+        cabal-fmt -i *.cabal
         git --no-pager diff --exit-code
 
   ormolu:
@@ -59,16 +59,11 @@ jobs:
         path: ~/.cabal/bin
         key: v1-ormolu-v0.0.3.1
 
-    - name: Display ghc & cabal version
-      run: |
-        ghc -V
-        cabal -V
-
     - name: Install ormolu
       if: steps.cache-bin.outputs.cache-hit != 'true'
       run: |
         cabal update
-        cabal install ormolu --overwrite-policy=always --install-method=copy
+        cabal install ormolu --overwrite-policy=always --install-method=copy -j2
 
     - name: Apply ormolu
       run: |
