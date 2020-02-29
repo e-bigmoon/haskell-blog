@@ -8,9 +8,10 @@ Member:
 Name | github | twitter
 -----|--------|-------
 Shinya Yamaguchi | [waddlaw](https://github.com/waddlaw) | [waddlaw](https://twitter.com/waddlaw)
-Hiroki Asano | [asanoH](https://github.com/asanoH) |
-Wataru Yamada | [wataru86](https://github.com/wataru86) |
+Hiroki Asano | [asanoH](https://github.com/asanoH)
+Wataru Yamada | [wataru86](https://github.com/wataru86)
 Fumiaki Kinoshita | [fumieval](https://github.com/fumieval) | [fumieval](https://twitter.com/fumieval)
+Takeji Isao | [isao-takejib](https://github.com/isao-takejib)
 
 ---
 
