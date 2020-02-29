@@ -26,3 +26,4 @@ Takeji Isao | [isao-takejib](https://github.com/isao-takejib)
 - [Mark Karpov](https://markkarpov.com)
 
 訳の間違い、誤字脱字のご指摘に関しては [github issue](https://github.com/e-bigmoon/haskell-blog/issues) にて、ご連絡ください。
+
