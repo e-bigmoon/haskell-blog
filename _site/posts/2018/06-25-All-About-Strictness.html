@@ -195,7 +195,7 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
         
           <div class="col s6">
             <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
-            <div class="chip"><a href="../../tags/fpcomplete.html">fpcomplete</a>, <a href="../../tags/%E7%BF%BB%E8%A8%B3.html">翻訳</a></div>
+            <div class="chip"><a title="All pages tagged 'fpcomplete'." href="../../tags/fpcomplete.html">fpcomplete</a>, <a title="All pages tagged '翻訳'." href="../../tags/%E7%BF%BB%E8%A8%B3.html">翻訳</a></div>
           </div>
         
 
@@ -426,47 +426,47 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <span id="cb12-12"><a href="#cb12-12"></a></span>
 <span id="cb12-13"><a href="#cb12-13"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
 <p>この動作を正格な言語と比較するためには、実行時例外のようなものを持つ言語が必要ですね。Rust の panic を使うことにしましょう:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">fn</span> add(x: <span class="dt">isize</span>, y: <span class="dt">isize</span>) -&gt; <span class="dt">isize</span> <span class="op">{</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span>, x, y);</span>
-<span id="cb13-3"><a href="#cb13-3"></a>    x + y</span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">fn</span> add(x<span class="op">:</span> <span class="dt">isize</span><span class="op">,</span> y<span class="op">:</span> <span class="dt">isize</span>) <span class="op">-&gt;</span> <span class="dt">isize</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span><span class="op">,</span> x<span class="op">,</span> y)<span class="op">;</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>    x <span class="op">+</span> y</span>
 <span id="cb13-4"><a href="#cb13-4"></a><span class="op">}</span></span>
 <span id="cb13-5"><a href="#cb13-5"></a></span>
 <span id="cb13-6"><a href="#cb13-6"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a>    <span class="kw">let</span> five = add(<span class="dv">1</span> + <span class="dv">1</span>, <span class="dv">1</span> + <span class="dv">2</span>);</span>
-<span id="cb13-8"><a href="#cb13-8"></a>    <span class="kw">let</span> seven = add(<span class="dv">1</span> + <span class="dv">2</span>, <span class="pp">panic!</span>());</span>
+<span id="cb13-7"><a href="#cb13-7"></a>    <span class="kw">let</span> five <span class="op">=</span> add(<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a>    <span class="kw">let</span> seven <span class="op">=</span> add(<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> <span class="pp">panic!</span>())<span class="op">;</span></span>
 <span id="cb13-9"><a href="#cb13-9"></a></span>
-<span id="cb13-10"><a href="#cb13-10"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span>, five);</span>
+<span id="cb13-10"><a href="#cb13-10"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span><span class="op">,</span> five)<span class="op">;</span></span>
 <span id="cb13-11"><a href="#cb13-11"></a><span class="op">}</span></span></code></pre></div>
 <p>まず、Rust の名誉のために一言断っておくと、Rust は、このプログラムがどんなにバカげたことをしているのか、多くの警告を出してくれます。確かにそれはそうなんですが、これらの警告は無視して突っ走りましょう。このプログラムは、まず最初に <code>add(1 + 1, 1 + 2)</code> という式を評価します (<code>adding: 2 and 3</code> という出力で確認できます)。そして、2回目の <code>add</code> 関数に入る前に、<code>1 + 2</code> と <code>panic!()</code> のどちらも評価する必要があります。前者はいいですが、後者ではパニックが発生し、そこでショートします。</p>
 <p>Haskell の遅延性を獲得したいのなら、簡単な方法があります。クロージャを使いましょう。クロージャは本質的にはサンクです。Rust の構文でクロージャを書くと、<code>|args| body</code> のようになります。引数なしのクロージャを作ると、サンクのような振る舞いをします。こんな感じです:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">fn</span> add&lt;X, Y&gt;(x: X, y: Y) -&gt; <span class="dt">isize</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a>    <span class="kw">where</span> X: <span class="bu">FnOnce</span>() -&gt; <span class="dt">isize</span>,</span>
-<span id="cb14-3"><a href="#cb14-3"></a>          Y: <span class="bu">FnOnce</span>() -&gt; <span class="dt">isize</span> <span class="op">{</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a>    <span class="kw">let</span> x = x();</span>
-<span id="cb14-5"><a href="#cb14-5"></a>    <span class="kw">let</span> y = y();</span>
-<span id="cb14-6"><a href="#cb14-6"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span>, x, y);</span>
-<span id="cb14-7"><a href="#cb14-7"></a>    x + y</span>
+<div class="sourceCode" id="cb14"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">fn</span> add<span class="op">&lt;</span>X<span class="op">,</span> Y<span class="op">&gt;</span>(x<span class="op">:</span> X<span class="op">,</span> y<span class="op">:</span> Y) <span class="op">-&gt;</span> <span class="dt">isize</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>    <span class="kw">where</span> X<span class="op">:</span> <span class="bu">FnOnce</span>() <span class="op">-&gt;</span> <span class="dt">isize</span><span class="op">,</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>          Y<span class="op">:</span> <span class="bu">FnOnce</span>() <span class="op">-&gt;</span> <span class="dt">isize</span> <span class="op">{</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>    <span class="kw">let</span> x <span class="op">=</span> x()<span class="op">;</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>    <span class="kw">let</span> y <span class="op">=</span> y()<span class="op">;</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span><span class="op">,</span> x<span class="op">,</span> y)<span class="op">;</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>    x <span class="op">+</span> y</span>
 <span id="cb14-8"><a href="#cb14-8"></a><span class="op">}</span></span>
 <span id="cb14-9"><a href="#cb14-9"></a></span>
 <span id="cb14-10"><a href="#cb14-10"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
-<span id="cb14-11"><a href="#cb14-11"></a>    <span class="kw">let</span> five = || add(|| <span class="dv">1</span> + <span class="dv">1</span>, || <span class="dv">1</span> + <span class="dv">2</span>);</span>
-<span id="cb14-12"><a href="#cb14-12"></a>    <span class="kw">let</span> seven = || add(|| <span class="dv">1</span> + <span class="dv">2</span>, || <span class="pp">panic!</span>());</span>
+<span id="cb14-11"><a href="#cb14-11"></a>    <span class="kw">let</span> five <span class="op">=</span> <span class="op">||</span> add(<span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> <span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a>    <span class="kw">let</span> seven <span class="op">=</span> <span class="op">||</span> add(<span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> <span class="op">||</span> <span class="pp">panic!</span>())<span class="op">;</span></span>
 <span id="cb14-13"><a href="#cb14-13"></a></span>
-<span id="cb14-14"><a href="#cb14-14"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span>, five());</span>
+<span id="cb14-14"><a href="#cb14-14"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span><span class="op">,</span> five())<span class="op">;</span></span>
 <span id="cb14-15"><a href="#cb14-15"></a><span class="op">}</span></span></code></pre></div>
 <p>繰り返しますが、Rust のコンパイラは使われていない <code>seven</code> について文句を言ってきます。が、<code>seven</code> のクロージャを使うことはないので、このプログラムを実行することはできます。</p>
 <p>まだ Rust についてあまり知らない? それなら、みんな大好き Javascript を使ってみましょう:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">function</span> <span class="at">add</span>(x<span class="op">,</span> y) <span class="op">{</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a>    <span class="cf">return</span> <span class="at">x</span>() <span class="op">+</span> <span class="at">y</span>()<span class="op">;</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="op">}</span></span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">function</span> <span class="fu">add</span>(x<span class="op">,</span> y) {</span>
+<span id="cb15-2"><a href="#cb15-2"></a>    <span class="cf">return</span> x() <span class="op">+</span> y()<span class="op">;</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>}</span>
 <span id="cb15-4"><a href="#cb15-4"></a></span>
-<span id="cb15-5"><a href="#cb15-5"></a><span class="kw">function</span> <span class="at">panic</span>() <span class="op">{</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="kw">function</span> <span class="fu">panic</span>() {</span>
 <span id="cb15-6"><a href="#cb15-6"></a>    <span class="cf">throw</span> <span class="st">&quot;Panic!&quot;</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a><span class="op">}</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>}</span>
 <span id="cb15-8"><a href="#cb15-8"></a></span>
-<span id="cb15-9"><a href="#cb15-9"></a><span class="kw">var</span> five <span class="op">=</span> ignored <span class="kw">=&gt;</span> <span class="at">add</span>(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
-<span id="cb15-10"><a href="#cb15-10"></a><span class="kw">var</span> seven <span class="op">=</span> ignored <span class="kw">=&gt;</span> <span class="at">add</span>(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> panic)<span class="op">;</span></span>
-<span id="cb15-11"><a href="#cb15-11"></a><span class="va">console</span>.<span class="at">log</span>(<span class="st">&quot;Five: &quot;</span> <span class="op">+</span> <span class="at">five</span>())<span class="op">;</span></span></code></pre></div>
+<span id="cb15-9"><a href="#cb15-9"></a><span class="kw">var</span> five <span class="op">=</span> ignored <span class="kw">=&gt;</span> add(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="kw">var</span> seven <span class="op">=</span> ignored <span class="kw">=&gt;</span> add(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> panic)<span class="op">;</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Five: &quot;</span> <span class="op">+</span> five())<span class="op">;</span></span></code></pre></div>
 <p>よし、今までの話をまとめてみます:</p>
 <ul>
 <li>Haskell の評価戦略はデフォルトで遅延評価です。</li>

@@ -225,11 +225,11 @@
 <p>信頼できないのであれば、どんな入力に対しても絶対に <code>rawJS</code> 関数を使ってはいけません。例えば、ユーザが任意の入力を行えるフォームで使ってしまったら、それだけで脆弱性が発生します。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- 型クラスをインポートすることで rawJS 関数がインポートされます</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="kw">import</span> <span class="dt">Text.Julius</span> (<span class="dt">RawJS</span> (..))</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode julius"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1"></a><span class="at">$</span>(<span class="kw">function</span>()<span class="op">{</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>    <span class="at">$</span>(<span class="st">&quot;section.#{rawJS sectionClass}&quot;</span>).<span class="at">hide</span>()<span class="op">;</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>    <span class="at">$</span>(<span class="st">&quot;#mybutton&quot;</span>).<span class="at">click</span>(<span class="kw">function</span>()<span class="op">{</span><span class="va">document</span>.<span class="at">location</span> <span class="op">=</span> <span class="st">&quot;@{SomeRouteR}&quot;</span><span class="op">;}</span>)<span class="op">;</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>    <span class="op">^{</span>addBling<span class="op">}</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="op">}</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julius"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1"></a>$(<span class="kw">function</span>(){</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    $(<span class="st">&quot;section.#{rawJS sectionClass}&quot;</span>)<span class="op">.</span><span class="fu">hide</span>()<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>    $(<span class="st">&quot;#mybutton&quot;</span>)<span class="op">.</span><span class="fu">click</span>(<span class="kw">function</span>(){<span class="bu">document</span><span class="op">.</span><span class="at">location</span> <span class="op">=</span> <span class="st">&quot;@{SomeRouteR}&quot;</span><span class="op">;</span>})<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="op">^</span>{addBling}</span>
+<span id="cb5-5"><a href="#cb5-5"></a>})<span class="op">;</span></span></code></pre></div>
 <h2 id="型">型</h2>
 <p>構文に入る前に色々な型を見てみましょう。最初に「型は XSS 攻撃の防止に役立つ」と述べました。例えば、誰かの名前を表示する次のような HTML テンプレートがあったとしましょう。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">&lt;p&gt;</span>Hello, my name is <span class="kw">#{</span>name<span class="kw">}</span></span></code></pre></div>
