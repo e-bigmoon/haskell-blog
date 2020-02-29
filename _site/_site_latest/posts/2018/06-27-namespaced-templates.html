@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>namespaced templates</title>
+  <meta name="description" content="はじめに
+つい先日 namespaced templates という、PRが master にマージされました。(Namespaced templates #4039 が該当する isssue です)
+通常、stack new コマンドを実行すると、ローカルに保存されている new-template の内容に基づいてプ">
+  <link rel="canonical" href="../../posts/2018/06-27-namespaced-templates.html">
+  <link rel="alternate" type="application/atom+xml" title="namespaced templates" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="namespaced templates" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/06-27-namespaced-templates.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="namespaced templates" />
+  <meta property="og:description" content="はじめに
+つい先日 namespaced templates という、PRが master にマージされました。(Namespaced templates #4039 が該当する isssue です)
+通常、stack new コマンドを実行すると、ローカルに保存されている new-template の内容に基づいてプ" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on June 27, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">namespaced templates</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a>, <a title="All pages tagged 'stack'." href="../../tags/stack.html">stack</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=namespaced templates&url=https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p>つい先日 <a href="https://github.com/commercialhaskell/stack/pull/4103">namespaced templates</a> という、PRが <strong>master</strong> にマージされました。(<a href="https://github.com/commercialhaskell/stack/issues/4039">Namespaced templates #4039</a> が該当する isssue です)</p>
+<p>通常、<strong>stack new</strong> コマンドを実行すると、ローカルに保存されている <a href="https://github.com/commercialhaskell/stack-templates/blob/master/new-template.hsfiles">new-template</a> の内容に基づいてプロジェクトの雛形が作成されます。</p>
+<p>もし、ローカルに保存されているテンプレートの内容を確認したい場合は以下のようなコマンドを実行すれば良いでしょう。</p>
+<pre class="shell"><code>$ cat $(stack path --stack-root)/templates/new-template.hsfiles</code></pre>
+<p><strong>config.yaml</strong> を変更すれば、このデフォルトテンプレートを変更することもできます。(詳しくは <a href="https://haskell.e-bigmoon.com/stack/tips/config-yaml.html">config.yaml のよくある設定</a> をご確認ください)</p>
+<p>今回新たに実装された namespaced templates 機能は、これらのテンプレート機能をより強化するものとなっています。</p>
+<p>具体的には <strong>username/foo</strong> という形式でリモートリポジトリから自分のプロジェクトテンプレートをダウンロードし、それをもとにプロジェクトを作成できるようになります。</p>
+<p>それでは使い方を見ていきたいと思います。</p>
+<pre class="shell"><code>$ stack --version
+Version 1.8.0, Git revision 466da22ce21cddc20323fc2611cd2a2d3cc56ec6 (dirty) (5998 commits) x86_64 hpack-0.28.2</code></pre>
+<!--more-->
+<h2 id="リポジトリを用意しよう">リポジトリを用意しよう！</h2>
+<p>namespaced templates 機能は以下のサービスで利用可能です。</p>
+<ul>
+<li>github</li>
+<li>gitlab</li>
+<li>bitbucket</li>
+</ul>
+<p>まずは、<strong>stack-templates</strong> という名前でリポジトリを作っておいてください。(今のところは任意の名前に変更する方法はありません。)</p>
+<p>この名前のリポジトリに存在するテンプレートファイルを参照することができます。</p>
+<h2 id="テンプレートファイルを作ってみよう">テンプレートファイルを作ってみよう！</h2>
+<ul>
+<li>テンプレートの参考になるのは <a href="https://github.com/commercialhaskell/stack-templates/blob/master/simple.hsfiles">commercialhaskell/simple.hsfiles</a> です。</li>
+<li>テンプレートエンジンは <a href="https://mustache.github.io/mustache.1.html">mustache</a> を使っているそうです。</li>
+<li>今から作るテンプレートファイルは <a href="https://github.com/e-bigmoon/stack-templates/blob/master/sample.hsfiles">e-bigmoon/sample.hsfiles</a> にあります。</li>
+</ul>
+<h3 id="最小のプロジェクトテンプレート">最小のプロジェクトテンプレート</h3>
+<p>とりあえず <strong>Readme.md</strong> ぐらいは欲しいですよね。</p>
+<pre class="mastache"><code>{-# START_FILE README.md #-}
+# {{name}}</code></pre>
+<ul>
+<li><code>{-# START_FILE README.md #-}</code> はそれ以降に続く内容で <strong>README.md</strong> というファイルを作ります ｰ <code>{{name}}</code> には、<strong>stack new</strong> の引数で与えたプロジェクト名が挿入されます。</li>
+</ul>
+<p>ここまでで実際に動かして確認してみます。</p>
+<pre class="shell"><code>$ cd /tmp
+$ stack new test-proj e-bigmoon/sample
+Downloading template &quot;e-bigmoon/sample&quot; to create project &quot;test-proj&quot; in test-proj/ ...
+The template &quot;e-bigmoon/sample&quot; is invalid and could not be used. The error was: Template does not contain a .cabal or package.yaml file</code></pre>
+<p>怒られました。どうやら <strong>cabal</strong> ファイルか <strong>package.yaml</strong> が含まれている必要があるみたいです。</p>
+<p><strong>package.yaml</strong> ファイルも追加して作成するために、少し編集しましょう。</p>
+<pre class="mastache"><code>{-# START_FILE README.md #-}
+# {{name}}
+
+{-# START_FILE package.yaml #-}
+name: {{name}}
+dependencies:
+  - base
+library: {}</code></pre>
+<p>もう一度実行してみます。</p>
+<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample
+...
+All done.
+
+$ tree test-proj/
+test-proj/
+├── package.yaml
+├── README.md
+├── stack.yaml
+└── test-proj.cabal</code></pre>
+<p>今度は成功しました。簡単でいいですね。</p>
+<p>ダウンロードしたテンプレートファイルは <code>~/.stack/templates/&lt;username&gt;/&lt;template&gt;</code> というパスで保存されています。</p>
+<h2 id="stack-new-コマンド">stack new コマンド</h2>
+<p>先程は github リポジトリ上のテンプレートファイルを取得したので以下のコマンドを実行しました。</p>
+<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample</code></pre>
+<p>このコマンドは次のコマンドの省略形です。</p>
+<pre class="shell"><code>$ stack new test-proj github:e-bigmoon/sample.hsfiles</code></pre>
+<p>そのため gitlab や bitbucket にあるテンプレートファイルをダウンロードする場合は以下のようになります。</p>
+<pre class="shell"><code># gitlab
+$ stack new test-proj gitlab:e-bigmoon/sample.hsfiles
+
+# bitbucket
+$ stack new test-proj bitbucket:e-bigmoon/sample.hsfiles</code></pre>
+<p>また、テンプレート名を省略した場合は公式のテンプレートが利用されるため、次のコマンドを実行していることと同じです。</p>
+<pre class="shell"><code>$ stack new test-proj commercialhaskell/new-template</code></pre>
+<p>完全なURLで別のサーバーにあるテンプレートファイルを指定することも可能です。</p>
+<pre class="shell"><code>$ stack new test-proj https://my-site.com/content/template9.hsfiles</code></pre>
+<p>github のテンプレートファイルを完全なURLで指定する際、上記のURLは invalid なので注意。ちゃんと raw の URL を指定しましょう。</p>
+<pre class="shell"><code># NG
+$ stack new test-proj https://github.com/commercialhaskell/stack-templates/blob/master/hspec.hsfiles
+
+# OK
+$ stack new test-proj https://raw.githubusercontent.com/commercialhaskell/stack-templates/master/new-template.hsfiles</code></pre>
+<h2 id="stack.yaml-が含まれる場合">stack.yaml が含まれる場合</h2>
+<p>プロジェクトテンプレートに <strong>stack.yaml</strong> が含まれる場合は初期化処理がスキップされます。(<a href="https://haskell.e-bigmoon.com/posts/2018/05-04-stack171.html">v1.7.1</a> で導入された修正ですね)</p>
+<pre class="shell"><code>$ stack new test-proj e-bigmoon/sample
+Downloading template &quot;e-bigmoon/sample&quot; to create project &quot;test-proj&quot; in test-proj/ ...
+Initialized empty Git repository in /tmp/test-proj/.git/</code></pre>
+<h2 id="もっと複雑なテンプレート">もっと複雑なテンプレート</h2>
+<p><code>~/.stack/config.yaml</code> に変数を定義しておき、プロジェクトテンプレートから参照することもできます。</p>
+<p><strong>config.yaml</strong> ファイルの内容が以下のようになっているとしましょう。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">templates</span><span class="kw">:</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="at">  </span><span class="fu">params</span><span class="kw">:</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="at">    </span><span class="fu">author-email</span><span class="kw">:</span><span class="at"> chrisdone@gmail.com</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="at">    </span><span class="fu">author-name</span><span class="kw">:</span><span class="at"> Chris Done</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="at">    </span><span class="fu">copyright</span><span class="kw">:</span><span class="at"> 2018 Chris Done</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="at">    </span><span class="fu">github-username</span><span class="kw">:</span><span class="at"> chrisdone</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="at">    </span><span class="fu">category</span><span class="kw">:</span><span class="at"> Development</span></span></code></pre></div>
+<p>テンプレートファイル内から単純に <code>{{author-email}}</code> の形式で変数を展開できます。</p>
+<pre><code>{-# START_FILE {{name}}.cabal #-}
+name:                {{name}}
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/{{github-username}}{{^github-username}}githubuser{{/github-username}}/{{name}}#readme
+license:             BSD3
+license-file:        LICENSE
+author:              {{author-name}}{{^author-name}}Author name here{{/author-name}}
+maintainer:          {{author-email}}{{^author-email}}example@example.com{{/author-email}}
+copyright:           {{copyright}}{{^copyright}}{{year}}{{^year}}2018{{/year}} {{author-name}}{{^author-name}}Author name here{{/author-name}}{{/copyright}}
+category:            {{category}}{{^category}}Web{{/category}}</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<p>今までも自分で作ったプロジェクトテンプレートを使うことはできましたが、<strong>new-template</strong> を置き換えるか <strong>config.yml</strong> を設定する必要がありました。</p>
+<p>今回の機能追加により、<strong>stack new</strong> コマンドで直接プロジェクトテンプレートを簡単に指定できるため、自作テンプレート作りがはかどりそうです。</p>
+<p>以上です。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/06-26-cont-param.html"><i class="material-icons left">navigate_before</i>ContT を使ってコードを綺麗にしよう！</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2018/07-06-quiz-9.html">Haskell Quiz No.9 Conduit Part.5<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=namespaced templates&url=https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/06-27-namespaced-templates.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Cookie のセキュリティ</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/tips/05-cookie.html">
+  <link rel="alternate" type="application/atom+xml" title="Cookie のセキュリティ" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Cookie のセキュリティ" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/tips/05-cookie.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Cookie のセキュリティ" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">Cookie のセキュリティ</h1>
+        
+        <span>最終更新日: 2018/08/04</span>
+        
+      </div>
+
+      <article class="page-content">
+        <h2 id="セッションを保存しているクッキー">セッションを保存しているクッキー</h2>
+<p>Yesod では <code>_SESSION</code> というクッキーにセッションIDが格納されます。この名前は <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#clientSessionBackend">clientSessionBackend</a> 関数内部でハードコーディングされている。</p>
+<p>もし変更したい場合は <code>Yesod</code> 型クラスの <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#defaultClientSessionBackend">makeSessionBackend</a> を自分で実装する。その際は <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#defaultClientSessionBackend">defaultClientSessionBackend</a> が参考になる。</p>
+<h2 id="セッションに指定されているデフォルトの属性">セッションに指定されているデフォルトの属性</h2>
+<p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#loadClientSession">loadClientSession</a> の中に定義がある。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>[<span class="dt">AddCookie</span> defaultSetCookie</span>
+<span id="cb1-2"><a href="#cb1-2"></a>  { setCookieName <span class="ot">=</span> sessionName</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  , setCookieValue <span class="ot">=</span> encodeClientSession key iv date host sess'</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  , setCookiePath <span class="ot">=</span> <span class="dt">Just</span> <span class="st">&quot;/&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  , setCookieExpires <span class="ot">=</span> <span class="dt">Just</span> (csdcExpires date)</span>
+<span id="cb1-6"><a href="#cb1-6"></a>  , setCookieDomain <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  , setCookieHttpOnly <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  }</span>
+<span id="cb1-9"><a href="#cb1-9"></a>]</span></code></pre></div>
+<p>この結果</p>
+<ul>
+<li><code>Domain</code>: 設定無し</li>
+<li><code>HttpOnly</code>: 設定有り</li>
+</ul>
+<p>ということがわかる。</p>
+<h2 id="クッキーを追加した時のデフォルト値">クッキーを追加した時のデフォルト値</h2>
+<p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Handler.html#v:setCookie">setCookie</a> を使うことでクッキーを追加できる。</p>
+<p><a href="https://www.stackage.org/haddock/lts-12.4/cookie-0.4.4/Web-Cookie.html#t:SetCookie">SetCookie</a> 型の値は <a href="https://www.stackage.org/haddock/lts-12.4/cookie-0.4.4/Web-Cookie.html#v:defaultSetCookie">defaultSetCookie</a> を使って、必要な部分のみを変更すると良い。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">defaultSetCookie ::</span> <span class="dt">SetCookie</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>defaultSetCookie <span class="ot">=</span> <span class="dt">SetCookie</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    { setCookieName     <span class="ot">=</span> <span class="st">&quot;name&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>    , setCookieValue    <span class="ot">=</span> <span class="st">&quot;value&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>    , setCookiePath     <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>    , setCookieExpires  <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    , setCookieMaxAge   <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>    , setCookieDomain   <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>    , setCookieHttpOnly <span class="ot">=</span> <span class="dt">False</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>    , setCookieSecure   <span class="ot">=</span> <span class="dt">False</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>    , setCookieSameSite <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>    }</span></code></pre></div>
+<p>その際、デフォルト値は上記のようになっている。</p>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Cookie のセキュリティ&url=https://haskell.e-bigmoon.com/yesod/tips/05-cookie.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/tips/05-cookie.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/yesod/tips/05-cookie.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

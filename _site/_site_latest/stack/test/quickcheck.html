@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>【基礎】ランダムテスト (QuickCheck)</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../stack/test/quickcheck.html">
+  <link rel="alternate" type="application/atom+xml" title="【基礎】ランダムテスト (QuickCheck)" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="【基礎】ランダムテスト (QuickCheck)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/stack/test/quickcheck.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="【基礎】ランダムテスト (QuickCheck)" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">【基礎】ランダムテスト (QuickCheck)</h1>
+        
+        <span>最終更新日: 2019/09/14</span>
+        
+      </div>
+
+      <article class="page-content">
+        <p><strong>QuickCheck</strong> は凄く面白いので、<strong>Haskeller</strong> なら使いこなしたいところです。しかしながら、慣れるまでは結構難しいので実例を見ながら使い方を理解していきたいと思います。</p>
+<h2 id="パッケージのインストール">パッケージのインストール</h2>
+<p><strong>hspec</strong> の時と同様に <strong>package.yaml</strong> の <strong>tests</strong> に <strong>QuickCheck</strong> パッケージを追記します。<strong>quickcheck</strong> では無いのでスペルミスに注意してください。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="at">  </span><span class="fu">PFAD-test</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Spec.hs</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         test</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hspec</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="at">    </span><span class="kw">-</span><span class="at"> QuickCheck</span><span class="co"> # この行を追記</span></span></code></pre></div>
+<p><strong>QuickCheck</strong> パッケージは頻繁に更新されるのでバージョンごとに書き方が違う場合があります。今回明示的には指定していませんが、<strong>lts-14.5</strong> に含まれている <a href="https://www.stackage.org/lts-14.5/package/QuickCheck-2.13.2">QuickCheck-2.13.2</a> を利用しています。</p>
+<h2 id="quickcheck-に慣れよう">QuickCheck に慣れよう</h2>
+<p>まずは <strong>QuickCheck</strong> が生成するランダムな値について理解を深めたいと思います。</p>
+<p>この <a href="https://hackage.haskell.org/package/QuickCheck-2.13.2/docs/Test-QuickCheck-Gen.html#v:sample">sample</a> 関数を使うことによって、どんな値が生成されるのかデバッグすることができます。型を見る通り <a href="https://hackage.haskell.org/package/QuickCheck-2.13.2/docs/Test-QuickCheck-Gen.html#t:Gen">Gen a</a> の値を適用すれば良さそうに見えますが、ここが少し変わっているので注意してください。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">$</span> stack ghci <span class="co">--no-load --package QuickCheck</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>λ <span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>λ <span class="op">:</span>t sample</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="ot">sample ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span></code></pre></div>
+<p>実際に値をいくつか生成してみます。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>λ sample (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> [<span class="dt">Int</span>])</span>
+<span id="cb3-2"><a href="#cb3-2"></a>[]</span>
+<span id="cb3-3"><a href="#cb3-3"></a>[<span class="dv">2</span>]</span>
+<span id="cb3-4"><a href="#cb3-4"></a>[<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">3</span>]</span>
+<span id="cb3-5"><a href="#cb3-5"></a>[<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">1</span>,<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">5</span>,<span class="dv">1</span>]</span>
+<span id="cb3-6"><a href="#cb3-6"></a>[<span class="op">-</span><span class="dv">8</span>,<span class="dv">2</span>,<span class="dv">7</span>,<span class="dv">2</span>,<span class="op">-</span><span class="dv">6</span>]</span>
+<span id="cb3-7"><a href="#cb3-7"></a>[<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">5</span>,<span class="op">-</span><span class="dv">3</span>,<span class="op">-</span><span class="dv">7</span>,<span class="op">-</span><span class="dv">6</span>]</span>
+<span id="cb3-8"><a href="#cb3-8"></a>[<span class="op">-</span><span class="dv">5</span>,<span class="dv">9</span>,<span class="dv">8</span>,<span class="op">-</span><span class="dv">4</span>,<span class="dv">10</span>,<span class="op">-</span><span class="dv">10</span>]</span>
+<span id="cb3-9"><a href="#cb3-9"></a>[<span class="op">-</span><span class="dv">12</span>]</span>
+<span id="cb3-10"><a href="#cb3-10"></a>[<span class="dv">9</span>,<span class="dv">15</span>,<span class="dv">12</span>,<span class="dv">13</span>,<span class="op">-</span><span class="dv">15</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">12</span>,<span class="dv">8</span>,<span class="dv">14</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">0</span>,<span class="dv">3</span>,<span class="op">-</span><span class="dv">4</span>]</span>
+<span id="cb3-11"><a href="#cb3-11"></a>[<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">7</span>,<span class="op">-</span><span class="dv">15</span>,<span class="op">-</span><span class="dv">17</span>]</span>
+<span id="cb3-12"><a href="#cb3-12"></a>[<span class="dv">20</span>,<span class="dv">18</span>,<span class="dv">3</span>,<span class="op">-</span><span class="dv">13</span>,<span class="dv">8</span>,<span class="dv">10</span>,<span class="dv">6</span>,<span class="dv">0</span>]</span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a>λ sample (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> [<span class="dt">Int</span>])</span>
+<span id="cb3-15"><a href="#cb3-15"></a>[]</span>
+<span id="cb3-16"><a href="#cb3-16"></a>[<span class="dv">0</span>]</span>
+<span id="cb3-17"><a href="#cb3-17"></a>[]</span>
+<span id="cb3-18"><a href="#cb3-18"></a>[<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">3</span>]</span>
+<span id="cb3-19"><a href="#cb3-19"></a>[<span class="op">-</span><span class="dv">2</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">0</span>,<span class="dv">7</span>]</span>
+<span id="cb3-20"><a href="#cb3-20"></a>[<span class="dv">10</span>,<span class="op">-</span><span class="dv">3</span>,<span class="dv">0</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">8</span>,<span class="dv">9</span>]</span>
+<span id="cb3-21"><a href="#cb3-21"></a>[<span class="dv">4</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">7</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">12</span>,<span class="op">-</span><span class="dv">7</span>,<span class="op">-</span><span class="dv">3</span>]</span>
+<span id="cb3-22"><a href="#cb3-22"></a>[<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="dv">9</span>,<span class="dv">2</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">0</span>]</span>
+<span id="cb3-23"><a href="#cb3-23"></a>[<span class="op">-</span><span class="dv">13</span>,<span class="dv">9</span>,<span class="op">-</span><span class="dv">9</span>,<span class="dv">13</span>,<span class="dv">11</span>,<span class="op">-</span><span class="dv">16</span>,<span class="dv">1</span>,<span class="dv">7</span>,<span class="op">-</span><span class="dv">3</span>]</span>
+<span id="cb3-24"><a href="#cb3-24"></a>[<span class="op">-</span><span class="dv">14</span>,<span class="dv">11</span>,<span class="dv">9</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="dv">9</span>]</span>
+<span id="cb3-25"><a href="#cb3-25"></a>[<span class="op">-</span><span class="dv">17</span>]</span>
+<span id="cb3-26"><a href="#cb3-26"></a></span>
+<span id="cb3-27"><a href="#cb3-27"></a>λ sample (<span class="ot">arbitrary ::</span> [<span class="dt">Int</span>])</span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">5</span><span class="op">:</span><span class="dv">9</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>    • <span class="dt">Couldn't</span> match expected <span class="kw">type</span> ‘[<span class="dt">Int</span>]’ with actual <span class="kw">type</span> ‘<span class="dt">Gen</span> a0’</span>
+<span id="cb3-30"><a href="#cb3-30"></a>    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘sample’, namely ‘(<span class="ot">arbitrary ::</span> [<span class="dt">Int</span>])’</span>
+<span id="cb3-31"><a href="#cb3-31"></a>      <span class="dt">In</span> the expression<span class="op">:</span> sample (<span class="ot">arbitrary ::</span> [<span class="dt">Int</span>])</span>
+<span id="cb3-32"><a href="#cb3-32"></a>      <span class="dt">In</span> an equation for ‘it’<span class="op">:</span> it <span class="ot">=</span> sample (<span class="ot">arbitrary ::</span> [<span class="dt">Int</span>])</span>
+<span id="cb3-33"><a href="#cb3-33"></a></span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">5</span><span class="op">:</span><span class="dv">9</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a>    • <span class="dt">Couldn't</span> match expected <span class="kw">type</span> ‘<span class="dt">Gen</span> ()’ with actual <span class="kw">type</span> ‘[<span class="dt">Int</span>]’</span>
+<span id="cb3-36"><a href="#cb3-36"></a>    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘sample’, namely ‘(<span class="ot">arbitrary ::</span> [<span class="dt">Int</span>])’</span>
+<span id="cb3-37"><a href="#cb3-37"></a>      <span class="dt">In</span> the expression<span class="op">:</span> sample (<span class="ot">arbitrary ::</span> [<span class="dt">Int</span>])</span>
+<span id="cb3-38"><a href="#cb3-38"></a>      <span class="dt">In</span> an equation for ‘it’<span class="op">:</span> it <span class="ot">=</span> sample (<span class="ot">arbitrary ::</span> [<span class="dt">Int</span>])</span></code></pre></div>
+<p>ここで重要な点は2つです。</p>
+<ul>
+<li><strong>arbitrary :: Gen [Int]</strong></li>
+<li>生成される値は実行のたびにランダムに変化する</li>
+</ul>
+<p>面白いので他にも生成してみます。1行で表示させるために <a href="https://hackage.haskell.org/package/QuickCheck-2.13.2/docs/Test-QuickCheck-Gen.html#v:sample-39-">sample’</a> を利用することにします。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>λ sample' (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a>[<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">13</span>,<span class="dv">2</span>,<span class="op">-</span><span class="dv">9</span>,<span class="dv">13</span>]</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>λ sample' (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> [<span class="dt">Int</span>])</span>
+<span id="cb4-5"><a href="#cb4-5"></a>[[],[<span class="dv">2</span>],[<span class="op">-</span><span class="dv">3</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">4</span>],[],[<span class="op">-</span><span class="dv">8</span>],[<span class="op">-</span><span class="dv">9</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">4</span>,<span class="dv">5</span>],[<span class="dv">3</span>,<span class="dv">10</span>,<span class="op">-</span><span class="dv">7</span>,<span class="dv">6</span>],[<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">2</span>],[<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">7</span>,<span class="dv">9</span>,<span class="op">-</span><span class="dv">10</span>,<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">10</span>,<span class="dv">5</span>,<span class="op">-</span><span class="dv">14</span>,<span class="dv">3</span>,<span class="dv">11</span>,<span class="dv">7</span>],[<span class="op">-</span><span class="dv">4</span>],[]]</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>λ sample' (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Bool</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>[<span class="dt">True</span>,<span class="dt">True</span>,<span class="dt">False</span>,<span class="dt">False</span>,<span class="dt">True</span>,<span class="dt">True</span>,<span class="dt">False</span>,<span class="dt">False</span>,<span class="dt">True</span>,<span class="dt">False</span>,<span class="dt">True</span>]</span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a>λ sample' (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> (<span class="dt">Maybe</span> <span class="dt">Bool</span>))</span>
+<span id="cb4-11"><a href="#cb4-11"></a>[<span class="dt">Nothing</span>,<span class="dt">Just</span> <span class="dt">False</span>,<span class="dt">Just</span> <span class="dt">True</span>,<span class="dt">Nothing</span>,<span class="dt">Just</span> <span class="dt">True</span>,<span class="dt">Just</span> <span class="dt">False</span>,<span class="dt">Just</span> <span class="dt">False</span>,<span class="dt">Nothing</span>,<span class="dt">Just</span> <span class="dt">False</span>,<span class="dt">Just</span> <span class="dt">True</span>,<span class="dt">Just</span> <span class="dt">True</span>]</span>
+<span id="cb4-12"><a href="#cb4-12"></a></span>
+<span id="cb4-13"><a href="#cb4-13"></a>λ sample' (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> [a])</span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">10</span><span class="op">:</span><span class="dv">10</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>    • <span class="dt">No</span> <span class="kw">instance</span> for (<span class="dt">Arbitrary</span> a1) arising from a use <span class="kw">of</span> ‘arbitrary’</span>
+<span id="cb4-16"><a href="#cb4-16"></a>      <span class="dt">Possible</span> fix<span class="op">:</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>        add (<span class="dt">Arbitrary</span> a1) to the context <span class="kw">of</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>          an expression <span class="kw">type</span> signature<span class="op">:</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>            <span class="kw">forall</span> a1<span class="op">.</span> <span class="dt">Gen</span> [a1]</span>
+<span id="cb4-20"><a href="#cb4-20"></a>    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘sample'’, namely</span>
+<span id="cb4-21"><a href="#cb4-21"></a>        ‘(<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> [a])’</span>
+<span id="cb4-22"><a href="#cb4-22"></a>      <span class="dt">In</span> the expression<span class="op">:</span> sample' (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> [a])</span>
+<span id="cb4-23"><a href="#cb4-23"></a>      <span class="dt">In</span> an equation for ‘it’<span class="op">:</span> it <span class="ot">=</span> sample' (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> [a])</span></code></pre></div>
+<p>このように、生成したい値の型を <strong>Gen a</strong> の <strong>a</strong> に指定してあげることでランダムな値を生成できることがわかりました。また、多相型についてはエラーになります。</p>
+<h2 id="色々な関数を試す">色々な関数を試す</h2>
+<p>他にも、<strong>Test.QuickCheck</strong> モジュールではいくつか便利な関数を提供しています。</p>
+<h3 id="choose">choose</h3>
+<p>与えられた範囲でランダムな値を生成します。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- choose :: Random a =&gt; (a, a) -&gt; Gen a</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>λ sample' (choose (<span class="dv">1</span>,<span class="dv">10</span>))</span>
+<span id="cb5-3"><a href="#cb5-3"></a>[<span class="dv">7</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">7</span>,<span class="dv">6</span>,<span class="dv">10</span>]</span></code></pre></div>
+<h3 id="elements">elements</h3>
+<p>与えられたリストの中からランダムに値を生成します。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">-- elements :: [a] -&gt; Gen a</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>λ sample' (elements [<span class="st">&quot;patek&quot;</span>, <span class="st">&quot;omega&quot;</span>, <span class="st">&quot;seiko&quot;</span>])</span>
+<span id="cb6-3"><a href="#cb6-3"></a>[<span class="st">&quot;omega&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;patek&quot;</span>,<span class="st">&quot;omega&quot;</span>,<span class="st">&quot;patek&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;patek&quot;</span>,<span class="st">&quot;omega&quot;</span>,<span class="st">&quot;omega&quot;</span>,<span class="st">&quot;patek&quot;</span>,<span class="st">&quot;patek&quot;</span>]</span></code></pre></div>
+<h3 id="oneof">oneof</h3>
+<p>与えられたジェネレータのリストの中からランダムに選択し、それを利用してランダムな値を生成します。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">-- oneof :: [Gen a] -&gt; Gen a</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>λ genHighPriceWatch <span class="ot">=</span> elements [<span class="st">&quot;patek&quot;</span>, <span class="st">&quot;ap&quot;</span>, <span class="st">&quot;vc&quot;</span>]</span>
+<span id="cb7-3"><a href="#cb7-3"></a>λ genMiddlePriceWatch <span class="ot">=</span> elements [<span class="st">&quot;seiko&quot;</span>, <span class="st">&quot;omega&quot;</span>, <span class="st">&quot;rolex&quot;</span>]</span>
+<span id="cb7-4"><a href="#cb7-4"></a>λ sample' (oneof [genHighPriceWatch, genMiddlePriceWatch])</span>
+<span id="cb7-5"><a href="#cb7-5"></a>[<span class="st">&quot;patek&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;ap&quot;</span>,<span class="st">&quot;rolex&quot;</span>,<span class="st">&quot;ap&quot;</span>,<span class="st">&quot;vc&quot;</span>,<span class="st">&quot;vc&quot;</span>,<span class="st">&quot;vc&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;rolex&quot;</span>,<span class="st">&quot;patek&quot;</span>]</span></code></pre></div>
+<h3 id="frequency">frequency</h3>
+<p>出現頻度を指定してランダムな値を生成します。(この例では1/100,99/100の出現確率に設定)</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- frequency :: [(Int, Gen a)] -&gt; Gen a</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>λ genHighPriceWatchWithFreq <span class="ot">=</span> (<span class="dv">1</span>, genHighPriceWatch)</span>
+<span id="cb8-3"><a href="#cb8-3"></a>λ genMiddlePriceWatchWithFreq <span class="ot">=</span> (<span class="dv">99</span>, genMiddlePriceWatch)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>λ sample' (frequency [genHighPriceWatchWithFreq, genMiddlePriceWatchWithFreq])</span>
+<span id="cb8-5"><a href="#cb8-5"></a>[<span class="st">&quot;omega&quot;</span>,<span class="st">&quot;omega&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;omega&quot;</span>,<span class="st">&quot;rolex&quot;</span>,<span class="st">&quot;seiko&quot;</span>,<span class="st">&quot;rolex&quot;</span>]</span></code></pre></div>
+<h3 id="suchthat">suchThat</h3>
+<p>ランダムに生成された値に対して、与えられた条件満たす値のみを生成します。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- suchThat :: suchThat :: Gen a -&gt; (a -&gt; Bool) -&gt; Gen a</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>λ sample' ((<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>) <span class="ot">`suchThat`</span> <span class="fu">even</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a>[<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">10</span>,<span class="op">-</span><span class="dv">4</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">12</span>,<span class="dv">6</span>,<span class="dv">2</span>]</span>
+<span id="cb9-4"><a href="#cb9-4"></a>λ sample' ((<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>) <span class="ot">`suchThat`</span> (<span class="op">&gt;</span><span class="dv">0</span>))</span>
+<span id="cb9-5"><a href="#cb9-5"></a>[<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">7</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">11</span>,<span class="dv">8</span>,<span class="dv">4</span>,<span class="dv">15</span>,<span class="dv">16</span>]</span></code></pre></div>
+<h3 id="listof-listof1">listOf, listOf1</h3>
+<p>ランダムに生成された値のリストを生成します。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- listOf :: Gen a -&gt; Gen [a]</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>λ sample' (listOf (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>))</span>
+<span id="cb10-3"><a href="#cb10-3"></a>[[],[<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">2</span>],[<span class="dv">3</span>,<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>],[<span class="dv">2</span>,<span class="op">-</span><span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">0</span>,<span class="dv">5</span>,<span class="dv">6</span>],[<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">1</span>,<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">4</span>],[],[<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">2</span>],[<span class="op">-</span><span class="dv">13</span>,<span class="dv">9</span>,<span class="op">-</span><span class="dv">12</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">8</span>],[<span class="dv">12</span>,<span class="dv">0</span>,<span class="dv">9</span>,<span class="dv">2</span>,<span class="op">-</span><span class="dv">16</span>,<span class="dv">9</span>,<span class="dv">6</span>],[<span class="dv">17</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">18</span>,<span class="dv">14</span>,<span class="dv">12</span>,<span class="op">-</span><span class="dv">8</span>,<span class="dv">15</span>,<span class="op">-</span><span class="dv">11</span>,<span class="dv">7</span>,<span class="op">-</span><span class="dv">10</span>,<span class="op">-</span><span class="dv">17</span>,<span class="op">-</span><span class="dv">6</span>],[<span class="dv">6</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">16</span>,<span class="dv">16</span>,<span class="dv">19</span>,<span class="dv">7</span>,<span class="dv">0</span>,<span class="dv">1</span>]]</span></code></pre></div>
+<p>空リストを除いた結果が欲しい場合は <strong>listOf1</strong> を利用します。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">-- listOf1 :: Gen a -&gt; Gen [a]</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>λ sample' (listOf1 (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>))</span>
+<span id="cb11-3"><a href="#cb11-3"></a>[[<span class="dv">0</span>],[<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">2</span>],[<span class="op">-</span><span class="dv">3</span>,<span class="dv">2</span>,<span class="op">-</span><span class="dv">4</span>],[<span class="dv">4</span>,<span class="dv">5</span>],[<span class="dv">2</span>],[<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">7</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">4</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">9</span>],[<span class="dv">4</span>],[<span class="dv">13</span>],[<span class="dv">16</span>,<span class="dv">16</span>,<span class="dv">11</span>,<span class="op">-</span><span class="dv">11</span>,<span class="dv">5</span>,<span class="op">-</span><span class="dv">16</span>,<span class="op">-</span><span class="dv">16</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">3</span>],[<span class="dv">4</span>,<span class="dv">18</span>,<span class="dv">14</span>,<span class="dv">1</span>,<span class="op">-</span><span class="dv">9</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">17</span>,<span class="dv">10</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="op">-</span><span class="dv">5</span>,<span class="dv">8</span>,<span class="op">-</span><span class="dv">5</span>],[<span class="dv">4</span>,<span class="op">-</span><span class="dv">1</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">3</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">17</span>,<span class="dv">13</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="dv">7</span>,<span class="op">-</span><span class="dv">9</span>,<span class="dv">15</span>,<span class="dv">13</span>,<span class="dv">0</span>,<span class="op">-</span><span class="dv">8</span>]]</span></code></pre></div>
+<h3 id="vectorof">vectorOf</h3>
+<p>長さを指定してランダムな値のリストを生成します。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">-- vectorOf :: Int -&gt; Gen a -&gt; Gen [a]</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>λ sample' (vectorOf <span class="dv">3</span> (<span class="ot">arbitrary ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>))</span>
+<span id="cb12-3"><a href="#cb12-3"></a>[[<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>],[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">0</span>],[<span class="dv">4</span>,<span class="dv">4</span>,<span class="op">-</span><span class="dv">3</span>],[<span class="op">-</span><span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">2</span>],[<span class="dv">2</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">1</span>],[<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">4</span>],[<span class="op">-</span><span class="dv">9</span>,<span class="dv">11</span>,<span class="dv">4</span>],[<span class="dv">10</span>,<span class="dv">5</span>,<span class="dv">3</span>],[<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">12</span>],[<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">6</span>,<span class="dv">14</span>],[<span class="dv">19</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">12</span>]]</span></code></pre></div>
+<h3 id="shuffle">shuffle</h3>
+<p>与えられたリストをシャッフルしたランダムな値のリストを生成します。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">-- shuffle :: [a] -&gt; Gen [a]</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>λ sample' (shuffle [<span class="dv">1</span><span class="op">..</span><span class="dv">5</span>])</span>
+<span id="cb13-3"><a href="#cb13-3"></a>[[<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">4</span>],[<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">2</span>],[<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">5</span>],[<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">4</span>],[<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>],[<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">5</span>],[<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">4</span>],[<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">5</span>],[<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">1</span>],[<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">5</span>],[<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">3</span>]]</span></code></pre></div>
+<h3 id="vector">vector</h3>
+<p>長さを指定してランダムな値のリストを作成します。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">-- vector :: Arbitrary a =&gt; Int -&gt; Gen [a]</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>λ sample' <span class="op">$</span> (vector <span class="dv">3</span><span class="ot"> ::</span> <span class="dt">Gen</span> [<span class="dt">Int</span>])</span>
+<span id="cb14-3"><a href="#cb14-3"></a>[[<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>],[<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>],[<span class="op">-</span><span class="dv">3</span>,<span class="op">-</span><span class="dv">1</span>,<span class="dv">4</span>],[<span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>,<span class="dv">3</span>],[<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">4</span>],[<span class="dv">10</span>,<span class="dv">3</span>,<span class="op">-</span><span class="dv">8</span>],[<span class="op">-</span><span class="dv">8</span>,<span class="op">-</span><span class="dv">4</span>,<span class="dv">1</span>],[<span class="op">-</span><span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">13</span>],[<span class="op">-</span><span class="dv">5</span>,<span class="dv">11</span>,<span class="dv">10</span>],[<span class="op">-</span><span class="dv">14</span>,<span class="op">-</span><span class="dv">14</span>,<span class="op">-</span><span class="dv">18</span>],[<span class="dv">8</span>,<span class="dv">0</span>,<span class="dv">15</span>]]</span></code></pre></div>
+<h3 id="orderedlist">orderedList</h3>
+<p>昇順に並んだランダムな値のリストを生成します。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">-- orderedList :: (Ord a, Arbitrary a) =&gt; Gen [a]</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a>λ sample' (<span class="ot">orderedList ::</span> <span class="dt">Gen</span> [<span class="dt">Int</span>])</span>
+<span id="cb15-3"><a href="#cb15-3"></a>[[],[<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>],[<span class="op">-</span><span class="dv">4</span>,<span class="dv">1</span>],[<span class="op">-</span><span class="dv">3</span>,<span class="op">-</span><span class="dv">2</span>,<span class="op">-</span><span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">6</span>],[<span class="dv">3</span>],[<span class="op">-</span><span class="dv">10</span>,<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>],[<span class="op">-</span><span class="dv">11</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">3</span>],[<span class="op">-</span><span class="dv">12</span>,<span class="op">-</span><span class="dv">11</span>,<span class="op">-</span><span class="dv">10</span>,<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">11</span>],[<span class="op">-</span><span class="dv">10</span>,<span class="op">-</span><span class="dv">8</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">4</span>,<span class="op">-</span><span class="dv">4</span>,<span class="op">-</span><span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">15</span>],[<span class="op">-</span><span class="dv">15</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">7</span>,<span class="op">-</span><span class="dv">5</span>,<span class="op">-</span><span class="dv">3</span>,<span class="dv">0</span>,<span class="dv">5</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">14</span>],[<span class="op">-</span><span class="dv">17</span>,<span class="op">-</span><span class="dv">10</span>,<span class="op">-</span><span class="dv">9</span>,<span class="op">-</span><span class="dv">9</span>,<span class="dv">1</span>,<span class="dv">11</span>]]</span></code></pre></div>
+<p>結構たくさんあるので、基本的なテストであればこれらの関数で十分対応可能です。</p>
+<p>ここまで具体例をいくつか見てきたので、<strong>QuickCheck</strong> を使う際には <strong>arbitrary</strong> に具体的な型を指定してあげれば良さそうだということがわかってきました。</p>
+<p>また、<strong>arbitrary</strong> は <strong>Arbitrary</strong> 型クラスのメソッドとなっているため、適切にインスタンスを定義してしまえば、自分で定義した型の値をランダムに生成することも可能です。</p>
+      </article>
+
+      <div class="pager">
+      
+        <a class="waves-effect waves-light btn white-text prev" href="./hspec.html"><span>«</span>前</a>
+      
+      
+        <a class="waves-effect waves-light btn white-text next" href="./quickcheck2.html">次<span>»</span></a>
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=【基礎】ランダムテスト (QuickCheck)&url=https://haskell.e-bigmoon.com/stack/test/quickcheck.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/test/quickcheck.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/test/quickcheck.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

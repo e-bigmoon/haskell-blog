@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>HLint のヒントを無視する方法</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../stack/hlint/hlint-ignore.html">
+  <link rel="alternate" type="application/atom+xml" title="HLint のヒントを無視する方法" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="HLint のヒントを無視する方法" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/stack/hlint/hlint-ignore.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="HLint のヒントを無視する方法" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">HLint のヒントを無視する方法</h1>
+        
+        <span>最終更新日: 2018/12/26</span>
+        
+      </div>
+
+      <article class="page-content">
+        <h2 id="ヒントを無視する方法">ヒントを無視する方法</h2>
+<p><code>HLint</code> のヒントを無視する方法には以下の2種類があります。</p>
+<ul>
+<li><code>.hlint.yaml</code> ファイルで指定する (<strong>全てのファイル</strong>に影響)</li>
+<li>ファイルに直接 <code>{-# ANN -#}</code> アノテーションを記述する (<strong>アノテーションの範囲</strong>にのみ影響)</li>
+</ul>
+<p>書式がちょっとわかりづらいので、実際に色々試してみましょう。</p>
+<h2 id="関数単位で全てのヒントを無視する">関数単位で全てのヒントを無視する</h2>
+<p>最初に定義した <code>someFunc</code> 関数はヒントを2つ提案してくれていました。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-5"><a href="#cb1-5"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
+<span id="cb1-7"><a href="#cb1-7"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
+<pre class="shell"><code>$ hlint .
+./src/Lib.hs:6:12: Warning: Use concatMap
+Found:
+  concat (map toUpper ['a' .. 'z'])
+Why not:
+  concatMap toUpper ['a' .. 'z']
+
+./src/Lib.hs:7:12: Warning: Use fromMaybe
+Found:
+  maybe &quot;&quot; id
+Why not:
+  Data.Maybe.fromMaybe &quot;&quot;
+
+2 hints</code></pre>
+<p>提案されているヒントは以下の2つです。</p>
+<ul>
+<li>Warning: <code>Use concatMap</code></li>
+<li>Warning: <code>Use fromMaybe</code></li>
+</ul>
+<p>とりあえず <code>someFunc</code> のヒントを全て無視するようにしてしまいましょう。</p>
+<p>こんな感じで <code>{-# ANN someFunc "HLint: ignore" #-}</code> というアノテーションをつけます。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-6"><a href="#cb3-6"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
+<span id="cb3-8"><a href="#cb3-8"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
+<pre class="shell"><code>$ hlint .
+No hints</code></pre>
+<p>これで <code>src/Lib.hs</code> に記述されている <code>someFunc</code> 関数のみ <code>HLint</code> のヒントを無視できるようになりました。</p>
+<h2 id="ファイル単位でヒントを無視する様々な方法">ファイル単位でヒントを無視する様々な方法</h2>
+<p>ヒントレベルは <code>ignore</code> 以外にも <code>suggest</code>, <code>warn</code>, <code>error</code> が利用可能です。これらの値を利用した場合は出力時のヒントレベルが強制的にそのレベルに上書きされます。つまり、ヒントファイルに <code>warn</code> で定義されていたとしても <code>error</code> や <code>ignore</code> として処理されることになります。</p>
+<h4 id="関数単位で全てのヒントを無視する方法">関数単位で全てのヒントを無視する方法</h4>
+<p><code>ANN</code> のあとに対象の関数名を書きます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></span></code></pre></div>
+<h4 id="関数単位で特定のヒントのみを無視する方法">関数単位で特定のヒントのみを無視する方法</h4>
+<p><code>HLint: ignore</code> の後にヒント名を書きます。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use fromMaybe&quot; #-}</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use concatMap&quot; #-}</span></span></code></pre></div>
+<h4 id="モジュール単位で無視する方法">モジュール単位で無視する方法</h4>
+<p><code>module</code> キーワードを使う場合はアノテーションを <code>import</code> 文の後に設置しないと上手く動かないので、その点のみ注意が必要です。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">{-# ANN module &quot;HLint: ignore&quot; #-}</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">{-# ANN module &quot;HLint: ignore Use fromMaybe&quot; #-}</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="ot">{-# ANN module &quot;HLint: ignore Use concatMap&quot; #-}</span></span></code></pre></div>
+<h2 id="overloadedstrings-言語拡張">OverloadedStrings 言語拡張</h2>
+<p>言語拡張の <code>OverloadedStrings</code> を有効化している場合は上手く動かないため、明示的に <code>String</code> の型注釈を指定する必要があります。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="ot">{-# ANN someFunc (&quot;HLint: ignore&quot; :: String) #-}</span></span></code></pre></div>
+<h2 id="ヒントファイルを使って無視する方法">ヒントファイルを使って無視する方法</h2>
+<p>プロジェクト全体で無視したいヒントについては <code>.hint.yaml</code> に追記します。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># .hlint.yaml</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use fromMaybe</span><span class="kw">}</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use concatMap</span><span class="kw">}</span></span></code></pre></div>
+<p><code>within</code> キーワードでヒントを適用するモジュールを指定できます。</p>
+<p>例として <code>Lib</code> モジュールのみを対象とする場合は次のようになります。(この場合は <code>ignore</code> が指定されているので <code>Lib</code> モジュールのみヒントを無視します)</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># .hlint.yaml</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use fromMaybe</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use concatMap</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span></code></pre></div>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=HLint のヒントを無視する方法&url=https://haskell.e-bigmoon.com/stack/hlint/hlint-ignore.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/stack/hlint/hlint-ignore.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/stack/hlint/hlint-ignore.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

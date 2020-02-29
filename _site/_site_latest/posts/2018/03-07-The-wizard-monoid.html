@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>wizard モノイド (翻訳)</title>
+  <meta name="description" content="wizard モノイド (翻訳)
+Original post: The wizard monoid
+最近の GHC 8.0 は、IO 用の Monoid インスタンスを提供しています。このブログ記事では、組み合わせ可能な “wizard” を作りつつ、なぜこのインスタンスが便利なのかを示す例をお見せします。">
+  <link rel="canonical" href="../../posts/2018/03-07-The-wizard-monoid.html">
+  <link rel="alternate" type="application/atom+xml" title="wizard モノイド (翻訳)" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="wizard モノイド (翻訳)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/03-07-The-wizard-monoid.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="wizard モノイド (翻訳)" />
+  <meta property="og:description" content="wizard モノイド (翻訳)
+Original post: The wizard monoid
+最近の GHC 8.0 は、IO 用の Monoid インスタンスを提供しています。このブログ記事では、組み合わせ可能な “wizard” を作りつつ、なぜこのインスタンスが便利なのかを示す例をお見せします。" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on March  7, 2018
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          translated by pythonissam
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Gabriel Gonzalez
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">wizard モノイド (翻訳)</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'Haskell for all'." href="../../tags/Haskell%20for%20all.html">Haskell for all</a>, <a title="All pages tagged '翻訳'." href="../../tags/%E7%BF%BB%E8%A8%B3.html">翻訳</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=wizard モノイド (翻訳)&url=https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="wizard-モノイド-翻訳">wizard モノイド (翻訳)</h2>
+<p>Original post: <a href="http://www.haskellforall.com/2018/02/the-wizard-monoid.html">The wizard monoid</a></p>
+<p>最近の GHC 8.0 は、<code>IO</code> 用の <code>Monoid</code> インスタンスを提供しています。このブログ記事では、組み合わせ可能な “wizard” を作りつつ、なぜこのインスタンスが便利なのかを示す例をお見せします。</p>
+<!--more-->
+<h3 id="wizard">Wizard</h3>
+<p>ここで使う “wizard” とは、ユーザーに複数の入力を促し、全ての入力が完了したら、いくつかのアクションを実行するようなプログラムです。</p>
+<p>簡単な wizard の例です:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-2"><a href="#cb1-2"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    <span class="co">-- First, we request all inputs:</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your name?&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>    name <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your age?&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>    age <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a>    <span class="co">-- Then, we perform all actions:</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;Your name is: &quot;</span> <span class="op">++</span> name)</span>
+<span id="cb1-12"><a href="#cb1-12"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;Your age is: &quot;</span> <span class="op">++</span> age)</span></code></pre></div>
+<p>… 実行例:</p>
+<pre class="plain"><code>What is your name?
+Gabriel&lt;Enter&gt;
+What is your age?
+31&lt;Enter&gt;
+Your name is: Gabriel
+Your age is: 31</code></pre>
+<p>… それで、以下はもう少し複雑な wizard の例です:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">System.Directory</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-4"><a href="#cb3-4"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="co">-- First, we request all inputs:</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>    files <span class="ot">&lt;-</span> System.Directory.listDirectory <span class="st">&quot;.&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>    <span class="kw">let</span> askFile file <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>            <span class="fu">putStrLn</span> (<span class="st">&quot;Would you like to delete &quot;</span> <span class="op">++</span> file <span class="op">++</span> <span class="st">&quot;?&quot;</span>)</span>
+<span id="cb3-9"><a href="#cb3-9"></a>            response <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>            <span class="kw">case</span> response <span class="kw">of</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>                <span class="st">&quot;y&quot;</span> <span class="ot">-&gt;</span> <span class="fu">return</span> [file]</span>
+<span id="cb3-12"><a href="#cb3-12"></a>                _   <span class="ot">-&gt;</span> <span class="fu">return</span> []</span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a>    listOfListOfFilesToRemove <span class="ot">&lt;-</span> <span class="fu">mapM</span> askFile files</span>
+<span id="cb3-15"><a href="#cb3-15"></a>    <span class="kw">let</span> listOfFilesToRemove <span class="ot">=</span> <span class="fu">concat</span> listOfListOfFilesToRemove</span>
+<span id="cb3-16"><a href="#cb3-16"></a></span>
+<span id="cb3-17"><a href="#cb3-17"></a>    <span class="co">-- Then, we perform all actions:</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>    <span class="kw">let</span> removeFile file <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>            <span class="fu">putStrLn</span> (<span class="st">&quot;Removing &quot;</span> <span class="op">++</span> file)</span>
+<span id="cb3-20"><a href="#cb3-20"></a>            System.Directory.removeFile file</span>
+<span id="cb3-21"><a href="#cb3-21"></a>    <span class="fu">mapM_</span> removeFile listOfFilesToRemove</span></code></pre></div>
+<p>… 実行例:</p>
+<pre class="plain"><code>Would you like to delete file1.txt?
+y&lt;Enter&gt;
+Would you like to delete file2.txt?
+n&lt;Enter&gt;
+Would you like to delete file3.txt?
+y&lt;Enter&gt;
+Removing file1.txt
+Removing file3.txt</code></pre>
+<p>以上に挙げた例では、ユーザーが要求された入力を全て入力し終えるまで、変更ができないアクションを実行するのは避けたいという要求があります。</p>
+<h3 id="モジュール性">モジュール性</h3>
+<p>最初の例を見直してみましょう:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-2"><a href="#cb5-2"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="co">-- First, we request all inputs:</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your name?&quot;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    name <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your age?&quot;</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>    age <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a>    <span class="co">-- Then, we perform all actions:</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;Your name is: &quot;</span> <span class="op">++</span> name)</span>
+<span id="cb5-12"><a href="#cb5-12"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;Your age is: &quot;</span> <span class="op">++</span> age)</span></code></pre></div>
+<p>この例は、実質的には2つの独立した wizard を組み合わせています:</p>
+<ul>
+<li>最初の wizard はユーザーの名前を要求し、表示している</li>
+<li>2つ目の wizard はユーザーの年齢を要求し、表示している</li>
+</ul>
+<p>しかし、アクションを実行する前に全ての入力が必要だったので、2つの wizard のロジックをそれぞれ混ぜる必要がありました。</p>
+<p>これら2つの wizard を別々に定義し、より大きな wizard に合体させる方法があったらどうでしょう? <code>IO</code> の <code>Monoid</code> インスタンスの長所を活かせば可能です。こんな感じ:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb6-4"><a href="#cb6-4"></a>name <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your name?&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your name is: &quot;</span> <span class="op">++</span> x))</span>
+<span id="cb6-8"><a href="#cb6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="ot">age ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb6-10"><a href="#cb6-10"></a>age <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your age?&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your age is: &quot;</span> <span class="op">++</span> x))</span>
+<span id="cb6-14"><a href="#cb6-14"></a></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb6-16"><a href="#cb6-16"></a>runWizard request <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a>    respond <span class="ot">&lt;-</span> request</span>
+<span id="cb6-18"><a href="#cb6-18"></a>    respond</span>
+<span id="cb6-19"><a href="#cb6-19"></a></span>
+<span id="cb6-20"><a href="#cb6-20"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb6-21"><a href="#cb6-21"></a>main <span class="ot">=</span> runWizard (name <span class="op">&lt;&gt;</span> age)</span></code></pre></div>
+<p>このプログラムはさっきの例と完全に同じ動きをします。が、ユーザーの名前を扱うロジックは、ユーザーの年齢を扱うロジックと完全に分離されています。</p>
+<p>この方法でうまくいくのは、それぞれの wizard を2つの部分に分けたからです:</p>
+<ul>
+<li>リクエストの部分 (ユーザーに入力を求める部分など)</li>
+<li>レスポンスの部分 (その入力に応じたアクションを実行する部分など)</li>
+</ul>
+<p>… そしてそれぞれの wizard に <code>IO (IO ())</code> という型を与えることによって、型レベルでこれを実現しています:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">age ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span></code></pre></div>
+<p>外側の <code>IO</code> アクションは“リクエスト”です。リクエストが終了したとき、外側の <code>IO</code> アクションは内側の <code>IO</code> アクション、つまり“レスポンス”を返します。例えば:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">--      ↓ リクエスト</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co">--          ↑ レスポンス</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>name <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your name?&quot;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>    <span class="co">-- ↑ ここから上の部分全てが、外側の `IO` アクションの一部 (例えばリクエスト)</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a>    <span class="co">--      ↓ この return される値は、内側の `IO` アクション (例えばレスポンス)</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your name is: &quot;</span> <span class="op">++</span> x))</span></code></pre></div>
+<p>wizard は <code>(&lt;&gt;)</code> 演算子を使って組み合わせることができます。<code>IO</code> アクションに限って言うなら、以下のような動作をします:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a>ioLeft <span class="op">&lt;&gt;</span> ioRight</span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">=</span> <span class="kw">do</span> resultLeft  <span class="ot">&lt;-</span> ioLeft</span>
+<span id="cb9-4"><a href="#cb9-4"></a>     resultRight <span class="ot">&lt;-</span> ioRight</span>
+<span id="cb9-5"><a href="#cb9-5"></a>     <span class="fu">return</span> (resultLeft <span class="op">&lt;&gt;</span> resultRight)</span></code></pre></div>
+<p>言い換えるなら、<code>IO</code> アクションを2つ組み合わせるということは、それぞれの <code>IO</code> アクションを実行して結果を組み合わせるということなのです。これは、2つの <code>IO</code> アクションをネストさせると、アクションを実行して結果を組み合わせるという処理を2回実行する、ということも示しています:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a>requestLeft <span class="op">&lt;&gt;</span> requestRight</span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="ot">=</span> <span class="kw">do</span> respondLeft  <span class="ot">&lt;-</span> requestLeft</span>
+<span id="cb10-4"><a href="#cb10-4"></a>     respondRight <span class="ot">&lt;-</span> requestRight</span>
+<span id="cb10-5"><a href="#cb10-5"></a>     <span class="fu">return</span> (respondLeft <span class="op">&lt;&gt;</span> respondRight)</span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="ot">=</span> <span class="kw">do</span> respondLeft  <span class="ot">&lt;-</span> requestLeft</span>
+<span id="cb10-8"><a href="#cb10-8"></a>     respondRight <span class="ot">&lt;-</span> requestRight</span>
+<span id="cb10-9"><a href="#cb10-9"></a>     <span class="fu">return</span> (<span class="kw">do</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>         unitLeft  <span class="ot">&lt;-</span> respondLeft</span>
+<span id="cb10-11"><a href="#cb10-11"></a>         unitRight <span class="ot">&lt;-</span> respondRight</span>
+<span id="cb10-12"><a href="#cb10-12"></a>         <span class="fu">return</span> (unitLeft <span class="op">&lt;&gt;</span> unitRight) )</span>
+<span id="cb10-13"><a href="#cb10-13"></a></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="co">-- Both `unitLeft` and `unitRight` are `()` and `() &lt;&gt; () = ()`, so we can</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="co">-- simplify this further to:</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="co">-- `unitLeft` も `unitRight` も `()` で、`() &lt;&gt; () = ()` なので、</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="co">-- 以下のように簡約化することができます:</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="ot">=</span> <span class="kw">do</span> respondLeft  <span class="ot">&lt;-</span> requestLeft</span>
+<span id="cb10-20"><a href="#cb10-20"></a>     respondRight <span class="ot">&lt;-</span> requestRight</span>
+<span id="cb10-21"><a href="#cb10-21"></a>     <span class="fu">return</span> (<span class="kw">do</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a>         respondLeft</span>
+<span id="cb10-23"><a href="#cb10-23"></a>         respondRight )</span></code></pre></div>
+<p>つまり、2つの wizard を組み合わせると、リクエストを組み合わせてレスポンスも組み合わせたことになるのです。</p>
+<p>この方法は2つ以上の wizard でもうまくいきます。例えば:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a>request0 <span class="op">&lt;&gt;</span> request1 <span class="op">&lt;&gt;</span> request2 <span class="op">&lt;&gt;</span> request3</span>
+<span id="cb11-2"><a href="#cb11-2"></a></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="ot">=</span> <span class="kw">do</span> respond0 <span class="ot">&lt;-</span> request0</span>
+<span id="cb11-4"><a href="#cb11-4"></a>     respond1 <span class="ot">&lt;-</span> request1</span>
+<span id="cb11-5"><a href="#cb11-5"></a>     respond2 <span class="ot">&lt;-</span> request2</span>
+<span id="cb11-6"><a href="#cb11-6"></a>     respond3 <span class="ot">&lt;-</span> request3</span>
+<span id="cb11-7"><a href="#cb11-7"></a>     <span class="fu">return</span> (<span class="kw">do</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>         respond0</span>
+<span id="cb11-9"><a href="#cb11-9"></a>         respond1</span>
+<span id="cb11-10"><a href="#cb11-10"></a>         respond2</span>
+<span id="cb11-11"><a href="#cb11-11"></a>         respond3 )</span></code></pre></div>
+<p>これをアクションの形で表現するために、さっきの例をもう一度見てみましょう:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="ot">name ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb12-4"><a href="#cb12-4"></a>name <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your name?&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your name is: &quot;</span> <span class="op">++</span> x))</span>
+<span id="cb12-8"><a href="#cb12-8"></a></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="ot">age ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb12-10"><a href="#cb12-10"></a>age <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>    <span class="fu">putStrLn</span> <span class="st">&quot;What is your age?&quot;</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your age is: &quot;</span> <span class="op">++</span> x))</span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb12-16"><a href="#cb12-16"></a>runWizard request <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a>    respond <span class="ot">&lt;-</span> request</span>
+<span id="cb12-18"><a href="#cb12-18"></a>    respond</span>
+<span id="cb12-19"><a href="#cb12-19"></a></span>
+<span id="cb12-20"><a href="#cb12-20"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb12-21"><a href="#cb12-21"></a>main <span class="ot">=</span> runWizard (name <span class="op">&lt;&gt;</span> age)</span></code></pre></div>
+<p>…<code>name</code> と <code>age</code> はかなり似ているので、共通の関数を使うような実装にすることができますね:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</span>
+<span id="cb13-2"><a href="#cb13-2"></a></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="ot">prompt ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb13-4"><a href="#cb13-4"></a>prompt attribute <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;What is your &quot;</span> <span class="op">++</span> attribute <span class="op">++</span> <span class="st">&quot;?&quot;</span>)</span>
+<span id="cb13-6"><a href="#cb13-6"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your &quot;</span> <span class="op">++</span> attribute <span class="op">++</span> <span class="st">&quot; is: &quot;</span> <span class="op">++</span> x))</span>
+<span id="cb13-8"><a href="#cb13-8"></a></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb13-10"><a href="#cb13-10"></a>runWizard request <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>    respond <span class="ot">&lt;-</span> request</span>
+<span id="cb13-12"><a href="#cb13-12"></a>    respond</span>
+<span id="cb13-13"><a href="#cb13-13"></a></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb13-15"><a href="#cb13-15"></a>main <span class="ot">=</span> runWizard (prompt <span class="st">&quot;name&quot;</span> <span class="op">&lt;&gt;</span> prompt <span class="st">&quot;age&quot;</span>)</span></code></pre></div>
+<p>2つの wizard のロジックが混ざっていたとき、この共通化のロジックを使うことはできませんでした。しかしロジック毎に別々の wizard に分割すると、プログラムを小さくするための共通構造を突くことができます。</p>
+<p>このプログラムの圧縮によって、簡単に新しい wizard を追加することができます:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="ot">prompt ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb14-4"><a href="#cb14-4"></a>prompt attribute <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;What is your &quot;</span> <span class="op">++</span> attribute <span class="op">++</span> <span class="st">&quot;?&quot;</span>)</span>
+<span id="cb14-6"><a href="#cb14-6"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your &quot;</span> <span class="op">++</span> attribute <span class="op">++</span> <span class="st">&quot; is: &quot;</span> <span class="op">++</span> x))</span>
+<span id="cb14-8"><a href="#cb14-8"></a></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb14-10"><a href="#cb14-10"></a>runWizard request <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a>    respond <span class="ot">&lt;-</span> request</span>
+<span id="cb14-12"><a href="#cb14-12"></a>    respond</span>
+<span id="cb14-13"><a href="#cb14-13"></a></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb14-15"><a href="#cb14-15"></a>main <span class="ot">=</span> runWizard (prompt <span class="st">&quot;name&quot;</span> <span class="op">&lt;&gt;</span> prompt <span class="st">&quot;age&quot;</span> <span class="op">&lt;&gt;</span> prompt <span class="st">&quot;favorite color&quot;</span>)</span></code></pre></div>
+<p>… そして、モノイド関連の標準ライブラリ関数を活用しましょう。例えば <code>foldMap</code> を使えば wizard を大量に作ることができます。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span> ((&lt;&gt;))</span>
+<span id="cb15-2"><a href="#cb15-2"></a></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="ot">prompt ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb15-4"><a href="#cb15-4"></a>prompt attribute <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;What is your &quot;</span> <span class="op">++</span> attribute <span class="op">++</span> <span class="st">&quot;?&quot;</span>)</span>
+<span id="cb15-6"><a href="#cb15-6"></a>    x <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>    <span class="fu">return</span> (<span class="fu">putStrLn</span> (<span class="st">&quot;Your &quot;</span> <span class="op">++</span> attribute <span class="op">++</span> <span class="st">&quot; is: &quot;</span> <span class="op">++</span> x))</span>
+<span id="cb15-8"><a href="#cb15-8"></a></span>
+<span id="cb15-9"><a href="#cb15-9"></a><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb15-10"><a href="#cb15-10"></a>runWizard request <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a>    respond <span class="ot">&lt;-</span> request</span>
+<span id="cb15-12"><a href="#cb15-12"></a>    respond</span>
+<span id="cb15-13"><a href="#cb15-13"></a></span>
+<span id="cb15-14"><a href="#cb15-14"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb15-15"><a href="#cb15-15"></a>main <span class="ot">=</span> runWizard (<span class="fu">foldMap</span> prompt [ <span class="st">&quot;name&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;favorite color&quot;</span>, <span class="st">&quot;sign&quot;</span> ])</span></code></pre></div>
+<p>より重要なのは、プログラムが何をしているのか一目瞭然になりました。読みやすさは書きやすさに比べ、大きな美徳です。</p>
+<h3 id="最後の例">最後の例</h3>
+<p>ファイル削除の例も同じ観点から見直してみましょう:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">System.Directory</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb16-4"><a href="#cb16-4"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>    <span class="co">-- 最初に全ての入力をリクエストする:</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a>    files <span class="ot">&lt;-</span> System.Directory.listDirectory <span class="st">&quot;.&quot;</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>    <span class="kw">let</span> askFile file <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a>            <span class="fu">putStrLn</span> (<span class="st">&quot;Would you like to delete &quot;</span> <span class="op">++</span> file <span class="op">++</span> <span class="st">&quot;?&quot;</span>)</span>
+<span id="cb16-9"><a href="#cb16-9"></a>            response <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>            <span class="kw">case</span> response <span class="kw">of</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a>                <span class="st">&quot;y&quot;</span> <span class="ot">-&gt;</span> <span class="fu">return</span> [file]</span>
+<span id="cb16-12"><a href="#cb16-12"></a>                _   <span class="ot">-&gt;</span> <span class="fu">return</span> []</span>
+<span id="cb16-13"><a href="#cb16-13"></a></span>
+<span id="cb16-14"><a href="#cb16-14"></a>    listOfListOfFilesToRemove <span class="ot">&lt;-</span> <span class="fu">mapM</span> askFile files</span>
+<span id="cb16-15"><a href="#cb16-15"></a>    <span class="kw">let</span> listOfFilesToRemove <span class="ot">=</span> <span class="fu">concat</span> listOfListOfFilesToRemove</span>
+<span id="cb16-16"><a href="#cb16-16"></a></span>
+<span id="cb16-17"><a href="#cb16-17"></a>    <span class="co">-- 次に全てのアクションを実行する</span></span>
+<span id="cb16-18"><a href="#cb16-18"></a>    <span class="kw">let</span> removeFile file <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb16-19"><a href="#cb16-19"></a>            <span class="fu">putStrLn</span> (<span class="st">&quot;Removing &quot;</span> <span class="op">++</span> file)</span>
+<span id="cb16-20"><a href="#cb16-20"></a>            System.Directory.removeFile file</span>
+<span id="cb16-21"><a href="#cb16-21"></a>    <span class="fu">mapM_</span> removeFile listOfFilesToRemove</span></code></pre></div>
+<p>さっきと同じパターンで、シンプルにすることができます:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">System.Directory</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb17-4"><a href="#cb17-4"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a>    files <span class="ot">&lt;-</span> System.Directory.listDirectory <span class="st">&quot;.&quot;</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>    runWizard (<span class="fu">foldMap</span> prompt files)</span>
+<span id="cb17-7"><a href="#cb17-7"></a></span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="ot">prompt ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">IO</span> ())</span>
+<span id="cb17-9"><a href="#cb17-9"></a>prompt file <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a>    <span class="fu">putStrLn</span> (<span class="st">&quot;Would you like to delete &quot;</span> <span class="op">++</span> file <span class="op">++</span> <span class="st">&quot;?&quot;</span>)</span>
+<span id="cb17-11"><a href="#cb17-11"></a>    response <span class="ot">&lt;-</span> <span class="fu">getLine</span></span>
+<span id="cb17-12"><a href="#cb17-12"></a>    <span class="kw">case</span> response <span class="kw">of</span></span>
+<span id="cb17-13"><a href="#cb17-13"></a>        <span class="st">&quot;y&quot;</span> <span class="ot">-&gt;</span> <span class="fu">return</span> (<span class="kw">do</span></span>
+<span id="cb17-14"><a href="#cb17-14"></a>            <span class="fu">putStrLn</span> (<span class="st">&quot;Removing &quot;</span> <span class="op">++</span> file)</span>
+<span id="cb17-15"><a href="#cb17-15"></a>            System.Directory.removeFile file )</span>
+<span id="cb17-16"><a href="#cb17-16"></a>        _   <span class="ot">-&gt;</span> <span class="fu">return</span> (<span class="fu">return</span> ())</span>
+<span id="cb17-17"><a href="#cb17-17"></a></span>
+<span id="cb17-18"><a href="#cb17-18"></a><span class="ot">runWizard ::</span> <span class="dt">IO</span> (<span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb17-19"><a href="#cb17-19"></a>runWizard request <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-20"><a href="#cb17-20"></a>    respond <span class="ot">&lt;-</span> request</span>
+<span id="cb17-21"><a href="#cb17-21"></a>    respond</span></code></pre></div>
+<p>やるべきなのは、1つのファイルに対して処理を行う wizard を定義すること、そして <code>foldMap</code> を使って wizard を大量に生成することだけです。<code>IO</code> の <code>Monoid</code> インスタンスは、全てのリクエストを束ねて表示し、後で選択したファイルを削除してくれます。</p>
+<h3 id="結論">結論</h3>
+<p>ユーザーが望む wizard の全てにこのパターンが適用できるわけではありません。例えば、wizard が互いに依存しているような状況では、このパターンはすぐに使い物にならなくなります。しかし、このパターンは <code>Monoid</code> の <code>IO</code> インスタンスを他の <code>Monoid</code> のインスタンスと (もしくは自分自身と!) 連結させ、新しい動作を生成するような一例にはなっています。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/03-03-liquidhaskell-intro.html"><i class="material-icons left">navigate_before</i>Liquid Haskell のインストールと学習方法</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2018/03-13-stack-extra-deps-shorthand.html">extra-deps に github の短縮形が指定できるようになります<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=wizard モノイド (翻訳)&url=https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/03-07-The-wizard-monoid.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

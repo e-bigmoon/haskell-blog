@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>LiquidHaskell の --prune-unsorted フラグ</title>
+  <meta name="description" content="はじめに
+LiquidHaskell では measure という仕組みを使って Haskell の関数を LH の述語に持ち上げることができます。
+しかし、以下の nLen 関数は measure によって持ち上げることができません。
+{-@ measure nLen @-}
+nLen :: [Int] -&gt;">
+  <link rel="canonical" href="../../posts/2018/04-14-lh-unsorted-flag.html">
+  <link rel="alternate" type="application/atom+xml" title="LiquidHaskell の --prune-unsorted フラグ" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="LiquidHaskell の --prune-unsorted フラグ" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/04-14-lh-unsorted-flag.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="LiquidHaskell の --prune-unsorted フラグ" />
+  <meta property="og:description" content="はじめに
+LiquidHaskell では measure という仕組みを使って Haskell の関数を LH の述語に持ち上げることができます。
+しかし、以下の nLen 関数は measure によって持ち上げることができません。
+{-@ measure nLen @-}
+nLen :: [Int] -&gt;" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on April 14, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">LiquidHaskell の --prune-unsorted フラグ</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a>, <a title="All pages tagged 'liquidhaskell'." href="../../tags/liquidhaskell.html">liquidhaskell</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=LiquidHaskell の --prune-unsorted フラグ&url=https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p><code>LiquidHaskell</code> では <code>measure</code> という仕組みを使って <code>Haskell</code> の関数を <code>LH</code> の述語に持ち上げることができます。</p>
+<p>しかし、以下の <code>nLen</code> 関数は <code>measure</code> によって持ち上げることができません。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">{-@ measure nLen @-}</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>nLen [] <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>nLen (n<span class="op">:</span>ns) <span class="ot">=</span> n <span class="op">+</span> nLen ns</span></code></pre></div>
+<p>結論から言えば、これを解決するためには <code>--prune-unsorted</code> フラグを利用します。</p>
+<p>以下は <code>measure</code> の基本的な使い方等についての説明です。</p>
+<!--more-->
+<h2 id="measure-の基本的な使い方">measure の基本的な使い方</h2>
+<p>例えばリストの長さを求める <code>lLen</code> という関数を述語に持ち上げるにはこのようにします。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">{-@ measure lLen @-}</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">lLen ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>lLen [] <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>lLen (_<span class="op">:</span>xs) <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> lLen xs</span></code></pre></div>
+<pre class="shell"><code>$ liquid LH.hs
+LiquidHaskell Version 0.8.2.4, Git revision 5b68dc72f628a4c16a77616fb32d8c685580ed2d (dirty)
+Copyright 2013-18 Regents of the University of California. All Rights Reserved.
+
+**** DONE:  A-Normalization ****************************************************
+**** DONE:  Extracted Core using GHC *******************************************
+**** DONE:  Transformed Core ***************************************************
+Working 150% [=================================================================]
+**** DONE:  annotate ***********************************************************
+**** RESULT: SAFE **************************************************************</code></pre>
+<p>実際にはこんな感じで長さ付きリストのリファインメント型をつけます。先程から<strong>述語</strong>と言っているのはリファインメント型 <code>{ | }</code> の <code>|</code> の右側のことです。<code>measure</code> によってこの部分で <code>Haskell</code> で定義した <code>lLen</code> 関数が使えるようになります。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">{-@ type ListN a N = {v:[a] | lLen v = N} @-}</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">{-@ goodList :: ListN Int 2 @-}</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">goodList ::</span> [<span class="dt">Int</span>]</span>
+<span id="cb4-5"><a href="#cb4-5"></a>goodList <span class="ot">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</span></code></pre></div>
+<p>当然ですが、仕様を満たしていない場合は <code>UNSAFE</code> になります。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">{-@ badList :: ListN Int 1 @-}</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">badList ::</span> [<span class="dt">Int</span>]</span>
+<span id="cb5-3"><a href="#cb5-3"></a>badList <span class="ot">=</span> [<span class="dv">1</span>,<span class="dv">2</span>]</span></code></pre></div>
+<pre class="shell"><code>**** RESULT: UNSAFE ************************************************************
+Error: Liquid Type Mismatch
+
+ 14 | badList = [1,2]
+      ^^^^^^^
+   Inferred type
+     VV : {v : [Int] | Main.lLen v == 1 + Main.lLen ?d
+                       &amp;&amp; len v == 1 + len ?d
+                       &amp;&amp; tail v == ?d
+                       &amp;&amp; head v == (1 : int)
+                       &amp;&amp; len v &gt;= 0}
+
+   not a subtype of Required type
+     VV : {VV : [Int] | Main.lLen VV == 1}
+
+   In Context
+     ?b : {?b : [Int] | Main.lLen ?b == 0
+                        &amp;&amp; len ?b == 0
+                        &amp;&amp; len ?b &gt;= 0}
+
+     ?d : {?d : [Int] | Main.lLen ?d == 1 + Main.lLen ?b
+                        &amp;&amp; len ?d == 1 + len ?b
+                        &amp;&amp; tail ?d == ?b
+                        &amp;&amp; head ?d == (2 : int)
+                        &amp;&amp; len ?d &gt;= 0}</code></pre>
+<p>エラーメッセージがつらいですが、とりあえずは以下の部分に着目すれば良いでしょう。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">not</span> a subtype <span class="kw">of</span> <span class="dt">Required</span> <span class="kw">type</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>     <span class="dt">VV</span> <span class="op">:</span> {<span class="dt">VV</span> <span class="op">:</span> [<span class="dt">Int</span>] <span class="op">|</span> Main.lLen <span class="dt">VV</span> <span class="op">==</span> <span class="dv">1</span>}</span></code></pre></div>
+<p><code>lLen VV == 1</code> の制約が満たされていない。つまり、<code>lLen</code> の結果が <code>1</code> になってないよ。ということです。</p>
+<h2 id="measure-でエラーが出る場合">measure でエラーが出る場合</h2>
+<p><code>measure</code> はどんな関数にも使えるわけではありません。</p>
+<p>例えば、以下のような数値のリストに対して、リストの値の合計を返す関数 <code>nLen</code> を考えましょう。(<code>sum</code> と同じですが <code>Preude</code> とかぶるので名前を変更しています)</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">{-@ measure nLen @-}</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>nLen [] <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>nLen (n<span class="op">:</span>ns) <span class="ot">=</span> n <span class="op">+</span> nLen ns</span></code></pre></div>
+<p><code>LiquidHaskell</code> はこの定義に対してエラーを表示します。これは <code>nLen</code> 関数がリストの型変数 <code>a</code> を <code>Int</code> に特殊化しているためです。(<a href="https://github.com/ucsd-progsys/liquidhaskell#prune-unsorted-predicates">Prune Unsorted Predicates</a>)</p>
+<p>こういう関数に対しては <code>--prune-unsorted</code> フラグを用いれば良いです。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">{-@ LIQUID &quot;--prune-unsorted&quot; @-}</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="co">{-@ measure nLen @-}</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">nLen ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>nLen [] <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>nLen (n<span class="op">:</span>ns) <span class="ot">=</span> n <span class="op">+</span> nLen ns</span></code></pre></div>
+<p><code>nLen</code> を使った型は、先ほどの <code>lLen</code> とほとんど同じです。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">{-@ type ListSum a N = {v:[a] | nLen v = N} @-}</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="co">{-@ goodListSum :: ListSum Int 111 @-}</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="ot">goodListSum ::</span> [<span class="dt">Int</span>]</span>
+<span id="cb10-5"><a href="#cb10-5"></a>goodListSum <span class="ot">=</span> [<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">100</span>]</span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">{-@ badListSum :: ListSum Int 111 @-}</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="ot">badListSum ::</span> [<span class="dt">Int</span>]</span>
+<span id="cb10-9"><a href="#cb10-9"></a>badListSum <span class="ot">=</span> [<span class="dv">1</span>]</span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li>型パラメータが特殊化された関数を <code>measure</code> で述語に持ち上げる際には <code>--prune-unsorted</code> を使う</li>
+</ul>
+<p>以上です。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/04-08-quiz-8.html"><i class="material-icons left">navigate_before</i>Haskell Quiz No.8 Conduit Part.4</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2018/04-18-hie.html">HIE でコード整形時に改行が追加されてしまうバグが直りました<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=LiquidHaskell の --prune-unsorted フラグ&url=https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/04-14-lh-unsorted-flag.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

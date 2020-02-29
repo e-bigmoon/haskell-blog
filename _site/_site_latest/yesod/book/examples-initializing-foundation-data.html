@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>ファウンデーション型の初期化</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/book/examples-initializing-foundation-data.html">
+  <link rel="alternate" type="application/atom+xml" title="ファウンデーション型の初期化" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="ファウンデーション型の初期化" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/book/examples-initializing-foundation-data.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="ファウンデーション型の初期化" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">ファウンデーション型の初期化</h1>
+        
+        <span>最終更新日: 2018/09/16</span>
+        
+      </div>
+
+      <article class="page-content">
+        <p>この例では、ファウンデーション型の初期化という、比較的わかりやすい概念を解説します。データを初期化したい理由は様々ですが、以下の2つは特に重要です。</p>
+<ul>
+<li>効率性: 起動時にデータを初期化することで、リクエスト毎に同じ値するというような無駄な再計算を避けることができます。</li>
+<li>永続性: 何らかの情報を各リクエスト間で共有できるようにミュータブルな場所に保存したいと思うことがあります。こういった場合、外部データベースが良く利用されますが、メモリ内のミュータブル変数を使うこともあります。</li>
+</ul>
+<div class="yesod-book-notice">
+<p>ミュータブル変数はストレージとして便利な仕組みですが、デメリットについても理解しておくべきです。もし、プロセスが止まってしまったらデータを失ってしまいます。また、2つ以上のプロセスに水平スケールする場合、プロセス間でデータを同期するための方法が必要になります。今回の例ではこれらの問題を取り扱いませんが、現実的な問題です。この問題は Yesod が永続性のために外部データベースの使用を強く推奨する理由の1つです。</p>
+</div>
+<p>説明のためにとてもシンプルな Web サイトを実装したいと思います。どのぐらいシンプルかと言うと、</p>
+<ul>
+<li>ルートは1つだけです。</li>
+<li>Markdown ファイルに保存されたコンテンツを使います。</li>
+<li>コンテンツを表示します。</li>
+<li>昔流行ったと思いますが、サイトにどのぐらいの人数が来ているかわかるように訪問者数を表示します。</li>
+</ul>
+<p>という程度にシンプルです。</p>
+<h2 id="step1-アプリケーションのファウンデーションを定義しよう">Step1: アプリケーションのファウンデーションを定義しよう</h2>
+<p>最初の説明を良く読めば、今回のアプリケーションで初期化しておくべきものは、Web サイトに表示する Markdown コンテンツと訪問者数を保存するためのミュータブル変数だとわかるでしょう。これから私達がやりたいことは、初期化処理で可能な限り多くのことを行い、ハンドラ内で同じ作業の繰り返しを避けることです。そのため、前処理で Markdown コンテンツを HTML 変換します。訪問者カウンタは単に <code>IORef</code> で十分です。まとめると、ファウンデーション型は以下のようになります。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>    {<span class="ot"> homepageContent ::</span> <span class="dt">Html</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    ,<span class="ot"> visitorCount    ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    }</span></code></pre></div>
+<h2 id="step2-ファウンデーションの使い方">Step2: ファウンデーションの使い方</h2>
+<p>例を非常に単純にするためにルートはトップページしか考えません。やりたいことは以下の通りです。</p>
+<ol type="1">
+<li>訪問者数をインクリメントする。</li>
+<li>新しい訪問者数を取得する。</li>
+<li>訪問者数と共に Markdown コンテンツを表示する。</li>
+</ol>
+<p>コードを多少短くするためのテクニックとしてレコードワイルドカード構文 <code>App{..}</code> を採用します。この言語拡張はデータ型にいくつもの異なるフィールドがある場合に便利です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    currentCount <span class="ot">&lt;-</span> liftIO <span class="op">$</span> atomicModifyIORef visitorCount</span>
+<span id="cb2-5"><a href="#cb2-5"></a>        <span class="op">$</span> \i <span class="ot">-&gt;</span> (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>        setTitle <span class="st">&quot;Homepage&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>        [whamlet|</span>
+<span id="cb2-9"><a href="#cb2-9"></a>            <span class="kw">&lt;article&gt;#{</span>homepageContent<span class="kw">}</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>            <span class="kw">&lt;p&gt;</span>You are visitor number: <span class="kw">#{</span>currentCount<span class="kw">}</span>.</span>
+<span id="cb2-11"><a href="#cb2-11"></a>        |]</span></code></pre></div>
+<h2 id="step3-ファウンデーション型の値を作る">Step3: ファウンデーション型の値を作る</h2>
+<p>アプリケーションを初期化するときに、Step1 で定義した <code>App</code> 型の2つのフィールドに値を与える必要があります。この処理はただの <code>IO</code> なので必要に応じて任意のアクションを実行できます。今回は以下のアクションを実行します。</p>
+<ol type="1">
+<li>Markdown をファイルから読み込む。</li>
+<li>Markdown を HTML に変換する。</li>
+<li>訪問者数をカウントするための変数を作る。</li>
+</ol>
+<p>コードは上記のステップを Haskell に落とし込むだけです。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">go ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-2"><a href="#cb3-2"></a>go <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    rawMarkdown <span class="ot">&lt;-</span> TLIO.readFile <span class="st">&quot;homepage.md&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    countRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>        { homepageContent <span class="ot">=</span> markdown def rawMarkdown</span>
+<span id="cb3-7"><a href="#cb3-7"></a>        , visitorCount    <span class="ot">=</span> countRef</span>
+<span id="cb3-8"><a href="#cb3-8"></a>        }</span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<p>今回の例に関して言えば、特に難しい概念や用語は登場していません。ただのプログラミングです。この章の目的は、アプリケーションに必要なものを揃えるための、一般的に利用されているベストプラクティスを紹介することです。実際のアプリケーションに関して言えば、初期化ステップはもっと複雑になるでしょう。例えば、データベースのコネクションプールをセットアップしたり、ビッグデータをバッチ処理するためにバックグラウンドジョブを起動したりします。この章を読み終わった読者は、アプリケーション毎に必要となる初期化処理を記述できるようになります。</p>
+<p>以下は、今回の例の完全なソースコードです。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">{-# LANGUAGE RecordWildCards   #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.IO</span> <span class="kw">as</span> <span class="dt">TLIO</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">import</span>           <span class="dt">Text.Markdown</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    {<span class="ot"> homepageContent ::</span> <span class="dt">Html</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    ,<span class="ot"> visitorCount    ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>    }</span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb4-17"><a href="#cb4-17"></a>/ HomeR GET</span>
+<span id="cb4-18"><a href="#cb4-18"></a>|]</span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>    <span class="dt">App</span> {<span class="op">..</span>} <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb4-24"><a href="#cb4-24"></a>    currentCount <span class="ot">&lt;-</span> liftIO <span class="op">$</span> atomicModifyIORef visitorCount</span>
+<span id="cb4-25"><a href="#cb4-25"></a>        <span class="op">$</span> \i <span class="ot">-&gt;</span> (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb4-26"><a href="#cb4-26"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a>        setTitle <span class="st">&quot;Homepage&quot;</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a>        [whamlet|</span>
+<span id="cb4-29"><a href="#cb4-29"></a>            <span class="kw">&lt;article&gt;#{</span>homepageContent<span class="kw">}</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a>            <span class="kw">&lt;p&gt;</span>You are visitor number: <span class="kw">#{</span>currentCount<span class="kw">}</span>.</span>
+<span id="cb4-31"><a href="#cb4-31"></a>        |]</span>
+<span id="cb4-32"><a href="#cb4-32"></a></span>
+<span id="cb4-33"><a href="#cb4-33"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-34"><a href="#cb4-34"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a>    rawMarkdown <span class="ot">&lt;-</span> TLIO.readFile <span class="st">&quot;homepage.md&quot;</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a>    countRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
+<span id="cb4-37"><a href="#cb4-37"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb4-38"><a href="#cb4-38"></a>        { homepageContent <span class="ot">=</span> markdown def rawMarkdown</span>
+<span id="cb4-39"><a href="#cb4-39"></a>        , visitorCount    <span class="ot">=</span> countRef</span>
+<span id="cb4-40"><a href="#cb4-40"></a>        }</span></code></pre></div>
+<h2 id="本書のコード">本書のコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/examples/ex01/Example01.hs">Example01.hs</a></li>
+</ul>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=ファウンデーション型の初期化&url=https://haskell.e-bigmoon.com/yesod/book/examples-initializing-foundation-data.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/examples-initializing-foundation-data.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/yesod/book/examples-initializing-foundation-data.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

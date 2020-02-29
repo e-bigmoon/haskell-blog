@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Endo Monoid</title>
+  <meta name="description" content="はじめに
+Data.Monoid に Endo 型が定義されています。
+Endo という名前は 自己準同型 (Endomorphism) に由来します。
+newtype Endo a = Endo { appEndo :: a -&gt; a }
+
+instance Semigroup a =&gt; Semigrou">
+  <link rel="canonical" href="../../posts/2019/02-04-endo-monoid.html">
+  <link rel="alternate" type="application/atom+xml" title="Endo Monoid" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Endo Monoid" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2019/02-04-endo-monoid.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Endo Monoid" />
+  <meta property="og:description" content="はじめに
+Data.Monoid に Endo 型が定義されています。
+Endo という名前は 自己準同型 (Endomorphism) に由来します。
+newtype Endo a = Endo { appEndo :: a -&gt; a }
+
+instance Semigroup a =&gt; Semigrou" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on February  4, 2019
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Endo Monoid</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a>, <a title="All pages tagged 'monoid'." href="../../tags/monoid.html">monoid</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Endo Monoid&url=https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Endo">Endo</a> 型が定義されています。</p>
+<p><code>Endo</code> という名前は <code>自己準同型 (Endomorphism)</code> に由来します。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">newtype</span> <span class="dt">Endo</span> a <span class="ot">=</span> <span class="dt">Endo</span> {<span class="ot"> appEndo ::</span> a <span class="ot">-&gt;</span> a }</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> a <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g <span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">Endo</span> a) <span class="kw">where</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span></span></code></pre></div>
+<p>使い方は簡単。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>ghci<span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="op">+</span><span class="dv">1</span>), (<span class="op">*</span><span class="dv">2</span>), <span class="fu">negate</span>]</span>
+<span id="cb2-2"><a href="#cb2-2"></a>ghci<span class="op">&gt;</span> <span class="fu">print</span> <span class="op">$</span> appEndo f <span class="dv">5</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="op">-</span><span class="dv">9</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a>ghci<span class="op">&gt;</span> appEndo (<span class="dt">Endo</span> (<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>) <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)) <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="st">&quot;Hello, Haskell!&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>ghci<span class="op">&gt;</span> (appEndo <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">Endo</span> [(<span class="st">&quot;Hello, &quot;</span> <span class="op">++</span>), <span class="fu">id</span>, (<span class="op">++</span> <span class="st">&quot;!&quot;</span>)]) <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="st">&quot;Hello, Haskell!&quot;</span></span></code></pre></div>
+<p><code>appEndo</code> すると関数が出てくるところがポイントですね。2つ目の評価の流れをざっくり追うとこんな感じです。</p>
+<pre class="haskll"><code>  appEndo (Endo (&quot;Hello, &quot; ++) &lt;&gt; Endo (++ &quot;!&quot;)) &quot;Haskell&quot;
+= appEndo (Endo ((&quot;Hello, &quot; ++ ) . (++ &quot;!&quot;))) &quot;Haskell&quot;
+= (&quot;Hello, &quot; ++ ) . (++ &quot;!&quot;) $ &quot;Haskell&quot;
+= &quot;Hello, &quot; ++ (&quot;Haskell&quot; ++ &quot;!&quot;)
+= &quot;Hello, &quot; ++ &quot;Haskell!&quot;
+= &quot;Hello, Haskell!&quot;</code></pre>
+<p><code>Endo</code> は意外と色んなところで使える便利なモノイドです。</p>
+<!--more-->
+<h2 id="semigroup-monoid-law-の確認">Semigroup, Monoid law の確認</h2>
+<p>Semigroup Law</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="dt">Endo</span> g <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> (g <span class="op">.</span> h)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> (g <span class="op">.</span> h))</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co">-- Category の定義より f . (g . h) == (f . g) . h</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="ot">=</span> <span class="dt">Endo</span> ((f <span class="op">.</span> g) <span class="op">.</span> h)</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="ot">=</span> (<span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> g) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> h</span></code></pre></div>
+<p>Monoid Law</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>  <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">=</span> <span class="dt">Endo</span> f <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">=</span> <span class="dt">Endo</span> (f <span class="op">.</span> <span class="fu">id</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- Category の定義より f . id == f</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="ot">=</span> <span class="dt">Endo</span> f</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  (<span class="fu">mempty</span><span class="ot"> ::</span> <span class="dt">Endo</span> a) <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> f</span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="ot">=</span> <span class="dt">Endo</span> <span class="fu">id</span> <span class="op">&lt;&gt;</span> <span class="dt">Endo</span> <span class="fu">id</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="ot">=</span> <span class="dt">Endo</span> (<span class="fu">id</span> <span class="op">.</span> f)</span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">-- Category の定義より id . f == f</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="ot">=</span> <span class="dt">Endo</span> f</span></code></pre></div>
+<h3 id="f-.-g-.-h-f-.-g-.-h"><code>f . (g . h) == (f . g) . h</code></h3>
+<p><code>(.)</code> の定義</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>f <span class="op">.</span> g <span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g x)</span></code></pre></div>
+<p>証明</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a>(<span class="dt">LHS</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>  f <span class="op">.</span> (g <span class="op">.</span> h)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((g <span class="op">.</span> h) x)</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f ((\y <span class="ot">-&gt;</span> g (h y)) x)</span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</span>
+<span id="cb7-6"><a href="#cb7-6"></a></span>
+<span id="cb7-7"><a href="#cb7-7"></a>(<span class="dt">RHS</span>)</span>
+<span id="cb7-8"><a href="#cb7-8"></a>  (f <span class="op">.</span> g) <span class="op">.</span> h</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> (f <span class="op">.</span> g) (h x)</span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> (\y <span class="ot">-&gt;</span> f (g y)) (h x)</span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f (g (h x))</span></code></pre></div>
+<h3 id="id-.-f-f"><code>id . f == f</code></h3>
+<p><code>id</code> の定義</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">id</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">id</span> x <span class="ot">=</span> x</span></code></pre></div>
+<p>証明</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a>  <span class="fu">id</span> <span class="op">.</span> f</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="fu">id</span> (f x)</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">=</span> \x <span class="ot">-&gt;</span> f x</span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="ot">=</span> f</span></code></pre></div>
+<h2 id="例1-write-endo-パターン">例1) Write Endo パターン</h2>
+<p><a href="https://hackage.haskell.org/package/yesod-core">yesod-core</a> パッケージの <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Handler.html#t:ProvidedRep">ProvideRep</a> を扱う関数は <code>Endo</code> を利用しています。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="ot">selectRep ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) () <span class="ot">-&gt;</span> m <span class="dt">TypedContent</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="ot">provideRep ::</span> (<span class="dt">Monad</span> m, <span class="dt">HasContentType</span> a) <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="ot">provideRepType ::</span> (<span class="dt">Monad</span> m, <span class="dt">ToContent</span> a) <span class="ot">=&gt;</span> <span class="dt">ContentType</span> <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> <span class="dt">Writer</span> (<span class="dt">Endo</span> [<span class="dt">ProvidedRep</span> m]) ()</span></code></pre></div>
+<p>また <code>Yesod</code> には <a href="https://hackage.haskell.org/package/yesod-core-1.6.11/docs/Yesod-Core-Types.html#t:GHState">GHState</a> 型がありますが、そこでも <code>Endo</code> を使っています。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">data</span> <span class="dt">GHState</span> <span class="ot">=</span> <span class="dt">GHState</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>    {<span class="ot"> ghsSession ::</span> <span class="op">!</span><span class="dt">SessionMap</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>    ,<span class="ot"> ghsRBC     ::</span> <span class="op">!</span>(<span class="dt">Maybe</span> <span class="dt">RequestBodyContents</span>)</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    ,<span class="ot"> ghsIdent   ::</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>    ,<span class="ot"> ghsCache   ::</span> <span class="op">!</span><span class="dt">TypeMap</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>    ,<span class="ot"> ghsCacheBy ::</span> <span class="op">!</span><span class="dt">KeyedTypeMap</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>    ,<span class="ot"> ghsHeaders ::</span> <span class="op">!</span>(<span class="dt">Endo</span> [<span class="dt">Header</span>])</span>
+<span id="cb11-8"><a href="#cb11-8"></a>    }</span></code></pre></div>
+<p>このような <code>Writer</code> と <code>Endo</code> を使った実装パターンは <a href="https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html">Quick and Easy DSLs with Writer Endo</a> で紹介されている <code>Writer Endo</code> パターンとして知られているようです。</p>
+<h2 id="例2-データの更新">例2) データの更新</h2>
+<p>こんな感じで設定等を更新する際にも使えるかもしれません。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="kw">import</span> <span class="dt">Control.Lens</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="kw">type</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Record</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>  '[ <span class="st">&quot;name&quot;</span> <span class="op">&gt;:</span> <span class="dt">String</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>   , <span class="st">&quot;age&quot;</span>  <span class="op">&gt;:</span> <span class="dt">Int</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>   ]</span>
+<span id="cb12-13"><a href="#cb12-13"></a></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="ot">update ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>] <span class="ot">-&gt;</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a>update fs <span class="ot">=</span> appEndo (<span class="fu">foldMap</span> <span class="dt">Endo</span> fs)</span>
+<span id="cb12-16"><a href="#cb12-16"></a></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="ot">me ::</span> [<span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">Person</span>]</span>
+<span id="cb12-18"><a href="#cb12-18"></a>me <span class="ot">=</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a>  [ (<span class="op">&amp;</span> <span class="op">#</span>name <span class="op">.~</span> <span class="st">&quot;guchi&quot;</span>)</span>
+<span id="cb12-20"><a href="#cb12-20"></a>  , (<span class="op">&amp;</span> <span class="op">#</span>age <span class="op">.~</span> <span class="dv">20</span>)</span>
+<span id="cb12-21"><a href="#cb12-21"></a>  ]</span>
+<span id="cb12-22"><a href="#cb12-22"></a></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="ot">defaultPerson ::</span> <span class="dt">Person</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a>defaultPerson <span class="ot">=</span> <span class="op">#</span>name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span></span>
+<span id="cb12-25"><a href="#cb12-25"></a>             <span class="op">&lt;:</span> <span class="op">#</span>age  <span class="op">@=</span> <span class="dv">0</span></span>
+<span id="cb12-26"><a href="#cb12-26"></a>             <span class="op">&lt;:</span> nil</span></code></pre></div>
+<p>実行結果</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a>λ<span class="op">&gt;</span> stack repl <span class="co">--package extensible --package lens EndoExample.hs</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a></span>
+<span id="cb13-3"><a href="#cb13-3"></a>ghci<span class="op">&gt;</span> defaultPerson</span>
+<span id="cb13-4"><a href="#cb13-4"></a>name <span class="op">@=</span> <span class="st">&quot;NONAME&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">0</span> <span class="op">&lt;:</span> nil</span>
+<span id="cb13-5"><a href="#cb13-5"></a></span>
+<span id="cb13-6"><a href="#cb13-6"></a>ghci<span class="op">&gt;</span> update me defaultPerson</span>
+<span id="cb13-7"><a href="#cb13-7"></a>name <span class="op">@=</span> <span class="st">&quot;guchi&quot;</span> <span class="op">&lt;:</span> age <span class="op">@=</span> <span class="dv">20</span> <span class="op">&lt;:</span> nil</span></code></pre></div>
+<h2 id="例3-パターンマッチの実装">例3) パターンマッチの実装</h2>
+<p>僕はあまり <code>Endo</code> モノイドを使いこなせていませんが、良い感じに使えたと思える例としては TAPL 11章でレコードパターンを実装する際です。</p>
+<p>レコードのパターンマッチは代入の合成で書くことができるので、<code>Endo</code> がちょうどぴったり適用できました。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="ot">match ::</span> <span class="dt">Pattern</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> (<span class="dt">Term</span> <span class="ot">-&gt;</span> <span class="dt">Term</span>)</span>
+<span id="cb14-2"><a href="#cb14-2"></a>match (<span class="dt">PtVar</span> _ n) v <span class="ot">=</span> subst n v</span>
+<span id="cb14-3"><a href="#cb14-3"></a>match p<span class="op">@</span>(<span class="dt">PtRecord</span> fs) v<span class="op">@</span>(<span class="dt">TmRecord</span> fs')</span>
+<span id="cb14-4"><a href="#cb14-4"></a>  <span class="op">|</span> isRecordValue v <span class="op">&amp;&amp;</span> sameFieldLength p v</span>
+<span id="cb14-5"><a href="#cb14-5"></a>      <span class="ot">=</span> appEndo <span class="op">$</span> <span class="fu">foldMap</span> (<span class="dt">Endo</span> <span class="op">.</span> <span class="fu">uncurry</span> match) <span class="op">$</span> <span class="fu">zip</span> (<span class="fu">map</span> <span class="fu">snd</span> fs) (<span class="fu">map</span> <span class="fu">snd</span> fs')</span>
+<span id="cb14-6"><a href="#cb14-6"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: pattern match failure&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>match <span class="dt">PtRecord</span>{} _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;match: v is not Rrcord&quot;</span></span></code></pre></div>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.schoolofhaskell.com/user/mgsloan/monoids-tour">Monoids Tour</a></li>
+<li><a href="https://ocharles.org.uk/blog/posts/2013-02-12-quick-dsls-with-endo-writers.html">Quick and Easy DSLs with Writer Endo</a></li>
+<li><a href="http://blog.ploeh.dk/2018/04/16/endomorphic-composite-as-a-monoid/">Endomorphic Composite as a monoid</a></li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2019/02-02-dual-monoid.html"><i class="material-icons left">navigate_before</i>Dual Monoid</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2019/02-11-first-monoid.html">First Monoid<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Endo Monoid&url=https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/02-04-endo-monoid.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

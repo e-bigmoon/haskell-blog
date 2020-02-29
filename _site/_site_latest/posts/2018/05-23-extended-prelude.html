@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Prelude を カスタムPrelude で置き換える</title>
+  <meta name="description" content="はじめに
+つい最近 haskell-jp で 皆さんPreludeは何を使っていますか？ という話がありました。
+まとめるとだいたこんな感じです。
+
+
+
+カスタム Prelude パッケージ
+利用しているプロジェクト
+
+
+
+
+base-prelude
+???
+
+
+classy-prelude
+Yesod
+
+
+proto">
+  <link rel="canonical" href="../../posts/2018/05-23-extended-prelude.html">
+  <link rel="alternate" type="application/atom+xml" title="Prelude を カスタムPrelude で置き換える" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Prelude を カスタムPrelude で置き換える" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2018/05-23-extended-prelude.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Prelude を カスタムPrelude で置き換える" />
+  <meta property="og:description" content="はじめに
+つい最近 haskell-jp で 皆さんPreludeは何を使っていますか？ という話がありました。
+まとめるとだいたこんな感じです。
+
+
+
+カスタム Prelude パッケージ
+利用しているプロジェクト
+
+
+
+
+base-prelude
+???
+
+
+classy-prelude
+Yesod
+
+
+proto" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on May 23, 2018
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Prelude を カスタムPrelude で置き換える</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Prelude を カスタムPrelude で置き換える&url=https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p>つい最近 haskell-jp で <strong>皆さんPreludeは何を使っていますか？</strong> という話がありました。</p>
+<p>まとめるとだいたこんな感じです。</p>
+<table>
+<thead>
+<tr class="header">
+<th>カスタム Prelude パッケージ</th>
+<th>利用しているプロジェクト</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://github.com/nikita-volkov/base-prelude">base-prelude</a></td>
+<td>???</td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/snoyberg/mono-traversable/tree/master/classy-prelude">classy-prelude</a></td>
+<td><a href="https://github.com/yesodweb/yesod">Yesod</a></td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/sdiehl/protolude">protolude</a></td>
+<td><a href="https://github.com/purescript/purescript">purescript</a></td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/serokell/universum">universum</a></td>
+<td><a href="https://github.com/input-output-hk/cardano-sl">cardano-sl</a></td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/commercialhaskell/rio">rio</a></td>
+<td><a href="https://github.com/commercialhaskell/stack">stack</a></td>
+</tr>
+</tbody>
+</table>
+<p>カスタム Prelude を使うモチベーションは、自分のよく使う関数を Prelude に入れたいとか、<strong>fromJust</strong> みたいな部分関数を排除したいなど、色々あります。</p>
+<p>実際にカスタム Prelude を使うためにはファイルの先頭に <strong>NoImplicitPrelude</strong> 言語拡張とカスタムPreludeの <strong>import</strong> 宣言を追加する必要があります。(具体例として <strong>rio</strong> パッケージを利用します)</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">{-# LANGUAGE NoImplicitPrelude #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">import</span> <span class="dt">RIO</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="op">...</span></span></code></pre></div>
+<p>新しいファイルを作るたびに、ファイルの先頭に上記の宣言を書いても良いのですが、今回はこの作業なしにカスタム Prelude を使う方法をご紹介したいと思います。</p>
+<!--more-->
+<h2 id="default-extensions-を利用する">default-extensions を利用する</h2>
+<p><code>{-# LANGUAGE NoImplicitPrelude #-}</code> を自動的に有効化させることは意外と簡単です。</p>
+<p><strong>package.yaml</strong> や <strong>cabal</strong> ファイルの <strong>default-extensions</strong> に追加するだけです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># package.yaml</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">default-extensions</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">-</span><span class="at"> NoImplicitPrelude</span></span></code></pre></div>
+<pre><code># project.cabal
+default-extensions: NoImplicitPrelude</code></pre>
+<p>この場合、全てのファイルで自動的に <strong>NoImplicitPrelude</strong> が有効になるため、カスタム Prelude の import 宣言のみが必要となります。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">import</span> <span class="dt">RIO</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="op">...</span></span></code></pre></div>
+<p>まだ <code>import RIO</code> が残っているので、こいつをなんとかしましょう。</p>
+<h2 id="base-noprelude-パッケージ">base-noprelude パッケージ</h2>
+<p><a href="https://ghc.haskell.org/trac/ghc/ticket/9499?cversion=0&amp;cnum_hist=8">Add -prelude-is flag</a> というチケットで紹介されている方法を使えば、<code>import RIO</code> を記述することなく、<strong>Prelude</strong> のように利用できるようになります。</p>
+<p>このチケットによれば <strong>-prelude-is</strong> というオプションを導入しようとしていたようですが、そんなことしなくても <strong>Prelude</strong> を置き換えれるよ！という話です。</p>
+<p>具体的には <a href="https://github.com/haskell-hvr/base-noprelude">base-noprelude</a> パッケージを利用します。</p>
+<h3 id="最小構成">最小構成</h3>
+<p>この方法もかなり簡単で、<strong>stack.yaml</strong>, <strong>package.yaml</strong>, <strong>src/Prelude.hs</strong> をちょこっと書くだけで完成です。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># stack.yaml</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> nightly-2018-05-23</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">-</span><span class="at"> base-noprelude-4.11.1.0</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># package.yaml</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> extended-prelude</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="kw">-</span><span class="at"> base-noprelude</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">-</span><span class="at"> rio</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="at">  </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at"> src</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="at">  </span><span class="fu">other-modules</span><span class="kw">:</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="at">  </span><span class="kw">-</span><span class="at"> Prelude</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">-- src/Prelude.hs</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">module</span> <span class="dt">Prelude</span> (<span class="kw">module</span> <span class="dt">RIO</span>) <span class="kw">where</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">import</span> <span class="dt">RIO</span></span></code></pre></div>
+<h3 id="確認">確認</h3>
+<p>ファイルに <code>import RIO</code> を書かなくても本当に良いのか確かめてみます。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- src/Sample.hs</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">module</span> <span class="dt">Sample</span> <span class="kw">where</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="ot">f ::</span> <span class="dt">Text</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>f <span class="ot">=</span> tshow <span class="st">&quot;a&quot;</span></span></code></pre></div>
+<p>当然、通常の <strong>Prelude</strong> には <strong>Text</strong> も <strong>tshow</strong> も無いので、<code>import RIO</code> が有効になっていなければ、ビルドエラーになるはずです。</p>
+<p><strong>ghci</strong> で確認してみましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="op">$</span> stack repl</span>
+<span id="cb9-2"><a href="#cb9-2"></a>ghci<span class="op">&gt;</span> f</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="st">&quot;\&quot;a\&quot;&quot;</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a>ghci<span class="op">&gt;</span> <span class="op">:</span>t fromJust</span>
+<span id="cb9-6"><a href="#cb9-6"></a></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span> <span class="dt">Variable</span> <span class="fu">not</span> <span class="kw">in</span> scope<span class="op">:</span> fromJust</span>
+<span id="cb9-8"><a href="#cb9-8"></a></span>
+<span id="cb9-9"><a href="#cb9-9"></a>ghci<span class="op">&gt;</span> <span class="op">:</span>t view</span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="ot">view ::</span> <span class="dt">MonadReader</span> s m <span class="ot">=&gt;</span> <span class="dt">Getting</span> a s a <span class="ot">-&gt;</span> m a</span></code></pre></div>
+<p>ちゃんと動いてそうですね。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>実際にこの手法で開発を進めているわけではないので、もしかすると落とし穴があるかもしれませんが、思ったより使いやすくてびっくりしました。</p>
+<p>元の Prelude に戻すことも簡単だと思うので、興味があれば試してみて下さい。(結構前のチケットなので、周知の事実だったらすみません・・・。)</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2018/05-14-release-extensible-049.html"><i class="material-icons left">navigate_before</i>extensible-0.4.9 がリリースされました。</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2018/06-25-All-About-Strictness.html">正格性のすべて (翻訳)<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Prelude を カスタムPrelude で置き換える&url=https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2018/05-23-extended-prelude.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

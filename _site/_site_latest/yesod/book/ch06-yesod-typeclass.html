@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Yesod 型クラス</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/book/ch06-yesod-typeclass.html">
+  <link rel="alternate" type="application/atom+xml" title="Yesod 型クラス" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Yesod 型クラス" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/book/ch06-yesod-typeclass.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Yesod 型クラス" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <h1 class="post-title">Yesod 型クラス</h1>
+        
+        <span>最終更新日: 2018/10/24</span>
+        
+      </div>
+
+      <article class="page-content">
+        <p>あらゆる Yesod アプリケーションは <code>Yesod</code> 型クラスのインスタンスでなければなりません。今までのアプリケーションは、<code>Yesod</code> 型クラスのデフォルト実装によって動作していました。この章では <code>Yesod</code> 型クラスのメソッドをいくつかご紹介します。</p>
+<p><code>Yesod</code> 型クラスはアプリケーションの設定を定義するために存在します。全てのアプリケーションには、基本的なデフォルト実装が定義されていますが、より複雑にカスタマイズされたアプリケーションを作るためには、たいていこれらメッソドのいくつかを上書きして使います。</p>
+<div class="yesod-book-notice">
+<p>“なせレコード型の代わりに型クラスを利用するのだろうか？” という疑問があるかもしれません。型クラスには、2つの主な利点があります。</p>
+<ul>
+<li>Yesod 型クラスのメソッドで別のメソッドを呼ぶことがあります。型クラスの場合は単純ですが、レコード型の場合には多少複雑です。</li>
+<li>もう1つは、構文の単純さです。私たちはデフォルトの実装を提供し、ユーザが必要な機能だけを上書きできるようにしたいのです。型クラスで上書きすることは簡単ですし、構文的にも非常に優れています。また、レコード型には多少のオーバーヘッドがあります。</li>
+</ul>
+</div>
+<h2 id="url-のパージングとレンダリング">URL のパージングとレンダリング</h2>
+<p>既に述べた通り、Yesod は型安全URL を通常の URL (HTML に挿入可能なテキスト形式) へ自動的にレンダリングできます。例えば、次のようなルートがあったとしましょう。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>mkYesod <span class="st">&quot;MyApp&quot;</span> [parseRoutes|</span>
+<span id="cb1-2"><a href="#cb1-2"></a>/some/path SomePathR GET</span>
+<span id="cb1-3"><a href="#cb1-3"></a>]</span></code></pre></div>
+<p>hamlet テンプレートに <code>SomePathR</code> が出現するとき、 Yesod は <code>SomePathR</code> をどのようにレンダリングするのでしょうか？Yesod は常に絶対 (<strong><em>absolute</em></strong>) URL を構成しようとします。これは XML サイトマップや Atom フィードの生成、電子メールの送信などを考慮するためです。しかし、絶対 URL を作るためには、アプリケーションのドメイン名を知る必要があります。</p>
+<p>ドメイン名はユーザのリクエストから得られると思うかもしれませんが、それ以外にもポート番号についても知る必要もあります。そして、例えポート番号をリクエストから取得できたとしても、HTTP または HTTPS のどちらを利用すれば良いのでしょうか？さらにそれを知ったとしても、このような方法はユーザがどのようにリクエストを送信したかに応じて異なる URL が生成されることを意味します。例えば、ユーザが <code>"example.com"</code> と <code>"www.example.com"</code> にアクセスしたとき、両者で異なる URL が生成されてしまいます。サーチエンジン最適化の観点で考えると、ひとつの正規化された URL に統一したいでしょう。</p>
+<p>最後に Yesod はアプリケーションをどこにホストしているかについて何の仮定もありません。例えば、大部分は静的なサイト (<a href="http://static.example.com/">http://static.example.com/</a>) ですが、 /wiki/ に Yesod 製の Wiki を作りたいとしましょう。このとき、サブパスがどこからホストされているかについて、アプリケーションが決定するための信頼できる方法はありません。なので、様々な予測をするのではなく、Yesod にアプリケーションのルートを教えます。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">MyWiki</span> <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://static.example.com/wiki&quot;</span></span></code></pre></div>
+<p>末尾のスラッシュがないことに注意してください。Yesod が <code>SomePathR</code> の URL を構成するときは、まず <code>SomePathR</code> が相対パス <code>/some/path</code> であるということを計算し、それを <code>approot</code> に付け加えます。その結果 <code>http://static.example.com/wiki/some/path</code> ができあがります。</p>
+<p><code>approot</code> のデフォルト値は <code>ApprootRelative</code> です。これは本質的には “何の接頭辞も加えない” ということを意味するため、生成される URL は <code>/some/path</code> になります。これは、アプリケーション内リンクの一般的なケースとドメインのルートにホストされたアプリケーションにおいては正しく機能します。しかし、 (電子メールを送る場合のような) 絶対 URL が必要となる場合は <code>ApprootStatic</code> を利用するべきでしょう。</p>
+<p><code>ApprootStatic</code> コンストラクタに加え <code>ApprootMaster</code> と <code>ApprootRequest</code> コンストラクタも利用可能です。<code>ApprootMaster</code> は <code>approot</code> をファウンデーション値から決定します。このコンストラクタを使えば、例えば、<code>approot</code> を設定ファイルから読み込むことができます。<code>ApprootRequest</code> は <code>approot</code> を決めるための追加的なリクエスト値を利用できるため、ユーザが最初にサイトに対してどんなリクエストをしたかによって、異なるドメイン名にすることができます。</p>
+<p>scaffolded サイトはデフォルトで <code>ApprootMaster</code> を使い、<code>approot</code> を <code>APPROOT</code> 環境変数、または設定ファイルから起動時に読み込みます。そのため、テストとプロダクションのビルド毎で異なる設定を読み込み、ローカルホストのような1つのドメインをテストし、異なるドメインへデプロイするといった事が簡単にできます。そして、これらの値は設定ファイルから変更できます。</p>
+<h3 id="joinpath">joinPath</h3>
+<p>型安全URL をテキスト値に変えるために Yesod は2つの補助関数を使います。1つは <code>RenderRoot</code> 型クラスの <code>renderRoute</code> メソッドです。全ての型安全URL はこの型クラスのインスタンスです。<code>renderRoute</code> は値をパス断片のリストに変換します。例えば先ほどの <code>SomePathR</code> は <code>["some","path"]</code> に変換されます。</p>
+<div class="yesod-book-notice">
+<p>実際には <code>renderRoute</code> はパス断片のリストと、クエリ文字列パラメータのリストの両方を生成します。<code>rendeRoute</code> のデフォルト定義では、クエリ文字列パラメータは常に空リストですが、型クラスなのでメソッドを上書きして使うこともできます。注目すべきケースは静的サブサイトで、ファイルコンテンツのハッシュをキャッシュ目的でクエリ文字列に追加します。</p>
+</div>
+<p>Yesod 型クラスに定義されている別の関数として <code>joinPath</code> メソッドがあります。この関数は以下の4つの引数を取ります。</p>
+<ul>
+<li>ファウンデーション値</li>
+<li>アプリケーションルート</li>
+<li>パス断片のリスト</li>
+<li>クエリ文字列パラメータのリスト</li>
+</ul>
+<p>そして、テキスト形式の URL を返します。デフォルトの実装では、パス断片を前方に現れるスラッシュで分離し、パス断片の前にアプリケーションルートを付け加え、パス断片の後ろにクエリ文字列を付け加えるというような、処理を行います。</p>
+<p>もし、デフォルトの URL レンダリングで問題なければ特に変更する必要はありません。しかし、末尾のスラッシュを追加するように URL のレンダリングを変更したい時などでは、このメソッドを上書きする必要があります。</p>
+<h3 id="cleanpath">cleanPath</h3>
+<p><code>joinPath</code> の反対は <code>cleanPath</code> です。この関数がディスパッチ処理でどのように使われているか見てみましょう。</p>
+<ol type="1">
+<li>ユーザからリクエストされたパス情報は、一連のパス断片に分割されます。</li>
+<li>パス断片を <code>cleanPath</code> 関数に渡します。</li>
+<li>もし <code>cleanPath</code> がリダイレクト (<code>Left</code> レスポンス) を返せば、301レスポンスがクライアントに送られます。そのため、強制的に正規化した URL を使うことができます。 (例えば、余分なスラッシュを除去するなど)</li>
+<li>その他の場合 <code>cleanPath</code> からのレスポンス (<code>Right</code>) を使って、ディスパッチを試し、もしこれが上手くいけばレスポンスを返します。そうでなければ、404を返します。</li>
+</ol>
+<p>これらを組み合わせることで、マスターサイトの URL が変化したとしても、サブサイトは URL について完全な制御が可能です。例を使って、どのようにすれば Yesod が常に末尾のスラッシュを含むようになるか確認してみましょう。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="kw">import</span>           <span class="dt">Blaze.ByteString.Builder.Char.Utf8</span> (fromText)</span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="kw">import</span>           <span class="dt">Control.Arrow</span>                      ((***))</span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="kw">import</span>           <span class="dt">Data.Monoid</span>                        (mappend)</span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span>                          <span class="kw">as</span> <span class="dt">T</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Encoding</span>                 <span class="kw">as</span> <span class="dt">TE</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="kw">import</span>           <span class="dt">Network.HTTP.Types</span>                 (encodePath)</span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="kw">data</span> <span class="dt">Slash</span> <span class="ot">=</span> <span class="dt">Slash</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a></span>
+<span id="cb3-16"><a href="#cb3-16"></a>mkYesod <span class="st">&quot;Slash&quot;</span> [parseRoutes|</span>
+<span id="cb3-17"><a href="#cb3-17"></a>/ RootR GET</span>
+<span id="cb3-18"><a href="#cb3-18"></a>/foo FooR GET</span>
+<span id="cb3-19"><a href="#cb3-19"></a>|]</span>
+<span id="cb3-20"><a href="#cb3-20"></a></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Slash</span> <span class="kw">where</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>    joinPath _ ar pieces' qs' <span class="ot">=</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a>        fromText ar <span class="ot">`mappend`</span> encodePath pieces qs</span>
+<span id="cb3-24"><a href="#cb3-24"></a>      <span class="kw">where</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a>        qs <span class="ot">=</span> <span class="fu">map</span> (TE.encodeUtf8 <span class="op">***</span> go) qs'</span>
+<span id="cb3-26"><a href="#cb3-26"></a>        go <span class="st">&quot;&quot;</span> <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a>        go x <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> TE.encodeUtf8 x</span>
+<span id="cb3-28"><a href="#cb3-28"></a>        pieces <span class="ot">=</span> pieces' <span class="op">++</span> [<span class="st">&quot;&quot;</span>]</span>
+<span id="cb3-29"><a href="#cb3-29"></a></span>
+<span id="cb3-30"><a href="#cb3-30"></a>    <span class="co">-- We want to keep canonical URLs. Therefore, if the URL is missing a</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a>    <span class="co">-- trailing slash, redirect. But the empty set of pieces always stays the</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a>    <span class="co">-- same.</span></span>
+<span id="cb3-33"><a href="#cb3-33"></a>    cleanPath _ [] <span class="ot">=</span> <span class="dt">Right</span> []</span>
+<span id="cb3-34"><a href="#cb3-34"></a>    cleanPath _ s</span>
+<span id="cb3-35"><a href="#cb3-35"></a>        <span class="op">|</span> <span class="fu">dropWhile</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s <span class="op">==</span> [<span class="st">&quot;&quot;</span>] <span class="ot">=</span> <span class="co">-- the only empty string is the last one</span></span>
+<span id="cb3-36"><a href="#cb3-36"></a>            <span class="dt">Right</span> <span class="op">$</span> <span class="fu">init</span> s</span>
+<span id="cb3-37"><a href="#cb3-37"></a>        <span class="co">-- Since joinPath will append the missing trailing slash, we simply</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a>        <span class="co">-- remove empty pieces.</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a>        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Left</span> <span class="op">$</span> <span class="fu">filter</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s</span>
+<span id="cb3-40"><a href="#cb3-40"></a></span>
+<span id="cb3-41"><a href="#cb3-41"></a><span class="ot">getRootR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-42"><a href="#cb3-42"></a>getRootR <span class="ot">=</span> defaultLayout</span>
+<span id="cb3-43"><a href="#cb3-43"></a>    [whamlet|</span>
+<span id="cb3-44"><a href="#cb3-44"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb3-45"><a href="#cb3-45"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">RootR</span><span class="kw">}&gt;</span>RootR</span>
+<span id="cb3-46"><a href="#cb3-46"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb3-47"><a href="#cb3-47"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">FooR</span><span class="kw">}&gt;</span>FooR</span>
+<span id="cb3-48"><a href="#cb3-48"></a>    |]</span>
+<span id="cb3-49"><a href="#cb3-49"></a></span>
+<span id="cb3-50"><a href="#cb3-50"></a><span class="ot">getFooR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-51"><a href="#cb3-51"></a>getFooR <span class="ot">=</span> getRootR</span>
+<span id="cb3-52"><a href="#cb3-52"></a></span>
+<span id="cb3-53"><a href="#cb3-53"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-54"><a href="#cb3-54"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">Slash</span></span></code></pre></div>
+<p>まず <code>joinPath</code> の実装を見てください。これは1つを除いて Yesod 型クラスのデフォルト実装からほとんど一語一句そのままにコピーされたものです。異なる部分は、末尾に空文字列を余分に追加した点です。パス断片を扱う場合、空文字列はさらにスラッシュを追加するため、余分な空文字列を追加することで、末尾のスラッシュを強制できるのです。</p>
+<p><code>cleanPath</code> は少しだけトリッキーです。まず、前のように空パスをチェックし、もし空パスならそのまま受け渡し、リダイレクトが不要なことを示すために <code>Right</code> を返します。また、実際には、以下の問題についてチェックする必要があります。</p>
+<ul>
+<li>ダブルスラッシュがあり、それはパスの途中で空文字列として出現する。</li>
+<li>末尾のスラッシュが欠けており、空文字列では無い文字列が最後の断片として出現する。</li>
+</ul>
+<p>これらどちらの状況にも当てはまらないのであれば、最後の断片のみが空なので、最後の断片を除き全てに基づいてディスパッチを行うべきです。また、そうでない場合は正規化された URL にリダイレクトさせたいので、<code>joinPath</code> で全ての空断片を取り除き、末尾にスラッシュを追加します。</p>
+<h2 id="defaultlayout">defaultLayout</h2>
+<p>多くのウェブサイトでは、何らかの一般的なテンプレートを全ページに適用させたいということがあります。<code>defaultLayout</code> は、こういった用途にピッタリです。独自の関数を定義し代わりにそれを呼び出すことは同じくらい簡単ですが <code>defaultLayout</code> を上書きすることで、Yesod で生成された全てのページ (エラーページ、認証ページ) が自動的にこのスタイルとなります。</p>
+<p>このメソッドを上書きしたい場合は <code>Widget</code> をタイトル、ヘッドタグ、ボディダグに変換するために <code>widgetToPageContent</code> を使い、そして Hamlet テンプレートを <code>Html</code> 値に変換するために <code>withUrlRenderer</code> を使います。さらに <code>defaultLayout</code> 内で Lucius テンプレートのようなウィジェットコンポーネントをさらに追加することもできます。詳細は、前章を確認してください。</p>
+<p>scaffolded サイトを使っている場合は <code>templates/default-layout.hamlet</code> と <code>templates/default-layout-wrapper.hamlet</code> を変更します。前者は大部分の <code>&lt;body&gt;</code> タグのコンテンツを含み、後者は doctype や <code>&lt;head&gt;</code> タグのような残りの HTML を含みます。</p>
+<h3 id="getmessage">getMessage</h3>
+<p>まだセッションについては何も説明していませんが、ここで <code>getMessage</code> について言及したいと思います。Web 開発の共通パターンとして、ひとつのハンドラでメッセージをセットし、別のハンドラで表示するというものがあります。例えば、ユーザがフォームを <code>POST</code> したら、 “フォーム提出は完了しました” のメッセージとともにリダイレクトさせたいといった場合です。これは一般的に <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get">Post/Redirect/Get</a> として知られています。</p>
+<p>これを実現するために Yesod は次の関数のペアを組み込みで用意しています。<code>setMessage</code> はメッセージをユーザセッションにセットし <code>getMessage</code> はメッセージを回収します (再び出現しないように削除します)。そのため <code>getMessage</code> の結果を <code>defaultLayout</code> で表示することが推奨されています。以下の例で確認してみましょう。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">import</span> <span class="dt">Data.Time</span> (getCurrentTime)</span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb4-11"><a href="#cb4-11"></a>/ HomeR GET</span>
+<span id="cb4-12"><a href="#cb4-12"></a>|]</span>
+<span id="cb4-13"><a href="#cb4-13"></a></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>    defaultLayout contents <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>        <span class="dt">PageContent</span> title headTags bodyTags <span class="ot">&lt;-</span> widgetToPageContent contents</span>
+<span id="cb4-17"><a href="#cb4-17"></a>        mmsg <span class="ot">&lt;-</span> getMessage</span>
+<span id="cb4-18"><a href="#cb4-18"></a>        withUrlRenderer [hamlet|</span>
+<span id="cb4-19"><a href="#cb4-19"></a>            <span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a></span>
+<span id="cb4-21"><a href="#cb4-21"></a>            <span class="kw">&lt;html&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>                <span class="kw">&lt;head&gt;</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>                    <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>                    <span class="kw">^{</span>headTags<span class="kw">}</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a>                <span class="kw">&lt;body&gt;</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a>                    <span class="kw">$maybe</span> msg <span class="ot">&lt;-</span> mmsg</span>
+<span id="cb4-27"><a href="#cb4-27"></a>                        <span class="kw">&lt;div </span><span class="er">#message</span><span class="kw">&gt;#{</span>msg<span class="kw">}</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a>                    <span class="kw">^{</span>bodyTags<span class="kw">}</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>        |]</span>
+<span id="cb4-30"><a href="#cb4-30"></a></span>
+<span id="cb4-31"><a href="#cb4-31"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-32"><a href="#cb4-32"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a>    now <span class="ot">&lt;-</span> liftIO getCurrentTime</span>
+<span id="cb4-34"><a href="#cb4-34"></a>    setMessage <span class="op">$</span> toHtml <span class="op">$</span> <span class="st">&quot;You previously visited at: &quot;</span> <span class="op">++</span> <span class="fu">show</span> now</span>
+<span id="cb4-35"><a href="#cb4-35"></a>    defaultLayout [whamlet|<span class="kw">&lt;p&gt;</span>Try refreshing|]</span>
+<span id="cb4-36"><a href="#cb4-36"></a></span>
+<span id="cb4-37"><a href="#cb4-37"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-38"><a href="#cb4-38"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<p><code>getMessage</code> と　<code>setMessage</code> については、セッションの章で詳細に触れます。</p>
+<h2 id="カスタムエラーページ">カスタムエラーページ</h2>
+<p>プロフェッショナルな Web サイトの証の1つとして、適切に設計されたエラーページが挙げられます。Yesod はエラーページを表示するために、自動的に <code>defaultLayout</code> を利用しますが、もっと別の方法もあります。それが <code>errorHandler</code> メソッドを上書きする方法です。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb5-10"><a href="#cb5-10"></a>/ HomeR GET</span>
+<span id="cb5-11"><a href="#cb5-11"></a>/error ErrorR GET</span>
+<span id="cb5-12"><a href="#cb5-12"></a>/not-found NotFoundR GET</span>
+<span id="cb5-13"><a href="#cb5-13"></a>|]</span>
+<span id="cb5-14"><a href="#cb5-14"></a></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>    errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> <span class="fu">fmap</span> toTypedContent <span class="op">$</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a>        setTitle <span class="st">&quot;Request page not located&quot;</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a>        toWidget [hamlet|</span>
+<span id="cb5-19"><a href="#cb5-19"></a><span class="kw">&lt;h1&gt;</span>Not Found</span>
+<span id="cb5-20"><a href="#cb5-20"></a><span class="kw">&lt;p&gt;</span>We apologize for the inconvenience, but the requested page could not be located.</span>
+<span id="cb5-21"><a href="#cb5-21"></a>|]</span>
+<span id="cb5-22"><a href="#cb5-22"></a>    errorHandler other <span class="ot">=</span> defaultErrorHandler other</span>
+<span id="cb5-23"><a href="#cb5-23"></a></span>
+<span id="cb5-24"><a href="#cb5-24"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb5-25"><a href="#cb5-25"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
+<span id="cb5-26"><a href="#cb5-26"></a>    [whamlet|</span>
+<span id="cb5-27"><a href="#cb5-27"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb5-28"><a href="#cb5-28"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">ErrorR</span><span class="kw">}&gt;</span>Internal server error</span>
+<span id="cb5-29"><a href="#cb5-29"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">NotFoundR</span><span class="kw">}&gt;</span>Not found</span>
+<span id="cb5-30"><a href="#cb5-30"></a>    |]</span>
+<span id="cb5-31"><a href="#cb5-31"></a></span>
+<span id="cb5-32"><a href="#cb5-32"></a><span class="ot">getErrorR ::</span> <span class="dt">Handler</span> ()</span>
+<span id="cb5-33"><a href="#cb5-33"></a>getErrorR <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;This is an error&quot;</span></span>
+<span id="cb5-34"><a href="#cb5-34"></a></span>
+<span id="cb5-35"><a href="#cb5-35"></a><span class="ot">getNotFoundR ::</span> <span class="dt">Handler</span> ()</span>
+<span id="cb5-36"><a href="#cb5-36"></a>getNotFoundR <span class="ot">=</span> notFound</span>
+<span id="cb5-37"><a href="#cb5-37"></a></span>
+<span id="cb5-38"><a href="#cb5-38"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-39"><a href="#cb5-39"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span> haskell</span></code></pre></div>
+<p>ここでは、カスタマイズした404エラーページを指定します。それぞれのエラー型に対して、カスタマイズしたハンドラを書きたくない場合は <code>defaultErrorHandler</code> を利用しましょう。型の制約により <code>fmap toTypeContent</code> でメソッドで始める必要がありますが、典型的なハンドラ関数を書くことができます (<code>TypedContent</code> については、次の章で詳しく説明します)。</p>
+<p>実際に、リダイレクトのような特別なレスポンスさえも利用可能です。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> redirect <span class="dt">HomeR</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>errorHandler other <span class="ot">=</span> defaultErrorHandler other</span></code></pre></div>
+<div class="yesod-book-notice">
+<p>上記のように行うことはできますが、実際にはこのような使い方は推奨しません。なぜなら、404は404そのものであるべきだからです。</p>
+</div>
+<h2 id="外部の-css-と-javascript">外部の CSS と Javascript</h2>
+<div class="yesod-book-notice">
+<p>ここで示された機能は scaffolded サイトに自動的に含まれているため、自分自身で実装する必要はありません。</p>
+</div>
+<p>Yesod 型クラスにおける、最も強力かつ驚くべきメソッドは <code>addStaticContent</code> です。ウィジェットは CSS、 Javascript を含む複数のコンポーネントで構成されていることを思い出してください。CSS/JS は実際にはどのようにしてユーザのブラウザに表示されるのでしょうか？デフォルトでは、ページの <code>&lt;head&gt;</code> タグの内側の <code>&lt;style&gt;</code>、 <code>&lt;script&gt;</code> タグにそれぞれ配置されます。</p>
+<p>これは単純かもしれませんが、効率的ではありません。ページに何も変更が加えられていなくても、全てのページロードは CSS/JS を初めから読み込む必要があるためです！本当にやりたいことは、このコンテンツを外部ファイルに保存し HTML から参照することです。</p>
+<p>ここで <code>addStaticContent</code> が登場します。この関数はコンテンツのファイル名の拡張子 (<code>css</code> または <code>js</code>)、 コンテンツの MIME タイプ (<code>text/css</code> または <code>text/javascript</code>)、 コンテンツ自身の3つの引数を取り、次の３つのうちどれか1つを返します。</p>
+<h3 id="nothing">Nothing</h3>
+<p>静的ファイルの保存が起こらない場合、このコンテンツを直接 HTML に埋め込みます。これはデフォルトの挙動です。</p>
+<h3 id="just-left-text">Just (Left Text)</h3>
+<p>このコンテンツは外部ファイルに保存され、そのファイルを参照するためにテキスト形式のリンクを返します。</p>
+<h3 id="just-right-route-a-query">Just (Right (Route a, Query))</h3>
+<p>先ほどと同じですが、何らかのクエリ文字列パラメータとともに、型安全URLを返します。</p>
+<p><code>Left</code> の結果は、静的ファイルを CDN やメモリバックサーバのような外部サーバに保存する時によく使われます。<code>Right</code> の結果は、より一般的に用いられ、静的サブサイトにおいてよく使われます。この方法は多くのアプリケーションで推奨されるため scaffolded サイトではデフォルトの動作になっています。</p>
+<div class="yesod-book-notice">
+<p>次のことを不思議に思うかもしれません。もしこれが推奨される方法だとすれば、なぜデフォルトになっていないのでしょうか？問題としては、それは静的サブサイトの存在や、静的ファイルの場所など、普遍的には当てはまらないいくつかの仮定があるからです。</p>
+</div>
+<p>scaffolded された <code>addStaticContent</code> は便利ないくつかの賢い機能を提供します。</p>
+<ul>
+<li>hjsmin パッケージを使って、自動的に Javascript ファイルを最小化します。</li>
+<li>出力されるファイル名はファイルコンテンツのハッシュによって決まります。これは、古いコンテンツを気にすることなく、遠い将来までキャッシュヘッダをセット可能なことを意味します。</li>
+<li>ファイル名はハッシュに基づいているため、同じ名前のファイルが存在しても、ファイル名を書き直す必要がないことが保証されています。scaffold コードは、自動的にそのようなファイルの存在を確認し、必要でなければ、コストのかかるディスクIOによる書き込みを回避します。</li>
+</ul>
+<h2 id="静的ファイルの最適化">静的ファイルの最適化</h2>
+<p>グーグルは<a href="https://developers.google.com/speed/docs/insights/EnableCompression">静的ファイルを異なるドメインから受信せよ</a>という重要な最適化を推奨しています。この方法による利点は、メインのドメインにセットしたクッキーが静的ファイルを取り出す際に送信されないので、帯域幅の節約になります。</p>
+<p>これを可能にするために <code>urlParamRenderOverride</code> メソッドがあります。このメソッドは、通常のURLレンダリング処理に割り込み、何らかのルートに特別な値をセットします。例えば scaffolding はこのメソッドを次のように定義しています。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">urlParamRenderOverride ::</span> site</span>
+<span id="cb7-2"><a href="#cb7-2"></a>                       <span class="ot">-&gt;</span> <span class="dt">Route</span> site</span>
+<span id="cb7-3"><a href="#cb7-3"></a>                       <span class="ot">-&gt;</span> [(<span class="dt">T.Text</span>, <span class="dt">T.Text</span>)] <span class="co">-- ^ クエリ文字列</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>                       <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Builder</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>urlParamRenderOverride y (<span class="dt">StaticR</span> s) _ <span class="ot">=</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>  <span class="dt">Just</span> <span class="op">$</span> <span class="fu">uncurry</span> (joinPath y (Settings.staticRoot <span class="op">$</span> settings y)) <span class="op">$</span> renderRoute s</span>
+<span id="cb7-7"><a href="#cb7-7"></a>urlParamRenderOverride _ _ _ <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>これは、静的ルートが特別な静的ルートから受信されることを意味し、そのルートは異なるドメインになるよう設定可能です。これは、型安全URL の強力さと柔軟性の重要な例でもあり、たった1行のコードで、全てのハンドラを通して、静的ルートのレンダリングを変更することができてしまうのです。</p>
+<h2 id="認証-認可">認証 / 認可</h2>
+<p>単純なアプリケーションでは、各ハンドラ関数の中でパーミッションを確認するとういう方法が簡単で便利です。しかし、それはうまくスケーリングしません。結果的には、より宣言的な方法をとりたいと思うようになるでしょう。よくあるシステムでは ACL、特別な設定ファイル、そして多くの意味のわからない呪文を定義するでしょう。Yesod では、それらはただの Haskell です。3つのメソッドが関連します。</p>
+<h3 id="iswriterequest">isWriteRequest</h3>
+<p>現在のリクエストが “読み取り” あるいは “書き込み” 操作であるかどうかを決定します。デフォルトでは、Yesod は RESTful 原則に従い <code>GET</code>、<code>HEAD</code>、 <code>OPTIONS</code>、 <code>TRACE</code> リクエストを読み取り専用、その他は書き込み可能とします。</p>
+<h3 id="isauthorized">isAuthorized</h3>
+<p>ルート (型安全URL) と、リクエストが書き込み可能なリクエストかどうかを示す真偽値を取ります。結果として、<code>AuthResult</code> 型の値を返します。この型の値は次の3種類です。</p>
+<ul>
+<li><code>Authorized</code></li>
+<li><code>AuthenticationRequired</code></li>
+<li><code>Unauthorized</code></li>
+</ul>
+<p>デフォルトでは、あらゆるリクエストに対して <code>Authorized</code> を返します。</p>
+<h3 id="authroute">authRoute</h3>
+<p><code>isAuthorized</code> から <code>AuthenticationRequired</code> が返ってきた時は、与えられたルートへリダイレクトします。もし、ルートが与えられていない場合 (デフォルト) は、401 “要認証” メッセージを返します。</p>
+<p>これらのメソッドは yesod-auth パッケージとうまく結びつき、それは scaffolded サイトにおいて、 OpenID、 Mozilla Persona、電子メール、ユーザ名、 Twitter のようないくつのもの認証オプションを提供するために利用されます。より具体的な例については、認証の章で確認します。</p>
+<h2 id="単純な設定たち">単純な設定たち</h2>
+<p>Yesod 型クラスの全てのメソッドが複雑というわけではありません。中には、単純な機能のメソッドもあるので、どんなものがあるか見てみましょう。</p>
+<h3 id="maximumcontentlength">maximumContentLength</h3>
+<p>サービス拒否 (DoS) 攻撃を防ぐために、Yesod はリクエストのボディサイズを制限します。あるルート (例えば、ファイルのアップロードページなど) では、この制限に引っかかる場合があるかもしれませんが、そういった時に関数を使います。</p>
+<h3 id="fileupload">fileUpload</h3>
+<p>リクエストのサイズに応じてアップロードされたファイルをどのように扱うか決定します。2つのもっとも一般的な方法は、ファイルをメモリに保存すること、または、一時ファイルに流すことです。デフォルトでは、小さなリクエストはメモリに保持され、大きなものはディスクに保存されます。</p>
+<h3 id="shouldlogio">shouldLogIO</h3>
+<p>与えられた (ソースとレベル情報を含む) ログメッセージが、ログに送られるべきかどうかを決定します。これにより、多くのデバッグ情報をアプリケーションに送ることが可能になりますが、常に利用するのではなく必要な場合にのみ使ってください。</p>
+<p>最新の情報については Yesod 型クラスの Haddock API ドキュメントを確認してください。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>Yesod 型クラスは、アプリケーションの設定するための多くの上書き可能なメソッドを持ちます。適切なデフォルト実装が全てのメソッドに用意されているので、上書きするかどうかはアプリケーション毎に好きに決めることができます。<code>defaultLayout</code> や <code>getMessage</code> といった Yesod 型クラスが提供する構築方法を利用することで、エラーページや認証ページのような Yesod で自動生成されるページを含めて、サイト全体を通し一貫した見た目にすることができます。</p>
+<p>本章で紹介したメソッドは Yesod 型クラスの一部です。そのため、利用可能なメソッドの全リストについては Haddock ドキュメントを参照してください。</p>
+<h2 id="本書のコード">本書のコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch06/Example01.hs">Example01.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch06/Example02.hs">Example02.hs</a></li>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch06/Example03.hs">Example03.hs</a></li>
+</ul>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Yesod 型クラス&url=https://haskell.e-bigmoon.com/yesod/book/ch06-yesod-typeclass.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/ch06-yesod-typeclass.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/yesod/book/ch06-yesod-typeclass.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

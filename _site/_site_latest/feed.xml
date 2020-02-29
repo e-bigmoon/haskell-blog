@@ -1,0 +1,1735 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>BIG MOON</title>
+    <link href="https://haskell.e-bigmoon.com/feed.xml" rel="self" />
+    <link href="https://haskell.e-bigmoon.com" />
+    <id>https://haskell.e-bigmoon.com/feed.xml</id>
+    <author>
+        <name>BIG MOON</name>
+        <email>it@e-bigmoon.com</email>
+    </author>
+    <updated>2020-02-19T00:00:00Z</updated>
+    <entry>
+    <title>HUnit で日本語が文字化けする問題</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/02-19-hunit-show-unicode.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/02-19-hunit-show-unicode.html</id>
+    <published>2020-02-19T00:00:00Z</published>
+    <updated>2020-02-19T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p><code>HUnit</code> で日本語を扱おうとすると、以下のように文字化けしますよね。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span></code></pre></div>
+<p>この問題は簡単に回避できるので、その方法を紹介します。やり方は <a href="https://github.com/hspec/hspec/issues/384">Human-readable output of unicode characters in expectation results #384</a> の方法そのまんまです。</p>
+<!--more-->
+<h2 id="問題が発生している原因">問題が発生している原因</h2>
+<p>今回使うコードはとてもシンプルです。依存しているパッケージは <a href="https://hackage.haskell.org/package/HUnit">HUnit</a> です。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- Main.hs</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-7"><a href="#cb2-7"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
+<p>上記のコードを実行すると、以下のような結果になります。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">$</span> stack repl <span class="co">--package HUnit ./Main.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> bad</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">### Failure:                              </span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">6</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
+<p>この問題は何故発生するかと言うと、<code>HUnit</code> 内部で <code>show</code> 関数を利用しているためです。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="st">&quot;\12495\12473\12465\12523&quot;</span></span></code></pre></div>
+<p>上記のような文字化けに対応するには <a href="https://hackage.haskell.org/package/unicode-show">unicode-show</a> パッケージの <strong>ushow</strong> 関数が便利です。より詳しい紹介は「<a href="https://haskell.jp/blog/posts/2019/unicode-show.html">日本語をshowしてうまく表示されなかったらunicode-showの紹介（と、pretty-simpleを少し）</a>」を参照してください。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">$</span> stack repl <span class="co">--package HUnit --package unicode-show ./Main.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="op">*</span><span class="dt">Main</span> <span class="dt">Text.Show.Unicode</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> ushow <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="st">&quot;ハスケル&quot;</span></span></code></pre></div>
+<p>ということで、<strong>HUnit</strong> を <strong>ushow</strong> を使うようにしてみましょう。</p>
+<h2 id="解決策">解決策</h2>
+<p>やり方はとても簡単です。<strong>(@?=)</strong> を以下のように再定義するだけです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">HUnit.Assertion</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span></code></pre></div>
+<p>コード全体は以下の通りです。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-6"><a href="#cb7-6"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
+<span id="cb7-9"><a href="#cb7-9"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
+<span id="cb7-13"><a href="#cb7-13"></a></span>
+<span id="cb7-14"><a href="#cb7-14"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Assertion</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span>
+<span id="cb7-16"><a href="#cb7-16"></a></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="ot">good ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-18"><a href="#cb7-18"></a>good <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
+<p>実行してみましょう！</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;</span> good</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="pp">### Failure:</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">15</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>expected<span class="op">:</span> <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
+<p>こんな感じで他の関数も同様に定義してしまえば良い感じです。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>日本語の文字化けで困っている人向け情報でした。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://iwamototakashi.hatenadiary.jp/entry/20100722/p1">HUnitで日本語を出力してみる→成功</a></li>
+<li><a href="https://github.com/hspec/hspec/issues/384">Human-readable output of unicode characters in expectation results #384</a></li>
+<li><a href="https://haskell.jp/blog/posts/2019/unicode-show.html">日本語をshowしてうまく表示されなかったらunicode-showの紹介（と、pretty-simpleを少し）</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
+    <title>stack で管理されたプロジェクトを cabal でビルドするために</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/01-22-get-freeze-from-stackage.html</id>
+    <published>2020-01-22T00:00:00Z</published>
+    <updated>2020-01-22T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Haskell のビルドツールといえば <strong>cabal</strong> と <strong>stack</strong> です。ちょっと前までは <strong>cabal</strong> より <strong>stack</strong> の方が流行っていたのですが、最近は開発も落ち着いているようであまり動きがありません。それよりも <strong>cabal</strong> の <strong>nix-style local build</strong> が非常に使いやすく、近頃では <strong>stack</strong> から <strong>cabal</strong> に移行しているプロジェクトも多くあります。</p>
+<p><strong>stack</strong> を使っていて改善したら良いなぁと思う部分としては、新しい <strong>GHC</strong> やライブラリをすぐに使おうと思っても <strong>LTS</strong> や <strong>nightly</strong> に入っていないため使えなかったり、<strong>Backpack</strong> が未だに使えなかったりするところでしょうか。</p>
+<p>ただ、ビルドの再現性という点においては <strong>stack</strong> の方が優秀だと思っているので今は両方使っています。(<strong>index-state</strong> と <strong>freeze</strong> ファイルを組み合わせれば <strong>cabal</strong> でも再現性が保証されそうな気がしますが、どうなんだろう)</p>
+<p>今回は <strong>stack</strong> で管理されたプロジェクトを確実に <strong>cabal</strong> でビルドするための方法についてまとめました。</p>
+<ul>
+<li><a href="https://medium.com/@fommil/why-not-both-8adadb71a5ed">Why Not Both?</a> に載ってた <strong>Stackage</strong> の使い方の紹介でもあります。</li>
+</ul>
+<!--more-->
+<h2 id="モチベーション">モチベーション</h2>
+<p>ここでは <code>stack</code> で管理されていて、<code>cabal</code> ファイルにバージョン制約が明記されていないという、良くあるシチュエーションを考えます。</p>
+<p>どんなプロジェクトでも良いのですが、具体的には <a href="https://github.com/arcticmatt/dino-brick">arcticmatt/dino-brick</a> のようなプロジェクトです。<code>stack.yaml</code> は以下のようになっています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-8.23</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">-</span><span class="at"> </span><span class="st">&#39;.&#39;</span></span></code></pre></div>
+<p><code>dino.cabal</code> の <code>dependencies</code> には、ほとんどバージョンが明記されていません。(stack の場合はスナップショットが決まると自動的にパッケージのバージョンが決まるため、明示する必要はあまり無いのです)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="at">    , brick</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="at">    , containers</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="at">    , linear</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="at">    , microlens</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="at">    , microlens-th</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="at">    , random</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="at">    , vty</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
+<p>このプロジェクトを <code>cabal</code> でビルドするためにはどうしたら良いんだろうか？というお話です。何もしなくてもビルドできるプロジェクトも結構あるんですが、ハマる時もあります・・・。</p>
+<h2 id="package.yaml-から-cabal-ファイルを生成する">package.yaml から cabal ファイルを生成する</h2>
+<p>リポジトリに <code>package.yaml</code> しか含まれていない場合は、<code>package.yaml</code> から <code>cabal</code> ファイルを生成しましょう。</p>
+<p>以下のコマンドでビルドすることなくすぐに生成できます。</p>
+<pre class="shell"><code>$ stack build --dry-run</code></pre>
+<p>今回は <code>dino.cabal</code> が最初からリポジトリに含まれているため何もしなくても良さそうですね。</p>
+<h2 id="cabal-でビルドしてみよう">cabal でビルドしてみよう</h2>
+<p>とりあえずビルドしてみましょう。</p>
+<pre class="shell"><code>$ git clone https://github.com/arcticmatt/dino-brick.git
+$ cd dino-brick
+$ cabal update
+Downloading the latest package list from hackage.haskell.org
+To revert to previous state run:
+    cabal v2-update &#39;hackage.haskell.org,2020-01-19T06:12:36Z&#39;
+
+$ cabal build
+...
+
+src/UI.hs:142:56: error:
+    • Couldn&#39;t match expected type ‘App s0 e0 n0’
+                  with actual type ‘Game’
+    • In the fourth argument of ‘customMain’, namely ‘g’
+      In a stmt of a &#39;do&#39; block:
+        customMain (V.mkVty V.defaultConfig) (Just chan) app g
+      In the expression:
+        do chan &lt;- newBChan 10
+           forkIO
+             $ forever
+                 $ do modifyIORef counter (+ 1)
+                      c&#39; &lt;- readIORef counter
+                      ....
+           g &lt;- initGame 0
+           customMain (V.mkVty V.defaultConfig) (Just chan) app g
+    |
+142 |   customMain (V.mkVty V.defaultConfig) (Just chan) app g
+    |                                                        ^
+cabal: Failed to build dino-0.1.0.0 (which is required by exe:dino from
+dino-0.1.0.0).</code></pre>
+<p>エラーがいくつも出てしまいました。上記の結果はそのうちの最後の1つだけを表示しています。</p>
+<p>ちなみに <code>stack build</code> だとビルドできます。</p>
+<h3 id="問題点">問題点</h3>
+<p><code>stack</code> だとビルドできて、<code>cabal</code> だと失敗してしまう原因はビルド時にパッケージのバージョンにあります。どのパッケージが原因かと言うと、今回は <a href="https://hackage.haskell.org/package/brick">brick</a> です。</p>
+<p><code>stack</code> の場合は <a href="https://www.stackage.org/lts-8.23">LTS-8.23</a> に含まれるバージョンを利用することになるので <a href="https://www.stackage.org/lts-8.23/package/brick-0.17.2">brick-0.17.2</a> を利用します。</p>
+<p>一方で <code>cabal</code> の場合は <code>cabal update</code> を最後に実行した時の <code>Hackage</code> の最新バージョンが利用されます。これは明示的なバージョン制約が <code>cabal</code> ファイルに記述されていないためです。そのため <a href="https://hackage.haskell.org/package/brick-0.50.1">brick-0.50.1</a> などが利用されます。</p>
+<p>バージョンアップによって後方互換性が保たれている場合は何も考えずにビルドが通るのですが、GHC のバージョンが変わるタイミングなどでは破壊的変更が含まれている場合も多いため、どこかでビルドが壊れます。</p>
+<p>今回のプロジェクトでは <a href="https://github.com/jtdaugherty/brick/blob/master/CHANGELOG.md#047">brick-0.47</a> の変更によって <code>Brick.Main.customMain</code> の型が変わり、その結果ビルドエラーになりました。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- 0.46</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span>        <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- 0.47</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span></code></pre></div>
+<p>このように、原因が特定できれば、修正は簡単です。<code>brick</code> にバージョン制約を付けるだけです。(0.47 でビルドできるようにコードを修正する方法ももちろん考えられます)</p>
+<pre class="cabal"><code>library:
+  build-depends:
+      base &gt;= 4.7 &amp;&amp; &lt; 5
+    , brick == 0.46       -- 破壊的変更が起きる前のバージョンを指定
+    , containers
+    , linear
+    , microlens
+    , microlens-th
+    , random
+    , vty
+    , MonadRandom</code></pre>
+<p>このプロジェクトはこれで上手く動きました。</p>
+<p>しかし、どのバージョンで壊れたかどうかを毎回調べるのはかなりつらいです。そのため、もっと良い方法として <code>LTS-8.23</code> のバージョン制約を使ってみましょう。</p>
+<h2 id="cabal-freeze-コマンド">cabal freeze コマンド</h2>
+<p><code>cabal</code> には <code>cabal freeze</code> というコマンドがあります。アプリケーション開発で便利な機能です。</p>
+<p>コマンドを実行すると <code>cabal.project.freeze</code> というファイルが作られます。</p>
+<pre class="shell"><code>$ cabal freeze
+Wrote freeze file: dino-brick/cabal.project.freeze</code></pre>
+<p>このファイルは一言でいえば <code>npm</code> の <code>package-lock.json</code> ファイルと同じです。ビルドの再現性を保証するためのものです。</p>
+<p>例えば、先ほどの <code>dino.cabal</code> ファイルで <code>brick</code> のバージョンを <code>^&gt;= 0.46</code> のように指定した場合を考えてみましょう。この指定方法は <code>brick &gt;= 0.46 &amp;&amp; &lt; 0.47</code> と同じ意味になります。(cabal 2.0 から使えます)</p>
+<pre class="cabal"><code>library:
+  build-depends:
+      base &gt;= 4.7 &amp;&amp; &lt; 5
+    , brick ^&gt;= 0.46      -- brick &gt;= 0.46 &amp;&amp; &lt; 0.47 と同じ意味
+    , containers
+    , linear
+    , microlens
+    , microlens-th
+    , random
+    , vty
+    , MonadRandom</code></pre>
+<p>例えば、会社のデスクトップPCでビルドしたときに <code>brick-0.46</code> がインストールされたとしましょう。</p>
+<p>次の日の朝、バグフィックスされた <code>brick-0.46.1</code> が Hackage にアップロードされました。</p>
+<p>その日の午後、自宅のノートPCで <code>cabal update &amp;&amp; cabal build</code> を行った場合、インストールされるのは <code>brick-0.46.1</code> になります。</p>
+<p>つまり、<code>brick ^&gt;= 0.46</code> という指定方法では環境ごとに同じバージョンが使われていることを保証できません。そのため、<code>cabal freeze</code> コマンドで <code>cabal.project.freeze</code> を生成し、コマンドを実行した環境で実際に利用されている具体的なバージョンを記録しておきます。これは <code>stack</code> のスナップショットと同じようなものです。</p>
+<p>実際に生成されたファイルの中身はこんな感じです。</p>
+<pre class="cabal"><code>constraints: any.Cabal ==2.4.0.1,
+             any.MonadRandom ==0.5.1.2,
+             any.QuickCheck ==2.13.2,
+             QuickCheck +templatehaskell,
+             any.StateVar ==1.2,
+             any.adjunctions ==4.4,
+             any.ansi-terminal ==0.10.2,
+             ansi-terminal -example,
+             any.ansi-wl-pprint ==0.6.9,
+             ansi-wl-pprint -example,
+             any.array ==0.5.3.0,
+             any.base ==4.12.0.0,
+             any.base-orphans ==0.8.1,
+             any.bifunctors ==5.5.6,
+             bifunctors +semigroups +tagged,
+             any.binary ==0.8.6.0,
+             any.binary-orphans ==1.0.1,
+             any.blaze-builder ==0.4.1.0,
+             any.brick ==0.46,
+             brick -demos,
+             any.bytes ==0.16,
+             bytes +test-doctests,
+             any.bytestring ==0.10.8.2,
+             any.cabal-doctest ==1.0.8,
+             any.call-stack ==0.2.0,
+             any.case-insensitive ==1.2.1.0,
+             any.cereal ==0.5.8.1,
+             cereal -bytestring-builder,
+             any.colour ==2.3.5,
+             any.comonad ==5.0.6,
+             comonad +containers +distributive +test-doctests,
+             any.config-ini ==0.2.4.0,
+             config-ini -enable-doctests,
+             any.containers ==0.6.0.1,
+             any.contravariant ==1.5.2,
+             contravariant +semigroups +statevar +tagged,
+             any.data-clist ==0.1.2.3,
+             any.deepseq ==1.4.4.0,
+             any.directory ==1.3.3.0,
+             any.distributive ==0.6.1,
+             distributive +semigroups +tagged,
+             any.dlist ==0.8.0.7,
+             any.exceptions ==0.10.4,
+             exceptions +transformers-0-4,
+             any.filepath ==1.4.2.1,
+             any.free ==5.1.3,
+             any.ghc-boot-th ==8.6.5,
+             any.ghc-prim ==0.5.3,
+             any.hashable ==1.3.0.0,
+             hashable -examples +integer-gmp +sse2 -sse41,
+             any.integer-gmp ==1.0.2.0,
+             any.integer-logarithms ==1.0.3,
+             integer-logarithms -check-bounds +integer-gmp,
+             any.invariant ==0.5.3,
+             any.kan-extensions ==5.2,
+             any.lens ==4.18.1,
+             lens -benchmark-uniplate -dump-splices +inlining -j -old-inline-pragmas -safe +test-doctests +test-hunit +test-properties +test-templates +trustworthy,
+             any.linear ==1.20.9,
+             linear -herbie +template-haskell,
+             any.megaparsec ==7.0.5,
+             megaparsec -dev,
+             any.microlens ==0.4.11.2,
+             any.microlens-mtl ==0.2.0.1,
+             any.microlens-th ==0.4.3.2,
+             any.mtl ==2.2.2,
+             any.optparse-applicative ==0.15.1.0,
+             any.parallel ==3.2.2.0,
+             any.parsec ==3.1.13.0,
+             any.parser-combinators ==1.2.1,
+             parser-combinators -dev,
+             any.pretty ==1.1.3.6,
+             any.primitive ==0.7.0.0,
+             any.process ==1.6.5.0,
+             any.profunctors ==5.5.1,
+             any.random ==1.1,
+             any.reflection ==2.1.5,
+             reflection -slow +template-haskell,
+             any.rts ==1.0,
+             any.scientific ==0.3.6.2,
+             scientific -bytestring-builder -integer-simple,
+             any.semigroupoids ==5.3.4,
+             semigroupoids +comonad +containers +contravariant +distributive +doctests +tagged +unordered-containers,
+             any.semigroups ==0.19.1,
+             semigroups +binary +bytestring -bytestring-builder +containers +deepseq +hashable +tagged +template-haskell +text +transformers +unordered-containers,
+             any.splitmix ==0.0.3,
+             splitmix -optimised-mixer +random,
+             any.stm ==2.5.0.0,
+             any.tagged ==0.8.6,
+             tagged +deepseq +transformers,
+             any.template-haskell ==2.14.0.0,
+             any.terminfo ==0.4.1.2,
+             any.text ==1.2.3.1,
+             any.text-zipper ==0.10.1,
+             any.th-abstraction ==0.3.1.0,
+             any.time ==1.8.0.2,
+             any.transformers ==0.5.6.2,
+             any.transformers-base ==0.4.5.2,
+             transformers-base +orphaninstances,
+             any.transformers-compat ==0.6.5,
+             transformers-compat -five +five-three -four +generic-deriving +mtl -three -two,
+             any.type-equality ==1,
+             any.unix ==2.7.2.2,
+             any.unordered-containers ==0.2.10.0,
+             unordered-containers -debug,
+             any.utf8-string ==1.0.1.1,
+             any.vector ==0.12.0.3,
+             vector +boundschecks -internalchecks -unsafechecks -wall,
+             any.void ==0.7.3,
+             void -safe,
+             any.vty ==5.26,
+             any.word-wrap ==0.4.1</code></pre>
+<p><code>cabal.project.freeze</code> ファイルと <code>&lt;project&gt;.cabal</code> ファイルでバージョンが異なる場合は <code>&lt;project&gt;.cabal</code> のバージョンが優先されるようです。</p>
+<pre class="cabal"><code>library:
+  build-depends:
+      base &gt;= 4.7 &amp;&amp; &lt; 5
+    , brick ^&gt;= 0.47      -- ビルドが失敗するバージョン制約を指定
+    , containers
+    , linear
+    , microlens
+    , microlens-th
+    , random
+    , vty
+    , MonadRandom</code></pre>
+<pre class="shell"><code>$ ls cabal.project.freeze 
+cabal.project.freeze
+$ cabal build
+...
+[__1] fail (backjumping, conflict set: brick, dino)
+After searching the rest of the dependency tree exhaustively, these were the
+goals I&#39;ve had most trouble fulfilling: brick, dino
+
+$ cabal freeze
+...
+[__1] fail (backjumping, conflict set: brick, dino)
+After searching the rest of the dependency tree exhaustively, these were the
+goals I&#39;ve had most trouble fulfilling: brick, dino</code></pre>
+<p>そもそも制約を満たさない場合は <code>cabal freeze</code> が失敗するみたいです。</p>
+<h2 id="スナップショットに対応した-freeze-ファイルを使おう">スナップショットに対応した freeze ファイルを使おう</h2>
+<p>さて、それではリポジトリを <code>clone</code> した直後に戻しましょう。こんな状態です。</p>
+<pre class="shell"><code>$ git clone https://github.com/arcticmatt/dino-brick.git
+$ cd dino-brick
+$ cabal update</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="at">    , brick</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="at">    , containers</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="at">    , linear</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="at">    , microlens</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="at">    , microlens-th</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="at">    , random</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="at">    , vty</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
+<p><code>Stackage</code> のスナップショットの <code>URL</code> の後ろに <code>cabal.config</code> を付けた <a href="https://www.stackage.org/lts-8.23/cabal.config">https://www.stackage.org/lts-8.23/cabal.config</a> にアクセスすると <code>cabal.project.freeze</code> ファイルとして利用可能なテキストファイルが表示されます。</p>
+<p>これをそのまま保存してビルドするだけで全てが上手くいきます。</p>
+<pre class="shell"><code>$ curl https://www.stackage.org/lts-8.23/cabal.config &gt; cabal.project.freeze
+$ cabal build
+[__2] fail (backjumping, conflict set: base, dino, optparse-applicative)
+After searching the rest of the dependency tree exhaustively, these were the
+goals I&#39;ve had most trouble fulfilling: optparse-applicative, base, dino</code></pre>
+<p>おっと忘れていました。<code>LTS-8.23</code> は <code>GHC-8.0.2</code> でしたね。</p>
+<p><code>-w</code> (<code>with-compiler</code> の頭文字) オプションで利用する <code>GHC</code> を切り替えてビルドしましょう！</p>
+<pre class="shell"><code>$ cabal build -w ghc-8.0.2</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>stack</code> でビルドが通っていれば、<code>cabal</code> でも通る</li>
+<li><code>cabal freeze</code> を使うとスナップショットのようにバージョンを記録できる</li>
+<li><code>Stackage</code> のスナップショットの URL の最後に <code>cabal.config</code> を付けると <code>freeze</code> ファイルを取得できる</li>
+</ul>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/cabal/users-guide/nix-local-build.html#cabal-v2-freeze">5.4.6. cabal v2-freeze</a></li>
+<li><a href="https://medium.com/@fommil/why-not-both-8adadb71a5ed">Why Not Both?</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
+    <title>cabal の build-tool-depends フィールド</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/01-18-cabal-build-tool-depends.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/01-18-cabal-build-tool-depends.html</id>
+    <published>2020-01-18T00:00:00Z</published>
+    <updated>2020-01-18T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>cabal の <a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-tool-depends">build-tool-depends</a> というフィールドが便利だったので紹介します。</p>
+<p>テストを書くときに <a href="https://hackage.haskell.org/package/hspec-discover">hspec-discover</a> や <a href="https://hackage.haskell.org/package/tasty-discover">tasty-discover</a> などを使う場合、このフィールドを設定しておくことで依存している実行ファイルを自動的にダウンロードして使ってくれます。</p>
+<pre class="shell"><code>$ cabal --version
+cabal-install version 3.0.0.0
+compiled using version 3.0.0.0 of the Cabal library </code></pre>
+<!--more-->
+<h2 id="サンプルプロジェクトの構成">サンプルプロジェクトの構成</h2>
+<p>全体のディレクトリ構成は以下のようになっているとしましょう。</p>
+<pre class="shell"><code>$ tree .
+.
+├── example.cabal
+├── src
+│   └── Lib.hs
+├── stack.yaml
+└── test
+    ├── LibSpec.hs
+    └── Spec.hs</code></pre>
+<p>それぞれのファイルの内容は以下のようになっています。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">module</span> <span class="dt">Lib</span> (someFunc) <span class="kw">where</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-5"><a href="#cb3-5"></a>someFunc <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- test/LibSpec.hs</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">module</span> <span class="dt">LibSpec</span> (spec) <span class="kw">where</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">spec ::</span> <span class="dt">Spec</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>spec <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- test/Spec.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">{-# OPTIONS_GHC -F -pgmF hspec-discover #-}</span></span></code></pre></div>
+<pre class="cabal"><code>-- example.cabal
+cabal-version: 2.4
+name:          example
+version:       0.1.0.0
+
+library
+  exposed-modules:  Lib
+  hs-source-dirs:   src
+  build-depends:    base &gt;=4.7 &amp;&amp; &lt;5
+  default-language: Haskell2010
+
+test-suite example-test
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   test
+  other-modules:    LibSpec
+  build-depends:
+    , base     &gt;=4.7 &amp;&amp; &lt;5
+    , example
+
+  default-language: Haskell2010</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># stack.yaml</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-14.20</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">-</span><span class="at"> .</span></span></code></pre></div>
+<p>このような状況で <code>cabal</code> や <code>stack</code> がどのように振舞うか見ていきましょう。</p>
+<p>現時点では <code>hspec-discover</code> の実行ファイルは存在していません。</p>
+<pre class="shell"><code>$ hspec-discover
+bash: hspec-discover: コマンドが見つかりません</code></pre>
+<h2 id="stack">stack</h2>
+<p><code>hspec-discover</code> の実行ファイルが無い状態で <code>stack test</code> を実行すると以下のようにエラーになります。</p>
+<pre class="shell"><code>$ stack test
+...
+
+ghc: could not execute: hspec-discover</code></pre>
+<h3 id="hspec-discover-をインストールした場合">hspec-discover をインストールした場合</h3>
+<pre class="shell"><code>$ stack install hspec-discover
+
+$ hspec-discover
+Usage: hspec-discover SRC CUR DST [--module-name=NAME]</code></pre>
+<p>上記のようにインストールした場合は、問題無く動作します。</p>
+<pre class="shell"><code>$ stack test
+...
+
+example/test/LibSpec.hs:3:9: error:
+    Not in scope: type constructor or class ‘Spec’
+  |         
+3 | spec :: Spec
+  |         ^^^^</code></pre>
+<p><code>hspec-discover</code> がファイルを自動的に見つけてくれたので、コンパイルエラーになりました。</p>
+<p>次に進む前に実行ファイルを削除しておきます。</p>
+<pre class="shell"><code>$ rm ~/.local/bin/hspec-discover</code></pre>
+<h3 id="build-depends-に追加した場合">build-depends に追加した場合</h3>
+<p><code>example.cabal</code> ファイルの <code>build-depends</code> に追加した場合はどうなるのでしょうか？</p>
+<pre class="cabal"><code>test-suite example-test
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   test
+  other-modules:    LibSpec
+  build-depends:
+    , base     &gt;=4.7 &amp;&amp; &lt;5
+    , example
+    , hspec-discover  -- 新しく追加した
+
+  default-language: Haskell2010</code></pre>
+<p>では <code>stack test</code> を実行してみます。</p>
+<pre class="shell"><code>$ stack test
+...
+
+example/test/LibSpec.hs:3:9: error:
+    Not in scope: type constructor or class ‘Spec’
+  |         
+3 | spec :: Spec
+  |         ^^^^</code></pre>
+<p>実行ファイルがローカル環境に存在しなくても自動的に <code>hspec-discover</code> が動作しています。</p>
+<p>そのため、<code>stack</code> プロジェクトでは <code>hspec-discover</code> を依存関係 (<code>build-depends</code>) に追加するだけで良い感じにテストが進みます。</p>
+<h2 id="cabal">cabal</h2>
+<p>同様に <code>cabal</code> の場合も確かめてみましょう。(<code>example.cabal</code> ファイルから <code>hspec-discover</code> を削除しておきます)</p>
+<pre class="shell"><code>$ cabal test
+...
+
+ghc: could not execute: hspec-discover</code></pre>
+<p><code>stack</code> と同様のエラーになりました。</p>
+<h3 id="hspec-discover-をインストールした場合-1">hspec-discover をインストールした場合</h3>
+<pre class="shell"><code>$ cabal install hspec-discover
+
+$ hspec-discover
+Usage: hspec-discover SRC CUR DST [--module-name=NAME]</code></pre>
+<p>同様に <code>cabal test</code> を実行してみます。</p>
+<pre class="shell"><code>$ cabal test
+...
+
+test/LibSpec.hs:3:9: error:
+    Not in scope: type constructor or class ‘Spec’
+  |
+3 | spec :: Spec
+  | </code></pre>
+<p><code>stack</code> の場合と同じように、ちゃんと動いていますね。</p>
+<h3 id="build-depends-に追加した場合-1">build-depends に追加した場合</h3>
+<p>まずはバイナリファイルを削除しておきます。</p>
+<pre class="shell"><code>$ rm ~/.cabal/bin/hspec-discover</code></pre>
+<p><code>example.cabal</code> ファイルは先ほどと同じように <code>build-depends</code> に <code>hspec-discover</code> を追加した状態です。</p>
+<p>テストを実行してみましょう。</p>
+<pre class="shell"><code>$ cabal test
+...
+
+ghc: could not execute: hspec-discover</code></pre>
+<p><code>stack</code> と異なる結果になりましたね・・・。僕は今までこの結果への対処法は <code>hspec-discover</code> をインストールしておくしかないと思っていました。</p>
+<p>しかし、<code>build-tool-depends</code> をフィールドを利用することで <code>stack</code> と同じ挙動になるということがわかりました。</p>
+<p>実際に試してみましょう。</p>
+<h3 id="build-tool-depends-に追加した場合">build-tool-depends に追加した場合</h3>
+<p><code>build-tool-depends</code> に追加するとこんな感じです。</p>
+<pre class="cabal"><code>test-suite example-test
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   test
+  other-modules:    LibSpec
+  build-depends:
+    , base     &gt;=4.7 &amp;&amp; &lt;5
+    , example
+
+  build-tool-depends:                 -- 新たに追加した行
+    , hspec-discover:hspec-discover   -- 新たに追加した行
+
+  default-language: Haskell2010</code></pre>
+<p><code>build-depends</code> が <code>&lt;package_name&gt;</code> という指定方法でしたが、<code>build-tool-depends</code> では <code>&lt;package_name&gt;:&lt;exe_name&gt;</code> という指定方法になっている点に注意です。</p>
+<p>バージョン制約が必要な場合は <code>build-depends</code> と同じように指定できます。</p>
+<pre class="cabal"><code>hspec-discover:hspec-discover ^&gt;=2.7</code></pre>
+<p>これでテストを実行してみましょう。</p>
+<pre class="shell"><code>$ cabal test
+...
+
+test/LibSpec.hs:3:9: error:
+    Not in scope: type constructor or class ‘Spec’
+  |
+3 | spec :: Spec
+  | </code></pre>
+<p>これで <code>stack</code> と同じような挙動になりました！happy!</p>
+<h2 id="まとめ">まとめ</h2>
+<p>こんな便利なフィールドがあるなんて全然知りませんでした・・・。</p>
+<ul>
+<li><code>build-tool-depends</code> を指定しておけば、実行ファイルが無くても大丈夫</li>
+<li><code>stack</code> は初心者に優しい</li>
+</ul>
+<p><a href="https://www.haskell.org/ghc/blog/20200116-ghc-8.8.2-released.html">GHC-8.8.2 がリリース</a>されましたね。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-tool-depends">cabal user guide</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
+    <title>Memo - unexpected At most 9 numbers are allowed per version number part</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/01-04-cabal-version-numbers-error.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/01-04-cabal-version-numbers-error.html</id>
+    <published>2020-01-04T00:00:00Z</published>
+    <updated>2020-01-04T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>GHC-8.8 への移行中に GitHub Actions で以下のようなエラーが発生しました。</p>
+<pre class="shell"><code>proj/dist-newstyle/src/barbies-6f24224e2c384e2f/barbies.cabal:2:31: error:
+unexpected At most 9 numbers are allowed per version number part
+
+    1 | name:           barbies
+    2 | version:        1.999999999999
+      |                               ^
+
+##[error]Process completed with exit code 1.</code></pre>
+<p>初めて見るエラーだったのでメモとして残しておきます。</p>
+<!--more-->
+<h2 id="エラーが発生した理由">エラーが発生した理由</h2>
+<p>エラー発生の原因はたぶんこれです。</p>
+<ul>
+<li><a href="https://github.com/haskell/cabal/pull/6386">Limit version number parts to be 9 digits #6386</a></li>
+</ul>
+<p>この変更は <code>cabal-3.0.1.0</code> に含まれるはずなので <code>cabal-3.0.0.0</code> では関係ないと思っていたのですが、<a href="https://github.com/e-bigmoon/haskell-blog/commit/73a7adcb8bf8204dd81de35d014c967b76040526/checks?check_suite_id=384131716">GitHub Actions のログ</a>を見るとわかるとおり、GitHub Actions では <code>cabal-3.0.1.0</code> がインストールされていました。(何故?<a href="https://github.com/haskell/cabal/issues/6328">cabal-install 3.0.1.0 release planning #6328</a> はまだ閉じられてない)</p>
+<pre class="shell"><code>...
+The Glorious Glasgow Haskell Compilation System, version 8.6.5
+cabal-install version 3.0.1.0
+compiled using version 3.0.1.0 of the Cabal library 
+...</code></pre>
+<p>また <a href="https://github.com/actions/setup-haskell">actions/setup-haskell</a> の README を見る限り <code>cabal</code> のバージョン指定方法は <code>2.0</code>, <code>2.2</code>, <code>2.4</code>, <code>3.0</code> しか無いので <code>3.0.0.0</code> を使う方法がありません・・・。</p>
+<h2 id="とりあえずの解決策">とりあえずの解決策</h2>
+<p><a href="https://github.com/jcpetruzza/barbies/blob/0b09a4235cd719aa3df9f9467f3e8fee81446bc8/barbies.cabal">barbies.cabal</a> のバージョン番号が長すぎるために起きているエラーなので、fork して一時的にバージョンを短くして対応しました。</p>
+<pre><code>name:           barbies
+version:        1.999999999999  -- 変更前
+version:        1.999999999     -- 変更後</code></pre>
+<h2 id="まとめ">まとめ</h2>
+<p>もうすぐ GHC-8.10.1 がリリースされそうですね。</p>
+<ul>
+<li><a href="https://gitlab.haskell.org/ghc/ghc/wikis/status/ghc-8.10.1">GHC plans for 8.10.1</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
+    <title>Ap Monoid</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/12-24-ap-monoid.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/12-24-ap-monoid.html</id>
+    <published>2019-12-24T00:00:00Z</published>
+    <updated>2019-12-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>まずは以下の関数 <code>f</code> を考えます。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">.</span> <span class="fu">sequence</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&gt;</span> f e1</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="op">&gt;</span> f e2</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="dt">Nothing</span></span></code></pre></div>
+<p>次に、この <code>f = fmap concat . sequence</code> をもっと短くカッコよく書けないかな？と考えます。</p>
+<p>何となく <code>mconcat</code> で置き換えれそうな気がしたんですよ・・・。 だけど、動作が変わってしまうんです・・・。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;</span> <span class="fu">mconcat</span> e1</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="op">&gt;</span> <span class="fu">mconcat</span> e2</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span></code></pre></div>
+<p>ここで問題です。なぜ <code>mconcat</code> にすると結果が異なるのでしょうか？ また、<code>f = fmap concat . sequence</code> という定義を畳み込みを使って書き直すことはできるのでしょうか？</p>
+<p>このことを考えていたら <code>Ap</code> モノイドにたどり着きました。</p>
+<!--more-->
+<h2 id="関数-f-は何を行っているのか">関数 f は何を行っているのか？</h2>
+<p>まずは <code>f = fmap concat . sequence</code> がどのように動作するか確認してみましょう。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>f e1</span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">$</span> <span class="fu">sequence</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">$</span> <span class="dt">Just</span> [[<span class="dv">1</span>,<span class="dv">2</span>], [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> <span class="fu">concat</span> [[<span class="dv">1</span>,<span class="dv">2</span>], [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>f e2</span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="op">$</span> <span class="fu">sequence</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">concat</span> <span class="dt">Nothing</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>ここまでは簡単ですね。では <code>f = mconcat</code> の場合も確認します。(ここでの定義はデフォルト実装の <code>mconcat = foldr (&lt;&gt;) mempty</code> を使います)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>f e1</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="ot">=</span> <span class="fu">mconcat</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="ot">=</span> <span class="fu">foldr</span> (<span class="op">&lt;&gt;</span>) <span class="fu">mempty</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="fu">mempty</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="co">-- ココ!!!</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb4-8"><a href="#cb4-8"></a>  <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span></code></pre></div>
+<p>どうやら <code>mconcat</code> に変更すると <code>Just [3,4] &lt;&gt; Nothing</code> の計算で結果が変わってくるということがわかります。 つまり、求めている計算は <code>Monoid</code> の演算ではなく <code>Monad (Applicative)</code> の <code>Effect</code> なのです。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- 雰囲気でいえば、こんな感じになれば良いかも？</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span> <span class="co">-- mconcat で行われる演算</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span> <span class="co">-- 期待しているのは Maybe モナドの Effect</span></span></code></pre></div>
+<h2 id="畳み込んでみる">畳み込んでみる</h2>
+<p>何となく方向性は掴めました。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">-- 計算の途中で出てきたこの形を</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&lt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">-- (とりあえず) こうしたい</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>] <span class="op">&gt;&gt;</span> (<span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>] <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span>)</span></code></pre></div>
+<p>形だけ見れば <code>foldr (&gt;&gt;) mempty</code> とすれば良さげです。試してみましょう。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldr</span> (<span class="op">&gt;&gt;</span>) <span class="fu">mempty</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="op">&gt;</span> f e1</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="dt">Nothing</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="op">&gt;</span> f e2</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="dt">Nothing</span></span></code></pre></div>
+<p><code>f e2</code> は良い感じですが、今度は <code>f e1</code> の結果がおかしくなりました・・・。 それはそうですよね。<code>Maybe</code> モナドの <code>Effect</code> で畳み込んでいるため、どこかで <code>Nothing</code> が出てきたら計算全体は <code>Nothing</code> になりますよね。</p>
+<p>これってつまり、<code>Maybe</code> モナドの <code>Effect</code> と <code>リスト</code> モノイドの演算の両方が必要ってことになりますね・・・。 オリジナルの <code>f = fmap concat . sequence</code> の定義も確かにそんな感じです。</p>
+<h2 id="自分で定義しよう">自分で定義しよう！</h2>
+<p>もう一度整理しましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- 計算対象のリスト</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>[ m_a1, m_a2, m_a3, me ]</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">-- まずは Effect を実行したい</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>m_a1 <span class="op">&gt;&gt;</span> m_a2 <span class="op">&gt;&gt;</span> m_a3 <span class="op">&gt;&gt;</span> me</span>
+<span id="cb8-6"><a href="#cb8-6"></a></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">-- m_a1, m_a2, m_a3, me の結果をそれぞれ a1, a2, a3, e として</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">-- Monoid の演算を行いたい</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e</span>
+<span id="cb8-10"><a href="#cb8-10"></a></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">------------------------------------------------</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">-- 具体的に、値が全部 Just でラップされていると考えた場合</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a2 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">-- 期待する結果</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e</span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">-- どこか一箇所に Nothing がある (この場合 m_a2 が Nothing) と考えた場合</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">-- 期待する結果</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="dt">Nothing</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="co">-- 以下のようになってはダメ</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a>a1 <span class="op">&lt;&gt;</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e</span>
+<span id="cb8-24"><a href="#cb8-24"></a></span>
+<span id="cb8-25"><a href="#cb8-25"></a><span class="co">------------------------------------------------</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a><span class="co">-- こんな感じで計算が進むモノイドが欲しい</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a2 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-28"><a href="#cb8-28"></a>  <span class="ot">=</span> <span class="dt">Just</span> (a1 <span class="op">&lt;&gt;</span> a2) <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-29"><a href="#cb8-29"></a>  <span class="ot">=</span> <span class="dt">Just</span> (a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3) <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-30"><a href="#cb8-30"></a>  <span class="ot">=</span> <span class="dt">Just</span> (a1 <span class="op">&lt;&gt;</span> a2 <span class="op">&lt;&gt;</span> a3 <span class="op">&lt;&gt;</span> e)</span>
+<span id="cb8-31"><a href="#cb8-31"></a></span>
+<span id="cb8-32"><a href="#cb8-32"></a><span class="dt">Just</span> a1 <span class="op">&gt;&gt;</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-33"><a href="#cb8-33"></a>  <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> a3 <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-34"><a href="#cb8-34"></a>  <span class="ot">=</span> <span class="dt">Nothing</span> <span class="op">&gt;&gt;</span> <span class="dt">Just</span> e</span>
+<span id="cb8-35"><a href="#cb8-35"></a>  <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>上記のような挙動を行う <code>Monoid</code> を新しく定義してみます！</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">newtype</span> <span class="dt">Sequence</span> m a <span class="ot">=</span> <span class="dt">Sequence</span> {<span class="ot"> getSequence ::</span> m a }</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">instance</span> (<span class="dt">Monad</span> m, <span class="dt">Semigroup</span> a) <span class="ot">=&gt;</span> <span class="dt">Semigroup</span> (<span class="dt">Sequence</span> m a) <span class="kw">where</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  ma <span class="op">&lt;&gt;</span> mb <span class="ot">=</span> <span class="dt">Sequence</span> <span class="op">$</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>    <span class="kw">do</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>      a <span class="ot">&lt;-</span> getSequence ma</span>
+<span id="cb9-8"><a href="#cb9-8"></a>      b <span class="ot">&lt;-</span> getSequence mb</span>
+<span id="cb9-9"><a href="#cb9-9"></a>      <span class="fu">return</span> (a <span class="op">&lt;&gt;</span> b)</span>
+<span id="cb9-10"><a href="#cb9-10"></a></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="kw">instance</span> (<span class="dt">Monad</span> m, <span class="dt">Monoid</span> a) <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">Sequence</span> m a) <span class="kw">where</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">Sequence</span> (<span class="fu">return</span> <span class="fu">mempty</span>)</span></code></pre></div>
+<p>実際に確かめてみましょう。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- (&lt;&gt;) に変更した。</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="op">&gt;</span> f <span class="ot">=</span> <span class="fu">foldr</span> (<span class="op">&lt;&gt;</span>) <span class="fu">mempty</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb10-5"><a href="#cb10-5"></a></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="op">&gt;</span> f (<span class="fu">map</span> <span class="dt">Sequence</span> e1)</span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]}</span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="op">&gt;</span> f (<span class="fu">map</span> <span class="dt">Sequence</span> e2)</span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Nothing</span>}</span></code></pre></div>
+<p>期待通りに動いていますね。<code>foldMap</code> を使うともう少し短くかけます。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Sequence</span> e1</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]}</span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Sequence</span> e2</span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="dt">Sequence</span> {getSequence <span class="ot">=</span> <span class="dt">Nothing</span>}</span></code></pre></div>
+<h2 id="ap-モノイド">Ap モノイド</h2>
+<p>ここまでで定義した <code>Sequence</code> モノイドは <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:Ap">Ap</a> という名前で定義されています。</p>
+<p>今回は <code>Monad</code> で話を進めましたが、実際は <code>Applicative</code> でも成り立ちます。 最初の例を <code>Ap</code> モノイドで置き換えれば以下のようになります。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Monoid</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> [<span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>], <span class="dt">Just</span> [<span class="dv">3</span>,<span class="dv">4</span>], <span class="dt">Nothing</span>]</span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Ap</span> e1</span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="dt">Ap</span> {getAp <span class="ot">=</span> <span class="dt">Just</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]}</span>
+<span id="cb12-7"><a href="#cb12-7"></a></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="op">&gt;</span> <span class="fu">foldMap</span> <span class="dt">Ap</span> e2</span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="dt">Ap</span> {getAp <span class="ot">=</span> <span class="dt">Nothing</span>}</span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<ul>
+<li><code>Ap</code> モノイドの使い道がわかった</li>
+<li><a href="https://blog.miz-ar.info/2019/02/monoid-for-haskellers/">Haskellerのためのモノイド完全ガイド</a> でも解説されているので、気になった方はこちらもどうぞ</li>
+<li><code>fmap fold . sequenceA</code> と <code>getAp . foldMap Ap</code> を比較すると型制約が若干違う</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;</span> <span class="op">:</span>t <span class="fu">fmap</span> fold <span class="op">.</span> <span class="fu">sequenceA</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">fmap</span> fold <span class="op">.</span><span class="ot"> sequenceA ::</span> (<span class="dt">Monoid</span> a, <span class="dt">Traversable</span> t, <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> t (f a) <span class="ot">-&gt;</span> f a</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="op">&gt;</span> <span class="op">:</span>t getAp <span class="op">.</span> <span class="fu">foldMap</span> <span class="dt">Ap</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>getAp <span class="op">.</span> <span class="fu">foldMap</span> <span class="dt">Ap</span><span class="ot">    ::</span> (<span class="dt">Monoid</span> a, <span class="dt">Foldable</span> t, <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> t (f a) <span class="ot">-&gt;</span> f a</span></code></pre></div>]]></summary>
+</entry>
+<entry>
+    <title>Megaparsec 8 (翻訳)</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html</id>
+    <published>2019-11-10T00:00:00Z</published>
+    <updated>2019-11-10T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Great original post: <a href="https://markkarpov.com/post/megaparsec-8.html">Megaparsec 8</a></p>
+<p>一年が経ち、Megaparsecの新しいメジャーバージョンが再び登場する時がきました。 今回の変更は、これまでのメジャーリリースの中で最も破壊的ではない変更です。 実際、ほとんどのユーザはアップグレードのために何もする必要はないと思います。</p>
+<!--more-->
+<p>これには次の理由があります。</p>
+<ul>
+<li>それほど多くのissue が開かれておらず、バグも報告されていません。それはMegaparsecが最近、そしてほとんど満足のいく方法で「うまくいく」という事実と関係があると思います。</li>
+<li>ライブラリは現在幅広く使用されています。この記事の執筆時点で、Megaparsecに直接依存する<a href="https://packdeps.haskellers.com/reverse/megaparsec">Hackageのパッケージは146個</a>あります。Megaparsecの上に構築することを選択した<a href="https://hackage.haskell.org/package/replace-megaparsec">新しい刺激的なライブラリ</a>も現れました。<a href="https://github.com/idris-lang/Idris-dev">Idris</a>や<a href="https://github.com/dhall-lang/dhall-haskell">Dhall</a>などのプロジェクトでは、Megaparsecを使用してパースの問題を解決しています。</li>
+</ul>
+<p>これらはライブラリが枯れ、成熟したことを示しているので、動作しているものを壊さないようにしましょう。 とはいえ、常に改善の余地があります。</p>
+<h2 id="nixによる品質保証">Nixによる品質保証</h2>
+<p>バージョン8の作業を開始する前に、Nixを使用して品質保証を強化することにしました。 現在のMegaparsecに依存するプロジェクトの数を把握し、Nixを使用して<a href="https://github.com/tweag/ormolu">Ormolu</a>のバグを発見したという成功体験から、依存パッケージによって引き起こされる破壊的変更、パフォーマンスの変更、およびバグのチェックにNixを用いることにしました。</p>
+<p>結果をMegaparsecのリポジトリにある<a href="https://github.com/mrkkrp/megaparsec/blob/master/HACKING.md">HACKING.md</a>に文書化しました。 開発時のshellとは別に、Nix expressionは以下のターゲットグループを提供します。</p>
+<ul>
+<li><code>base</code> は <code>parser-combinators</code> や <code>hspec-megaparsec</code> などの密接に関連したパッケージとそのテストです。<code>nix-build -A base --no-out-link</code> を実行することにより、開発者はこれらすべてをビルドし、テストすることができます。</li>
+<li><code>deps</code> は選択された依存関係のもとでビルドの破壊とテストスイートの失敗が起きないことを確認します。</li>
+<li><code>benches</code> はベンチマークのコレクションです。これには、Megaparsecのマイクロベンチマークと、ライブラリが実際のタスクでどのように実行されるかを示すいくつかのパッケージが含まれます。</li>
+</ul>
+<p>これらコマンドのそれぞれで、特定のパッケージまたはベンチマークに「ズームイン」できます。 たとえば、<code>nix-build -A benches.parsers-bench</code> を実行して、<code>parsers-bench</code> のベンチマークを確認できます。 要するに、ほとんどのパッケージは新しい変更でも引き続き動作し、修正が容易ではないものでも動作します。 実際、システムを使い続けるためには不備のあるパッケージにパッチを適用する必要があり、そのための<a href="https://github.com/mrkkrp/megaparsec/tree/31b917b1297950c22925f9ee7f7a588834293103/nix/patches">アップグレード用のパッチ</a>も利用可能です。</p>
+<p>ロジックやパフォーマンスの低下は見つかりませんでした。</p>
+<h2 id="パースエラー位置の制御">パースエラー位置の制御</h2>
+<p>新機能について話しましょう。 プリミティブ <code>failure</code> と <code>fancyFailure</code> は <code>parseError</code> に置き換わりました。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">parseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">-- 現在の &#39;failure&#39; と &#39;fancyFailure&#39; は普通の関数:</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a>failure</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-10"><a href="#cb1-10"></a>failure us ps <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>  o <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  parseError (<span class="dt">TrivialError</span> o us ps)</span>
+<span id="cb1-13"><a href="#cb1-13"></a></span>
+<span id="cb1-14"><a href="#cb1-14"></a>fancyFailure</span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb1-16"><a href="#cb1-16"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-18"><a href="#cb1-18"></a>fancyFailure xs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>  o <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb1-20"><a href="#cb1-20"></a>  parseError (<span class="dt">FancyError</span> o xs)</span></code></pre></div>
+<p>これはプリミティブの数を減らすという話ではありません (減らすことも良いことですが)。 <code>parseError</code> の主な特徴は、パーサの状態から現在のオフセットを必要とすることなく、任意のオフセットでパースエラーを報告できることです。 これは、パースエラーにしたい位置を既に超えてしまっている場合でも、入力のその位置でパースエラーを作成したい場合に重要です。 これまでは、まず <code>getOffset</code> を介して正しいオフセットを取得し、次にパースエラーを報告する直前に <code>setOffset</code> でオフセットを設定することでしか達成できませんでした。 これは見苦しいだけでなく、エラーが発生しやすくなり、正しいオフセットの復元を忘れることがあります。 <code>mmark</code>の<a href="https://github.com/mmark-md/mmark/blob/8f5534d8068c2b7a139b893639ee5920bcaedd84/Text/MMark/Parser.hs#L787-L790">実例</a>を次に示します。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>  o&#39; <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  setOffset o</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="co">-- ↑ これが失敗した場合、これをオフセット「o」で報告する必要があります</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  setOffset (o&#39; <span class="op">+</span> <span class="dv">2</span>)</span></code></pre></div>
+<p>ここでは完全な状況を説明しませんが、<code>"[]"</code>(<code>+ 2</code>の部分)のパース後にオフセットの増分を考慮するのを忘れたため、このコードにはしばらくバグがあったと言えば十分でしょう。 次のように書けば、同じことをよりうまく表現できます。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>  region (setErrorOffset o) <span class="op">$</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>    (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">-- 備考</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">region ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="ot">=&gt;</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> <span class="dt">ParseError</span> s e)</span>
+<span id="cb3-8"><a href="#cb3-8"></a>     <span class="co">-- ^ &#39;ParseError&#39; の処理方法</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb3-10"><a href="#cb3-10"></a>     <span class="co">-- ^ 処理を適用する「region」</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  <span class="ot">-&gt;</span> m a</span></code></pre></div>
+<p><code>region</code>は<code>getOffset</code> / <code>setOffset</code> ハックと同じ目的で使用されます。 副作用として、エラーが起きた場合にはパースエラーを更新する関数によって現在のオフセットが変更されます。 <code>region</code> は <code>parseError</code> を使用して、古いハックを廃止できます。</p>
+<pre class="haskel"><code>region f m = do
+  r &lt;- observing m
+  case r of
+    Left err -&gt; parseError (f err)
+    Right x -&gt; return x</code></pre>
+<p>いいね.</p>
+<h2 id="マルチエラーパーサのより良いストーリー">マルチエラーパーサのより良いストーリー</h2>
+<p>プロジェクトの最初期から、マルチエラーパーサをサポートする方向にゆっくりと動いていました。 バージョン7では、<code>ParseError</code>の代わりに<code>ParseErrorBundle</code>を返すようになりました。 マルチエラーをサポートするための準備はすべてが整っていましたが、複数のパースエラーを報告するための方法がまだ提供されていませんでした。</p>
+<p>マルチエラーパーサに求められる事前条件は、入力に問題のある部分をスキップして、正常であることがわかっている位置からパースを再開できることです。 この部分は、<code>withRecovery</code>プリミティブ（Megaparsec 4.4.0以降で使用可能）を使用して実現されます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- | @&#39;withRecovery&#39; r p@ は、パーサー @p@ が失敗した場合でも解析を続行できます。</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co">-- この場合、実際の &#39;ParseError&#39; を引数とする @r@ が呼び出されます。</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">-- よくある使い方として、特定のオブジェクトのパースの失敗を意味する値を返すことで、</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- その入力の一部を消費し次のオブジェクトの開始位置に移動します。</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">--</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">-- @r@ が失敗すると、元のエラーメッセージが &#39;withRecovery&#39; なしで報告されることに注意してください。</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">-- パーサ @r@ を回復してもエラーメッセージに影響することはありません。</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a>withRecovery</span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="ot">  ::</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a) <span class="co">-- ^ 失敗の回復方法</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ オリジナルのパーサ</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ 失敗から回復できるパーサ</span></span></code></pre></div>
+<p>Megaparsec 8 までのユーザーは、成功と失敗の可能性を含む直和型になるように型<code>a</code>を選択する必要がありました。 たとえば、<code>Either (ParseError s e) Result</code> です。 パースエラーを収集し、後で表示する前に手動で<code>ParseErrorBundle</code>に追加する必要がありました。 言うまでもなく、これらはすべて、ユーザーフレンドリーではない高度な使用例です。</p>
+<p>Megaparsec 8 は、遅延パースエラーのサポートを追加します。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">-- | 後で報告するために &#39;ParseError&#39;を登録します。</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co">-- このアクションはパースを終了せず、パースの最後に考慮される</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">-- 「遅延」&#39;ParseError&#39;のコレクションに特定の「ParseError」を</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">-- 追加する以外は効果がありません。 このコレクションが空の場合のみ、</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">-- パーサは成功します。 これは、複数のパースエラーを一度に報告する</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">-- 主な方法です。</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="ot">registerParseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m ()</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">-- | &#39;failure&#39;に似ていますが、 遅延&#39;ParseError&#39;のためのものです。</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a></span>
+<span id="cb6-12"><a href="#cb6-12"></a>registerFailure</span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb6-14"><a href="#cb6-14"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>  <span class="ot">-&gt;</span> m ()</span>
+<span id="cb6-17"><a href="#cb6-17"></a></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co">-- | &#39;fancyFailure&#39;に似ていますが、 遅延&#39;ParseError&#39;のためのものです。</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a></span>
+<span id="cb6-20"><a href="#cb6-20"></a>registerFancyFailure</span>
+<span id="cb6-21"><a href="#cb6-21"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb6-22"><a href="#cb6-22"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
+<span id="cb6-23"><a href="#cb6-23"></a>  <span class="ot">-&gt;</span> m ()</span></code></pre></div>
+<p>これらのエラーは <code>withRecovery</code> のエラー処理コールバックに登録でき、結果の型は <code>Maybe Result</code> になります。 これにより、遅延エラーが最終的な <code>ParseErrorBundle</code> に含まれるようになり、遅延エラーのコレクションが空でない場合に パーサが最終的に失敗するようになります。</p>
+<p>以上のことから、マルチエラーパーサを書く習慣がユーザ間でより一般的になることを願っています。</p>
+<h2 id="その他">その他</h2>
+<ul>
+<li>いつものように、変更の完全なリストについては、<a href="https://github.com/mrkkrp/megaparsec/blob/master/CHANGELOG.md">chagelog</a> を参照してください。</li>
+<li><a href="https://markkarpov.com/megaparsec/megaparsec.html">公式チュートリアル</a>を含むすべてのテキストをバージョン8と互換性があるように更新しました。新しい機能の使用方法を説明するセクションを含めるように拡張しました。</li>
+<li><code>hspec-megaparsec</code> などのサテライトパッケージが更新され、バージョン8で動作するようになりました。</li>
+</ul>]]></summary>
+</entry>
+<entry>
+    <title>cabal-fmt の紹介</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html</id>
+    <published>2019-10-07T00:00:00Z</published>
+    <updated>2019-10-07T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/cabal-fmt">cabal-fmt</a> でできること。</p>
+<ul>
+<li><strong>cabal</strong> ファイルの整形</li>
+<li>フォルダを指定して自動でモジュールを expand できる</li>
+<li>以下のフィールドをアルファベット順で自動的に並べ替え&amp;重複を削除
+<ul>
+<li><strong>exposed-modules</strong></li>
+<li><strong>other-modules</strong></li>
+<li><strong>default-extensions</strong></li>
+<li><strong>other-extensions</strong></li>
+<li><strong>build-depends</strong></li>
+</ul></li>
+</ul>
+<pre class="shell"><code>λ cabal-fmt --version
+0.1.1.1
+
+λ cabal -V
+cabal-install version 3.0.0.0
+compiled using version 3.0.0.0 of the Cabal library
+
+# 使い方
+λ cabal-fmt &lt;proj&gt;.cabal -i</code></pre>
+<p>作者の記事: <a href="http://oleg.fi/gists/posts/2019-08-11-cabal-fmt.html">ANN: cabal-fmt</a></p>
+<!--more-->
+<h2 id="具体例">具体例</h2>
+<h3 id="適用前">適用前</h3>
+<pre class="cabal"><code>cabal-version: 2.4
+name:test
+version:0.1.0.0
+tested-with:
+  GHC ==8.8.1 || ==8.6.5 || ==8.4.4 || ==8.2.2 || ==8.0.2 || ==7.10.3
+  GHCJS ==8.4
+
+executable site
+  main-is:          site.hs
+  other-modules:
+    Config
+    Hakyll.Ext
+  hs-source-dirs:   app
+  ghc-options:
+    -Wcompat -Wall
+    -Wnoncanonical-monad-instances
+    -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -Wtabs -threaded
+  build-depends:
+      base, lens
+    , blaze-html, conduit-combinators
+    , containers      , filepath
+          , bytestring
+    , extensible
+    
+    
+    , yaml, time
+
+  if !os(windows)
+    build-depends: hakyll-sass
+
+  default-language: Haskell2010</code></pre>
+<h3 id="適用後">適用後</h3>
+<pre class="cabal"><code>cabal-version: 2.4
+name:          test
+version:       0.1.0.0
+tested-with:
+    GHC ==7.10.3
+     || ==8.0.2
+     || ==8.2.2
+     || ==8.4.4
+     || ==8.6.5
+     || ==8.8.1
+  , GHCJS ==8.4
+
+executable site
+  main-is:          site.hs
+  other-modules:
+    Config
+    Hakyll.Ext
+
+  hs-source-dirs:   app
+  ghc-options:
+    -Wcompat -Wall -Wnoncanonical-monad-instances
+    -Wincomplete-uni-patterns -Wincomplete-record-updates
+    -Wredundant-constraints -Wtabs -threaded
+
+  build-depends:
+    , base
+    , blaze-html
+    , bytestring
+    , conduit-combinators
+    , containers
+    , extensible
+    , filepath
+    , lens
+    , time
+    , yaml
+
+  if !os(windows)
+    build-depends: hakyll-sass
+
+  default-language: Haskell2010
+</code></pre>
+<h2 id="インストール">インストール</h2>
+<pre class="shell"><code>λ cabal v2-update
+λ cabal v2-install cabal-fmt
+
+λ cabal-fmt --help
+λ cabal-fmt - .cabal file reformatter
+
+Usage: cabal-fmt [-i|--inplace] [--Werror | --Wno-error | --indent N | --tabular
+                 | --no-tabular] [FILE...] [--version]
+  Reformat .cabal files
+
+Available options:
+  -i,--inplace             process files in-place
+  --Werror                 Treat warnings as errors
+  --indent N               Indentation
+  --tabular                Tabular formatting
+  FILE...                  input files
+  -h,--help                Show this help text
+  --version                Show version</code></pre>
+<h2 id="使い方">使い方</h2>
+<p>基本的には以下のコマンドで終わりです。(<code>&lt;proj&gt;</code> は各自のファイル名に置き換えてください)</p>
+<pre class="shell"><code>λ cabal-fmt &lt;proj&gt;.cabal -i</code></pre>
+<p><code>-i</code> オプション (<code>--inplace</code>) で既存ファイルを上書きするので、結果だけ見たい場合は外しましょう。</p>
+<h3 id="モジュールの自動展開">モジュールの自動展開</h3>
+<p>僕が <code>cabal-fmt</code> を使う理由の最大のポイントはモジュールの自動展開機能です。</p>
+<pre class="cabal"><code>library
+  -- cabal-fmt: expand src
+  exposed-modules:</code></pre>
+<p>記法としては、上記のようにしてモジュールを探索するディレクトリ (今回の場合は <strong>src</strong>) を指定します。</p>
+<p>実際に使ってみましょう。ここでは例として <strong>test-dir</strong> を作りますが、実際には <strong>src</strong>, <strong>app</strong>, <strong>test</strong> などが展開の対象となることが多いと思います。</p>
+<p>また、意図的に <strong>C.md</strong> としている点にも注意してください。</p>
+<pre class="shell"><code>λ mkdir test-dir
+λ touch test-dir/A.hs test-dir/B.hs test-dir/C.md
+λ tree test-dir
+test-dir
+├── A.hs
+├── B.hs
+└── C.md</code></pre>
+<p>適用する <strong>cabal</strong> ファイル (<strong>test.cabal</strong>) の中身は以下の通りです。</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir
+  exposed-modules:</code></pre>
+<p>この状態で <code>cabal-fmt test.cabal -i</code> を実行すると結果は以下のようになります。</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir
+  exposed-modules:
+    A
+    B
+    C
+</code></pre>
+<p><code>.hs</code> ファイルだけ列挙して欲しいところですが、指定したディレクトリ以下の全てを列挙します。そのため、公開したいモジュールと非公開のモジュールはディレクトリを分けて運用するなど、少しだけ工夫する必要があります。</p>
+<p>一応、除外したいモジュールを <code>-Module</code> の形式で指定することもできます。</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir -C
+  exposed-modules:</code></pre>
+<p>適用後</p>
+<pre class="cabal"><code>name:    test
+version: 0.1.0.0
+
+library
+  -- cabal-fmt: expand test-dir -C
+  exposed-modules:
+    A
+    B
+</code></pre>
+<p>この方法を使えば <strong>hspec-discover</strong> や <strong>tasty-discover</strong> のためのファイルなどを除外することができます。</p>
+<h2 id="cabal-format-コマンド">cabal format コマンド</h2>
+<p><code>cabal</code> についてあまり詳しく無いので良くわかりませんが、一応 <strong>cabal format</strong> というコマンドが存在します。(<a href="https://github.com/haskell/cabal/issues/2460"><code>cabal format</code> is not listed in –help message #2460</a>)</p>
+<pre class="shell"><code>λ cabal format --help
+Reformat the .cabal file using the standard style.
+
+Usage: cabal format [FILE]
+
+Flags for format:
+ -h --help Show this help text</code></pre>
+<p>実際にこのコマンドでも整形だけなら可能みたいです。ただし、<a href="https://github.com/haskell/cabal/issues/5734"><code>cabal format</code> inlines and removes <code>common</code> stanzas #5734</a> にもある通り <code>common</code> stanza が削除されたりします。</p>
+<p>そのため、<strong>cabal format</strong> コマンドよりも <strong>cabal-fmt</strong> を利用した方が良いと思います。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>便利なので最近良く使ってます。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="http://oleg.fi/gists/posts/2019-08-11-cabal-fmt.html">ANN: cabal-fmt</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
+    <title>NoStarIsType 言語拡張が必要になるとき</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html</id>
+    <published>2019-10-04T00:00:00Z</published>
+    <updated>2019-10-04T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>λ ghc <span class="op">-</span><span class="dt">V</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="dt">The</span> <span class="dt">Glorious</span> <span class="dt">Glasgow</span> <span class="dt">Haskell</span> <span class="dt">Compilation</span> <span class="dt">System</span>, version <span class="fl">8.8</span><span class="op">.</span><span class="dv">1</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">*</span><span class="dv">10</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>    • <span class="dt">Expected</span> kind ‘<span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> k0’, but ‘10’ has kind ‘<span class="dt">Nat</span>’</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    • <span class="dt">In</span> the <span class="kw">type</span> ‘<span class="dv">10</span> <span class="op">*</span> 10’</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XNoStarIsType</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">*</span><span class="dv">10</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="dv">10</span><span class="op">*</span><span class="dv">10</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="ot">=</span> <span class="dv">100</span></span></code></pre></div>
+<!--more-->
+<h2 id="型レベル四則演算">型レベル四則演算</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/GHC-TypeLits.html">GHC.TypeLits</a> に用意されている関数を使って型レベル自然数の四則演算を行ってみましょう。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span> <span class="op">-</span><span class="dt">XTypeOperators</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>λ <span class="kw">import</span> <span class="dt">GHC.TypeLits</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">1</span><span class="op">+</span><span class="dv">1</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="dv">1</span><span class="op">+</span><span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">-</span><span class="dv">1</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="dv">10</span><span class="op">-</span><span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="ot">=</span> <span class="dv">9</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dt">Div</span> <span class="dv">10</span> <span class="dv">2</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="dt">Div</span> <span class="dv">10</span> <span class="dv">2</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a></span>
+<span id="cb3-16"><a href="#cb3-16"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>    • <span class="dt">Expected</span> kind ‘<span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> k0’, but ‘10’ has kind ‘<span class="dt">Nat</span>’</span>
+<span id="cb3-19"><a href="#cb3-19"></a>    • <span class="dt">In</span> the <span class="kw">type</span> ‘<span class="dv">10</span> <span class="op">*</span> 10’</span></code></pre></div>
+<p>掛け算だけエラーになりましたね・・・。それぞれの演算子のカインドを確認してみましょう。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>λ <span class="op">:</span>k (<span class="op">+</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">(+) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>λ <span class="op">:</span>k (<span class="op">-</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">(-) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>λ <span class="op">:</span>k <span class="dt">Mod</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="dt">Mod</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>λ <span class="op">:</span>k (<span class="op">*</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="ot">(*) ::</span> <span class="op">*</span></span></code></pre></div>
+<p>1つだけ変ですね。これは <code>*</code> が <strong>Bool</strong> や <strong>Maybe</strong> などのよくある基本的な型 (lifted boxed types) のカインドの記号として割り当てられているためです。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>λ <span class="op">:</span>k <span class="dt">Bool</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a>λ <span class="op">:</span>k <span class="dt">Maybe</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
+<p>1つ前の <a href="https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6">GHC 8.6</a> から <strong>StarIsType</strong> 言語拡張がデフォルトで有効になり、<code>*</code> カインドは <code>Type</code> カインドのシノニムとして定義されるようになりました。なので明示的に <strong>StarIsType</strong> を無効にすると直ります。(この辺りの話題については既に <a href="https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/">“TypeOperators =&gt; NoStarIsType”の延期の提案</a> などにまとまっているため、気になる方はご参照ください)</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XNoStarIsType</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a>λ <span class="op">:</span>k <span class="dt">Bool</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>λ <span class="op">:</span>k <span class="dt">Maybe</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9"></a>λ <span class="op">:</span>k (<span class="op">*</span>)</span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="ot">(*) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span></code></pre></div>
+<p>ということでこれで無事に型レベルの掛け算ができるようになりました。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">=</span> <span class="dv">100</span></span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<p><code>kind!</code> のエイリアスとして <code>k!</code> コマンド欲しい。</p>
+<h2 id="追記">追記</h2>
+<p><code>k!</code> コマンドのマージリクエストが作られました <a href="https://gitlab.haskell.org/ghc/ghc/merge_requests/1934">Allow completion for GHCi commands with option <code>!</code> (#17345)</a></p>
+<p>ありがとうございます :)</p>
+<p>GHC に組み込まれるまでは、<code>~/.ghci</code> や <code>&lt;proj&gt;/.ghci</code> に以下の内容を記述しておけば <code>:kind!</code> のエイリアスとして <code>:k!</code> が使えるようになります。</p>
+<pre><code>:def! k! (\e -&gt; return (&quot;:kind! &quot; ++ e))</code></pre>
+<p>実行結果</p>
+<pre><code>&gt; :k! 1+1
+1+1 :: Nat
+= 2</code></pre>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://downloads.haskell.org/~ghc/8.8.1/docs/html/users_guide/glasgow_exts.html?highlight=nostaristype#extension-StarIsType">StarIsType - Glasgow Haskell Compiler User’s Guide</a></li>
+<li><a href="https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6">GHC 8.6.x Migration Guide</a></li>
+<li><a href="https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/">“TypeOperators =&gt; NoStarIsType”の延期の提案</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
+    <title>AST を拡張しよう</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/09-09-extensible-ast.html</id>
+    <published>2019-09-09T00:00:00Z</published>
+    <updated>2019-09-09T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>実験的な内容です。(<span class="citation" data-cites="fumievalさん">@fumievalさん</span>, <span class="citation" data-cites="matsubara0507さん">@matsubara0507さん</span>、アドバイスありがとうございました)</p>
+<!--more-->
+<h2 id="モチベーション">モチベーション</h2>
+<p>まずは、以下のような型 <code>Expr</code> と関数 <code>pretty</code> が定義されているとします。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">Expr</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb1-8"><a href="#cb1-8"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<p>今回、この <code>Expr</code> をベースとして新しい型 <code>ExprM</code>, <code>ExprS</code> をそれぞれ定義したい場合、どのように書けば良いのでしょうか？</p>
+<p>素朴に定義するとなると、以下のようになりそうです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">data</span> <span class="dt">ExprM</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="op">|</span> <span class="dt">Mul</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb2-9"><a href="#cb2-9"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span>
+<span id="cb2-10"><a href="#cb2-10"></a>pretty (<span class="dt">Mul</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; * &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">data</span> <span class="dt">ExprS</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="op">|</span> <span class="dt">Sub</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="ot">pretty ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>pretty (<span class="dt">Constant</span> i) <span class="ot">=</span> <span class="fu">show</span> i</span>
+<span id="cb3-9"><a href="#cb3-9"></a>pretty (<span class="dt">Add</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span>
+<span id="cb3-10"><a href="#cb3-10"></a>pretty (<span class="dt">Sub</span> e1 e2) <span class="ot">=</span> pretty e1 <span class="op">&lt;&gt;</span> <span class="st">&quot; - &quot;</span> <span class="op">&lt;&gt;</span> pretty e2</span></code></pre></div>
+<p>しかし、同じようなコードが含まれていて冗長なので何とかしたいです・・・。</p>
+<h2 id="方針">方針</h2>
+<ul>
+<li>各コンストラクタ <code>Constant</code>, <code>Add</code> 等を <code>extensible</code> のフィールドとして定義</li>
+<li><code>Expr</code>, <code>ExprS</code>, <code>ExprM</code> は、それぞれのフィールドを集めて作った拡張可能和として定義</li>
+<li>スマートコンストラクタは再利用できるようにしたい</li>
+</ul>
+<h2 id="実装">実装</h2>
+<ol type="1">
+<li>コンストラクタの定義</li>
+<li>型の定義</li>
+<li>スマートコンストラクタの定義</li>
+<li>pretty 関数の定義</li>
+<li>新しい型を定義</li>
+</ol>
+<h3 id="コンストラクタの定義">コンストラクタの定義</h3>
+<p>まずはそれぞれのフィールドを定義しましょう。それぞれの型は <code>Assoc Symbol Type</code> のカインドを持ちます。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- Field/Constant.hs</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">{-# LANGUAGE DataKinds     #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">type</span> <span class="dt">Constant</span> <span class="ot">=</span> <span class="st">&quot;constant&quot;</span> <span class="op">&gt;:</span> <span class="dt">Int</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">{-# LANGUAGE DataKinds     #-}</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">type</span> <span class="dt">Add</span> expr <span class="ot">=</span> <span class="st">&quot;add&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span></code></pre></div>
+<p>これらのフィールドは以下のような型のコンストラクタを1つずつ切り出したような感じです。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">data</span> <span class="dt">Expr</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="ot">=</span> <span class="dt">Constant</span> <span class="dt">Int</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span></code></pre></div>
+<h3 id="型の定義">型の定義</h3>
+<p>フィールドの定義は完了したので、次にそれらのフィールドを集めて型にしましょう。</p>
+<p>拡張性を得るために型クラスを定義します。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">-- Expr.hs</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">module</span> <span class="dt">Base</span> <span class="kw">where</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="kw">import</span> <span class="dt">Data.Kind</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">import</span> <span class="dt">GHC.TypeLits</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="kw">class</span> <span class="dt">Expr</span> expr <span class="kw">where</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="kw">type</span> <span class="dt">FieldList</span><span class="ot"> expr ::</span> [<span class="dt">Assoc</span> <span class="dt">Symbol</span> <span class="dt">Type</span>]</span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="ot">  liftExpr ::</span> <span class="dt">Variant</span> (<span class="dt">FieldList</span> expr) <span class="ot">-&gt;</span> expr</span></code></pre></div>
+<p><code>FieldList expr</code> によって型に応じてフィールドが変化します。</p>
+<p>実際に <code>Expr</code> 型を定義してみましょう。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Expr/Base.hs</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">module</span> <span class="dt">Expr.Base</span> <span class="kw">where</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="kw">newtype</span> <span class="dt">ExprB</span> <span class="ot">=</span> <span class="dt">ExprB</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  {<span class="ot"> unwrapExprB ::</span> <span class="dt">Variant</span> <span class="dt">ExprBFields</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb8-15"><a href="#cb8-15"></a></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="kw">type</span> <span class="dt">ExprBFields</span> <span class="ot">=</span> &#39;[ <span class="dt">Constant</span>, <span class="dt">Add</span> <span class="dt">ExprB</span> ]</span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprB</span> <span class="ot">=</span> <span class="dt">ExprBFields</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprB</span></span></code></pre></div>
+<ul>
+<li><code>type ExprBFields</code> は型に含まれるフィールドを表します。</li>
+<li>再帰的に定義するために <code>newtype ExprB</code> を宣言しています。</li>
+<li><code>Variant ExprBFields</code> によって <code>Constant</code>, <code>Add ExprB</code> の直和型っぽい感じになります。</li>
+</ul>
+<p><code>liftExpr</code> は再利用可能なスマートコンストラクタを作るためにあります。次で説明します。</p>
+<h3 id="スマートコンストラクタの定義">スマートコンストラクタの定義</h3>
+<p>ここまでで型の定義は終わりました。次は値を作りましょう。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="ot">{-# LANGUAGE TypeFamilies     #-}</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="kw">module</span> <span class="dt">Field.Add</span> <span class="kw">where</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="kw">type</span> <span class="dt">Add</span> expr <span class="ot">=</span> <span class="st">&quot;add&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span>
+<span id="cb9-14"><a href="#cb9-14"></a></span>
+<span id="cb9-15"><a href="#cb9-15"></a>add e1 e2 <span class="ot">=</span> liftExpr (<span class="op">#</span>add <span class="op">#</span> (e1, e2))</span></code></pre></div>
+<p><code>liftExpr</code> は文脈に応じて適切なタグに変化します。例えば <code>ExprB</code> 型であれば <code>ExprB</code> コンストラクタになります。</p>
+<p>同様に <code>Constant</code> の値を作る関数も定義しましょう。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="ot">{-# LANGUAGE DataKinds        #-}</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="ot">{-# LANGUAGE OverloadedLabels #-}</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="ot">{-# LANGUAGE TypeFamilies     #-}</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="ot">{-# LANGUAGE TypeOperators    #-}</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="kw">module</span> <span class="dt">Field.Constant</span> <span class="kw">where</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="kw">type</span> <span class="dt">Constant</span> <span class="ot">=</span> <span class="st">&quot;constant&quot;</span> <span class="op">&gt;:</span> <span class="dt">Int</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a></span>
+<span id="cb10-14"><a href="#cb10-14"></a>c i <span class="ot">=</span> liftExpr (<span class="op">#</span>constant <span class="op">#</span> i)</span></code></pre></div>
+<p>実際に使ってみるとこんな感じです。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">1</span>) (add <span class="op">@=</span> (<span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">0</span>) (constant <span class="op">@=</span> <span class="dv">10</span>)},<span class="dt">ExprB</span> {unwrapExprB <span class="ot">=</span> <span class="dt">EmbedAt</span> <span class="op">$</span>(mkMembership <span class="dv">0</span>) (constant <span class="op">@=</span> <span class="dv">20</span>)}))}</span></code></pre></div>
+<p>extensible の形式で表示されていますが、問題無く値が作れています。型注釈が無い場合はコンパイルエラーになってしまいますが、ここでは気にしないことにします。</p>
+<h3 id="pretty-関数の定義">pretty 関数の定義</h3>
+<p>値が作れるようになったら、次は <code>pretty</code> 関数を作ります。</p>
+<p>ここが一番面白いポイントだと思っているのですが、<code>pretty</code> のような関数を各フィールドに対して動作する型クラスのメソッドとして定義します。</p>
+<p>まずは、パターンマッチのための補助関数 <code>matchVariant</code> を定義します。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">-- Expr.hs</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="ot">{-# LANGUAGE ConstraintKinds     #-}</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="ot">{-# LANGUAGE DataKinds           #-}</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="ot">{-# LANGUAGE PolyKinds           #-}</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="ot">{-# LANGUAGE RankNTypes          #-}</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="ot">{-# LANGUAGE ScopedTypeVariables #-}</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="ot">{-# LANGUAGE TypeApplications    #-}</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="ot">{-# LANGUAGE TypeFamilies        #-}</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="op">...</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="kw">import</span> <span class="dt">Data.Functor.Identity</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="op">...</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="ot">matchVariant ::</span> <span class="kw">forall</span> c xs r<span class="op">.</span> <span class="dt">Forall</span> c xs</span>
+<span id="cb12-16"><a href="#cb12-16"></a>  <span class="ot">=&gt;</span> <span class="dt">Proxy</span> c <span class="ot">-&gt;</span> (<span class="kw">forall</span> x<span class="op">.</span> c x <span class="ot">=&gt;</span> <span class="dt">Membership</span> xs x <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> x <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> r</span>
+<span id="cb12-17"><a href="#cb12-17"></a>matchVariant _ f <span class="ot">=</span> matchField <span class="op">$</span> htabulateFor (<span class="dt">Proxy</span> <span class="op">@</span>c) <span class="op">$</span> \m <span class="ot">-&gt;</span> <span class="dt">Field</span> <span class="op">$</span> <span class="dt">Match</span> <span class="op">$</span> f m <span class="op">.</span> runIdentity</span></code></pre></div>
+<p>次に <code>pretty</code> 関数を定義するための型クラスを作ります。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts #-}</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="ot">{-# LANGUAGE PolyKinds        #-}</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="ot">{-# LANGUAGE TypeApplications #-}</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">module</span> <span class="dt">Operation.Pretty</span> <span class="kw">where</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="ot">pretty&#39; ::</span> <span class="dt">Forall</span> <span class="dt">PrettyField</span> xs <span class="ot">=&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>pretty&#39; <span class="ot">=</span> matchVariant (<span class="dt">Proxy</span> <span class="op">@</span><span class="dt">PrettyField</span>) prettyField</span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="kw">class</span> <span class="dt">Expr</span> expr <span class="ot">=&gt;</span> <span class="dt">Pretty</span> expr <span class="kw">where</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="ot">  pretty ::</span> expr <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="kw">class</span> <span class="dt">PrettyField</span> kv <span class="kw">where</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="ot">  prettyField ::</span> proxy kv <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> kv <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<p>実際にインスタンスを定義します。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">-- Field/Add.hs</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="op">...</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="op">...</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="op">...</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="kw">instance</span> <span class="dt">Pretty</span> expr <span class="ot">=&gt;</span> <span class="dt">PrettyField</span> (<span class="dt">Add</span> expr) <span class="kw">where</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a>  prettyField _ (l, r) <span class="ot">=</span> pretty l <span class="op">&lt;&gt;</span> <span class="st">&quot; + &quot;</span> <span class="op">&lt;&gt;</span> pretty r</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">-- Field/Constant.hs</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="op">...</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="op">...</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="op">...</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a></span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="kw">instance</span> <span class="dt">PrettyField</span> <span class="dt">Constant</span> <span class="kw">where</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>  prettyField _ <span class="ot">=</span> <span class="fu">show</span></span></code></pre></div>
+<p><code>ExprB</code> に対する定義はボイラープレートのようなものです。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">-- Expr/Base.hs</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="op">...</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="op">...</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>  pretty <span class="ot">=</span> pretty&#39; <span class="op">.</span> unwrapExprB</span></code></pre></div>
+<p>実際に使ってみます。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;</span> pretty e1</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">&quot;10 + 20&quot;</span></span></code></pre></div>
+<p>期待通り、ちゃんと動いています。</p>
+<h3 id="新しい型を定義">新しい型を定義</h3>
+<p>最後に既存の型を拡張して <code>ExprM</code> を作ります。</p>
+<p>まずは <code>Mul</code> フィールドの <code>pretty</code> とコンストラクタの定義を追加しましょう。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">-- Field/Mul.hs</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="ot">{-# LANGUAGE DataKinds         #-}</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="ot">{-# LANGUAGE OverloadedLabels  #-}</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="ot">{-# LANGUAGE TypeOperators     #-}</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="kw">module</span> <span class="dt">Field.Mul</span> <span class="kw">where</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="kw">import</span> <span class="dt">Control.Lens</span> ((#))</span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="kw">type</span> <span class="dt">Mul</span> expr <span class="ot">=</span> <span class="st">&quot;mul&quot;</span> <span class="op">&gt;:</span> (expr, expr)</span>
+<span id="cb18-16"><a href="#cb18-16"></a></span>
+<span id="cb18-17"><a href="#cb18-17"></a><span class="kw">instance</span> <span class="dt">Pretty</span> expr <span class="ot">=&gt;</span> <span class="dt">PrettyField</span> (<span class="dt">Mul</span> expr) <span class="kw">where</span></span>
+<span id="cb18-18"><a href="#cb18-18"></a>  prettyField _ (l, r) <span class="ot">=</span> pretty l <span class="op">&lt;&gt;</span> <span class="st">&quot; * &quot;</span> <span class="op">&lt;&gt;</span> pretty r</span>
+<span id="cb18-19"><a href="#cb18-19"></a></span>
+<span id="cb18-20"><a href="#cb18-20"></a>mul e1 e2 <span class="ot">=</span> liftExpr (<span class="op">#</span>mul <span class="op">#</span> (e1, e2))</span></code></pre></div>
+<p>次に <code>ExprM</code> 型を定義します。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">-- Expr/Mul.hs</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="kw">module</span> <span class="dt">Expr.Mul</span> <span class="kw">where</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="kw">newtype</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a>  {<span class="ot"> unwrapExprM ::</span> <span class="dt">Variant</span> <span class="dt">ExprMFields</span></span>
+<span id="cb19-17"><a href="#cb19-17"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb19-18"><a href="#cb19-18"></a></span>
+<span id="cb19-19"><a href="#cb19-19"></a><span class="kw">type</span> <span class="dt">ExprMFields</span> <span class="ot">=</span> &#39;[ <span class="dt">Constant</span>, <span class="dt">Add</span> <span class="dt">ExprM</span>, <span class="dt">Mul</span> <span class="dt">ExprM</span> ]</span>
+<span id="cb19-20"><a href="#cb19-20"></a></span>
+<span id="cb19-21"><a href="#cb19-21"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb19-22"><a href="#cb19-22"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprMFields</span></span>
+<span id="cb19-23"><a href="#cb19-23"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb19-24"><a href="#cb19-24"></a></span>
+<span id="cb19-25"><a href="#cb19-25"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb19-26"><a href="#cb19-26"></a>  pretty <span class="ot">=</span> pretty&#39; <span class="op">.</span> unwrapExprM</span></code></pre></div>
+<p>ほとんど同じですが、<code>type ExprMFields</code> の部分で <code>Mul ExprM</code> を追加しています。(<code>ExprB</code> のフィールドに単純に追加する方法も一応可能です。)</p>
+<p>実際に使ってみると、ちゃんと異なる型と認識してコンパイルエラーになってくれます。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> add (c <span class="dv">40</span>) (c <span class="dv">50</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="op">&gt;</span> add e1 e2</span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="co">-- 型が異なるためコンパイルエラー</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="op">&gt;</span> pretty e1</span>
+<span id="cb20-8"><a href="#cb20-8"></a><span class="st">&quot;10 + 20&quot;</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="op">&gt;</span> pretty e2</span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="st">&quot;40 + 50&quot;</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="op">&gt;</span> e3 <span class="ot">=</span> mul (c <span class="dv">60</span>) (c <span class="dv">70</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb20-13"><a href="#cb20-13"></a><span class="co">-- ExprB 型には Mul フィールドが存在していないため、コンパイルエラー</span></span>
+<span id="cb20-14"><a href="#cb20-14"></a></span>
+<span id="cb20-15"><a href="#cb20-15"></a><span class="op">&gt;</span> e3 <span class="ot">=</span> mul (c <span class="dv">60</span>) (c <span class="dv">70</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb20-16"><a href="#cb20-16"></a><span class="op">&gt;</span> pretty e3</span>
+<span id="cb20-17"><a href="#cb20-17"></a><span class="st">&quot;60 * 70&quot;</span></span></code></pre></div>
+<h2 id="おまけ">おまけ</h2>
+<h3 id="既存のフィールドを拡張する">既存のフィールドを拡張する</h3>
+<p><code>UndecidableInstances</code> 拡張を使っても良ければ、以下のように <code>ExprBFields ++ '[ Mul ExprM ]</code> と書くこともできます。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="ot">{-# LANGUAGE DataKinds    #-}</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="ot">{-# LANGUAGE TypeFamilies #-}</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="ot">{-# LANGUAGE UndecidableInstances #-}</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="kw">module</span> <span class="dt">Expr.Mul</span> <span class="kw">where</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a><span class="kw">import</span> <span class="dt">Operation.Pretty</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a></span>
+<span id="cb21-14"><a href="#cb21-14"></a><span class="kw">newtype</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>  {<span class="ot"> unwrapExprM ::</span> <span class="dt">Variant</span> <span class="dt">ExprMFields</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a>  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb21-17"><a href="#cb21-17"></a></span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="kw">type</span> <span class="dt">ExprMFields</span> <span class="ot">=</span> <span class="dt">ExprBFields</span> <span class="op">++</span> &#39;[ <span class="dt">Mul</span> <span class="dt">ExprM</span> ]</span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="co">-- type ExprMFields = &#39;[ Constant, Add ExprM, Mul ExprM ]</span></span>
+<span id="cb21-20"><a href="#cb21-20"></a></span>
+<span id="cb21-21"><a href="#cb21-21"></a><span class="kw">instance</span> <span class="dt">Expr</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a>  <span class="kw">type</span> <span class="dt">FieldList</span> <span class="dt">ExprM</span> <span class="ot">=</span> <span class="dt">ExprMFields</span></span>
+<span id="cb21-23"><a href="#cb21-23"></a>  liftExpr <span class="ot">=</span> <span class="dt">ExprM</span></span>
+<span id="cb21-24"><a href="#cb21-24"></a></span>
+<span id="cb21-25"><a href="#cb21-25"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb21-26"><a href="#cb21-26"></a>  pretty <span class="ot">=</span> pretty&#39; <span class="op">.</span> unwrapExprM</span></code></pre></div>
+<h3 id="操作を追加しよう">操作を追加しよう</h3>
+<p><code>eval</code> を追加してみましょう。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="co">-- Operation/Eval.hs</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="ot">{-# LANGUAGE FlexibleContexts #-}</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="ot">{-# LANGUAGE PolyKinds        #-}</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="ot">{-# LANGUAGE TypeApplications #-}</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="kw">module</span> <span class="dt">Operation.Eval</span> <span class="kw">where</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="kw">import</span> <span class="dt">Expr</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="kw">import</span> <span class="dt">Data.Extensible</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a></span>
+<span id="cb22-11"><a href="#cb22-11"></a><span class="ot">eval&#39; ::</span> <span class="dt">Forall</span> <span class="dt">EvalField</span> xs <span class="ot">=&gt;</span> <span class="dt">Variant</span> xs <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a>eval&#39; <span class="ot">=</span> matchVariant (<span class="dt">Proxy</span> <span class="op">@</span><span class="dt">EvalField</span>) evalField</span>
+<span id="cb22-13"><a href="#cb22-13"></a></span>
+<span id="cb22-14"><a href="#cb22-14"></a><span class="kw">class</span> <span class="dt">Eval</span> expr <span class="kw">where</span></span>
+<span id="cb22-15"><a href="#cb22-15"></a><span class="ot">  eval ::</span> expr <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb22-16"><a href="#cb22-16"></a></span>
+<span id="cb22-17"><a href="#cb22-17"></a><span class="kw">class</span> <span class="dt">EvalField</span> kv <span class="kw">where</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a><span class="ot">  evalField ::</span> proxy kv <span class="ot">-&gt;</span> <span class="dt">TargetOf</span> kv <span class="ot">-&gt;</span> <span class="dt">Int</span></span></code></pre></div>
+<p>さらに、インスタンス定義もこのファイルに定義します。</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1"></a><span class="co">-- Operation/Eval.hs</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="op">...</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="op">...</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="kw">import</span> <span class="dt">Expr.Base</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="kw">import</span> <span class="dt">Expr.Mul</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="kw">import</span> <span class="dt">Field.Add</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a><span class="kw">import</span> <span class="dt">Field.Constant</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="kw">import</span> <span class="dt">Field.Mul</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="op">...</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="kw">instance</span> <span class="dt">Eval</span> <span class="dt">ExprB</span> <span class="kw">where</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a>  eval <span class="ot">=</span> eval&#39; <span class="op">.</span> unwrapExprB</span>
+<span id="cb23-16"><a href="#cb23-16"></a></span>
+<span id="cb23-17"><a href="#cb23-17"></a><span class="kw">instance</span> <span class="dt">Eval</span> <span class="dt">ExprM</span> <span class="kw">where</span></span>
+<span id="cb23-18"><a href="#cb23-18"></a>  eval <span class="ot">=</span> eval&#39; <span class="op">.</span> unwrapExprM</span>
+<span id="cb23-19"><a href="#cb23-19"></a></span>
+<span id="cb23-20"><a href="#cb23-20"></a><span class="op">...</span></span>
+<span id="cb23-21"><a href="#cb23-21"></a></span>
+<span id="cb23-22"><a href="#cb23-22"></a><span class="kw">instance</span> <span class="dt">EvalField</span> <span class="dt">Constant</span> <span class="kw">where</span></span>
+<span id="cb23-23"><a href="#cb23-23"></a>  evalField _ <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb23-24"><a href="#cb23-24"></a></span>
+<span id="cb23-25"><a href="#cb23-25"></a><span class="kw">instance</span> <span class="dt">Eval</span> expr <span class="ot">=&gt;</span> <span class="dt">EvalField</span> (<span class="dt">Add</span> expr) <span class="kw">where</span></span>
+<span id="cb23-26"><a href="#cb23-26"></a>  evalField _ (l, r) <span class="ot">=</span> eval l <span class="op">+</span> eval r</span>
+<span id="cb23-27"><a href="#cb23-27"></a></span>
+<span id="cb23-28"><a href="#cb23-28"></a><span class="kw">instance</span> <span class="dt">Eval</span> expr <span class="ot">=&gt;</span> <span class="dt">EvalField</span> (<span class="dt">Mul</span> expr) <span class="kw">where</span></span>
+<span id="cb23-29"><a href="#cb23-29"></a>  evalField _ (l, r) <span class="ot">=</span> eval l <span class="op">*</span> eval r</span></code></pre></div>
+<p>これで使えるようになりました。</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;</span> e1 <span class="ot">=</span> add (c <span class="dv">10</span>) (c <span class="dv">20</span>)<span class="ot"> ::</span> <span class="dt">ExprB</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="op">&gt;</span> e2 <span class="ot">=</span> mul (c <span class="dv">40</span>) (c <span class="dv">50</span>)<span class="ot"> ::</span> <span class="dt">ExprM</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="op">&gt;</span> eval e1</span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="dv">30</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="op">&gt;</span> eval e2</span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="dv">2000</span></span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+<p>何かに使えないかなー。</p>]]></summary>
+</entry>
+<entry>
+    <title>let, where, let...in の使い分け</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html</id>
+    <published>2019-08-24T00:00:00Z</published>
+    <updated>2019-08-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
+<p>アルバイトの学生に良く質問される内容の1つに「<code>let</code>, <code>where</code>, <code>let...in</code> はどういう風に使い分ければ良いですか？」というものがあります。ちょっと前に <strong>twitter</strong> でも同じような話題を見かけたので、少しまとめてみました。</p>
+<p>また、様々な Haskell 書籍で同様の内容について触れられていますが、明確な指針は無く個人の好みという感じがします。</p>
+<!--more-->
+<h2 id="let-を使うタイミング-do-の中">let を使うタイミング (do の中)</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">-- let version</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>      z <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<ul>
+<li>上記のコードのように <code>do</code> の中で束縛された変数 <code>x</code> を使って新しい変数 <code>y</code> を宣言する時に良く使います</li>
+<li>他の変数に依存していない <code>z</code> はどの書き方でも書けますが、通常は <code>let</code> で続けて書くことが多いと思います</li>
+<li><code>let</code> は <code>do</code> (またはリスト内包表記) 以外では使えません</li>
+<li>内部的には <code>do { let decls; stmts } = let decls in do { stmts }</code> という変換が行われます。(リスト内包表記は <code>[ e | let decls, Q ] = let decls in [ e | Q ]</code> という変換です。)</li>
+</ul>
+<h3 id="where-で書いた場合">where で書いた場合</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- where version</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="kw">where</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<ul>
+<li><code>where</code> を使って <code>x</code> を宣言することはできません。(<code>do</code> を脱糖した形を見ると、できない感じが伝わりやすいかもしれません)</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- do を使わない形</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>f <span class="ot">=</span> <span class="fu">return</span> <span class="dv">1</span> <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z))</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">where</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<ul>
+<li>何百行も続く巨大な <code>do</code> だと <code>where</code> で宣言されている変数までの距離が遠いため、可読性が落ちます。<code>z</code> を <code>where</code> で書くか <code>let</code> で書くかはケースバイケースかもしれません</li>
+</ul>
+<h3 id="letin-で書いた場合">let…in で書いた場合</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- let...in version</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<ul>
+<li><code>let...in</code> を使うとインデントに気配りする必要があるので面倒です
+<ul>
+<li>例えば <code>let</code> と <code>in</code> の先頭を合わせるとコンパイルエラーになります</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- let...in version (compile error)</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<h2 id="where-を使うタイミング-ガード">where を使うタイミング (ガード)</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>calcBmi cm kg</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">=</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">=</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">=</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="st">&quot;太っているね&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>  <span class="kw">where</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>    bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    m <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">-- *Main&gt; putStrLn $ calcBmi 170 60</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">-- 普通だね</span></span></code></pre></div>
+<ul>
+<li>このように、ガードで共通する変数を宣言する場合に <code>where</code> を使うと見通しが良くなります。</li>
+<li><code>do</code> の中ではないため、当然 <code>let</code> は使えません</li>
+</ul>
+<h3 id="letin-で書いた場合-1">let…in で書いた場合</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">{-# LANGUAGE MultiWayIf #-}</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>calcBmi cm kg <span class="ot">=</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="kw">let</span> m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>      bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="kw">in</span> <span class="kw">if</span> <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">-&gt;</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>        <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">-&gt;</span> <span class="st">&quot;太っているね&quot;</span></span></code></pre></div>
+<ul>
+<li>もし <code>let...in</code> を使って同じように書く場合は、上記のように <code>MultiWayIf</code> を使うことになるでしょう。</li>
+</ul>
+<h2 id="letin-を使うタイミング">let…in を使うタイミング</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb8-6"><a href="#cb8-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> (\s <span class="ot">-&gt;</span> <span class="kw">let</span> (x,s&#39;) <span class="ot">=</span> app st s <span class="kw">in</span> (g x, s&#39;))</span></code></pre></div>
+<ul>
+<li>こんな感じの関数を書くときにはとても便利です</li>
+<li>ただ、このようなケースというのはあまり遭遇しないので、個人的には使わないようにしています。無くてもほぼ困らないです
+<ul>
+<li>理由1: レイアウトルールを気にしなければならない点がとても面倒なので</li>
+<li>理由2: ポイントフリースタイルで書くのが好きなので</li>
+</ul></li>
+</ul>
+<h3 id="where-で書いた場合-1">where で書いた場合</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb9-6"><a href="#cb9-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="fu">fmap</span> g <span class="ot">=</span> <span class="dt">S</span> <span class="op">.</span> f g</span>
+<span id="cb9-11"><a href="#cb9-11"></a></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="ot">f ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (b, <span class="dt">State</span>)</span>
+<span id="cb9-13"><a href="#cb9-13"></a>f g st s <span class="ot">=</span> (g x, s&#39;)</span>
+<span id="cb9-14"><a href="#cb9-14"></a>  <span class="kw">where</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>    (x,s&#39;) <span class="ot">=</span> app st s</span>
+<span id="cb9-16"><a href="#cb9-16"></a></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">-- もしくは</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> f</span>
+<span id="cb9-21"><a href="#cb9-21"></a>    <span class="kw">where</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a>      f s <span class="ot">=</span> (g x, s&#39;)</span>
+<span id="cb9-23"><a href="#cb9-23"></a>        <span class="kw">where</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a>          (x,s&#39;) <span class="ot">=</span> app st s</span></code></pre></div>
+<ul>
+<li><code>let...in</code> で書いたときよりも可読性が落ちてしまったように思います</li>
+</ul>
+<h2 id="where-と-letin-の違い">where と let…in の違い</h2>
+<p><code>let...in</code> と <code>where</code> の明確な違いは <code>let...in</code> が式なのに対して <code>where</code> が節だという点です。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- OK</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>f <span class="ot">=</span> <span class="kw">if</span> <span class="kw">let</span> x <span class="ot">=</span> <span class="dt">True</span> <span class="kw">in</span> x <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co">-- NG</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>g <span class="ot">=</span> <span class="kw">if</span> (x <span class="kw">where</span> x <span class="ot">=</span> <span class="dt">True</span>) <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span></code></pre></div>
+<p>構文上のどこに式が出現できるかという規則については <code>Language Report</code> に詳しく記載されています。</p>
+<h2 id="まとめ">まとめ</h2>
+<p>このように、<code>let</code>, <code>where</code>, <code>let...in</code> はどちらでも書けることが多いので、適材適所で自分の感性を信じて使いこなすと良いのではないかと思います。</p>
+<p>そういえばラムダノートさんから<a href="https://www.lambdanote.com/collections/haskell">プログラミングHaskellの第2版</a>が発売されましたね。書籍の内容が個人的にとても好きなので、弊社のアルバイトの人には推薦図書として英語版を読んでもらっていました。</p>
+<p>これからは日本語で読めるようになったので、これを機に Haskell に入門してみるのも良いかもしれません。</p>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/onlinereport/haskell2010/">Haskell 2010 Language Report</a></li>
+<li>すごいHaskellたのしく学ぼう！</li>
+<li>Programming in Haskell 2nd Edition</li>
+</ul>
+<h2 id="宣伝">宣伝</h2>
+<p><a href="https://techbookfest.org/event/tbf07">技術書典7</a>に初参加します。</p>
+<p><img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px"></p>
+<p>進捗・詳細については <a href="/ad/techbookfest7.html">技術書典7特設ページ</a> をご確認ください。</p>]]></summary>
+</entry>
+
+</feed>

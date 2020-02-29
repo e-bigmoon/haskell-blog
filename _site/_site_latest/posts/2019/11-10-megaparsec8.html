@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Megaparsec 8 (翻訳)</title>
+  <meta name="description" content="Great original post: Megaparsec 8
+一年が経ち、Megaparsecの新しいメジャーバージョンが再び登場する時がきました。 今回の変更は、これまでのメジャーリリースの中で最も破壊的ではない変更です。 実際、ほとんどのユーザはアップグレードのために何もする必要はないと思います。">
+  <link rel="canonical" href="../../posts/2019/11-10-megaparsec8.html">
+  <link rel="alternate" type="application/atom+xml" title="Megaparsec 8 (翻訳)" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Megaparsec 8 (翻訳)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2019/11-10-megaparsec8.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Megaparsec 8 (翻訳)" />
+  <meta property="og:description" content="Great original post: Megaparsec 8
+一年が経ち、Megaparsecの新しいメジャーバージョンが再び登場する時がきました。 今回の変更は、これまでのメジャーリリースの中で最も破壊的ではない変更です。 実際、ほとんどのユーザはアップグレードのために何もする必要はないと思います。" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on November 10, 2019
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          translated by Wataru Yamada
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Mark Karpov
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Megaparsec 8 (翻訳)</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'megaparsec'." href="../../tags/megaparsec.html">megaparsec</a>, <a title="All pages tagged 'package'." href="../../tags/package.html">package</a>, <a title="All pages tagged '翻訳'." href="../../tags/%E7%BF%BB%E8%A8%B3.html">翻訳</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Megaparsec 8 (翻訳)&url=https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <p>Great original post: <a href="https://markkarpov.com/post/megaparsec-8.html">Megaparsec 8</a></p>
+<p>一年が経ち、Megaparsecの新しいメジャーバージョンが再び登場する時がきました。 今回の変更は、これまでのメジャーリリースの中で最も破壊的ではない変更です。 実際、ほとんどのユーザはアップグレードのために何もする必要はないと思います。</p>
+<!--more-->
+<p>これには次の理由があります。</p>
+<ul>
+<li>それほど多くのissue が開かれておらず、バグも報告されていません。それはMegaparsecが最近、そしてほとんど満足のいく方法で「うまくいく」という事実と関係があると思います。</li>
+<li>ライブラリは現在幅広く使用されています。この記事の執筆時点で、Megaparsecに直接依存する<a href="https://packdeps.haskellers.com/reverse/megaparsec">Hackageのパッケージは146個</a>あります。Megaparsecの上に構築することを選択した<a href="https://hackage.haskell.org/package/replace-megaparsec">新しい刺激的なライブラリ</a>も現れました。<a href="https://github.com/idris-lang/Idris-dev">Idris</a>や<a href="https://github.com/dhall-lang/dhall-haskell">Dhall</a>などのプロジェクトでは、Megaparsecを使用してパースの問題を解決しています。</li>
+</ul>
+<p>これらはライブラリが枯れ、成熟したことを示しているので、動作しているものを壊さないようにしましょう。 とはいえ、常に改善の余地があります。</p>
+<h2 id="nixによる品質保証">Nixによる品質保証</h2>
+<p>バージョン8の作業を開始する前に、Nixを使用して品質保証を強化することにしました。 現在のMegaparsecに依存するプロジェクトの数を把握し、Nixを使用して<a href="https://github.com/tweag/ormolu">Ormolu</a>のバグを発見したという成功体験から、依存パッケージによって引き起こされる破壊的変更、パフォーマンスの変更、およびバグのチェックにNixを用いることにしました。</p>
+<p>結果をMegaparsecのリポジトリにある<a href="https://github.com/mrkkrp/megaparsec/blob/master/HACKING.md">HACKING.md</a>に文書化しました。 開発時のshellとは別に、Nix expressionは以下のターゲットグループを提供します。</p>
+<ul>
+<li><code>base</code> は <code>parser-combinators</code> や <code>hspec-megaparsec</code> などの密接に関連したパッケージとそのテストです。<code>nix-build -A base --no-out-link</code> を実行することにより、開発者はこれらすべてをビルドし、テストすることができます。</li>
+<li><code>deps</code> は選択された依存関係のもとでビルドの破壊とテストスイートの失敗が起きないことを確認します。</li>
+<li><code>benches</code> はベンチマークのコレクションです。これには、Megaparsecのマイクロベンチマークと、ライブラリが実際のタスクでどのように実行されるかを示すいくつかのパッケージが含まれます。</li>
+</ul>
+<p>これらコマンドのそれぞれで、特定のパッケージまたはベンチマークに「ズームイン」できます。 たとえば、<code>nix-build -A benches.parsers-bench</code> を実行して、<code>parsers-bench</code> のベンチマークを確認できます。 要するに、ほとんどのパッケージは新しい変更でも引き続き動作し、修正が容易ではないものでも動作します。 実際、システムを使い続けるためには不備のあるパッケージにパッチを適用する必要があり、そのための<a href="https://github.com/mrkkrp/megaparsec/tree/31b917b1297950c22925f9ee7f7a588834293103/nix/patches">アップグレード用のパッチ</a>も利用可能です。</p>
+<p>ロジックやパフォーマンスの低下は見つかりませんでした。</p>
+<h2 id="パースエラー位置の制御">パースエラー位置の制御</h2>
+<p>新機能について話しましょう。 プリミティブ <code>failure</code> と <code>fancyFailure</code> は <code>parseError</code> に置き換わりました。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">parseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">-- 現在の 'failure' と 'fancyFailure' は普通の関数:</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a>failure</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-10"><a href="#cb1-10"></a>failure us ps <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>  o <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  parseError (<span class="dt">TrivialError</span> o us ps)</span>
+<span id="cb1-13"><a href="#cb1-13"></a></span>
+<span id="cb1-14"><a href="#cb1-14"></a>fancyFailure</span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb1-16"><a href="#cb1-16"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-18"><a href="#cb1-18"></a>fancyFailure xs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>  o <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb1-20"><a href="#cb1-20"></a>  parseError (<span class="dt">FancyError</span> o xs)</span></code></pre></div>
+<p>これはプリミティブの数を減らすという話ではありません (減らすことも良いことですが)。 <code>parseError</code> の主な特徴は、パーサの状態から現在のオフセットを必要とすることなく、任意のオフセットでパースエラーを報告できることです。 これは、パースエラーにしたい位置を既に超えてしまっている場合でも、入力のその位置でパースエラーを作成したい場合に重要です。 これまでは、まず <code>getOffset</code> を介して正しいオフセットを取得し、次にパースエラーを報告する直前に <code>setOffset</code> でオフセットを設定することでしか達成できませんでした。 これは見苦しいだけでなく、エラーが発生しやすくなり、正しいオフセットの復元を忘れることがあります。 <code>mmark</code>の<a href="https://github.com/mmark-md/mmark/blob/8f5534d8068c2b7a139b893639ee5920bcaedd84/Text/MMark/Parser.hs#L787-L790">実例</a>を次に示します。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>  o' <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  setOffset o</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="co">-- ↑ これが失敗した場合、これをオフセット「o」で報告する必要があります</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  setOffset (o' <span class="op">+</span> <span class="dv">2</span>)</span></code></pre></div>
+<p>ここでは完全な状況を説明しませんが、<code>"[]"</code>(<code>+ 2</code>の部分)のパース後にオフセットの増分を考慮するのを忘れたため、このコードにはしばらくバグがあったと言えば十分でしょう。 次のように書けば、同じことをよりうまく表現できます。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>  region (setErrorOffset o) <span class="op">$</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>    (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">-- 備考</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">region ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="ot">=&gt;</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> <span class="dt">ParseError</span> s e)</span>
+<span id="cb3-8"><a href="#cb3-8"></a>     <span class="co">-- ^ 'ParseError' の処理方法</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb3-10"><a href="#cb3-10"></a>     <span class="co">-- ^ 処理を適用する「region」</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  <span class="ot">-&gt;</span> m a</span></code></pre></div>
+<p><code>region</code>は<code>getOffset</code> / <code>setOffset</code> ハックと同じ目的で使用されます。 副作用として、エラーが起きた場合にはパースエラーを更新する関数によって現在のオフセットが変更されます。 <code>region</code> は <code>parseError</code> を使用して、古いハックを廃止できます。</p>
+<pre class="haskel"><code>region f m = do
+  r &lt;- observing m
+  case r of
+    Left err -&gt; parseError (f err)
+    Right x -&gt; return x</code></pre>
+<p>いいね.</p>
+<h2 id="マルチエラーパーサのより良いストーリー">マルチエラーパーサのより良いストーリー</h2>
+<p>プロジェクトの最初期から、マルチエラーパーサをサポートする方向にゆっくりと動いていました。 バージョン7では、<code>ParseError</code>の代わりに<code>ParseErrorBundle</code>を返すようになりました。 マルチエラーをサポートするための準備はすべてが整っていましたが、複数のパースエラーを報告するための方法がまだ提供されていませんでした。</p>
+<p>マルチエラーパーサに求められる事前条件は、入力に問題のある部分をスキップして、正常であることがわかっている位置からパースを再開できることです。 この部分は、<code>withRecovery</code>プリミティブ（Megaparsec 4.4.0以降で使用可能）を使用して実現されます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- | @'withRecovery' r p@ は、パーサー @p@ が失敗した場合でも解析を続行できます。</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co">-- この場合、実際の 'ParseError' を引数とする @r@ が呼び出されます。</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">-- よくある使い方として、特定のオブジェクトのパースの失敗を意味する値を返すことで、</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- その入力の一部を消費し次のオブジェクトの開始位置に移動します。</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">--</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">-- @r@ が失敗すると、元のエラーメッセージが 'withRecovery' なしで報告されることに注意してください。</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">-- パーサ @r@ を回復してもエラーメッセージに影響することはありません。</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a>withRecovery</span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="ot">  ::</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a) <span class="co">-- ^ 失敗の回復方法</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ オリジナルのパーサ</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ 失敗から回復できるパーサ</span></span></code></pre></div>
+<p>Megaparsec 8 までのユーザーは、成功と失敗の可能性を含む直和型になるように型<code>a</code>を選択する必要がありました。 たとえば、<code>Either (ParseError s e) Result</code> です。 パースエラーを収集し、後で表示する前に手動で<code>ParseErrorBundle</code>に追加する必要がありました。 言うまでもなく、これらはすべて、ユーザーフレンドリーではない高度な使用例です。</p>
+<p>Megaparsec 8 は、遅延パースエラーのサポートを追加します。</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">-- | 後で報告するために 'ParseError'を登録します。</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co">-- このアクションはパースを終了せず、パースの最後に考慮される</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">-- 「遅延」'ParseError'のコレクションに特定の「ParseError」を</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">-- 追加する以外は効果がありません。 このコレクションが空の場合のみ、</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">-- パーサは成功します。 これは、複数のパースエラーを一度に報告する</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">-- 主な方法です。</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="ot">registerParseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m ()</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">-- | 'failure'に似ていますが、 遅延'ParseError'のためのものです。</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a></span>
+<span id="cb6-12"><a href="#cb6-12"></a>registerFailure</span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb6-14"><a href="#cb6-14"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>  <span class="ot">-&gt;</span> m ()</span>
+<span id="cb6-17"><a href="#cb6-17"></a></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co">-- | 'fancyFailure'に似ていますが、 遅延'ParseError'のためのものです。</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a></span>
+<span id="cb6-20"><a href="#cb6-20"></a>registerFancyFailure</span>
+<span id="cb6-21"><a href="#cb6-21"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb6-22"><a href="#cb6-22"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
+<span id="cb6-23"><a href="#cb6-23"></a>  <span class="ot">-&gt;</span> m ()</span></code></pre></div>
+<p>これらのエラーは <code>withRecovery</code> のエラー処理コールバックに登録でき、結果の型は <code>Maybe Result</code> になります。 これにより、遅延エラーが最終的な <code>ParseErrorBundle</code> に含まれるようになり、遅延エラーのコレクションが空でない場合に パーサが最終的に失敗するようになります。</p>
+<p>以上のことから、マルチエラーパーサを書く習慣がユーザ間でより一般的になることを願っています。</p>
+<h2 id="その他">その他</h2>
+<ul>
+<li>いつものように、変更の完全なリストについては、<a href="https://github.com/mrkkrp/megaparsec/blob/master/CHANGELOG.md">chagelog</a> を参照してください。</li>
+<li><a href="https://markkarpov.com/megaparsec/megaparsec.html">公式チュートリアル</a>を含むすべてのテキストをバージョン8と互換性があるように更新しました。新しい機能の使用方法を説明するセクションを含めるように拡張しました。</li>
+<li><code>hspec-megaparsec</code> などのサテライトパッケージが更新され、バージョン8で動作するようになりました。</li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2019/10-07-cabal-fmt.html"><i class="material-icons left">navigate_before</i>cabal-fmt の紹介</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2019/12-24-ap-monoid.html">Ap Monoid<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Megaparsec 8 (翻訳)&url=https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/11-10-megaparsec8.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

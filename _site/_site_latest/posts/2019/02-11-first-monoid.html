@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>First Monoid</title>
+  <meta name="description" content="はじめに
+Data.Monoid に First 型が定義されています。
+newtype First a = First { getFirst :: Maybe a }
+
+instance Semigroup (First a) where
+  First Nothing &lt;&gt; b = b
+  a    ">
+  <link rel="canonical" href="../../posts/2019/02-11-first-monoid.html">
+  <link rel="alternate" type="application/atom+xml" title="First Monoid" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="First Monoid" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2019/02-11-first-monoid.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="First Monoid" />
+  <meta property="og:description" content="はじめに
+Data.Monoid に First 型が定義されています。
+newtype First a = First { getFirst :: Maybe a }
+
+instance Semigroup (First a) where
+  First Nothing &lt;&gt; b = b
+  a    " />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on February 11, 2019
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">First Monoid</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a>, <a title="All pages tagged 'monoid'." href="../../tags/monoid.html">monoid</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=First Monoid&url=https://haskell.e-bigmoon.com/posts/2019/02-11-first-monoid.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/02-11-first-monoid.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/02-11-first-monoid.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <h2 id="はじめに">はじめに</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a> に <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html#t:First">First</a> 型が定義されています。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> <span class="dt">Maybe</span> a }</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">First</span> a) <span class="kw">where</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">First</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> b <span class="ot">=</span> b</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  a             <span class="op">&lt;&gt;</span> _ <span class="ot">=</span> a</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">First</span> a) <span class="kw">where</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">First</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p><code>First</code> モノイドは <code>Endo</code> や <code>Dual</code> モノイドとは定義の雰囲気が少し違いますね。</p>
+<ul>
+<li><code>getFirst :: a</code> ではなく <code>getFirst :: Maybe a</code> となっている</li>
+<li>インスタンス宣言にクラス制約が必要無い</li>
+</ul>
+<p>使い方は簡単。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>ghci<span class="op">&gt;</span> getFirst (<span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>) <span class="op">&lt;&gt;</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> (<span class="dt">Just</span> <span class="st">&quot;world&quot;</span>))</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>ghci<span class="op">&gt;</span> getFirst <span class="op">$</span> <span class="fu">foldMap</span> <span class="dt">First</span> [<span class="dt">Just</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="st">&quot;world&quot;</span>]</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="dt">Just</span> <span class="st">&quot;hello&quot;</span></span></code></pre></div>
+<p>常に最初の値を返すという、一見意味の無さそうな <code>First</code> モノイドも実は便利に使えたりします。</p>
+<!--more-->
+<h2 id="semigroup-law-の確認">Semigroup law の確認</h2>
+<h3 id="case-1-a-nothing-b-nothing">Case (1) (a == Nothing, b == Nothing)</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">=</span> <span class="dt">First</span> c</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="ot">=</span> <span class="dt">First</span> c</span></code></pre></div>
+<h3 id="case-2-a-nothing-b-just-b">Case (2) (a == Nothing, b == Just b’)</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">=</span> <span class="dt">First</span> b</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="ot">=</span> <span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="ot">=</span> <span class="dt">First</span> b</span></code></pre></div>
+<h3 id="case-3-a-just-a">Case (3) (a == Just a’)</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ot">=</span> <span class="dt">First</span> a</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a>  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">=</span> <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="ot">=</span> <span class="dt">First</span> a</span></code></pre></div>
+<h2 id="monoid-law">Monoid Law</h2>
+<h3 id="case-1-a-nothing">Case (1) (a = Nothing)</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">=</span> <span class="dt">First</span> a</span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a>  <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">=</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="ot">=</span> <span class="dt">First</span> a</span></code></pre></div>
+<h3 id="case-2-a-just-a">Case (2) (a = Just a’)</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="ot">=</span> <span class="dt">First</span> a</span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a>  <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="ot">=</span> <span class="dt">First</span> <span class="dt">Nothing</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="ot">=</span> <span class="dt">First</span> a</span></code></pre></div>
+<h2 id="なぜ-getfirst-a-にしないのか">なぜ getFirst :: a にしないのか？</h2>
+<p>普通は他のモノイド同様に以下のように定義したくなりますよね。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> a }</span>
+<span id="cb11-2"><a href="#cb11-2"></a></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">instance</span> <span class="dt">Semigroup</span> (<span class="dt">First</span> a) <span class="kw">where</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> _ <span class="ot">=</span> <span class="dt">First</span> a</span>
+<span id="cb11-5"><a href="#cb11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="kw">instance</span> <span class="dt">Monoid</span> a <span class="ot">=&gt;</span> <span class="dt">Monoid</span> (<span class="dt">First</span> a) <span class="kw">where</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>  <span class="fu">mempty</span> <span class="ot">=</span> <span class="dt">First</span> <span class="fu">mempty</span></span></code></pre></div>
+<p>ではなぜこのような定義にしないのでしょうか？</p>
+<p>答えは、<code>Monoid law</code> を満たさないからです。実際に確認してみましょう。</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="fu">mempty</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="ot">=</span> <span class="dt">First</span> a</span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="ot">=</span> <span class="dt">First</span> <span class="fu">mempty</span> <span class="op">&lt;&gt;</span> <span class="dt">First</span> a</span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="ot">=</span> <span class="dt">First</span> <span class="fu">mempty</span></span></code></pre></div>
+<p>このように成り立ちません。ちなみに <code>Semigroup law</code> は満たします。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a>  <span class="dt">First</span> a <span class="op">&lt;&gt;</span> (<span class="dt">First</span> b <span class="op">&lt;&gt;</span> <span class="dt">First</span> c)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="ot">=</span> <span class="dt">First</span> a</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a>  (<span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> b) <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="ot">=</span> <span class="dt">First</span> a <span class="op">&lt;&gt;</span> <span class="dt">First</span> c</span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="ot">=</span> <span class="dt">First</span> a</span></code></pre></div>
+<p>つまり、Semigroup からモノイドにするために <code>Maybe</code> でラップしてあると考えて差し支えないと思います。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">-- Semigroup</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> a }</span>
+<span id="cb14-3"><a href="#cb14-3"></a></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co">-- Semigroup, Monoid</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="kw">newtype</span> <span class="dt">First</span> a <span class="ot">=</span> <span class="dt">First</span> {<span class="ot"> getFirst ::</span> <span class="dt">Maybe</span> a }</span></code></pre></div>
+<h2 id="具体例-コマンドラインパーサー">具体例: コマンドラインパーサー</h2>
+<p>僕が <code>First</code> モノイドの存在を認識したのは <code>stack</code> のコードで <a href="https://www.stackage.org/haddock/lts-13.6/stack-1.9.3/Stack-Types-Config.html#t:ConfigMonoid">ConfigMonoid</a> というデータ型があり、その設定値に <code>First Bool</code> などの型が使われているという場面でした。</p>
+<h3 id="コード">コード</h3>
+<p><a href="https://hackage.haskell.org/package/optparse-applicative">optparse-applicative</a> を使った具体的なサンプルはこんな感じです。(Last モノイドは名前の通りです)</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="kw">import</span> <span class="dt">Data.Monoid</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="kw">import</span> <span class="dt">Options.Applicative</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="kw">data</span> <span class="dt">PartialOptions</span> <span class="ot">=</span> <span class="dt">PartialOptions</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>  {<span class="ot"> poInputPath  ::</span> <span class="dt">First</span> <span class="dt">FilePath</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a>  ,<span class="ot"> poOutputPath ::</span> <span class="dt">Last</span>  <span class="dt">FilePath</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>  } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</span>
+<span id="cb15-10"><a href="#cb15-10"></a></span>
+<span id="cb15-11"><a href="#cb15-11"></a><span class="ot">partialOptionsParser ::</span> <span class="dt">Parser</span> <span class="dt">PartialOptions</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a>partialOptionsParser <span class="ot">=</span> toPartialOptions</span>
+<span id="cb15-13"><a href="#cb15-13"></a>  <span class="op">&lt;$&gt;</span> many (optFilePathP <span class="ch">'i'</span>)</span>
+<span id="cb15-14"><a href="#cb15-14"></a>  <span class="op">&lt;*&gt;</span> many (optFilePathP <span class="ch">'o'</span>)</span>
+<span id="cb15-15"><a href="#cb15-15"></a>  <span class="kw">where</span></span>
+<span id="cb15-16"><a href="#cb15-16"></a>    toPartialOptions input output <span class="ot">=</span></span>
+<span id="cb15-17"><a href="#cb15-17"></a>      <span class="dt">PartialOptions</span></span>
+<span id="cb15-18"><a href="#cb15-18"></a>        { poInputPath  <span class="ot">=</span> lift input</span>
+<span id="cb15-19"><a href="#cb15-19"></a>        , poOutputPath <span class="ot">=</span> lift output</span>
+<span id="cb15-20"><a href="#cb15-20"></a>        }</span>
+<span id="cb15-21"><a href="#cb15-21"></a></span>
+<span id="cb15-22"><a href="#cb15-22"></a><span class="ot">lift ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monoid</span> (f a), <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> t a <span class="ot">-&gt;</span> f a</span>
+<span id="cb15-23"><a href="#cb15-23"></a>lift <span class="ot">=</span> <span class="fu">foldMap</span> <span class="fu">pure</span></span>
+<span id="cb15-24"><a href="#cb15-24"></a></span>
+<span id="cb15-25"><a href="#cb15-25"></a><span class="ot">optFilePathP ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> <span class="dt">FilePath</span></span>
+<span id="cb15-26"><a href="#cb15-26"></a>optFilePathP <span class="ot">=</span> strOption <span class="op">.</span> short</span>
+<span id="cb15-27"><a href="#cb15-27"></a></span>
+<span id="cb15-28"><a href="#cb15-28"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb15-29"><a href="#cb15-29"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb15-30"><a href="#cb15-30"></a>  options <span class="ot">&lt;-</span> execParser <span class="op">$</span> info partialOptionsParser <span class="fu">mempty</span> </span>
+<span id="cb15-31"><a href="#cb15-31"></a>  <span class="fu">print</span> options</span></code></pre></div>
+<h3 id="実行結果">実行結果</h3>
+<p>実行すると何が起きているかわかります。(手動で改行等を入れて見やすくしています)</p>
+<pre class="shell"><code># オプション無しで実行
+λ&gt; stack run ex2
+PartialOptions
+  { poInputPath  = First { getFirst = Nothing }
+  , poOutputPath = Last  { getLast  = Nothing }
+  }
+
+# どちらもオプションを1つずつ指定して実行
+λ&gt; stack run ex2 -- -i aaa -o aaa
+PartialOptions
+  { poInputPath  = First { getFirst = Just &quot;aaa&quot; }
+  , poOutputPath = Last  { getLast  = Just &quot;aaa&quot; }
+  }
+
+# -i のオプションのみ2つ指定
+λ&gt; stack run ex2 -- -i aaa -i bbb -o aaa
+PartialOptions
+  { poInputPath  = First { getFirst = Just &quot;aaa&quot; }
+  , poOutputPath = Last  { getLast  = Just &quot;aaa&quot; }
+  }
+
+# -o のオプションのみ2つ指定
+λ&gt; stack run ex2 -- -i aaa -o aaa -o bbb
+PartialOptions
+  { poInputPath  = First { getFirst = Just &quot;aaa&quot; }
+  , poOutputPath = Last  { getLast  = Just &quot;bbb&quot; }
+  }
+
+# -i, -o のオプションどちらも2つ指定
+λ&gt; stack run ex2 -- -i aaa -i bbb -o aaa -o bbb
+PartialOptions
+  { poInputPath  = First { getFirst = Just &quot;aaa&quot; }
+  , poOutputPath = Last  { getLast  = Just &quot;bbb&quot; }
+  }</code></pre>
+<p>こんな感じで <code>First</code> モノイドや <code>Last</code> モノイドを使ってオプションが複数指定された場合に最初の値か最後の値かを選ぶことができます。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://medium.com/@jonathangfischoff/the-partial-options-monoid-pattern-31914a71fc67">The Partial Options Monoid</a></li>
+<li><a href="https://kazu-yamamoto.hatenablog.jp/entry/2018/11/29/155311">SemigroupがMonoidに恋するとき</a></li>
+<li><a href="https://qiita.com/philopon/items/a29717af62831d3c8c07">optparse-applicativeをふわっと使う</a></li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2019/02-04-endo-monoid.html"><i class="material-icons left">navigate_before</i>Endo Monoid</a>
+          
+        </div>
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2019/02-11-lambdabot.html">Lambdabot for Slack<i class="material-icons right">navigate_next</i></a>
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=First Monoid&url=https://haskell.e-bigmoon.com/posts/2019/02-11-first-monoid.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2019/02-11-first-monoid.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2019/02-11-first-monoid.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
