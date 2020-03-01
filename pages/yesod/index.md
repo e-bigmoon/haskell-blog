@@ -1,6 +1,6 @@
 ---
 title: Haskell Yesod
-date: 2020/02/02
+date: 2020/03/01
 ---
 
 ## Yesod クイックスタートガイド
@@ -243,3 +243,4 @@ $ sudo apt-get install -y libpq-dev
 - [persistent-sqlite](https://hackage.haskell.org/package/persistent-sqlite)
 - [persistent-template](https://hackage.haskell.org/package/persistent-template)
 - [shakespeare](https://hackage.haskell.org/package/shakespeare)
+- [nicolashery/vscode-language-yesod](https://github.com/nicolashery/vscode-language-yesod)
