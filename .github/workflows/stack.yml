@@ -20,15 +20,9 @@ jobs:
         # https://github.com/jgm/pandoc/commit/9feefa39319358acc84811e6017aeea60f9140c3
         os: [ubuntu-18.04, macos-10.15]
         resolver: ["lts-15"]
-        ghc: ["8.8.2"]
-        cabal: ["3.0"]
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1
-      with:
-        ghc-version: ${{ matrix.ghc }}
-        cabal-version: ${{ matrix.cabal }}
 
     - name: Cache ~/.stack
       uses: actions/cache@v1.1.2
@@ -37,9 +31,9 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.resolver }}-v2-stack
 
     - name: Install dependencies
-      run: stack test --only-dependencies --resolver ${{ matrix.resolver }} --stack-yaml stack-${{ matrix.resolver }}.yaml --system-ghc
+      run: stack test --only-dependencies --resolver ${{ matrix.resolver }} --stack-yaml stack-${{ matrix.resolver }}.yaml
 
     - name: Build
       run: |
-        stack test    --fast --resolver ${{ matrix.resolver }} --stack-yaml stack-${{ matrix.resolver }}.yaml --system-ghc
-        stack install --fast --resolver ${{ matrix.resolver }} --stack-yaml stack-${{ matrix.resolver }}.yaml --system-ghc
+        stack test    --fast --resolver ${{ matrix.resolver }} --stack-yaml stack-${{ matrix.resolver }}.yaml
+        stack install --fast --resolver ${{ matrix.resolver }} --stack-yaml stack-${{ matrix.resolver }}.yaml
