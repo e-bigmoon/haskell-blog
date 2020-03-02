@@ -216,7 +216,7 @@ Ap {getAp = Nothing}
 
 - `Ap` モノイドの使い道がわかった
 - [Haskellerのためのモノイド完全ガイド](https://blog.miz-ar.info/2019/02/monoid-for-haskellers/) でも解説されているので、気になった方はこちらもどうぞ
-- `fmap fold . sequenceA` と `getAp . foldMap Ap` を比較すると型制約が若干違う
+- `fmap fold . sequenceA` と `getAp . foldMap Ap` を比較すると型クラス制約が若干違う
 
 ```hs
 > :t fmap fold . sequenceA
