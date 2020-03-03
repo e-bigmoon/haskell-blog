@@ -9,10 +9,11 @@ import Hakyll
 import Hakyll.Ext
 import Hakyll.Web.Sass
 import RIO
+import RIO.FilePath
 import qualified RIO.List as List
 import qualified RIO.List.Partial as List'
 import qualified RIO.Text as Text
-import RIO.FilePath
+import RIO.Time
 
 main :: IO ()
 main =
@@ -155,12 +156,14 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         toField configObj configField item = do
           _metadata <- getMetadata $ itemIdentifier item
           return $ siteConfig ^. configObj ^. configField
+
+
     postCtx :: Context String
     postCtx =
       mconcat
         [ dateField' "date" "%B %e, %Y",
-          dateField' "published" "%Y-%m-%dT%H:%M:%SZ",
-          dateField' "updated" "%Y-%m-%dT%H:%M:%SZ",
+          dateField' "published" "%B %e, %Y",
+          optDateField "updated" "%B %e, %Y",
           teaserField "teaser" "content",
           mapContext
             (trim' . take 160 . stripTags)
@@ -173,6 +176,8 @@ main' siteConfig = hakyllWith hakyllConfig $ do
             trim'' (ix, x)
               | ix == 0 || ix == (length xs - 1) = x `notElem` [' ', '\n', '\t']
               | otherwise = True
+
+
     createTagsRules :: Tags -> (String -> String) -> Rules ()
     createTagsRules tags mkTitle = tagsRules tags $ \tag pattern' -> do
       route idRoute
@@ -232,3 +237,11 @@ recentFirst' = recentFirstWith toDate
 
 sortChronological' :: MonadMetadata m => [Identifier] -> m [Identifier]
 sortChronological' = sortChronologicalWith toDate
+
+optDateField :: String -> String -> Context a
+optDateField key fmt = field key $ \item -> do
+  lookupString key <$> (getMetadata $ itemIdentifier item) >>= \case
+    Nothing -> return ""
+    Just val -> do
+      parseTime' <- parseTimeM @Compiler @ZonedTime True defaultTimeLocale "%Y/%m/%d" val
+      return $ formatTime defaultTimeLocale fmt parseTime'
