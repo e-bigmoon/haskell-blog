@@ -2,6 +2,7 @@
 title: prettyprinter パッケージ
 author: Shinya Yamaguchi
 tags: bigmoon, package
+updated: 2018/03/31
 ---
 
 ## はじめに

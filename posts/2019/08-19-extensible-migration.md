@@ -2,6 +2,7 @@
 title: extensible-0.6.1 マイグレーションガイド
 author: Shinya Yamaguchi
 tags: bigmoon, extensible, package
+updated: 2019/08/20
 ---
 
 ## はじめに

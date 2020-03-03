@@ -1,10 +1,11 @@
 ---
 title: About
-date: 2020/03/01
+published: 2017/10/22
+updated: 2020/03/01
 tags: template
 ---
 
-Member:
+## Member
 
 Name | github | twitter
 -----|--------|-------
@@ -25,5 +26,5 @@ Isao Takeji | [isao-takejib](https://github.com/isao-takejib)
 - [Yesod Web Framework Blog](https://www.yesodweb.com/blog/)
 - [Mark Karpov](https://markkarpov.com)
 
-訳の間違い、誤字脱字のご指摘に関しては [github issue](https://github.com/e-bigmoon/haskell-blog/issues) にて、ご連絡ください。
+訳の間違い、誤字脱字のご指摘に関しては [GitHub issue](https://github.com/e-bigmoon/haskell-blog/issues) にて、ご連絡ください。
 

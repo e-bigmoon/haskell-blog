@@ -1,6 +1,7 @@
 ---
 title: 最小の stack プロジェクト
-date: 2018/05/16
+published: 2018/05/16
+# updated: 2020/02/22
 ---
 
 ## stack.yaml

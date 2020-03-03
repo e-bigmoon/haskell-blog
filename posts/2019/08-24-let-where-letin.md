@@ -2,6 +2,7 @@
 title: let, where, let...in の使い分け
 author: Shinya Yamaguchi
 tags: bigmoon, haskell
+updated: 2020/03/02
 ---
 
 ## はじめに

@@ -1,11 +1,11 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.4
+-- stack script --resolver lts-15.1
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Text.Julius
-import           Yesod
+import Text.Julius
+import Yesod
 
 data App = App
 

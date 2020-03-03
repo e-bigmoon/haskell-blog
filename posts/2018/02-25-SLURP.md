@@ -3,6 +3,7 @@ title: SLURP (翻訳)
 author: Michael Snoyman
 translator: pythonissam
 tags: Michael Snoyman's blog, 翻訳
+updated: 2018/03/14
 ---
 
 ## SLURP

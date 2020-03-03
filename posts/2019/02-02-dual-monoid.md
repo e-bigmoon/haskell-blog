@@ -2,6 +2,7 @@
 title: Dual Monoid
 author: Shinya Yamaguchi
 tags: bigmoon, monoid
+updated: 2019/02/13
 ---
 
 ## はじめに

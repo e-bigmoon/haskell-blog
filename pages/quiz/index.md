@@ -1,6 +1,7 @@
 ---
 title: Haskell Quiz
-date: 2018/07/30
+published: 2018/07/30
+# updated: 2020/02/19
 ---
 
 <div class="row">

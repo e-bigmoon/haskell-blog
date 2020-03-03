@@ -1,6 +1,7 @@
 ---
 title: stack path
-date: 2018/09/14
+published: 2018/07/30
+updated: 2018/09/14
 ---
 
 ## 目的

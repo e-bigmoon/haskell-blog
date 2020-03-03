@@ -2,6 +2,7 @@
 title: extensible-0.4.9 がリリースされました。
 author: Shinya Yamaguchi
 tags: bigmoon, extensible
+updated: 2018/05/14
 ---
 
 ## はじめに

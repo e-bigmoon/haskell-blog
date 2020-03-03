@@ -1,6 +1,7 @@
 ---
 title: テストの作成
-date: 2019/09/14
+published: 2017/12/25
+updated: 2019/09/15
 prev: ../doc/haddock-settings.html
 next: ../test/hspec.html
 ---

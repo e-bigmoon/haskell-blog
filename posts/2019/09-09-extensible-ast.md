@@ -2,6 +2,7 @@
 title: AST を拡張しよう
 author: Shinya Yamaguchi
 tags: bigmoon, extensible, package
+updated: 2019/09/09
 ---
 
 ## はじめに

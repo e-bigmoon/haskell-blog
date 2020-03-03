@@ -2,6 +2,7 @@
 title: Ap Monoid
 author: Shinya Yamaguchi
 tags: bigmoon, monoid, package
+updated: 2020/03/03
 ---
 
 まずは以下の関数 `f` を考えます。

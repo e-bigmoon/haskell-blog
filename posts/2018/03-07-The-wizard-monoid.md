@@ -3,6 +3,7 @@ title: wizard モノイド (翻訳)
 author: Gabriel Gonzalez
 translator: pythonissam
 tags: Haskell for all, 翻訳
+updated: 2018/07/30
 ---
 
 ## wizard モノイド (翻訳)

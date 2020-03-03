@@ -1,6 +1,7 @@
 ---
 title: stack image container
-date: 2018/09/14
+published: 2018/09/14
+# updated: 2019/09/15
 ---
 
 このコマンドを利用すると、アプリケーション入りの Docker イメージをコマンド1発で作ることができます。

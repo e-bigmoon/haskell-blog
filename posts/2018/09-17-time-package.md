@@ -2,6 +2,7 @@
 title: time パッケージの使い方
 author: Shinya Yamaguchi
 tags: bigmoon, package
+updated: 2018/09/17
 ---
 
 ## はじめに

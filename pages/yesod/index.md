@@ -1,6 +1,7 @@
 ---
 title: Haskell Yesod
-date: 2020/03/01
+published: 2018/03/18
+updated: 2020/03/03
 ---
 
 ## Yesod クイックスタートガイド
@@ -212,14 +213,23 @@ $ sudo apt-get install -y libpq-dev
 
 記事 | 検証に利用したコード
 ------|-------
-[whamlet と julius](tips/01-compile-hamlet-julius.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips1.hs)
-[hamlet とインライン Javascript](tips/02-inline-js.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips2.hs)
-[X-XSS-Protection レスポンスヘッダ](tips/03-x-xss-protection.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips3.hs)
-[TRACE メソッド](tips/04-trace-method.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips4.hs)
-[Cookie のセキュリティ](tips/05-cookie.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips5.hs)
-[XSS に対するセキュリティ](tips/06-xss.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips6.hs)
-[変数展開処理の流れ](tips/07-variable-interpolation.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips7.hs)
-[TH で生成されるコードの確認方法](tips/08-TH.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips8.hs)
+[whamlet と julius](tips/01-compile-hamlet-julius.html) | [code][tips1]
+[hamlet とインライン Javascript](tips/02-inline-js.html) | [code][tips2]
+[X-XSS-Protection レスポンスヘッダ](tips/03-x-xss-protection.html) | [code][tips3]
+[TRACE メソッド](tips/04-trace-method.html) | [code][tips4]
+[Cookie のセキュリティ](tips/05-cookie.html) | [code][tips5]
+[XSS に対するセキュリティ](tips/06-xss.html) | [code][tips6]
+[変数展開処理の流れ](tips/07-variable-interpolation.html) | [code][tips7]
+[TH で生成されるコードの確認方法](tips/08-TH.html) | [code][tips8]
+
+[tips1]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips1.hs
+[tips2]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips2.hs
+[tips3]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips3.hs
+[tips4]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips4.hs
+[tips5]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips5.hs
+[tips6]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips6.hs
+[tips7]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips7.hs
+[tips8]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips8.hs
 
 ## Yesod で作られているアプリケーション
 

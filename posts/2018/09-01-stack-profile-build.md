@@ -2,6 +2,7 @@
 title: stack でアプリケーションのバックトレースを取得する (デバッグ)
 author: Shinya Yamaguchi
 tags: bigmoon, stack
+updated: 2018/09/02
 ---
 
 ## はじめに

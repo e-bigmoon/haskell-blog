@@ -1,6 +1,7 @@
 ---
 title: Creating a Subsite
-date: 2018/04/07
+published: 2018/03/18
+updated: 2018/04/07
 ---
 
 ## サブサイトを構築する

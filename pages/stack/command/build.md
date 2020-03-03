@@ -1,6 +1,7 @@
 ---
 title: stack build
-date: 2018/09/14
+published: 2018/07/30
+updated: 2018/09/14
 ---
 
 ## stack build 時に良く利用するオプション

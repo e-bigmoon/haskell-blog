@@ -3,6 +3,7 @@ title: Haskell で暗号学的ハッシュを扱う (翻訳)
 author: Michael Snoyman
 translator: pythonissam
 tags: fpcomplete, 翻訳
+updated: 2018/07/30
 ---
 
 Great original post: [CRYPTOGRAPHIC HASHING IN HASKELL.](https://www.fpcomplete.com/blog/2017/09/cryptographic-hashing-haskell).

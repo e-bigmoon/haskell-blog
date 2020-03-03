@@ -3,6 +3,7 @@ title: Yesod の破壊的変更予定 (翻訳)
 author: Michael Snoyman
 translator: pythonissam
 tags: Yesod Web Framework, 翻訳
+updated: 2019/12/24
 ---
 
 Original post: [Upcoming Yesod breaking changes](https://www.yesodweb.com/blog/2018/01/upcoming-yesod-breaking-changes)

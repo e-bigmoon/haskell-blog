@@ -1,6 +1,7 @@
 ---
 title: script interpreter + stack script でスクリプティング！
-date: 2018/05/05
+published: 2018/03/19
+updated: 2018/05/05
 ---
 
 ## stack script コマンドとは？

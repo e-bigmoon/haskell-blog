@@ -1,6 +1,7 @@
 ---
 title: stack 以外の選択肢について
-date: 2019/09/14
+published: 2019/09/14
+# updated: 2019/09/15
 prev: ./hpack.html
 next: ./create-prj.html
 ---

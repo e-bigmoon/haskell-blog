@@ -3,6 +3,7 @@ title: 将来も使えるテストスイート (翻訳)
 author: Michael Snoyman
 translator: pythonissam
 tags: Michael Snoyman's blog, 翻訳
+updated: 2018/07/30
 ---
 
 Great original post: [Future proofing test suites](https://www.snoyman.com/blog/2017/11/future-proofing-test-suites).

@@ -1,6 +1,7 @@
 ---
 title: Persistent
-date: 2018/08/29
+published: 2018/03/18
+updated: 2018/08/29
 ---
 
 ## Persistent

@@ -2,6 +2,7 @@
 title: Sum Monoid
 author: Shinya Yamaguchi
 tags: bigmoon, monoid, package
+updated: 2019/08/19
 ---
 
 ## はじめに
