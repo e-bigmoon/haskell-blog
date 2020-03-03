@@ -1,6 +1,4 @@
-{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 import qualified Config as C
 import Control.Lens ((^.))
