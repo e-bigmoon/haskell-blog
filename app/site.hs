@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main (main) where
+module Main
+  ( main,
+  )
+where
 
 import Config
 import qualified Data.Yaml as Yaml
@@ -156,8 +159,6 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         toField configObj configField item = do
           _metadata <- getMetadata $ itemIdentifier item
           return $ siteConfig ^. configObj ^. configField
-
-
     postCtx :: Context String
     postCtx =
       mconcat
@@ -176,8 +177,6 @@ main' siteConfig = hakyllWith hakyllConfig $ do
             trim'' (ix, x)
               | ix == 0 || ix == (length xs - 1) = x `notElem` [' ', '\n', '\t']
               | otherwise = True
-
-
     createTagsRules :: Tags -> (String -> String) -> Rules ()
     createTagsRules tags mkTitle = tagsRules tags $ \tag pattern' -> do
       route idRoute
@@ -213,10 +212,11 @@ atomFeedConfiguration fs =
 
 -- Friendlier config when using docker
 hakyllConfig :: Configuration
-hakyllConfig = defaultConfiguration
-  { previewHost = "0.0.0.0"
-  , previewPort = 3001
-  }
+hakyllConfig =
+  defaultConfiguration
+    { previewHost = "0.0.0.0",
+      previewPort = 3001
+    }
 
 sitemapPages :: [Item String] -> [Item String]
 sitemapPages = filter ((/= "pages/LICENSE.md") . toFilePath . itemIdentifier)

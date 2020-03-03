@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Hakyll.Ext
-  ( dateFieldWith'
-  , recentFirstWith
-  , sortChronologicalWith
+  ( dateFieldWith',
+    recentFirstWith,
+    sortChronologicalWith,
   )
 where
 

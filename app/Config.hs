@@ -1,6 +1,6 @@
 module Config
-  ( Feed
-  , Site
+  ( Feed,
+    Site,
   )
 where
 
@@ -37,6 +37,7 @@ type Style =
     ]
 
 type Colour = String
+
 type HexColour = String
 
 type General =
