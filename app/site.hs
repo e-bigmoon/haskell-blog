@@ -191,7 +191,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
           >>= loadAndApplyTemplate "templates/default.html" ctx
           >>= relativizeUrls
     pageTitle, pageUrl :: Identifier -> Compiler String
-    pageTitle i = do
+    pageTitle i =
       getMetadataField i "title" >>= \case
         Just title -> return title
         Nothing -> fail "no 'title' field"
@@ -239,8 +239,8 @@ sortChronological' :: MonadMetadata m => [Identifier] -> m [Identifier]
 sortChronological' = sortChronologicalWith toDate
 
 optDateField :: String -> String -> Context a
-optDateField key fmt = field key $ \item -> do
-  lookupString key <$> (getMetadata $ itemIdentifier item) >>= \case
+optDateField key fmt = field key $ \item ->
+  lookupString key <$> getMetadata (itemIdentifier item) >>= \case
     Nothing -> return ""
     Just val -> do
       parseTime' <- parseTimeM @Compiler @ZonedTime True defaultTimeLocale "%Y/%m/%d" val
