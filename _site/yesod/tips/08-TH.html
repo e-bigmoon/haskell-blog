@@ -167,44 +167,47 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
+        <div style="float: right;">
+          
+          <span>記事公開日: 2018/08/04</span><br>
+          
+          
+          <span>最終更新日: 2020/03/03</span>
+          
+        </div>
         <h1 class="post-title">TH で生成されるコードの確認方法</h1>
-        
-        <span>最終更新日: 2018/08/04</span>
-        
       </div>
 
       <article class="page-content">
         <h2 id="確認方法">確認方法</h2>
-<p>ファイルの先頭に <code>{-# OPTIONS_GHC -ddump-splices #-}</code> を付けるだけで良い。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="co">-- stack script --resolver lts-12.4</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="ot">{-# OPTIONS_GHC -ddump-splices #-}</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<p>ファイルの先頭に <code>{-# OPTIONS_GHC -ddump-splices #-}</code> を付けるだけです。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="ot">{-# OPTIONS_GHC -ddump-splices #-}</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">import</span> <span class="dt">Yesod</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
 <span id="cb1-9"><a href="#cb1-9"></a></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb1-13"><a href="#cb1-13"></a>/check1 Check1R GET</span>
-<span id="cb1-14"><a href="#cb1-14"></a>|]</span>
+<span id="cb1-10"><a href="#cb1-10"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb1-11"><a href="#cb1-11"></a>/check1 Check1R GET</span>
+<span id="cb1-12"><a href="#cb1-12"></a>|]</span>
+<span id="cb1-13"><a href="#cb1-13"></a></span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a></span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="ot">getCheck1R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>getCheck1R <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-20"><a href="#cb1-20"></a>  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a></span>
-<span id="cb1-22"><a href="#cb1-22"></a>  [whamlet|</span>
-<span id="cb1-23"><a href="#cb1-23"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
-<span id="cb1-24"><a href="#cb1-24"></a>  |]</span>
-<span id="cb1-25"><a href="#cb1-25"></a></span>
-<span id="cb1-26"><a href="#cb1-26"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-27"><a href="#cb1-27"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="ot">getCheck1R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>getCheck1R <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a></span>
+<span id="cb1-20"><a href="#cb1-20"></a>  [whamlet|</span>
+<span id="cb1-21"><a href="#cb1-21"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a>  |]</span>
+<span id="cb1-23"><a href="#cb1-23"></a></span>
+<span id="cb1-24"><a href="#cb1-24"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-25"><a href="#cb1-25"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <h3 id="実際に生成されるコード">実際に生成されるコード</h3>
-<p>さきほどの例を実行すると次のようなコードが生成されていることがわかる。</p>
+<p>さきほどの例を実行すると次のようなコードが生成されていることがわかります。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>Tips8.hs<span class="op">:</span>(<span class="dv">12</span>,<span class="dv">28</span>)<span class="op">-</span>(<span class="dv">14</span>,<span class="dv">2</span>)<span class="op">:</span> <span class="dt">Splicing</span> expression</span>
 <span id="cb2-2"><a href="#cb2-2"></a>    template<span class="op">-</span>haskell<span class="op">-</span><span class="fl">2.13</span><span class="op">.</span><span class="fl">0.0</span><span class="op">:</span>Language.Haskell.TH.Quote.quoteExp</span>
 <span id="cb2-3"><a href="#cb2-3"></a>      parseRoutes</span>

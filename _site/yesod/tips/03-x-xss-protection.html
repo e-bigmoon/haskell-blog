@@ -167,49 +167,53 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
+        <div style="float: right;">
+          
+          <span>記事公開日: 2018/08/04</span><br>
+          
+          
+          <span>最終更新日: 2020/03/03</span>
+          
+        </div>
         <h1 class="post-title">X-XSS-Protection レスポンスヘッダ</h1>
-        
-        <span>最終更新日: 2018/08/04</span>
-        
       </div>
 
       <article class="page-content">
-        <h2 id="関連情報">関連情報</h2>
+        <p>この問題は <a href="https://github.com/yesodweb/yesod/pull/1550">Set X-XSS-Protection to 1; mode=block. #1550</a> で解決されました。</p>
+<h2 id="関連情報">関連情報</h2>
 <ul>
 <li><a href="https://github.com/yesodweb/yesod/issues/1543">Setting X-XSS-Protection: 1 in response header by default? #1543</a></li>
 </ul>
 <h2 id="デフォルト">デフォルト</h2>
-<p>Yesod のデフォルトでは <code>X-XSS-Protection</code> レスポンスヘッダは特に設定されていない。</p>
+<p>Yesod のデフォルトでは <code>X-XSS-Protection</code> レスポンスヘッダは特に設定されていません。</p>
 <p>しかし、セキュリティ的には</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1"></a>X-XSS-Protection: 1; mode=block</span></code></pre></div>
-<p>が設定されている方が望ましいと思う。以下のようにすれば良い。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="co">-- stack script --resolver lts-12.4</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<p>が設定されている方が望ましいです。これは、以下のようにすると良いです。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">import</span> <span class="dt">Yesod</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a></span>
-<span id="cb2-11"><a href="#cb2-11"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb2-12"><a href="#cb2-12"></a>/ HomeR GET</span>
-<span id="cb2-13"><a href="#cb2-13"></a>|]</span>
-<span id="cb2-14"><a href="#cb2-14"></a></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>  yesodMiddleware handler <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a>    addHeader <span class="st">&quot;X-XSS-Protection&quot;</span> <span class="st">&quot;1;mode=block&quot;</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a>    defaultYesodMiddleware handler</span>
-<span id="cb2-19"><a href="#cb2-19"></a></span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb2-22"><a href="#cb2-22"></a>  [whamlet|</span>
-<span id="cb2-23"><a href="#cb2-23"></a>    &quot;test&quot;</span>
-<span id="cb2-24"><a href="#cb2-24"></a>  |]</span>
-<span id="cb2-25"><a href="#cb2-25"></a></span>
-<span id="cb2-26"><a href="#cb2-26"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-27"><a href="#cb2-27"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<span id="cb2-9"><a href="#cb2-9"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb2-10"><a href="#cb2-10"></a>/ HomeR GET</span>
+<span id="cb2-11"><a href="#cb2-11"></a>|]</span>
+<span id="cb2-12"><a href="#cb2-12"></a></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>  yesodMiddleware handler <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>    addHeader <span class="st">&quot;X-XSS-Protection&quot;</span> <span class="st">&quot;1;mode=block&quot;</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a>    defaultYesodMiddleware handler</span>
+<span id="cb2-17"><a href="#cb2-17"></a></span>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>  [whamlet|</span>
+<span id="cb2-21"><a href="#cb2-21"></a>    &quot;test&quot;</span>
+<span id="cb2-22"><a href="#cb2-22"></a>  |]</span>
+<span id="cb2-23"><a href="#cb2-23"></a></span>
+<span id="cb2-24"><a href="#cb2-24"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-25"><a href="#cb2-25"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
       </article>
 
       <div class="pager">

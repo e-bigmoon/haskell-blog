@@ -167,61 +167,65 @@
   <div class="post-page card-panel z-depth-2">
     <div class="post-section">
       <div class="post-heading">
+        <div style="float: right;">
+          
+          <span>記事公開日: 2018/08/04</span><br>
+          
+          
+          <span>最終更新日: 2020/03/03</span>
+          
+        </div>
         <h1 class="post-title">変数展開処理の流れ</h1>
-        
-        <span>最終更新日: 2018/08/04</span>
-        
       </div>
 
       <article class="page-content">
         <h2 id="変数展開記法">変数展開記法</h2>
-<p><code>hamlet</code> では <code>#{...}</code> という形式で変数展開を行うことができる。</p>
+<p><code>hamlet</code> では <code>#{...}</code> という形式で変数展開を行うことができます。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>[hamlet|</span>
 <span id="cb1-2"><a href="#cb1-2"></a>  <span class="kw">#{</span>var<span class="kw">}</span></span>
 <span id="cb1-3"><a href="#cb1-3"></a>|]</span></code></pre></div>
-<p>HTML のエスケープなどもこの段階で行われる。</p>
-<p>今回はこの処理の流れを追ってみようと思う。</p>
+<p>HTML のエスケープなどもこの段階で行われます。</p>
+<p>今回はこの処理の流れを追ってみようと思います。</p>
 <h2 id="text---html-型への変換部分">Text -&gt; Html 型への変換部分</h2>
-<p>今回は <code>Text</code> 型について処理を追うが、その他の型についても大筋の流れは同じである。</p>
+<p>今回は <code>Text</code> 型について処理を追うが、その他の型についても大筋の流れは同じです。</p>
 <h3 id="ステップ1-tohtml-in-yesod-core">【ステップ1】 toHtml (in yesod-core)</h3>
-<p><code>#{var}</code> は実際のところ <strong>yesod-core</strong> パッケージの <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core.html#v:toHtml">toHtml</a> 関数を適用している。</p>
-<p>つまり、以下の式と同じである。</p>
+<p><code>#{var}</code> は実際のところ <strong>yesod-core</strong> パッケージが再エクスポートしている <code>blaze-html</code> の <a href="https://hackage.haskell.org/package/blaze-html-0.9.1.2/docs/Text-Blaze-Html.html#v:toHtml">toHtml</a> 関数を適用するだけです。</p>
+<p>つまり、以下の式と同じです。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>toHtml var</span></code></pre></div>
-<p>また <strong>yesod-core</strong> で定義されている <strong>toHtml</strong> は <strong>blaze-html</strong> パッケージの <a href="https://www.stackage.org/haddock/lts-12.4/blaze-html-0.9.1.1/Text-Blaze-Html.html#v:toHtml">toHtml</a> を再エクスポートしているだけである。</p>
 <h3 id="ステップ2-tohtml-in-blaze-html">【ステップ2】 toHtml (in blaze-html)</h3>
-<p><strong>toHtml</strong> の<a href="https://www.stackage.org/haddock/lts-12.4/blaze-html-0.9.1.1/src/Text.Blaze.Html.html#toHtml">実装</a> は以下のとおりである。</p>
+<p><strong>toHtml</strong> の実装は以下のようになっています。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">toHtml ::</span> <span class="dt">ToMarkup</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Html</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>toHtml <span class="ot">=</span> toMarkup</span></code></pre></div>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/Text-Blaze.html#v:toMarkup">toMarkup</a> メソッドは <strong>blaze-markup</strong> パッケージで定義されている。</p>
+<p><a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze.html#v:toMarkup">toMarkup</a> メソッドは <strong>blaze-markup</strong> パッケージで定義されています。</p>
 <h3 id="ステップ3-tomarkup-in-blaze-markup">【ステップ3】 toMarkup (in blaze-markup)</h3>
-<p><strong>toMarkup</strong> メソッドは <a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/Text-Blaze.html#t:ToMarkup">ToMarkup</a> のメソッドなので、実装は型によって異なる。</p>
-<p>今回は <code>Text</code> 型に着目している。<code>Text</code> 型の<a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.html#line-131">インスタンス定義</a> は以下の通りである。</p>
+<p><strong>toMarkup</strong> メソッドは <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze.html#t:ToMarkup">ToMarkup</a> 型クラスのメソッドなので、実装は型によって異なります。</p>
+<p>今回は <code>Text</code> 型に着目しているため、<code>Text</code> 型のインスタンス定義を確認しましょう。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">instance</span> <span class="dt">ToMarkup</span> <span class="dt">Text</span> <span class="kw">where</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>  toMarkup <span class="ot">=</span> text</span>
 <span id="cb4-3"><a href="#cb4-3"></a>  preEscapedToMarkup <span class="ot">=</span> preEscapedText</span></code></pre></div>
-<p><strong>text</strong> 関数は <a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Internal.html">Text.Blaze.Internal</a> モジュールで定義されている。</p>
+<p><strong>text</strong> 関数は <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Internal.html#v:text">Text.Blaze.Internal</a> モジュールで定義されています。</p>
 <h3 id="ステップ4-text-in-blaze-markup">【ステップ4】 text (in blaze-markup)</h3>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Internal.html">text</a> 関数の実装は以下の通り。</p>
+<p><code>text</code> 関数の実装は以下の通りです。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">text ::</span> <span class="dt">Text</span>    <span class="co">-- ^ Text to render.</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>     <span class="ot">-&gt;</span> <span class="dt">Markup</span>  <span class="co">-- ^ Resulting HTML fragment.</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a>text <span class="ot">=</span> content <span class="op">.</span> <span class="dt">Text</span></span></code></pre></div>
-<p>ここで出現する <code>Text</code> は <a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/Text-Blaze-Internal.html#t:ChoiceString">ChoiceString</a> 型の値である。</p>
-<p><strong>content</strong> 関数もまた、<a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Internal.html">Text.Blaze.Internal</a> モジュールで定義されている。</p>
-<h3 id="ステップ5-content-in-blaze-markup">【ステップ5】 content (in blaze-markup))</h3>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Internal.html#content">content</a> 関数の実装は以下の通り。</p>
+<p>ここで出現する <code>Text</code> データコンストラクタは <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Internal.html#t:ChoiceString">ChoiceString</a> 型の値です。</p>
+<p><strong>content</strong> 関数もまた <code>Text.Blaze.Internal</code> モジュールで定義されています。(export はされていません)</p>
+<h3 id="ステップ5-content-in-blaze-markup">【ステップ5】 content (in blaze-markup)</h3>
+<p><code>content</code> 関数の実装は以下の通りです。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">content ::</span> <span class="dt">ChoiceString</span> <span class="ot">-&gt;</span> <span class="dt">Markup</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>content cs <span class="ot">=</span> <span class="dt">Content</span> cs ()</span></code></pre></div>
-<p>ここで出現する <code>Content</code> は <a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/Text-Blaze-Internal.html#t:MarkupM">MarkupM</a> 型の値である。</p>
-<p>つまりここまでの流れとまとめると、以下のようになる</p>
+<p>ここで出現する <code>Content</code> は <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Internal.html#t:MarkupM">MarkupM</a> 型の値です。</p>
+<p>つまりここまでの流れとまとめると、以下のようになります。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#{var}</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="ot">=</span> toHtml var</span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="ot">=</span> toMarkup var</span>
 <span id="cb7-4"><a href="#cb7-4"></a><span class="ot">=</span> text var</span>
 <span id="cb7-5"><a href="#cb7-5"></a><span class="ot">=</span> content <span class="op">$</span> <span class="dt">Text</span> var</span>
 <span id="cb7-6"><a href="#cb7-6"></a><span class="ot">=</span> <span class="dt">Content</span> (<span class="dt">Text</span> var) ()</span></code></pre></div>
-<p>次は、ディスパッチの処理を追っていこう。</p>
+<p>次は、ディスパッチの処理を追っていきましょう。</p>
 <h2 id="ディスパッチ処理">ディスパッチ処理</h2>
-<p>典型的なハンドラは以下のような定義とすることが多いだろう。</p>
+<p>典型的なハンドラは以下のような定義とすることが多いでしょう。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></span>
@@ -229,13 +233,13 @@
 <span id="cb8-5"><a href="#cb8-5"></a>  [whamlet|</span>
 <span id="cb8-6"><a href="#cb8-6"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
 <span id="cb8-7"><a href="#cb8-7"></a>  |]</span></code></pre></div>
-<p>ここで注意する点は <code>getHomeR</code> の型は <code>Handler Text</code> ではなく <code>Handler Html</code> だという事実である。</p>
-<p>つまり <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core.html#v:defaultLayout">defaultLayout</a> を適用した結果はまだエスケープ処理に移る前段階ということである。</p>
-<p>ではどこでエスケープ処理が行われているのだろうか？</p>
-<p>それはハンドラが実際に呼び出される場所を特定すれば良い。具体的に言えば <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core.html#t:YesodDispatch">YesodDispatch</a> 型クラスがハンドラを実際に呼び出している。</p>
+<p>ここで注意する点は <code>getHomeR</code> の型は <code>Handler Text</code> ではなく <code>Handler Html</code> とした点です。</p>
+<p>つまり <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:defaultLayout">defaultLayout</a> を適用した結果はまだエスケープ処理に移る前段階ということです。</p>
+<p>ではどこでエスケープ処理が行われているのでしょう？確認するためにはハンドラが実際に呼び出される場所を特定すれば良いでしょう。</p>
+<p>具体的には <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#t:YesodDispatch">YesodDispatch</a> 型クラスがハンドラを実際に呼び出しています。</p>
 <h3 id="ステップ1yesoddispatch-型クラス">【ステップ1】YesodDispatch 型クラス</h3>
-<p>ここで少し問題となるのが、<code>YesodDispatch</code> のインスタンスは <code>TH</code> によって自動生成されるという点だ。</p>
-<p><a href="./08-TH.html">TH で生成されるコードの確認方法</a> を参考に生成されるコードを確認してみよう。</p>
+<p>ここで少し問題となるのが、<code>YesodDispatch</code> のインスタンスは <code>TH</code> によって自動生成されるという点です。</p>
+<p><a href="./08-TH.html">TH で生成されるコードの確認方法</a> を参考に生成されるコードを確認してみましょう。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
 <span id="cb9-3"><a href="#cb9-3"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
@@ -251,7 +255,7 @@
 <span id="cb9-13"><a href="#cb9-13"></a>  [whamlet|</span>
 <span id="cb9-14"><a href="#cb9-14"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
 <span id="cb9-15"><a href="#cb9-15"></a>  |]</span></code></pre></div>
-<p>生成されるコードは次のようになる。(読みやすいように、少々整形している)</p>
+<p>生成されるコードは次のようになります。(読みやすいように、少々整形しています)</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a>mkYesod <span class="st">&quot;App&quot;</span> <span class="op">$</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>  [ <span class="dt">ResourceLeaf</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>      <span class="dt">Resource</span></span>
@@ -306,108 +310,128 @@
 <span id="cb10-52"><a href="#cb10-52"></a>          <span class="st">&quot;GET&quot;</span> <span class="ot">-&gt;</span> yesodRunner getCheck1R env (<span class="dt">Just</span> <span class="dt">Check1R</span>) req</span>
 <span id="cb10-53"><a href="#cb10-53"></a>          _     <span class="ot">-&gt;</span> yesodRunner (void badMethod) env (<span class="dt">Just</span> <span class="dt">Check1R</span>) req</span>
 <span id="cb10-54"><a href="#cb10-54"></a>      helper _ <span class="ot">=</span> yesodRunner (void notFound) env <span class="dt">Nothing</span> req</span></code></pre></div>
-<p>色々と生成されているが、ここで着目するのは <code>yesodDispatch</code> メソッドである。</p>
-<p>その中で <code>yesodRunner getCheck1R env (Just Check1R) req</code> という形で <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core.html#v:yesodRunner">yesodRunner</a> が呼ばれていることがわかる。</p>
+<p>色々と生成されているが、ここで着目するのは <code>yesodDispatch</code> メソッドです。</p>
+<p>その中で <code>yesodRunner getCheck1R env (Just Check1R) req</code> という形で <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:yesodRunner">yesodRunner</a> が呼ばれていることがわかります。</p>
 <h3 id="ステップ2yesodrunner-in-yesod-core">【ステップ2】yesodRunner (in yesod-core)</h3>
-<p>yesodRunner の<a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Internal.Run.html#yesodRunner">実装</a> は以下の通りである。(長いので必要な部分のみ抜き出した)</p>
+<p>yesodRunner の実装は以下の通りです。(長いので必要な部分のみ抜き出しています)</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a>yesodRunner handler' <span class="dt">YesodRunnerEnv</span> {<span class="op">..</span>} route req sendResponse</span>
 <span id="cb11-2"><a href="#cb11-2"></a><span class="op">...</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a>        yar <span class="ot">&lt;-</span> runInternalState (runHandler rhe handler yreq') is</span>
 <span id="cb11-4"><a href="#cb11-4"></a><span class="op">...</span></span>
 <span id="cb11-5"><a href="#cb11-5"></a>    handler <span class="ot">=</span> yesodMiddleware handler'</span></code></pre></div>
-<p>まずは <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core.html#v:yesodMiddleware">yesodMiddleware</a> に適用されるが、型が変化しないため、ここではエスケープ処理が行われていないことがわかる。</p>
+<p>まずは <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:yesodMiddleware">yesodMiddleware</a> に適用されますが、型が変化しないためここではエスケープ処理が行われていないことがわかります。</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="ot">yesodMiddleware ::</span> <span class="dt">ToTypedContent</span> res <span class="ot">=&gt;</span> <span class="dt">HandlerFor</span> site res <span class="ot">-&gt;</span> <span class="dt">HandlerFor</span> site res</span></code></pre></div>
-<p>次に <a href="https://github.com/yesodweb/yesod/blob/master/yesod-core/Yesod/Core/Internal/Run.hs">Yesod.Core.Internal.Run</a> モジュールで定義されている <a href="https://github.com/yesodweb/yesod/blob/master/yesod-core/Yesod/Core/Internal/Run.hs#L185">runHandler</a> 関数に制御がうつる。</p>
+<p>次に <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/src/Yesod.Core.Internal.Run.html">Yesod.Core.Internal.Run</a> モジュールで定義されている <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/src/Yesod.Core.Internal.Run.html#runHandler">runHandler</a> 関数に制御がうつります。</p>
 <h3 id="ステップ3runhandler">【ステップ3】runHandler</h3>
-<p>runHadler の実装は以下の通り。(ここでも必要な部分のみを掲載)</p>
+<p><code>runHandler</code> の実装は以下の通りです。(ここでも必要な部分のみを掲載しています)</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a>runHandler rhe<span class="op">@</span><span class="dt">RunHandlerEnv</span> {<span class="op">..</span>} handler yreq <span class="ot">=</span> withInternalState <span class="op">$</span> \resState <span class="ot">-&gt;</span> <span class="kw">do</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a>    (state, contents0) <span class="ot">&lt;-</span> basicRunHandler rhe handler yreq resState</span>
 <span id="cb13-3"><a href="#cb13-3"></a><span class="op">...</span></span></code></pre></div>
-<p>次は <a href="https://github.com/yesodweb/yesod/blob/master/yesod-core/Yesod/Core/Internal/Run.hs#L61">basicRunHandler</a> が呼ばれる。</p>
+<p>次は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/src/Yesod.Core.Internal.Run.html#basicRunHandler">basicRunHandler</a> が呼ばれます。</p>
 <h3 id="ステップ4basicrunhandler">【ステップ4】basicRunHandler</h3>
-<p>basicRunHandler の実装は以下の通り。(ここでも必要な部分のみを掲載)</p>
+<p><code>basicRunHandler</code> の実装は以下の通りです。(ここでも必要な部分のみを掲載しています)</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a>basicRunHandler rhe handler yreq resState <span class="ot">=</span> <span class="kw">do</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="op">...</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a>            res <span class="ot">&lt;-</span> unHandlerFor handler (hd istate)</span>
 <span id="cb14-4"><a href="#cb14-4"></a>            tc <span class="ot">&lt;-</span> evaluate (toTypedContent res)</span>
 <span id="cb14-5"><a href="#cb14-5"></a><span class="op">...</span></span></code></pre></div>
-<p>次に unHandlerFor に適用される。</p>
+<p>次に <code>unHandlerFor</code> が呼ばれます。</p>
 <h3 id="ステップ5unhandlerfor">【ステップ5】unHandlerFor</h3>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Types.html#v:unHandlerFor">unHandlerFor</a> は <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Types.html#t:HandlerFor">HandlerFor</a> 型を剥がすための関数である。</p>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Types.html#HandlerFor">実装</a> は以下のようになっている。</p>
+<p><a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Types.html#v:unHandlerFor">unHandlerFor</a> は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Types.html#t:HandlerFor">HandlerFor</a> 型を剥がすための関数で、実装は以下のようになっています。</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">newtype</span> <span class="dt">HandlerFor</span> site a <span class="ot">=</span> <span class="dt">HandlerFor</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a>    {<span class="ot"> unHandlerFor ::</span> <span class="dt">HandlerData</span> site site <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
 <span id="cb15-3"><a href="#cb15-3"></a>    }</span>
 <span id="cb15-4"><a href="#cb15-4"></a>    <span class="kw">deriving</span> <span class="dt">Functor</span></span></code></pre></div>
-<p>ここで <code>HandlerFor site a</code> が <code>IO a</code> に変化する。</p>
-<p>つまり先程の <code>res</code> の型が <code>Html</code> だということがわかる。</p>
+<p>ここで <code>HandlerFor site a</code> が <code>IO a</code> に変化します。</p>
+<p>つまり先程の <code>res</code> の型が <code>Html</code> だということがわかります。</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a>res <span class="ot">&lt;-</span> unHandlerFor handler (hd istate)</span>
 <span id="cb16-2"><a href="#cb16-2"></a>tc <span class="ot">&lt;-</span> evaluate (toTypedContent res)</span></code></pre></div>
-<p>そのため、次は <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Content.html#v:toTypedContent">toTypedContent</a> を見ていく必要がある。</p>
+<p>そのため、次は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Content.html#v:toTypedContent">toTypedContent</a> を見ていく必要があります。</p>
 <h3 id="ステップ6totypedcontent">【ステップ6】toTypedContent</h3>
-<p>toTypedContent は <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Content.html#t:ToTypedContent">ToTypedContent</a> 型クラスのメソッドである。</p>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Content.html#line-287">Html 型のインスタンス定義</a> は次のようになっている。</p>
+<p><code>toTypedContent</code> は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Content.html#t:ToTypedContent">ToTypedContent</a> 型クラスのメソッドです。</p>
+<p><code>Html</code> 型のインスタンス定義は次のようになっています。</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">instance</span> <span class="dt">ToTypedContent</span> <span class="dt">Html</span> <span class="kw">where</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a>  toTypedContent h <span class="ot">=</span> <span class="dt">TypedContent</span> typeHtml (toContent h)</span></code></pre></div>
-<p>toContent を見てみよう。</p>
+<p><code>toContent</code> を見てみましょう。</p>
 <h3 id="ステップ7tocontent">【ステップ7】toContent</h3>
-<p>toContent は <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Content.html#t:ToContent">ToContent</a> 型クラスのメソッドであり <a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Content.html#line-102">Html 型のインスタンス定義</a> は以下のようになっている。</p>
+<p><code>toContent</code> は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Content.html#t:ToContent">ToContent</a> 型クラスのメソッドであり <code>Html</code> 型のインスタンス定義は以下のようになっています。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">instance</span> <span class="dt">ToContent</span> <span class="dt">Html</span> <span class="kw">where</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a>  toContent bs <span class="ot">=</span> <span class="dt">ContentBuilder</span> (renderHtmlBuilder bs) <span class="dt">Nothing</span></span></code></pre></div>
-<p>ここでやっとレンダリング関数の <a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/Text-Blaze-Renderer-Utf8.html#v:renderHtmlBuilder">renderHtmlBuilder</a> が出現した。</p>
+<p>ここでやっとレンダリング関数の <a href="https://hackage.haskell.org/package/blaze-html-0.9.1.2/docs/Text-Blaze-Html-Renderer-Utf8.html#v:renderHtmlBuilder">renderHtmlBuilder</a> が出現しました。</p>
 <h2 id="レンダリング処理">レンダリング処理</h2>
-<p>renderHtmlBuilder は DEPRECATE になっており、<a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/Text-Blaze-Renderer-Utf8.html#v:renderMarkupBuilder">renderMarkupBuilder</a> の利用が推奨されている。</p>
+<h3 id="ステップ1renderhtmlbuilder">【ステップ1】renderHtmlBuilder</h3>
+<p><a href="https://hackage.haskell.org/package/blaze-html-0.9.1.2/docs/Text-Blaze-Html-Renderer-Utf8.html#v:renderHtmlBuilder">renderHtmlBuilder</a> の実装は以下の通りです。</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Blaze.Renderer.Utf8</span> <span class="kw">as</span> <span class="dt">R</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="ot">renderHtmlBuilder ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a>renderHtmlBuilder <span class="ot">=</span> R.renderMarkupBuilder</span></code></pre></div>
 <h3 id="ステップ1rendermarkupbuilder">【ステップ1】renderMarkupBuilder</h3>
-<p><a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Renderer.Utf8.html#renderMarkupBuilder">renderMarkupBuilder</a> の実装は以下のようになっている。</p>
-<p>ここで、この関数に渡される値は <code>Content (Text var) ()</code> のような形になっていたことを思い出そう。該当するパターンマッチのみを掲載する。</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a>renderMarkupBuilder</span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="ot">  ::</span> <span class="dt">Markup</span>     <span class="co">-- ^ Markup to render</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a>  <span class="ot">-&gt;</span> <span class="dt">Builder</span>  <span class="co">-- ^ Resulting builder</span></span>
-<span id="cb19-4"><a href="#cb19-4"></a>renderMarkupBuilder <span class="ot">=</span> go <span class="fu">mempty</span></span>
-<span id="cb19-5"><a href="#cb19-5"></a>  <span class="kw">where</span></span>
-<span id="cb19-6"><a href="#cb19-6"></a><span class="ot">    go ::</span> <span class="dt">Builder</span> <span class="ot">-&gt;</span> <span class="dt">MarkupM</span> b <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
-<span id="cb19-7"><a href="#cb19-7"></a>    <span class="op">...</span></span>
-<span id="cb19-8"><a href="#cb19-8"></a>    go _ (<span class="dt">Content</span> content _) <span class="ot">=</span> fromChoiceString content</span></code></pre></div>
-<p>単純に <a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/Text-Blaze-Renderer-String.html#v:fromChoiceString">fromChoiceString</a> を適用するだけのようだ。</p>
+<p><a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Renderer-Utf8.html#v:renderMarkupBuilder">renderMarkupBuilder</a> の実装は以下のようになっています。</p>
+<p>ここで、この関数に渡される値は <code>Content (Text var) ()</code> のような形になっていたことを思い出そう。該当するパターンマッチのみを掲載します。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a><span class="ot">renderMarkupBuilder ::</span> <span class="dt">Markup</span>     <span class="co">-- ^ Markup to render</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a>                  <span class="ot">-&gt;</span> <span class="dt">Builder</span>  <span class="co">-- ^ Resulting builder</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a>renderMarkupBuilder <span class="ot">=</span> go <span class="fu">mempty</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a>  <span class="kw">where</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="ot">    go ::</span> <span class="dt">Builder</span> <span class="ot">-&gt;</span> <span class="dt">MarkupM</span> b <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a>    <span class="op">...</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a>    go _ (<span class="dt">Content</span> content _) <span class="ot">=</span> fromChoiceString content</span></code></pre></div>
+<p>単純に <code>fromChoiceString</code> を適用するだけのようです。</p>
 <h3 id="ステップ2fromchoicestring">【ステップ2】fromChoiceString</h3>
-<p><code>fromChoiceString</code> の<a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Renderer.String.html#fromChoiceString">実装</a>は以下のようになっている。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a><span class="ot">fromChoiceString ::</span> <span class="dt">ChoiceString</span>  <span class="co">-- ^ String to render</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a>                 <span class="ot">-&gt;</span> <span class="dt">String</span>        <span class="co">-- ^ String to append</span></span>
-<span id="cb20-3"><a href="#cb20-3"></a>                 <span class="ot">-&gt;</span> <span class="dt">String</span>        <span class="co">-- ^ Resulting string</span></span>
-<span id="cb20-4"><a href="#cb20-4"></a>fromChoiceString (<span class="dt">Static</span> s)     <span class="ot">=</span> getString s</span>
-<span id="cb20-5"><a href="#cb20-5"></a>fromChoiceString (<span class="dt">String</span> s)     <span class="ot">=</span> escapeMarkupEntities s</span>
-<span id="cb20-6"><a href="#cb20-6"></a>fromChoiceString (<span class="dt">Text</span> s)       <span class="ot">=</span> escapeMarkupEntities <span class="op">$</span> T.unpack s</span>
-<span id="cb20-7"><a href="#cb20-7"></a>fromChoiceString (<span class="dt">ByteString</span> s) <span class="ot">=</span> (SBC.unpack s <span class="op">++</span>)</span>
-<span id="cb20-8"><a href="#cb20-8"></a>fromChoiceString (<span class="dt">PreEscaped</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
-<span id="cb20-9"><a href="#cb20-9"></a>    <span class="dt">String</span> s <span class="ot">-&gt;</span> (s <span class="op">++</span>)</span>
-<span id="cb20-10"><a href="#cb20-10"></a>    <span class="dt">Text</span>   s <span class="ot">-&gt;</span> (\k <span class="ot">-&gt;</span> T.foldr (<span class="op">:</span>) k s)</span>
-<span id="cb20-11"><a href="#cb20-11"></a>    s        <span class="ot">-&gt;</span> fromChoiceString s</span>
-<span id="cb20-12"><a href="#cb20-12"></a>fromChoiceString (<span class="dt">External</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
-<span id="cb20-13"><a href="#cb20-13"></a>    <span class="co">-- Check that the sequence &quot;&lt;/&quot; is *not* in the external data.</span></span>
-<span id="cb20-14"><a href="#cb20-14"></a>    <span class="dt">String</span> s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`isInfixOf`</span> s <span class="kw">then</span> <span class="fu">id</span> <span class="kw">else</span> (s <span class="op">++</span>)</span>
-<span id="cb20-15"><a href="#cb20-15"></a>    <span class="dt">Text</span>   s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`T.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">id</span> <span class="kw">else</span> (\k <span class="ot">-&gt;</span> T.foldr (<span class="op">:</span>) k s)</span>
-<span id="cb20-16"><a href="#cb20-16"></a>    <span class="dt">ByteString</span> s <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`S.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">id</span> <span class="kw">else</span> (SBC.unpack s <span class="op">++</span>)</span>
-<span id="cb20-17"><a href="#cb20-17"></a>    s            <span class="ot">-&gt;</span> fromChoiceString s</span>
-<span id="cb20-18"><a href="#cb20-18"></a>fromChoiceString (<span class="dt">AppendChoiceString</span> x y) <span class="ot">=</span></span>
-<span id="cb20-19"><a href="#cb20-19"></a>    fromChoiceString x <span class="op">.</span> fromChoiceString y</span>
-<span id="cb20-20"><a href="#cb20-20"></a>fromChoiceString <span class="dt">EmptyChoiceString</span> <span class="ot">=</span> <span class="fu">id</span></span></code></pre></div>
-<p>今回関係するのは <code>fromChoiceString (String s) = escapeMarkupEntities s</code> なので <a href="https://www.stackage.org/haddock/lts-12.4/blaze-markup-0.8.2.1/src/Text.Blaze.Renderer.String.html#escapeMarkupEntities">escapeMarkupEntities</a> を確認しよう。</p>
-<h3 id="ステップ3escapemarkupentities">【ステップ3】escapeMarkupEntities</h3>
-<p>escapeMarkupEntities 関数はエクスポートされていないが、実装は以下のようになっている。</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="ot">escapeMarkupEntities ::</span> <span class="dt">String</span>  <span class="co">-- ^ String to escape</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a>                   <span class="ot">-&gt;</span> <span class="dt">String</span>  <span class="co">-- ^ String to append</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a>                   <span class="ot">-&gt;</span> <span class="dt">String</span>  <span class="co">-- ^ Resulting string</span></span>
-<span id="cb21-4"><a href="#cb21-4"></a>escapeMarkupEntities []     k <span class="ot">=</span> k</span>
-<span id="cb21-5"><a href="#cb21-5"></a>escapeMarkupEntities (c<span class="op">:</span>cs) k <span class="ot">=</span> <span class="kw">case</span> c <span class="kw">of</span></span>
-<span id="cb21-6"><a href="#cb21-6"></a>    <span class="ch">'&lt;'</span>  <span class="ot">-&gt;</span> <span class="ch">'&amp;'</span> <span class="op">:</span> <span class="ch">'l'</span> <span class="op">:</span> <span class="ch">'t'</span> <span class="op">:</span> <span class="ch">';'</span>             <span class="op">:</span> escapeMarkupEntities cs k</span>
-<span id="cb21-7"><a href="#cb21-7"></a>    <span class="ch">'&gt;'</span>  <span class="ot">-&gt;</span> <span class="ch">'&amp;'</span> <span class="op">:</span> <span class="ch">'g'</span> <span class="op">:</span> <span class="ch">'t'</span> <span class="op">:</span> <span class="ch">';'</span>             <span class="op">:</span> escapeMarkupEntities cs k</span>
-<span id="cb21-8"><a href="#cb21-8"></a>    <span class="ch">'&amp;'</span>  <span class="ot">-&gt;</span> <span class="ch">'&amp;'</span> <span class="op">:</span> <span class="ch">'a'</span> <span class="op">:</span> <span class="ch">'m'</span> <span class="op">:</span> <span class="ch">'p'</span> <span class="op">:</span> <span class="ch">';'</span>       <span class="op">:</span> escapeMarkupEntities cs k</span>
-<span id="cb21-9"><a href="#cb21-9"></a>    <span class="ch">'&quot;'</span>  <span class="ot">-&gt;</span> <span class="ch">'&amp;'</span> <span class="op">:</span> <span class="ch">'q'</span> <span class="op">:</span> <span class="ch">'u'</span> <span class="op">:</span> <span class="ch">'o'</span> <span class="op">:</span> <span class="ch">'t'</span> <span class="op">:</span> <span class="ch">';'</span> <span class="op">:</span> escapeMarkupEntities cs k</span>
-<span id="cb21-10"><a href="#cb21-10"></a>    <span class="ch">'\''</span> <span class="ot">-&gt;</span> <span class="ch">'&amp;'</span> <span class="op">:</span> <span class="ch">'#'</span> <span class="op">:</span> <span class="ch">'3'</span> <span class="op">:</span> <span class="ch">'9'</span> <span class="op">:</span> <span class="ch">';'</span>       <span class="op">:</span> escapeMarkupEntities cs k</span>
-<span id="cb21-11"><a href="#cb21-11"></a>    x    <span class="ot">-&gt;</span> x                                 <span class="op">:</span> escapeMarkupEntities cs k</span></code></pre></div>
-<p>つまり、この関数内で実際のエスケープ処理が走っていることがわかる。</p>
+<p><a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/src/Text.Blaze.Renderer.Utf8.html#fromChoiceString">fromChoiceString</a> の実装は以下のようになっています。</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Blaze.ByteString.Builder</span>           <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Blaze.ByteString.Builder.Html.Utf8</span> <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="op">...</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="ot">fromChoiceString ::</span> <span class="dt">ChoiceString</span>  <span class="co">-- ^ String to render</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a>                 <span class="ot">-&gt;</span> <span class="dt">Builder</span>       <span class="co">-- ^ Resulting builder</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a>fromChoiceString (<span class="dt">Static</span> s)     <span class="ot">=</span> B.copyByteString <span class="op">$</span> getUtf8ByteString s</span>
+<span id="cb21-8"><a href="#cb21-8"></a>fromChoiceString (<span class="dt">String</span> s)     <span class="ot">=</span> B.fromHtmlEscapedString s</span>
+<span id="cb21-9"><a href="#cb21-9"></a>fromChoiceString (<span class="dt">Text</span> s)       <span class="ot">=</span> B.fromHtmlEscapedText s</span>
+<span id="cb21-10"><a href="#cb21-10"></a>fromChoiceString (<span class="dt">ByteString</span> s) <span class="ot">=</span> B.fromByteString s</span>
+<span id="cb21-11"><a href="#cb21-11"></a>fromChoiceString (<span class="dt">PreEscaped</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a>    <span class="dt">String</span> s <span class="ot">-&gt;</span> B.fromString s</span>
+<span id="cb21-13"><a href="#cb21-13"></a>    <span class="dt">Text</span>   s <span class="ot">-&gt;</span> B.fromText s</span>
+<span id="cb21-14"><a href="#cb21-14"></a>    s        <span class="ot">-&gt;</span> fromChoiceString s</span>
+<span id="cb21-15"><a href="#cb21-15"></a>fromChoiceString (<span class="dt">External</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a>    <span class="co">-- Check that the sequence &quot;&lt;/&quot; is *not* in the external data.</span></span>
+<span id="cb21-17"><a href="#cb21-17"></a>    <span class="dt">String</span> s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromString s</span>
+<span id="cb21-18"><a href="#cb21-18"></a>    <span class="dt">Text</span>   s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`T.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromText s</span>
+<span id="cb21-19"><a href="#cb21-19"></a>    <span class="dt">ByteString</span> s <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`S.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromByteString s</span>
+<span id="cb21-20"><a href="#cb21-20"></a>    s            <span class="ot">-&gt;</span> fromChoiceString s</span>
+<span id="cb21-21"><a href="#cb21-21"></a>fromChoiceString (<span class="dt">AppendChoiceString</span> x y) <span class="ot">=</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a>    fromChoiceString x <span class="ot">`mappend`</span> fromChoiceString y</span>
+<span id="cb21-23"><a href="#cb21-23"></a>fromChoiceString <span class="dt">EmptyChoiceString</span> <span class="ot">=</span> <span class="fu">mempty</span></span></code></pre></div>
+<p>今回関係するのは <code>fromChoiceString (String s) = B.fromHtmlEscapedText s</code> なので <code>fromHtmlEscapedText</code> を確認しましょう。</p>
+<h3 id="ステップ3fromhtmlescapedtext">【ステップ3】fromHtmlEscapedText</h3>
+<p><a href="https://hackage.haskell.org/package/blaze-builder-0.4.1.0/docs/Blaze-ByteString-Builder-Html-Utf8.html#v:fromHtmlEscapedString">fromHtmlEscapedString</a> 関数の実装は以下の通りです。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="ot">charUtf8HtmlEscaped ::</span> <span class="dt">P.BoundedPrim</span> <span class="dt">Char</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>charUtf8HtmlEscaped <span class="ot">=</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>    condB (<span class="op">&gt;</span>  <span class="ch">'&gt;'</span> ) (condB (<span class="op">==</span> <span class="ch">'\DEL'</span>) P.emptyB P.charUtf8) <span class="op">$</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a>    condB (<span class="op">==</span> <span class="ch">'&lt;'</span> ) (fixed4 (<span class="ch">'&amp;'</span>,(<span class="ch">'l'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))) <span class="op">$</span>        <span class="co">-- &amp;lt;</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a>    condB (<span class="op">==</span> <span class="ch">'&gt;'</span> ) (fixed4 (<span class="ch">'&amp;'</span>,(<span class="ch">'g'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))) <span class="op">$</span>        <span class="co">-- &amp;gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a>    condB (<span class="op">==</span> <span class="ch">'&amp;'</span> ) (fixed5 (<span class="ch">'&amp;'</span>,(<span class="ch">'a'</span>,(<span class="ch">'m'</span>,(<span class="ch">'p'</span>,<span class="ch">';'</span>))))) <span class="op">$</span>  <span class="co">-- &amp;amp;</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a>    condB (<span class="op">==</span> <span class="ch">'&quot;'</span> ) (fixed6 (<span class="ch">'&amp;'</span>,(<span class="ch">'q'</span>,(<span class="ch">'u'</span>,(<span class="ch">'o'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))))) <span class="op">$</span>  <span class="co">-- &amp;#quot;</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a>    condB (<span class="op">==</span> <span class="ch">'\''</span>) (fixed5 (<span class="ch">'&amp;'</span>,(<span class="ch">'#'</span>,(<span class="ch">'3'</span>,(<span class="ch">'9'</span>,<span class="ch">';'</span>))))) <span class="op">$</span>  <span class="co">-- &amp;#39;</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a>    condB (\c <span class="ot">-&gt;</span> c <span class="op">&gt;=</span> <span class="ch">' '</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\t'</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\n'</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\r'</span>)</span>
+<span id="cb22-10"><a href="#cb22-10"></a>          (P.liftFixedToBounded P.char7) <span class="op">$</span></span>
+<span id="cb22-11"><a href="#cb22-11"></a>    P.emptyB</span>
+<span id="cb22-12"><a href="#cb22-12"></a>  <span class="kw">where</span></span>
+<span id="cb22-13"><a href="#cb22-13"></a>    <span class="ot">{-# INLINE fixed4 #-}</span></span>
+<span id="cb22-14"><a href="#cb22-14"></a>    fixed4 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
+<span id="cb22-15"><a href="#cb22-15"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span>
+<span id="cb22-16"><a href="#cb22-16"></a></span>
+<span id="cb22-17"><a href="#cb22-17"></a>    <span class="ot">{-# INLINE fixed5 #-}</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a>    fixed5 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
+<span id="cb22-19"><a href="#cb22-19"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span>
+<span id="cb22-20"><a href="#cb22-20"></a></span>
+<span id="cb22-21"><a href="#cb22-21"></a>    <span class="ot">{-# INLINE fixed6 #-}</span></span>
+<span id="cb22-22"><a href="#cb22-22"></a>    fixed6 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
+<span id="cb22-23"><a href="#cb22-23"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span></code></pre></div>
+<p>つまり、この関数内で実際のエスケープ処理が走っていることがわかります。</p>
 <h2 id="まとめ">まとめ</h2>
-<p><code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, <code>"</code>, <code>'</code> の5文字がエスケープされる。</p>
+<ul>
+<li><code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, <code>"</code>, <code>'</code> の5文字がエスケープされます。</li>
+</ul>
       </article>
 
       <div class="pager">
