@@ -1,25 +1,26 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import qualified Config as C
-import Control.Lens ((^.))
-import Data.List (stripPrefix)
-import Data.Maybe
+module Main (main) where
+
+import Config
+import qualified Data.Yaml as Yaml
 import HTMLEntities.Text
-import Hakyll hiding (dateFieldWith)
+import Hakyll
 import Hakyll.Ext
-import Hakyll.Web.Sass (sassCompiler)
-import RIO hiding ((^.))
-import qualified RIO.List as L
-import qualified RIO.List.Partial as L'
+import Hakyll.Web.Sass
+import RIO
+import qualified RIO.List as List
+import qualified RIO.List.Partial as List'
 import qualified RIO.Text as Text
-import System.FilePath (takeBaseName, takeDirectory, takeFileName)
+import RIO.FilePath
 
 main :: IO ()
-main = do
-  msiteConfig <- C.fromConfig "config.yml"
-  either (error "Expected file 'config.yml' not found") main' msiteConfig
+main =
+  Yaml.decodeFileEither "config.yml" >>= \case
+    Left err -> error $ "Expected file 'config.yml' not found: " <> Yaml.prettyPrintParseException err
+    Right config -> main' config
 
-main' :: C.Site -> IO ()
+main' :: Site -> IO ()
 main' siteConfig = hakyllWith hakyllConfig $ do
   match (fromGlob "images/**" .||. fromGlob "js/**" .||. fromGlob "lib/**") $ do
     route idRoute
@@ -31,7 +32,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     route $
       customRoute
         ( fromMaybe (error "Expected pages to be in 'pages' folder")
-            . stripPrefix "pages/"
+            . List.stripPrefix "pages/"
             . toFilePath
         )
         `composeRoutes` setExtension "html"
@@ -46,8 +47,8 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   createTagsRules categories (\xs -> "Posts categorised as \"" ++ xs ++ "\"")
   postIDs <- sortChronological' =<< getMatches "posts/**"
   let prevPosts = Nothing : map Just postIDs
-      nextPosts = L'.tail $ map Just postIDs ++ [Nothing]
-  forM_ (L.zip3 postIDs prevPosts nextPosts) $
+      nextPosts = List'.tail $ map Just postIDs ++ [Nothing]
+  forM_ (List.zip3 postIDs prevPosts nextPosts) $
     \(postID, mprevPost, mnextPost) -> create [postID] $ do
       let prevPageCtx = case mprevPost of
             Just i ->
@@ -105,9 +106,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
           feedCtx = mapContext (Text.unpack . text . Text.pack) postCtx <> bodyField "description"
       posts <-
         fmap (take 10) . recentFirst'
-          =<< loadAllSnapshots
-            "posts/**"
-            "content"
+          =<< loadAllSnapshots "posts/**" "content"
       renderAtom (atomFeedConfiguration feedConfig) feedCtx posts
   -- SEO-related stuff
   create ["sitemap.xml"] $ do
@@ -193,13 +192,12 @@ main' siteConfig = hakyllWith hakyllConfig $ do
       case mtitle of
         Just title -> return title
         Nothing -> fail "no 'title' field"
-    pageUrl i = do
-      mfilePath <- getRoute i
-      case mfilePath of
+    pageUrl i =
+      getRoute i >>= \case
         Just filePath -> return (toUrl filePath)
         Nothing -> fail "no route"
 
-atomFeedConfiguration :: C.Feed -> FeedConfiguration
+atomFeedConfiguration :: Feed -> FeedConfiguration
 atomFeedConfiguration fs =
   FeedConfiguration
     { feedTitle = fs ^. #title,
@@ -211,8 +209,10 @@ atomFeedConfiguration fs =
 
 -- Friendlier config when using docker
 hakyllConfig :: Configuration
-hakyllConfig =
-  defaultConfiguration {previewHost = "0.0.0.0", previewPort = 3001}
+hakyllConfig = defaultConfiguration
+  { previewHost = "0.0.0.0"
+  , previewPort = 3001
+  }
 
 sitemapPages :: [Item String] -> [Item String]
 sitemapPages = filter ((/= "pages/LICENSE.md") . toFilePath . itemIdentifier)
@@ -226,7 +226,7 @@ toDate ident = yyyy ++ "-" ++ mmdd
     mmdd = take 5 $ takeBaseName path
 
 dateField' :: String -> String -> Context a
-dateField' = dateFieldWith toDate
+dateField' = dateFieldWith' toDate
 
 recentFirst' :: MonadMetadata m => [Item a] -> m [Item a]
 recentFirst' = recentFirstWith toDate

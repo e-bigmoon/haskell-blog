@@ -1,11 +1,27 @@
-module Config where
+module Config
+  ( Feed
+  , Site
+  )
+where
 
 import Data.Extensible
-import Data.Yaml (FromJSON, ParseException, decodeFileEither)
 import RIO
 
-fromConfig :: (FromJSON a) => FilePath -> IO (Either ParseException a)
-fromConfig = decodeFileEither
+type Site =
+  Record
+    [ "general" >: General,
+      "feed" >: Feed,
+      "style" >: Style
+    ]
+
+type Feed =
+  Record
+    [ "title" >: String,
+      "description" >: String,
+      "authorName" >: String,
+      "authorEmail" >: String,
+      "root" >: String
+    ]
 
 type Style =
   Record
@@ -21,7 +37,6 @@ type Style =
     ]
 
 type Colour = String
-
 type HexColour = String
 
 type General =
@@ -30,20 +45,4 @@ type General =
       "headTitle" >: String,
       "siteTitle" >: String,
       "paginate" >: Int
-    ]
-
-type Feed =
-  Record
-    [ "title" >: String,
-      "description" >: String,
-      "authorName" >: String,
-      "authorEmail" >: String,
-      "root" >: String
-    ]
-
-type Site =
-  Record
-    [ "general" >: General,
-      "feed" >: Feed,
-      "style" >: Style
     ]
