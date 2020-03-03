@@ -2,6 +2,7 @@
 title: (^>>) と (>>^)
 author: Shinya Yamaguchi
 tags: bigmoon
+updated: 2018/08/07
 ---
 
 ## はじめに

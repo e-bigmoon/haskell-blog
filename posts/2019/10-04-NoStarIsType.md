@@ -2,6 +2,7 @@
 title: NoStarIsType 言語拡張が必要になるとき
 author: Shinya Yamaguchi
 tags: bigmoon
+updated: 2019/10/13
 ---
 
 ## はじめに

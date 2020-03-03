@@ -2,6 +2,7 @@
 title: Haskell IDE Engine を Emacs で使う
 author: Wataru Yamada
 tags: bigmoon, package
+updated: 2018/03/27
 ---
 
 ## はじめに

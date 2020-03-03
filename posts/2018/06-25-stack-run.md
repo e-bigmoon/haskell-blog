@@ -2,6 +2,7 @@
 title: stack run コマンド
 author: Shinya Yamaguchi
 tags: bigmoon, stack
+updated: 2018/06/25
 ---
 
 ## はじめに

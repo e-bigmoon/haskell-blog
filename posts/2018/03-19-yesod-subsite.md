@@ -2,6 +2,7 @@
 title: Yesod v1.6 のサブサイト
 author: Shinya Yamaguchi
 tags: bigmoon, yesod
+updated: 2018/03/19
 ---
 
 ## はじめに

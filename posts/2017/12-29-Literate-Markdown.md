@@ -2,6 +2,7 @@
 title: Literate Markdown (markdown-unlit の使い方) について
 author: Shinya Yamaguchi
 tags: bigmoon, package
+updated: 2018/03/14
 ---
 
 ## はじめに

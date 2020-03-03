@@ -2,6 +2,7 @@
 title: Yesod には脆弱性があるのかな？
 author: Shinya Yamaguchi, pythonissam
 tags: bigmoon, yesod, security
+updated: 2018/07/31
 ---
 
 ## はじめに

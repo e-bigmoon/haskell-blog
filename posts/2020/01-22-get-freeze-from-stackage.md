@@ -2,6 +2,7 @@
 title: stack で管理されたプロジェクトを cabal でビルドするために
 author: Shinya Yamaguchi
 tags: bigmoon, cabal
+updated: 2020/01/22
 ---
 
 Haskell のビルドツールといえば **cabal** と **stack** です。ちょっと前までは **cabal** より **stack** の方が流行っていたのですが、最近は開発も落ち着いているようであまり動きがありません。それよりも **cabal** の **nix-style local build** が非常に使いやすく、近頃では **stack** から **cabal** に移行しているプロジェクトも多くあります。

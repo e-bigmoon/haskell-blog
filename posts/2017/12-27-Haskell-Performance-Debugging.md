@@ -4,6 +4,7 @@ author: Matt Parsons
 translator: pythonissam
 github: pythonissam
 tags: To Overcome, 翻訳
+updated: 2018/03/14
 ---
 
 Great original post: [Haskell Performance Debugging](http://www.parsonsmatt.org/2017/12/18/haskell_performance_debugging.html).

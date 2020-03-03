@@ -2,8 +2,7 @@
 title: HUnit で日本語が文字化けする問題
 author: Shinya Yamaguchi
 tags: bigmoon, package
-published: 2018/02/10
-updated: 2018/04/07
+updated: 2020/02/19
 ---
 
 `HUnit` で日本語を扱おうとすると、以下のように文字化けしますよね。

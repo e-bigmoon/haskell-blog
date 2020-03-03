@@ -3,6 +3,7 @@ title: debug パッケージのアナウンス (翻訳)
 author: Neil Mitchell
 translator: pythonissam
 tags: Neil Mitchell's Haskell Blog, 翻訳
+updated: 2018/03/14
 ---
 
 ## debug パッケージのアナウンス (翻訳)
