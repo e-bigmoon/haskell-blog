@@ -1,6 +1,7 @@
 ---
 title: stylish-haskell
-date: 2019/03/08
+published: 2018/05/05
+updated: 2019/05/08
 ---
 
 ## 何をするためのツールか？

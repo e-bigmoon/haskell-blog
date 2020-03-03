@@ -1,6 +1,7 @@
 ---
 title: アプリケーションの作成
-date: 2019/09/14
+published: 2017/12/24
+updated: 2019/09/14
 prev: ./extra-deps.html
 next: ../doc/index.html
 ---

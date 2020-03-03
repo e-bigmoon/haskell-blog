@@ -1,6 +1,7 @@
 ---
 title: HLintの導入と実行
-date: 2018/04/07
+published: 2018/02/10
+updated: 2018/04/07
 ---
 
 ## HLint の導入

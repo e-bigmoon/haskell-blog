@@ -188,8 +188,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
           >>= relativizeUrls
     pageTitle, pageUrl :: Identifier -> Compiler String
     pageTitle i = do
-      mtitle <- getMetadataField i "title"
-      case mtitle of
+      getMetadataField i "title" >>= \case
         Just title -> return title
         Nothing -> fail "no 'title' field"
     pageUrl i =

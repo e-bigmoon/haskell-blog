@@ -1,7 +1,10 @@
 ---
 title: X-XSS-Protection レスポンスヘッダ
-date: 2018/08/04
+published: 2018/08/04
+updated: 2020/03/03
 ---
+
+この問題は [Set X-XSS-Protection to 1; mode=block. #1550](https://github.com/yesodweb/yesod/pull/1550) で解決されました。
 
 ## 関連情報
 
@@ -9,7 +12,7 @@ date: 2018/08/04
 
 ## デフォルト
 
-Yesod のデフォルトでは `X-XSS-Protection` レスポンスヘッダは特に設定されていない。
+Yesod のデフォルトでは `X-XSS-Protection` レスポンスヘッダは特に設定されていません。
 
 しかし、セキュリティ的には
 
@@ -17,16 +20,14 @@ Yesod のデフォルトでは `X-XSS-Protection` レスポンスヘッダは特
 X-XSS-Protection: 1; mode=block
 ```
 
-が設定されている方が望ましいと思う。以下のようにすれば良い。
+が設定されている方が望ましいです。これは、以下のようにすると良いです。
 
 ```hs
-#!/usr/bin/env stack
--- stack script --resolver lts-12.4
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Yesod
+import Yesod
 
 data App = App
 

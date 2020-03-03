@@ -1,6 +1,7 @@
 ---
 title: hpack とは何か？
-date: 2019/09/14
+published: 2018/01/08
+updated: 2019/09/14
 prev: stack-install.html
 next: alt-stack.html
 ---

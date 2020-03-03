@@ -1,6 +1,7 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2020/01/27
+published: 2018/08/17
+updated: 2020/01/27
 ---
 
 ## 実行環境

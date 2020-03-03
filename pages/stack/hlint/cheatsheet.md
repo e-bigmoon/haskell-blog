@@ -1,6 +1,7 @@
 ---
 title: チートシート
-date: 2018/09/14
+published: 2018/09/14
+# updated: 2019/09/14
 ---
 
 ## functions

@@ -1,6 +1,7 @@
 ---
 title: ドキュメントの作成
-date: 2019/09/14
+published: 2017/12/25
+updated: 2019/09/14
 next: ./haddock-intro.html
 ---
 

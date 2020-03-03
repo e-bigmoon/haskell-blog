@@ -1,18 +1,17 @@
 ---
 title: XSS に対するセキュリティ
-date: 2018/08/04
+published: 2018/08/04
+updated: 2020/03/03
 ---
 
 ## サンプルの基本形式
 
 ```hs
-#!/usr/bin/env stack
--- stack script --resolver lts-12.4
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Yesod
+import Yesod
 
 data App = App
 
@@ -58,7 +57,7 @@ main = warp 3000 App
 &lt;script&gt;alert(document.cookie)&lt;/script&gt;
 ```
 
-そのため **XSS** は発生しない。(エスケープについての詳しい流れは[変数展開処理の流れ](./07-variable-interpolation.html)を参照せよ。)
+そのため **XSS** は発生しない。(エスケープについての詳しい流れは[変数展開処理の流れ](./07-variable-interpolation.html)を参照してください)
 
 ## 画面の書き換え
 
@@ -146,13 +145,13 @@ toWidget [julius|
 
 ### URL
 
-[`http://localhost:3000/check5?p='),alert(document.cookie)//`](http://localhost:3000/check5?p='),alert(document.cookie)//)
+[`http://localhost:3000/check5?p='),alert(document.cookie)//`](http://localhost:3000/check5?p='\),alert(document.cookie)//)
 
 ### 結果
 
-XSS が発生する。JavaScript のエスケープ処理が行われないため。
+JavaScript のエスケープ処理が行われないため、XSS が発生する。
 
-```hs
+```html
 <body onload="init('&#39;),alert(document.cookie)//')"></body>
 <script>
   function init(text) {

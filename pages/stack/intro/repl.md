@@ -1,6 +1,7 @@
 ---
 title: repl 環境の使い方
-date: 2019/09/14
+published: 2019/09/14
+# updated: 2019/09/14
 prev: ./create-lib.html
 next: ./ghc.html
 ---

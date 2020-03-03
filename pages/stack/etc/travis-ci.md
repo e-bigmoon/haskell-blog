@@ -1,6 +1,7 @@
 ---
 title: Travis CI
-date: 2019/01/07
+published: 2018/01/06
+updated: 2019/01/07
 ---
 
 ## テンプレート

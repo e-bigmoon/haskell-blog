@@ -1,6 +1,7 @@
 ---
 title: criterion パッケージ
-date: 2019/09/15
+published: 2019/09/15
+# updated: 2019/09/15
 prev: ./index.html
 next: ./gauge.html
 ---

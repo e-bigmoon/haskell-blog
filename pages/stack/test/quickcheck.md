@@ -1,6 +1,7 @@
 ---
 title: 【基礎】ランダムテスト (QuickCheck)
-date: 2019/09/14
+published: 2017/12/24
+updated: 2019/09/14
 prev: ./hspec.html
 next: ./quickcheck2.html
 ---

@@ -1,6 +1,7 @@
 ---
 title: extra-deps の指定方法
-date: 2019/09/14
+published: 2019/09/14
+# updated: 2019/09/14
 prev: ./package-and-deps.html
 next: ./create-app.html
 ---

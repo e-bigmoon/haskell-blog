@@ -1,6 +1,7 @@
 ---
 title: Haskell Development
-date: 2019/12/24
+published: 2017/10/24
+updated: 2019/12/24
 ---
 
 <div class="row">

@@ -1,6 +1,7 @@
 ---
 title: プロジェクトの作成
-date: 2019/09/14
+published: 2017/12/24
+updated: 2019/09/14
 prev: ./alt-stack.html
 next: ./create-lib.html
 ---

@@ -1,7 +1,10 @@
 ---
 title: hamlet とインライン Javascript
-date: 2018/08/04
+published: 2018/08/04
+updated: 2020/03/03
 ---
+
+この問題は [Escape single quote in Julius variable interpolation #221](https://github.com/yesodweb/shakespeare/pull/221) で解決されました。
 
 ## 関連情報
 
@@ -12,14 +15,12 @@ date: 2018/08/04
 ## 脆弱性を含むコード
 
 ```hs
-#!/usr/bin/env stack
--- stack script --resolver lts-12.4
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Data.Maybe
-import           Yesod
+import Data.Maybe
+import Yesod
 
 data App = App
 
@@ -48,7 +49,7 @@ main :: IO ()
 main = warp 3000 App
 ```
 
-例えば `http://localhost:3000/?name=%27),alert(1)//` にアクセスすると `alert` が実行されてしまう。
+例えば `http://localhost:3000/?name=%27),alert(1)//` にアクセスすると `alert` が実行されてしまいます。
 
 ## 対策
 
@@ -56,7 +57,7 @@ main = warp 3000 App
 
 `julius` に全部書く。
 
-潜在的にではあるが、脆弱性は存在しているので、推奨はしない。(実装者によっては知らずに書いてしまうかもしれない)
+潜在的にではあるが、脆弱性は存在しているので推奨しません。(実装者によっては知らずに書いてしまうかもしれない)
 
 ### 方法2 Content Security Policy の設定
 
@@ -71,7 +72,7 @@ instance Yesod App where
 
 ### 方法3 明示的に javascript のエスケープを行う
 
-rails の [escape_javascript](https://github.com/rails/rails/blob/master/actionview/lib/action_view/helpers/javascript_helper.rb#L27) を参考に自前でエスケープ処理を実装する。
+Rails の [escape_javascript](https://github.com/rails/rails/blob/master/actionview/lib/action_view/helpers/javascript_helper.rb#L27) を参考に自前でエスケープ処理を実装する。
 
 今のところ、Yesod はそのような関数を提供していない。
 

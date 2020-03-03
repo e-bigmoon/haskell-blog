@@ -1,6 +1,7 @@
 ---
 title: テストフレームワーク (tasty)
-date: 2020/01/24
+published: 2019/09/15
+updated: 2019/02/06
 prev: ./doctest.html
 next: ../bench/index.html
 ---

@@ -1,6 +1,7 @@
 ---
 title: gauge パッケージ
-date: 2019/09/15
+published: 2019/09/15
+# updated: 2019/09/15
 prev: ./criterion.html
 next: ../dist/index.html
 ---

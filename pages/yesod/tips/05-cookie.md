@@ -1,17 +1,22 @@
 ---
 title: Cookie のセキュリティ
-date: 2018/08/04
+published: 2018/08/04
+updated: 2020/03/03
 ---
 
 ## セッションを保存しているクッキー
 
-Yesod では `_SESSION` というクッキーにセッションIDが格納されます。この名前は [clientSessionBackend](https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#clientSessionBackend) 関数内部でハードコーディングされている。
+Yesod では `_SESSION` というクッキーにセッションIDが格納されます。この名前は [clientSessionBackend][1] 関数内部でハードコーディングされている。
 
-もし変更したい場合は `Yesod` 型クラスの [makeSessionBackend](https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#defaultClientSessionBackend) を自分で実装する。その際は [defaultClientSessionBackend](https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#defaultClientSessionBackend) が参考になる。
+もし変更したい場合は `Yesod` 型クラスの [makeSessionBackend][2] を自分で実装する。その際は [defaultClientSessionBackend][3] が参考になる。
+
+[1]: https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:clientSessionBackend
+[2]: https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:makeSessionBackend
+[3]: https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:defaultClientSessionBackend
 
 ## セッションに指定されているデフォルトの属性
 
-[loadClientSession](https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/src/Yesod.Core.Class.Yesod.html#loadClientSession) の中に定義がある。
+[loadClientSession][4] の中に定義がある。
 
 ```hs
 [AddCookie defaultSetCookie
@@ -32,11 +37,17 @@ Yesod では `_SESSION` というクッキーにセッションIDが格納され
 
 ということがわかる。
 
+[4]: https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:loadClientSession
+
 ## クッキーを追加した時のデフォルト値
 
-[setCookie](https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Handler.html#v:setCookie) を使うことでクッキーを追加できる。
+[setCookie][5] を使うことでクッキーを追加できる。
 
-[SetCookie](https://www.stackage.org/haddock/lts-12.4/cookie-0.4.4/Web-Cookie.html#t:SetCookie) 型の値は [defaultSetCookie](https://www.stackage.org/haddock/lts-12.4/cookie-0.4.4/Web-Cookie.html#v:defaultSetCookie) を使って、必要な部分のみを変更すると良い。
+[SetCookie][6] 型の値は [defaultSetCookie][7] を使って、必要な部分のみを変更すると良い。
+
+[5]: https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Handler.html#v:setCookie
+[6]: https://hackage.haskell.org/package/cookie-0.4.5/docs/Web-Cookie.html#t:SetCookie
+[7]: https://hackage.haskell.org/package/cookie-0.4.5/docs/Web-Cookie.html#v:defaultSetCookie
 
 ```hs
 defaultSetCookie :: SetCookie

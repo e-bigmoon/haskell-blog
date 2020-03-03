@@ -1,6 +1,7 @@
 ---
 title: ファイル単位で GHC_OPTIONS を指定する方法
-date: 2018/05/16
+published: 2018/05/16
+# updated: 2020/02/22
 ---
 
 ## やり方

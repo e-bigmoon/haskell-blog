@@ -1,6 +1,7 @@
 ---
 title: CI を回す!
-date: 2018/02/12
+published: 2018/02/10
+updated: 2018/02/12
 ---
 
 ## Haskell プロジェクトで良く使われている CI

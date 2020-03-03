@@ -1,10 +1,11 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.4
+-- stack script --resolver lts-15.1
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Yesod
+import Data.Text
+import Yesod
 
 data App = App
 
@@ -12,15 +13,18 @@ mkYesod "App" [parseRoutes|
 / HomeR GET
 |]
 
-instance Yesod App where
-  yesodMiddleware handler = do
-    addHeader "X-XSS-Protection" "1;mode=block"
-    defaultYesodMiddleware handler
+instance Yesod App
 
 getHomeR :: Handler Html
-getHomeR = defaultLayout
+getHomeR = defaultLayout $ do
+  let name = "bigmoon" :: Text
+
   [whamlet|
-    "test"
+    #{name}
+  |]
+
+  toWidget [julius|
+    #{name}
   |]
 
 main :: IO ()

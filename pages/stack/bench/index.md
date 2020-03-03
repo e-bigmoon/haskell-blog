@@ -1,6 +1,7 @@
 ---
 title: ベンチマークの作成
-date: 2019/09/15
+published: 2019/09/15
+# updated: 2019/09/15
 prev: ../test/tasty.html
 next: ./criterion.html
 ---

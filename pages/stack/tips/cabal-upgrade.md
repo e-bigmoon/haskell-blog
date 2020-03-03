@@ -1,6 +1,7 @@
 ---
 title: cabal-install の更新
-date: 2019/09/14
+published: 2019/09/14
+# updated: 2019/12/24
 ---
 
 ## cabal のアップグレード方法
