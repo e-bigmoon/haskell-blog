@@ -42,9 +42,10 @@ jobs:
         rm -rf _site
         mv _site_latest _site
 
-        git add _site
-        git commit -m "by Github Action"
-
+        if [ "`git status -s | wc -l`" -gt 0 ]; then
+          git add _site
+          git commit -m "by Github Action"
+        fi
     - name: Push changes
       uses: ad-m/github-push-action@v0.5.0
       with:
