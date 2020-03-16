@@ -15,20 +15,23 @@ on:
 jobs:
   cabal-fmt:
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        cache-version: ["2020-03-16"]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-haskell@v1
       with:
-        ghc-version: "8.8.2"
+        ghc-version: "8.8.3"
         cabal-version: "3.0"
 
-    - uses: actions/cache@v1.1.2
+    - uses: actions/cache@v1
       name: Cache ~/.cabal/bin
       id: cache-bin
       with:
         path: ~/.cabal/bin
-        key: v5-cabal-fmt-v0.1.2
+        key: ${{ matrix.cache-version }}-cabal-fmt
 
     - name: Install cabal-fmt
       if: steps.cache-bin.outputs.cache-hit != 'true'
@@ -44,20 +47,23 @@ jobs:
 
   ormolu:
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        cache-version: ["2020-03-16"]
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-haskell@v1
       with:
-        ghc-version: "8.8.2"
+        ghc-version: "8.8.3"
         cabal-version: "3.0"
 
-    - uses: actions/cache@v1.1.2
+    - uses: actions/cache@v1
       name: Cache ~/.cabal/bin
       id: cache-bin
       with:
         path: ~/.cabal/bin
-        key: v1-ormolu-v0.0.3.1
+        key: ${{ matrix.cache-version }}-ormolu
 
     - name: Install ormolu
       if: steps.cache-bin.outputs.cache-hit != 'true'
