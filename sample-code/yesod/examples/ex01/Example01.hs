@@ -1,5 +1,9 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.9
+{- stack repl --resolver lts-15.4
+    --package markdown
+    --package text
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RecordWildCards   #-}

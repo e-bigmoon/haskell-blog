@@ -1,5 +1,14 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.19
+{- stack repl --resolver lts-15.4
+    --package conduit
+    --package extra
+    --package esqueleto
+    --package monad-logger
+    --package persistent-sqlite
+    --package text
+    --package yesod
+-}
+{-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE EmptyDataDecls             #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GADTs                      #-}
@@ -7,8 +16,10 @@
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE StandaloneDeriving         #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE UndecidableInstances       #-}
 {-# LANGUAGE ViewPatterns               #-}
 import           Control.Monad.Logger
 import           Control.Monad.Extra (maybeM)
@@ -17,8 +28,8 @@ import qualified Database.Esqueleto      as E
 import           Database.Esqueleto      ((^.))
 import           Database.Persist.Sqlite
 import           Yesod
-import qualified Data.Conduit.List as CL
-import Data.Conduit ((.|))
+import qualified Data.Conduit.List       as CL
+import           Data.Conduit            ((.|))
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Author
@@ -83,9 +94,6 @@ getBlogR blogId = do
         $nothing
           <p>I don't know your blog.
     |]
-
--- getBlogR :: BlogId -> Handler Html
--- getBlogR _ = error "Implementation left as exercise to reader"
 
 main :: IO ()
 main = do

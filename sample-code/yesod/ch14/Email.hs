@@ -1,7 +1,18 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-13.4
-
+{- stack repl --resolver lts-15.4
+    --package blaze-html
+    --package http-conduit
+    --package mime-mail
+    --package monad-logger
+    --package persistent-sqlite
+    --package persistent-template
+    --package shakespeare
+    --package text
+    --package yesod
+    --package yesod-auth
+-}
 {-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -9,8 +20,10 @@
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE StandaloneDeriving         #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE UndecidableInstances       #-}
 import           Control.Monad                 (join)
 import           Control.Monad.Logger          (runNoLoggingT)
 import           Data.Maybe                    (isJust)

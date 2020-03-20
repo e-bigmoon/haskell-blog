@@ -1,5 +1,13 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.19
+{- stack repl --resolver lts-15.4
+    --package conduit
+    --package esqueleto
+    --package monad-logger
+    --package persistent-sqlite
+    --package text
+    --package yesod
+-}
+{-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE EmptyDataDecls             #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GADTs                      #-}
@@ -7,8 +15,10 @@
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE StandaloneDeriving         #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE UndecidableInstances       #-}
 {-# LANGUAGE ViewPatterns               #-}
 import           Control.Monad.Logger
 import           Data.Text               (Text)
@@ -16,8 +26,8 @@ import           Database.Persist.Sqlite
 import           Yesod
 import qualified Database.Esqueleto      as E
 import           Database.Esqueleto      ((^.))
-import qualified Data.Conduit.List as CL
-import Data.Conduit ((.|))
+import qualified Data.Conduit.List       as CL
+import           Data.Conduit            ((.|))
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Author
