@@ -1,7 +1,7 @@
 ---
 title: Haskell Yesod
 published: 2018/03/18
-updated: 2020/03/03
+updated: 2020/03/20
 ---
 
 ## Yesod クイックスタートガイド
@@ -184,6 +184,7 @@ $ sudo apt-get install -y libpq-dev
 [ja-ch16]:book/ch16-internationalization.html
 [ja-ch17]:book/ch17-creating-a-subsite.html
 [ja-ch18]:book/ch18-understanding-a-request.html
+[ja-ch19]:book/ch19-sql-joins.html
 
 ### Examples
 
