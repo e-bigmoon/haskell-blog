@@ -1,5 +1,11 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-13.4
+{- stack repl --resolver lts-15.4
+    --package data-default
+    --package http-conduit
+    --package text
+    --package yesod
+    --package yesod-auth
+-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}

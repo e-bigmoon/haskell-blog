@@ -1,9 +1,21 @@
+#!/usr/bin/env stack
+{- stack repl --resolver lts-15.4
+    --package base16-bytestring
+    --package crypto-api
+    --package exceptions
+    --package monadcryptorandom
+    --package mtl
+    --package text
+    --package unliftio
+    --package yesod
+-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE TypeSynonymInstances  #-}
 import           Control.Monad              (join)
 import           Control.Monad.Catch        (throwM)
 import           Control.Monad.CryptoRandom

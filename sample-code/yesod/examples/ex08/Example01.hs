@@ -1,5 +1,8 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.9
+{- stack repl --resolver lts-15.4
+    --package text
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RecordWildCards   #-}
@@ -31,7 +34,6 @@ getHomeR = defaultLayout $ do
             <a href=@{HomeR}>And a link to: @{HomeR}
     |]
 
-{-# ANN main "HLint: ignore Use <$>" #-}
 main :: IO ()
 main = do
     myApproot <- fmap pack $ getEnv "APPROOT"

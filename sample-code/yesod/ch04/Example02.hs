@@ -1,5 +1,9 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.9
+{- stack repl --resolver lts-15.4
+    --package blaze-html
+    --package shakespeare
+    --package text
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 import           Data.Text                       (Text)

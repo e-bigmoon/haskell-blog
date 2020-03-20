@@ -1,9 +1,13 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-13.9
+{- stack repl --resolver lts-15.4
+    --package text
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE ViewPatterns      #-}
 import           Data.Text (Text)
 import qualified Data.Text as T
 import           Yesod

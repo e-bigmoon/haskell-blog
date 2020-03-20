@@ -1,3 +1,12 @@
+#!/usr/bin/env stack
+{- stack repl --resolver lts-15.4
+    --package base16-bytestring
+    --package bytestring
+    --package crypto-api
+    --package monadcryptorandom
+    --package text
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
