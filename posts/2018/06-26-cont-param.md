@@ -2,6 +2,7 @@
 title: ContT を使ってコードを綺麗にしよう！
 author: Shinya Yamaguchi
 tags: bigmoon
+updated: 2018/06/26
 ---
 
 ## はじめに

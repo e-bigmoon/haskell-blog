@@ -1,5 +1,11 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.9
+{- stack repl --resolver lts-15.4
+    --package blaze-builder
+    --package blaze-html
+    --package http-types
+    --package shakespeare
+    --package text
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 import           Blaze.ByteString.Builder        (toByteString)

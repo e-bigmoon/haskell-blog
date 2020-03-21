@@ -2,6 +2,7 @@
 title: path & path-io パッケージ
 author: Shinya Yamaguchi
 tags: bigmoon, package
+updated: 2019/12/30
 ---
 
 ## はじめに

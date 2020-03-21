@@ -1,6 +1,7 @@
 ---
 title: ライブラリの作成
-date: 2019/09/14
+published: 2017/12/24
+updated: 2019/09/14
 prev: ./create-prj.html
 next: ./repl.html
 ---

@@ -1,6 +1,9 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.9
-
+{- stack repl --resolver lts-15.4
+    --package aeson
+    --package bytestring
+    --package text
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 import           Data.Aeson

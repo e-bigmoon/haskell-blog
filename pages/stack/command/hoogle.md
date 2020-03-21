@@ -1,6 +1,7 @@
 ---
 title: stack hoogle
-date: 2018/07/30
+published: 2018/07/30
+# updated: 2019/09/15
 ---
 
 ## よく使うコマンド

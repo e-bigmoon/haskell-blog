@@ -1,0 +1,78 @@
+name: format
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  schedule:
+    - cron: "00 15 * * *"
+
+jobs:
+  cabal-fmt:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        cache-version: ["2020-03-16"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        ghc-version: "8.8.3"
+        cabal-version: "3.0"
+
+    - uses: actions/cache@v1
+      name: Cache ~/.cabal/bin
+      id: cache-bin
+      with:
+        path: ~/.cabal/bin
+        key: ${{ matrix.cache-version }}-cabal-fmt
+
+    - name: Install cabal-fmt
+      if: steps.cache-bin.outputs.cache-hit != 'true'
+      run: |
+        cabal update
+        cabal install cabal-fmt --overwrite-policy=always --install-method=copy -j2
+
+    - name: Apply cabal-fmt
+      run: |
+        export PATH=~/.cabal/bin/:$PATH
+        cabal-fmt -i *.cabal
+        git --no-pager diff --exit-code
+
+  ormolu:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        cache-version: ["2020-03-16"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        ghc-version: "8.8.3"
+        cabal-version: "3.0"
+
+    - uses: actions/cache@v1
+      name: Cache ~/.cabal/bin
+      id: cache-bin
+      with:
+        path: ~/.cabal/bin
+        key: ${{ matrix.cache-version }}-ormolu
+
+    - name: Install ormolu
+      if: steps.cache-bin.outputs.cache-hit != 'true'
+      run: |
+        cabal update
+        cabal install ormolu --overwrite-policy=always --install-method=copy -j2
+
+    - name: Apply ormolu
+      run: |
+        export PATH=~/.cabal/bin/:$PATH
+        ormolu -o -XTypeApplications --mode inplace $(find app -type f -name "*.hs")
+        git --no-pager diff --exit-code

@@ -1,6 +1,7 @@
 ---
 title: 【実践】ランダムテスト (QuickCheck)
-date: 2019/09/14
+published: 2019/09/14
+updated: 2019/09/15
 prev: ./quickcheck.html
 next: ./doctest.html
 ---

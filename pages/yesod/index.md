@@ -1,6 +1,7 @@
 ---
 title: Haskell Yesod
-date: 2020/02/02
+published: 2018/03/18
+updated: 2020/03/20
 ---
 
 ## Yesod クイックスタートガイド
@@ -163,7 +164,7 @@ $ sudo apt-get install -y libpq-dev
 [Internationalization][en-ch16] | [国際化][ja-ch16]
 [Creating a Subsite][en-ch17] | [Creating a Subsite][ja-ch17]
 [Understanding a Request][en-ch18] | [リクエストを理解する][ja-ch18]
-[SQL Joins][en-ch19] | SQL Joins
+[SQL Joins][en-ch19] | [SQL Joins][ja-ch19]
 [Yesod for Haskellers][en-ch20] | Yesod for Haskellers
 
 [en-ch12]:https://www.yesodweb.com/book/restful-content
@@ -183,43 +184,77 @@ $ sudo apt-get install -y libpq-dev
 [ja-ch16]:book/ch16-internationalization.html
 [ja-ch17]:book/ch17-creating-a-subsite.html
 [ja-ch18]:book/ch18-understanding-a-request.html
+[ja-ch19]:book/ch19-sql-joins.html
 
 ### Examples
 
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
-[Initializing data in the foundation datatype](https://www.yesodweb.com/book/initializing-foundation-data) | [ファウンデーション型の初期化](book/examples-initializing-foundation-data.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_0)
-[Blog: i18n, authentication, authorization, and database](https://www.yesodweb.com/book/blog-example-advanced) | Blog: i18n, authentication, authorization, and database
-[Wiki: markdown, chat subsite, event source](https://www.yesodweb.com/book/wiki-chat-example) | Wiki: markdown, chat subsite, event source
-[JSON Web Service](https://www.yesodweb.com/book/json-web-service) | JSON Web Service
-[Case Study: Sphinx-based Search](https://www.yesodweb.com/book/case-study-sphinx) | Case Study: Sphinx-based Search
-[Visitor counter](https://www.yesodweb.com/book/visitor-counter) | [訪問者数カウンタ](book/examples-visitor-counter.html) | [スライド](https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_11)
-[Single process pub-sub](https://www.yesodweb.com/book/single-process-pubsub) | Single process pub-sub
-[Environment variables for configuration](https://www.yesodweb.com/book/environment-variables) | [環境変数で設定しよう](book/examples-environment-variables.html)
-[Route attributes](https://www.yesodweb.com/book/route-attributes) | [ルート属性](book/examples-route-attributes.html)
+[Initializing data in the foundation datatype][en-ex01] | [ファウンデーション型の初期化][ja-ex01] | [スライド][slide-ex01]
+[Blog: i18n, authentication, authorization, and database][en-ex02] | Blog: i18n, authentication, authorization, and database
+[Wiki: markdown, chat subsite, event source][en-ex03] | Wiki: markdown, chat subsite, event source
+[JSON Web Service][en-ex04] | JSON Web Service
+[Case Study: Sphinx-based Search][en-ex05] | Case Study: Sphinx-based Search
+[Visitor counter][en-ex06] | [訪問者数カウンタ][ja-ex06] | [スライド][slide-ex06]
+[Single process pub-sub][en-ex07] | Single process pub-sub
+[Environment variables for configuration][en-ex08] | [環境変数で設定しよう][ja-ex08]
+[Route attributes][en-ex09] | [ルート属性][ja-ex09]
+
+[en-ex01]:https://www.yesodweb.com/book/initializing-foundation-data
+[en-ex02]:https://www.yesodweb.com/book/blog-example-advanced
+[en-ex03]:https://www.yesodweb.com/book/wiki-chat-example
+[en-ex04]:https://www.yesodweb.com/book/json-web-service
+[en-ex05]:https://www.yesodweb.com/book/case-study-sphinx
+[en-ex06]:https://www.yesodweb.com/book/visitor-counter
+[en-ex07]:https://www.yesodweb.com/book/single-process-pubsub
+[en-ex08]:https://www.yesodweb.com/book/environment-variables
+[en-ex09]:https://www.yesodweb.com/book/route-attributes
+
+[ja-ex01]:book/examples-initializing-foundation-data.html
+[ja-ex06]:book/examples-visitor-counter.html
+[ja-ex08]:book/examples-environment-variables.html
+[ja-ex09]:book/examples-route-attributes.html
+
+[slide-ex01]:https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_0
+[slide-ex06]:https://docs.google.com/presentation/d/1vkBheRrf1cVThsjG57KWQtEx_0u_LHC-lLoUvqXu3IY/edit#slide=id.g16295d9ca4_0_11
 
 ### Appendices
 
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
-[monad-control](https://www.yesodweb.com/book/monad-control) | monad-control
-[Web Application Interface](https://www.yesodweb.com/book/web-application-interface) | Web Application Interface
-[Settings Types](https://www.yesodweb.com/book/settings-types) | Settings Types
-[http-conduit](https://www.yesodweb.com/book/http-conduit) | http-conduit
-[xml-conduit](https://www.yesodweb.com/book/xml) | xml-conduit
+[monad-control][en-ap01] | monad-control
+[Web Application Interface][en-ap02] | Web Application Interface
+[Settings Types][en-ap03] | Settings Types
+[http-conduit][en-ap04] | http-conduit
+[xml-conduit][en-ap05] | xml-conduit
+
+[en-ap01]:https://www.yesodweb.com/book/monad-control
+[en-ap02]:https://www.yesodweb.com/book/web-application-interface
+[en-ap03]:https://www.yesodweb.com/book/settings-types
+[en-ap04]:https://www.yesodweb.com/book/http-conduit
+[en-ap05]:https://www.yesodweb.com/book/xml
 
 ## Yesod Tips
 
 記事 | 検証に利用したコード
 ------|-------
-[whamlet と julius](tips/01-compile-hamlet-julius.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips1.hs)
-[hamlet とインライン Javascript](tips/02-inline-js.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips2.hs)
-[X-XSS-Protection レスポンスヘッダ](tips/03-x-xss-protection.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips3.hs)
-[TRACE メソッド](tips/04-trace-method.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips4.hs)
-[Cookie のセキュリティ](tips/05-cookie.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips5.hs)
-[XSS に対するセキュリティ](tips/06-xss.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips6.hs)
-[変数展開処理の流れ](tips/07-variable-interpolation.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips7.hs)
-[TH で生成されるコードの確認方法](tips/08-TH.html) | [code](https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/Tips8.hs)
+[whamlet と julius](tips/01-compile-hamlet-julius.html) | [code][tips1]
+[hamlet とインライン Javascript](tips/02-inline-js.html) | [code][tips2]
+[X-XSS-Protection レスポンスヘッダ](tips/03-x-xss-protection.html) | [code][tips3]
+[TRACE メソッド](tips/04-trace-method.html) | [code][tips4]
+[Cookie のセキュリティ](tips/05-cookie.html) | [code][tips5]
+[XSS に対するセキュリティ](tips/06-xss.html) | [code][tips6]
+[変数展開処理の流れ](tips/07-variable-interpolation.html) | [code][tips7]
+[TH で生成されるコードの確認方法](tips/08-TH.html) | [code][tips8]
+
+[tips1]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips1.hs
+[tips2]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips2.hs
+[tips3]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips3.hs
+[tips4]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips4.hs
+[tips5]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips5.hs
+[tips6]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips6.hs
+[tips7]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips7.hs
+[tips8]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips8.hs
 
 ## Yesod で作られているアプリケーション
 
@@ -243,3 +278,4 @@ $ sudo apt-get install -y libpq-dev
 - [persistent-sqlite](https://hackage.haskell.org/package/persistent-sqlite)
 - [persistent-template](https://hackage.haskell.org/package/persistent-template)
 - [shakespeare](https://hackage.haskell.org/package/shakespeare)
+- [nicolashery/vscode-language-yesod](https://github.com/nicolashery/vscode-language-yesod)

@@ -2,6 +2,7 @@
 title: stack-1.11 から location に extra-dep を指定できなくなります。
 author: Shinya Yamaguchi
 tags: bigmoon, stack
+updated: 2018/08/31
 ---
 
 ## はじめに

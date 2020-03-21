@@ -2,6 +2,7 @@
 title: Circle CI 2.0 の設定
 author: Shinya Yamaguchi
 tags: bigmoon
+updated: 2018/07/23
 ---
 
 ## はじめに

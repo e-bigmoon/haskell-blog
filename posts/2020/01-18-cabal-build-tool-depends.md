@@ -2,6 +2,7 @@
 title: cabal の build-tool-depends フィールド
 author: Shinya Yamaguchi
 tags: bigmoon, cabal
+updated: 2020/01/22
 ---
 
 cabal の [build-tool-depends](https://www.haskell.org/cabal/users-guide/developing-packages.html#pkg-field-build-tool-depends) というフィールドが便利だったので紹介します。

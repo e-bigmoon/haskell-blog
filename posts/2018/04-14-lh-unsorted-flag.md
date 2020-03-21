@@ -2,6 +2,7 @@
 title: LiquidHaskell の --prune-unsorted フラグ
 author: Shinya Yamaguchi
 tags: bigmoon, liquidhaskell
+updated: 2018/04/14
 ---
 
 ## はじめに

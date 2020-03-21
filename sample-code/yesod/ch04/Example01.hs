@@ -1,5 +1,8 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.9
+{- stack repl --resolver lts-15.4
+    --package blaze-html
+    --package shakespeare
+-}
 -- Just ignore the quasiquote stuff for now, and that shamlet thing.
 -- It will be explained later.
 {-# LANGUAGE QuasiQuotes #-}

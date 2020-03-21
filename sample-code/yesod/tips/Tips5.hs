@@ -1,11 +1,14 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.4
+{- stack repl --resolver lts-15.4
+    --package cookie
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Web.Cookie
-import           Yesod
+import Web.Cookie
+import Yesod
 
 data App = App
 

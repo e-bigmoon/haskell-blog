@@ -2,6 +2,7 @@
 title: Lambdabot for Slack
 author: Shinya Yamaguchi
 tags: bigmoon
+updated: 2019/02/11
 ---
 
 ## はじめに

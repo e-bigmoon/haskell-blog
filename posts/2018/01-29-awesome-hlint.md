@@ -2,6 +2,7 @@
 title: 素晴らしき HLint を使いこなす
 author: Shinya Yamaguchi
 tags: bigmoon, hlint, 静的解析ツール, package
+updated: 2018/03/14
 ---
 
 ## はじめに

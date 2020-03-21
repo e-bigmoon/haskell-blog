@@ -2,6 +2,7 @@
 title: RecordWildCards と Reader モナド
 author: Shinya Yamaguchi
 tags: bigmoon
+updated: 2018/08/26
 ---
 
 ## はじめに

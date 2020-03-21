@@ -1,6 +1,7 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
-date: 2020/01/27
+published: 2018/08/17
+updated: 2020/03/08
 ---
 
 ## 実行環境
@@ -9,7 +10,7 @@ date: 2020/01/27
 |:-----:|:-------------|
 | OS    | Ubuntu 18.04 |
 | Stack |        2.1.3 |
-| HIE   | Version 1.0.0.0, Git revision 0fd7e3f7bed42173c671f53b93095c731d16ffbb (3704 commits) x86_64 ghc-8.8.1 |
+| HIE   | Version 1.2, Git revision ee5b98c6bd3610ff90cb5373608a09c5813dcb69 (3829 commits) x86_64 ghc-8.8.2 |
 | Emacs |         26.3 |
 
 ## 導入手順

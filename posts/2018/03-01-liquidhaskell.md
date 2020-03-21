@@ -2,6 +2,7 @@
 title: Liquid Haskell
 author: Shinya Yamaguchi
 tags: bigmoon, liquidhaskell
+updated: 2018/03/14
 ---
 
 ## はじめに

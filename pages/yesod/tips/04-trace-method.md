@@ -1,6 +1,7 @@
 ---
 title: TRACE メソッド
-date: 2018/08/04
+published: 2018/08/04
+updated: 2020/03/03
 ---
 
 ## デフォルト
@@ -8,13 +9,11 @@ date: 2018/08/04
 Yesod ではデフォルトで `TRACE` メソッドを禁止している。
 
 ```hs
-#!/usr/bin/env stack
--- stack script --resolver lts-12.4
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Yesod
+import Yesod
 
 data App = App
 

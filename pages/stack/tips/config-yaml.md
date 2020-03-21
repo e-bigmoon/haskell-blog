@@ -1,6 +1,7 @@
 ---
 title: config.yaml のよくある設定
-date: 2018/05/05
+published: 2018/05/05
+updated: 2020/02/22
 ---
 
 ## config.yaml について

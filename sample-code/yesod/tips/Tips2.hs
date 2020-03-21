@@ -1,12 +1,15 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.4
+{- stack repl --resolver lts-15.4
+    --package shakespeare
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Data.Maybe
-import           Text.Julius
-import           Yesod
+import Data.Maybe
+import Text.Julius
+import Yesod
 
 data App = App
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-13.4
-
+{- stack repl --resolver lts-15.4
+    --package text
+    --package yesod
+-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
@@ -33,7 +35,6 @@ instance Yesod App
 
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
-
 
 getHomeR :: Handler Html
 getHomeR = defaultLayout

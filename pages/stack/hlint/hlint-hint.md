@@ -1,6 +1,7 @@
 ---
 title: HLint のヒント
-date: 2018/02/12
+published: 2018/02/10
+updated: 2018/02/12
 ---
 
 ## stack プロジェクトで HLint になれよう！

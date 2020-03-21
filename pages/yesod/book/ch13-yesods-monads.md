@@ -1,6 +1,7 @@
 ---
 title: Yesod のモナドたち
-date: 2019/01/21
+published: 2018/07/21
+# updated: 2018/09/29
 ---
 
 これまでの章で `Handler`、`Widget`、`YesodDB` (Persistent のための) などのモナドが現れました。これらのモナドは一般的なモナドと同様に、各モナドごとに特有の機能が備わっています。`Handler` はリクエストへのアクセスやレスポンスの送信を許可し、`Widget` は HTML、CSS、Javascript を含み、 `YesodDB` はデータベースのクエリを発行できます。Model-View-Controller (MVC) の用語で言うと `YesodDB` はモデル、`Widget` はビュー、そして `Handler` はコントローラになります。

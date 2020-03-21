@@ -2,6 +2,7 @@
 title: 最近遭遇した stack build 時の ld (pthread, -fPIC) エラー
 author: Shinya Yamaguchi
 tags: bigmoon, stack
+updated: 2018/03/14
 ---
 
 ## はじめに

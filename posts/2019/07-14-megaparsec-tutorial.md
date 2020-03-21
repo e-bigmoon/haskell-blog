@@ -3,6 +3,8 @@ title: Megaparsec tutorial from IH book (翻訳)
 author: Mark Karpov
 translator: Wataru Yamada
 tags: megaparsec, package, 翻訳
+updated: 2020/03/07
+
 ---
 
 Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/megaparsec/megaparsec.html)
@@ -98,7 +100,7 @@ type Parsec e s a = ParsecT e s Identity a
 次のように型シノニム（通常は `Parser` と呼ばれる）を定義しましょう。
 
 ```haskell
-ype Parser = Parsec Void Text
+type Parser = Parsec Void Text
 --                   ^    ^
 --                   |    ┗━━━━┓
 -- カスタムエラーコンポーネント  入力ストリームの型

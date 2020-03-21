@@ -2,6 +2,7 @@
 title: アプリケーションのバージョンに Git の情報を出してみよう！
 author: Shinya Yamaguchi
 tags: bigmoon, package
+updated: 2018/03/20
 ---
 
 ## はじめに

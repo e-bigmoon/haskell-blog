@@ -2,6 +2,7 @@
 title: Pattern Synonyms で DEPRECATED
 author: Shinya Yamaguchi
 tags: bigmoon, 言語拡張
+updated: 2018/03/14
 ---
 
 ## はじめに

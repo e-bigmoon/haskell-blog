@@ -1,6 +1,7 @@
 ---
 title: Links
-date: 2018/09/14
+published: 2018/07/08
+updated: 2018/09/14
 ---
 
 ## ビルドツール

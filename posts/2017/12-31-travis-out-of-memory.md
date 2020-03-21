@@ -2,6 +2,7 @@
 title: travis-ci の初回ビルドで OUT OF MEMORY が出た時の対処法
 author: Shinya Yamaguchi
 tags: bigmoon, travis, stack
+updated: 2018/03/14
 ---
 
 ## はじめに

@@ -1,6 +1,7 @@
 ---
 title: stack のインストールと設定
-date: 2019/09/14
+published: 2017/12/24
+updated: 2019/09/14
 prev: ./stackage.html
 next: ./hpack.html
 ---

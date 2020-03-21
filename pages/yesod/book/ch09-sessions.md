@@ -1,6 +1,7 @@
 ---
 title: Sessions
-date: 2018/03/18
+published: 2018/03/18
+updated: 2018/07/15
 ---
 
 ## Sessions

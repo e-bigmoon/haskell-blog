@@ -1,6 +1,8 @@
 ---
 title: cabal のバージョンについて
 date: 2019/09/14
+published: 2019/09/14
+# updated: 2019/12/24
 ---
 
 cabal のバージョンを確認するためには `--version` オプションを利用します。

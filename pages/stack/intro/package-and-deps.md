@@ -1,6 +1,7 @@
 ---
 title: パッケージと依存関係
-date: 2019/09/14
+published: 2019/09/14
+# updated: 2019/09/14
 prev: ./ghc.html
 next: ./extra-deps.html
 ---

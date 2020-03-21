@@ -3,6 +3,7 @@ title: VS Code で Ghcid を使う (翻訳)
 author: Neil Mitchell
 translator: pythonissam
 tags: Neil Mitchell’s Haskell Blog, 翻訳
+updated: 2019/12/24
 ---
 
 Great original post: [Ghcid with VS Code](http://neilmitchell.blogspot.jp/2017/11/ghcid-with-vs-code.html).

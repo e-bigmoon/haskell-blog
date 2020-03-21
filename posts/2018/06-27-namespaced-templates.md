@@ -2,6 +2,7 @@
 title: namespaced templates
 author: Shinya Yamaguchi
 tags: bigmoon, stack
+updated: 2018/06/27
 ---
 
 ## はじめに

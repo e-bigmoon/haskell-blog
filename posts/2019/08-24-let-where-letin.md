@@ -2,6 +2,7 @@
 title: let, where, let...in の使い分け
 author: Shinya Yamaguchi
 tags: bigmoon, haskell
+updated: 2020/03/02
 ---
 
 ## はじめに
@@ -61,11 +62,11 @@ f = do
   x <- return 1
   let y = x + 1
       z = 0
-    in return (y+z)
+   in return (y+z)
 ```
 
 - `let...in` を使うとインデントに気配りする必要があるので面倒です
-  - 例えば `let` と `in` の先頭を合わせるとコンパイルエラーになります
+  - 例えば `do` の中で `let` と `in` の先頭を合わせるとコンパイルエラーになります
 
 ```haskell
 -- let...in version (compile error)
@@ -85,10 +86,10 @@ calcBmi cm kg
   | bmi <= 18.5 = "痩せてるね"
   | bmi <= 25.0 = "普通だね"
   | bmi <= 30.0 = "ぽっちゃりだね"
-  | otherwise = "太っているね"
+  | otherwise   = "太っているね"
   where
     bmi = kg / (m^2)
-    m = cm / 100
+    m   = cm / 100
 
 -- *Main> putStrLn $ calcBmi 170 60
 -- 普通だね
@@ -177,7 +178,7 @@ f = if let x = True in x then 1 else 0
 g = if (x where x = True) then 1 else 0
 ```
 
-構文上のどこに式が出現できるかという規則については `Language Report` に詳しく記載されています。
+構文上のどこに式が出現できるかという規則については `Haskell 2010 Language Report` に詳しく記載されています。
 
 ## まとめ
 
@@ -192,11 +193,3 @@ g = if (x where x = True) then 1 else 0
 - [Haskell 2010 Language Report](https://www.haskell.org/onlinereport/haskell2010/)
 - すごいHaskellたのしく学ぼう！
 - Programming in Haskell 2nd Edition
-
-## 宣伝
-
-[技術書典7](https://techbookfest.org/event/tbf07)に初参加します。
-
-<img src="/images/2019/08-19/circle.png" alt ="サークルカット" width="400px">
-
-進捗・詳細については [技術書典7特設ページ](/ad/techbookfest7.html) をご確認ください。

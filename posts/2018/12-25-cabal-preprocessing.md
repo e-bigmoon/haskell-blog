@@ -1,7 +1,8 @@
 ---
 title: cabal build で package.yaml を使う
 author: Shinya Yamaguchi
-tags: bigmoon,cabal
+tags: bigmoon, cabal
+updated: 2018/12/25
 ---
 
 ## はじめに

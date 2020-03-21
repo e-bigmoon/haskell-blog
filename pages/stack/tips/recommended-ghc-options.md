@@ -1,6 +1,7 @@
 ---
 title: ghc-options の推奨設定
-date: 2019/03/12
+published: 2018/05/07
+updated: 2019/05/12
 ---
 
 ## ghc-options の設定例

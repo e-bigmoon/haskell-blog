@@ -1,7 +1,10 @@
 # BIG MOON Haskeller's blog
 
-[![CircleCI](https://circleci.com/gh/e-bigmoon/haskell-blog.svg?style=svg)](https://circleci.com/gh/e-bigmoon/haskell-blog)
-[![Build status](https://ci.appveyor.com/api/projects/status/uyh62oq0ccn2ge46?svg=true)](https://ci.appveyor.com/project/waddlaw/haskell-blog)
+![cabal](https://github.com/e-bigmoon/haskell-blog/workflows/cabal/badge.svg)
+![stack](https://github.com/e-bigmoon/haskell-blog/workflows/stack/badge.svg)
+![format](https://github.com/e-bigmoon/haskell-blog/workflows/format/badge.svg)
+![lint](https://github.com/e-bigmoon/haskell-blog/workflows/lint/badge.svg)
+![deploy](https://github.com/e-bigmoon/haskell-blog/workflows/deploy/badge.svg)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/9fdf0837-5e38-4dc5-a035-bde11f5d0b83/deploy-status)](https://app.netlify.com/sites/haskell/deploys)
 
 ## ページ
@@ -22,6 +25,7 @@ title: Haskell で暗号学的ハッシュを扱う
 author: Michael Snoyman
 translator: pythonissam
 tags: fpcomplete
+updated: 2020/01/22
 ---
 
 Great original post: [CRYPTOGRAPHIC HASHING IN HASKELL.](https://www.fpcomplete.com/blog/2017/09/cryptographic-hashing-haskell).

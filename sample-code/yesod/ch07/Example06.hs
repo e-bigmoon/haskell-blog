@@ -1,5 +1,7 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-13.9
+{- stack repl --resolver lts-15.4
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}

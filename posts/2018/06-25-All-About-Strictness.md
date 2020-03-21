@@ -3,6 +3,7 @@ title: 正格性のすべて (翻訳)
 author: Michael Snoyman
 translator: pythonissam, Shinya Yamaguchi
 tags: fpcomplete, 翻訳
+updated: 2018/07/02
 ---
 
 Original post: [ALL ABOUT STRICTNESS](https://www.fpcomplete.com/blog/2017/09/all-about-strictness)

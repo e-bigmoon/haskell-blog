@@ -2,6 +2,7 @@
 title: haddock に Grid Table 記法が追加されました
 author: Shinya Yamaguchi
 tags: bigmoon, haddock
+updated: 2018/07/30
 ---
 
 ![Grid Table 記法の紹介](/images/2017/12-27/step0.png)

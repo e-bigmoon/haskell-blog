@@ -2,6 +2,7 @@
 title: CamelCase の split
 author: Shinya Yamaguchi
 tags: bigmoon
+updated: 2018/11/16
 ---
 
 ## はじめに

@@ -5,7 +5,7 @@ dev:
 .PHONY: fmt
 fmt:
 			$(eval FILES := $(shell find app -type f -name "*.hs"))
-			ormolu --mode inplace $(FILES)
+			ormolu -o -XTypeApplications --mode inplace $(FILES)
 
 .PHONY: cabal-fmt
 cabal-fmt:

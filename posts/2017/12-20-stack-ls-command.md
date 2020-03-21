@@ -2,6 +2,7 @@
 title: stack ls コマンドが追加されます
 author: Shinya Yamaguchi
 tags: bigmoon, stack
+updated: 2018/03/14
 ---
 
 `Stack` の `master` に `stack ls` コマンドがマージされました。

@@ -1,23 +1,28 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-12.4
+{- stack repl --resolver lts-15.4
+    --package yesod
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Yesod
+{-# OPTIONS_GHC -ddump-splices #-}
+import Yesod
 
 data App = App
 
 mkYesod "App" [parseRoutes|
-/ HomeR GET
+/check1 Check1R GET
 |]
 
 instance Yesod App
 
-getHomeR :: Handler Html
-getHomeR = defaultLayout
+getCheck1R :: Handler Html
+getCheck1R = defaultLayout $ do
+  mParam <- lookupGetParam "p"
+
   [whamlet|
-    "test"
+    #{maybe "" id mParam}
   |]
 
 main :: IO ()

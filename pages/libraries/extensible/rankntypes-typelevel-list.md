@@ -1,6 +1,7 @@
 ---
 title: extensible チュートリアル 1
-date: 2020/02/19
+published: 2020/02/19
+# updated: 2020/02/22
 ---
 
 ## 目次

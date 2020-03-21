@@ -1,7 +1,8 @@
 ---
 title: 技術書典7
 tags: book,技術書典
-date: 2019/09/15
+published: 2019/08/24
+updated: 2019/09/15
 ---
 
 「すみころもち」は<a href="https://techbookfest.org/event/tbf07/circle/6222386688950272" target="_blank">技術書典7</a>に初参加します。本ページの情報は随時更新しています。
