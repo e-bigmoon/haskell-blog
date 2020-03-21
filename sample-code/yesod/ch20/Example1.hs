@@ -1,5 +1,9 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.27
+{- stack repl --resolver lts-15.4
+    --package http-types
+    --package wai
+    --package warp
+-}
 {-# LANGUAGE OverloadedStrings #-}
 import           Network.HTTP.Types       (status200)
 import           Network.Wai              (Application, responseLBS)

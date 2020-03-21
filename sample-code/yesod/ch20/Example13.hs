@@ -1,32 +1,33 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.27
-{-# LANGUAGE QuasiQuotes #-}
-import           Data.Text   (Text, pack)
-import           Text.Julius (Javascript)
-import           Text.Lucius (Css)
-import           Yesod.Core
+{- stack repl --resolver lts-15.4
+    --package yesod-core
+-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE ViewPatterns      #-}
+import           Yesod.Core (RenderRoute (..), Yesod, mkYesod, parseRoutes,
+                             redirect, warp)
 
-getHomeR :: LiteHandler Html
-getHomeR = withUrlRenderer $
-    [hamlet|
-        $doctype 5
-        <html>
-            <head>
-                <title>Hi There!
-                <link rel=stylesheet href=/style.css>
-                <script src=/script.js>
-            <body>
-                <h1>Hello World!
-    |]
+-- | Our foundation datatype.
+data App = App
 
-getStyleR :: LiteHandler Css
-getStyleR = withUrlRenderer [lucius|h1 { color: red }|]
+instance Yesod App
 
-getScriptR :: LiteHandler Javascript
-getScriptR = withUrlRenderer [julius|alert('Yay, Javascript works too!');|]
+mkYesod "App" [parseRoutes|
+/         HomeR GET
+/fib/#Int FibR  GET
+|]
+
+getHomeR :: Handler ()
+getHomeR = redirect (FibR 1)
+
+fibs :: [Int]
+fibs = 0 : scanl (+) 1 fibs
+
+getFibR :: Int -> Handler String
+getFibR i = return $ show $ fibs !! i
 
 main :: IO ()
-main = warp 3000 $ liteApp $ do
-    dispatchTo getHomeR
-    onStatic (pack "style.css") $ dispatchTo getStyleR
-    onStatic (pack "script.js") $ dispatchTo getScriptR
+main = warp 3000 App

@@ -1,19 +1,64 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.27
-import           Data.Text  (pack)
-import           Yesod.Core (LiteHandler, dispatchTo, dispatchTo, liteApp,
-                             onStatic, redirect, warp, withDynamic)
+{- stack repl --resolver lts-15.4
+    --package blaze-builder
+    --package text
+    --package wai
+    --package warp
+    --package yesod-core
+-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies      #-}
+import           Blaze.ByteString.Builder           (fromByteString)
+import           Blaze.ByteString.Builder.Char.Utf8 (fromShow)
+import           Control.Concurrent                 (threadDelay)
+import           Control.Monad                      (forM_)
+import           Data.Monoid                        ((<>))
+import           Network.Wai                        (pathInfo)
+import           Yesod.Core                         (HandlerT, RenderRoute (..),
+                                                     TypedContent, Yesod,
+                                                     YesodDispatch (..), liftIO,
+                                                     notFound, respondSource,
+                                                     sendChunk, sendChunkBS,
+                                                     sendChunkText, sendFlush,
+                                                     warp, yesodRunner)
 
-getHomeR :: LiteHandler ()
-getHomeR = redirect "/fib/1"
+-- | Our foundation datatype.
+data App = App
 
-fibs :: [Int]
-fibs = 0 : scanl (+) 1 fibs
+instance Yesod App
 
-getFibR :: Int -> LiteHandler String
-getFibR i = return $ show $ fibs !! i
+instance RenderRoute App where
+    data Route App = HomeR -- just one accepted URL
+        deriving (Show, Read, Eq, Ord)
+
+    renderRoute HomeR = ( [] -- empty path info, means "/"
+                        , [] -- empty query string
+                        )
+
+getHomeR :: HandlerT App IO TypedContent
+getHomeR = respondSource "text/plain" $ do
+    sendChunkBS "Starting streaming response.\n"
+    sendChunkText "Performing some I/O.\n"
+    sendFlush
+    -- pretend we're performing some I/O
+    liftIO $ threadDelay 1000000
+    sendChunkBS "I/O performed, here are some results.\n"
+    forM_ [1..50 :: Int] $ \i -> do
+        sendChunk $ fromByteString "Got the value: " <>
+                    fromShow i <>
+                    fromByteString "\n"
+
+instance YesodDispatch App where
+    yesodDispatch yesodRunnerEnv req sendResponse =
+        let maybeRoute =
+                case pathInfo req of
+                    [] -> Just HomeR
+                    _  -> Nothing
+            handler =
+                case maybeRoute of
+                    Nothing -> notFound
+                    Just HomeR -> getHomeR
+         in yesodRunner handler yesodRunnerEnv maybeRoute req sendResponse
 
 main :: IO ()
-main = warp 3000 $ liteApp $ do
-    dispatchTo getHomeR
-    onStatic (pack "fib") $ withDynamic $ \i -> dispatchTo (getFibR i)
+main = warp 3000 App

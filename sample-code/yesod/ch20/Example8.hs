@@ -1,23 +1,26 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.27
+{- stack repl --resolver lts-15.4
+    --package blaze-html
+    --package http-types
+    --package wai
+    --package warp
+    --package yesod-core
+-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
-import           Blaze.ByteString.Builder           (fromByteString)
-import           Blaze.ByteString.Builder.Char.Utf8 (fromShow)
-import           Control.Concurrent                 (threadDelay)
-import           Control.Monad                      (forM_)
-import           Data.Monoid                        ((<>))
-import           Network.Wai                        (pathInfo)
-import           Yesod.Core                         (HandlerT, RenderRoute (..),
-                                                     TypedContent, Yesod,
-                                                     YesodDispatch (..), liftIO,
-                                                     notFound, respondSource,
-                                                     sendChunk, sendChunkBS,
-                                                     sendChunkText, sendFlush,
-                                                     warp, yesodRunner)
+import           Network.HTTP.Types            (status200)
+import           Network.Wai                   (responseBuilder)
+import           Network.Wai.Handler.Warp      (run)
+import           Text.Blaze.Html.Renderer.Utf8 (renderHtmlBuilder)
+import qualified Text.Blaze.Html5              as H
+import           Yesod.Core                    (Html, RenderRoute (..), Yesod,
+                                                YesodDispatch (..), toWaiApp)
+import           Yesod.Core.Types              (YesodRunnerEnv (..))
 
 -- | Our foundation datatype.
 data App = App
+    { welcomeMessage :: !Html
+    }
 
 instance Yesod App
 
@@ -29,30 +32,18 @@ instance RenderRoute App where
                         , [] -- empty query string
                         )
 
-getHomeR :: HandlerT App IO TypedContent
-getHomeR = respondSource "text/plain" $ do
-    sendChunkBS "Starting streaming response.\n"
-    sendChunkText "Performing some I/O.\n"
-    sendFlush
-    -- pretend we're performing some I/O
-    liftIO $ threadDelay 1000000
-    sendChunkBS "I/O performed, here are some results.\n"
-    forM_ [1..50 :: Int] $ \i -> do
-        sendChunk $ fromByteString "Got the value: " <>
-                    fromShow i <>
-                    fromByteString "\n"
-
 instance YesodDispatch App where
-    yesodDispatch yesodRunnerEnv req sendResponse =
-        let maybeRoute =
-                case pathInfo req of
-                    [] -> Just HomeR
-                    _  -> Nothing
-            handler =
-                case maybeRoute of
-                    Nothing -> notFound
-                    Just HomeR -> getHomeR
-         in yesodRunner handler yesodRunnerEnv maybeRoute req sendResponse
+    yesodDispatch (YesodRunnerEnv _logger site _sessionBackend _ _) _req sendResponse =
+        sendResponse $ responseBuilder
+            status200
+            [("Content-Type", "text/html")]
+            (renderHtmlBuilder $ welcomeMessage site)
 
 main :: IO ()
-main = warp 3000 App
+main = do
+    -- We could get this message from a file instead if we wanted.
+    let welcome = H.p "Welcome to Yesod!"
+    waiApp <- toWaiApp App
+        { welcomeMessage = welcome
+        }
+    run 3000 waiApp

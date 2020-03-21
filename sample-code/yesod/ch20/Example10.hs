@@ -1,31 +1,66 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.27
+{- stack repl --resolver lts-15.4
+    --package blaze-html
+    --package text
+    --package wai
+    --package warp
+    --package yesod-core
+-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE ViewPatterns      #-}
-import           Yesod.Core (RenderRoute (..), Yesod, mkYesod, parseRoutes,
-                             redirect, warp)
+import           Data.Text                (Text)
+import           Network.Wai              (pathInfo)
+import           Network.Wai.Handler.Warp (run)
+import qualified Text.Blaze.Html5         as H
+import           Yesod.Core               (HandlerT, Html, RenderRoute (..),
+                                           TypedContent, Value, Yesod,
+                                           YesodDispatch (..), getYesod,
+                                           notFound, object, provideRep,
+                                           selectRep, toWaiApp, yesodRunner,
+                                           (.=))
 
 -- | Our foundation datatype.
 data App = App
+    { welcomeMessageHtml :: !Html
+    , welcomeMessageText :: !Text
+    , welcomeMessageJson :: !Value
+    }
 
 instance Yesod App
 
-mkYesod "App" [parseRoutes|
-/         HomeR GET
-/fib/#Int FibR  GET
-|]
+instance RenderRoute App where
+    data Route App = HomeR -- just one accepted URL
+        deriving (Show, Read, Eq, Ord)
 
-getHomeR :: Handler ()
-getHomeR = redirect (FibR 1)
+    renderRoute HomeR = ( [] -- empty path info, means "/"
+                        , [] -- empty query string
+                        )
 
-fibs :: [Int]
-fibs = 0 : scanl (+) 1 fibs
+getHomeR :: HandlerT App IO TypedContent
+getHomeR = do
+    site <- getYesod
+    selectRep $ do
+        provideRep $ return $ welcomeMessageHtml site
+        provideRep $ return $ welcomeMessageText site
+        provideRep $ return $ welcomeMessageJson site
 
-getFibR :: Int -> Handler String
-getFibR i = return $ show $ fibs !! i
+instance YesodDispatch App where
+    yesodDispatch yesodRunnerEnv req sendResponse =
+        let maybeRoute =
+                case pathInfo req of
+                    [] -> Just HomeR
+                    _  -> Nothing
+            handler =
+                case maybeRoute of
+                    Nothing -> notFound
+                    Just HomeR -> getHomeR
+         in yesodRunner handler yesodRunnerEnv maybeRoute req sendResponse
 
 main :: IO ()
-main = warp 3000 App
+main = do
+    waiApp <- toWaiApp App
+        { welcomeMessageHtml = H.p "Welcome to Yesod!"
+        , welcomeMessageText = "Welcome to Yesod!"
+        , welcomeMessageJson = object ["msg" .= ("Welcome to Yesod!" :: Text)]
+        }
+    run 3000 waiApp

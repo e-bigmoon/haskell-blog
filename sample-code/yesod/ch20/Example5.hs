@@ -1,43 +1,39 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.27
+{- stack repl --resolver lts-15.4
+    --package blaze-builder
+    --package http-types
+    --package transformers
+    --package wai
+    --package warp
+-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeFamilies      #-}
-import           Network.HTTP.Types            (status200)
-import           Network.Wai                   (responseBuilder)
-import           Network.Wai.Handler.Warp      (run)
-import           Text.Blaze.Html.Renderer.Utf8 (renderHtmlBuilder)
-import qualified Text.Blaze.Html5              as H
-import           Yesod.Core                    (Html, RenderRoute (..), Yesod,
-                                                YesodDispatch (..), toWaiApp)
-import           Yesod.Core.Types              (YesodRunnerEnv (..))
-
--- | Our foundation datatype.
-data App = App
-    { welcomeMessage :: !Html
-    }
-
-instance Yesod App
-
-instance RenderRoute App where
-    data Route App = HomeR -- just one accepted URL
-        deriving (Show, Read, Eq, Ord)
-
-    renderRoute HomeR = ( [] -- empty path info, means "/"
-                        , [] -- empty query string
-                        )
-
-instance YesodDispatch App where
-    yesodDispatch (YesodRunnerEnv _logger site _sessionBackend _ _) _req sendResponse =
-        sendResponse $ responseBuilder
-            status200
-            [("Content-Type", "text/html")]
-            (renderHtmlBuilder $ welcomeMessage site)
+import           Blaze.ByteString.Builder           (Builder, fromByteString)
+import           Blaze.ByteString.Builder.Char.Utf8 (fromShow)
+import           Control.Concurrent                 (threadDelay)
+import           Control.Monad                      (forM_)
+import           Control.Monad.Trans.Class          (lift)
+import           Network.HTTP.Types                 (status200)
+import           Network.Wai                        (Application, responseStream)
+import           Network.Wai.Handler.Warp           (run)
 
 main :: IO ()
-main = do
-    -- We could get this message from a file instead if we wanted.
-    let welcome = H.p "Welcome to Yesod!"
-    waiApp <- toWaiApp App
-        { welcomeMessage = welcome
-        }
-    run 3000 waiApp
+main = run 3000 app
+
+app :: Application
+app _req sendResponse = sendResponse $ responseStream
+    status200
+    [("Content-Type", "text/html")]
+    myStream
+
+myStream :: (Builder -> IO ()) -> IO () -> IO ()
+myStream send flush = do
+  send $ fromByteString "Starting streaming response.\n"
+  send $ fromByteString "Performing some I/O.\n"
+  flush
+  -- pretend we're performing some I/O
+  threadDelay 1000000
+  send $ fromByteString "I/O performed, here are some results.\n"
+  forM_ [1..50 :: Int] $ \i -> do
+    send $ fromByteString "Got the value: " <>
+           fromShow i <>
+           fromByteString "\n"

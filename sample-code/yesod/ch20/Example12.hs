@@ -1,25 +1,48 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-14.27
-import           Data.Text  (pack)
-import           Yesod.Core
+{- stack repl --resolver lts-15.4
+    --package wai
+    --package yesod-core
+-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies      #-}
+import           Network.Wai (pathInfo)
+import           Yesod.Core  (HandlerT, RenderRoute (..),
+                              Yesod,
+                              YesodDispatch (..), toPathPiece, fromPathPiece, redirect, notFound, yesodRunner, warp)
 
-getHomeR :: LiteHandler TypedContent
-getHomeR = return $ TypedContent typeHtml $ toContent
-    "<html><head><title>Hi There!</title>\
-    \<link rel='stylesheet' href='/style.css'>\
-    \<script src='/script.js'></script></head>\
-    \<body><h1>Hello World!</h1></body></html>"
+-- | Our foundation datatype.
+data App = App
 
-getStyleR :: LiteHandler TypedContent
-getStyleR = return $ TypedContent typeCss $ toContent
-    "h1 { color: red }"
+instance Yesod App
 
-getScriptR :: LiteHandler TypedContent
-getScriptR = return $ TypedContent typeJavascript $ toContent
-    "alert('Yay, Javascript works too!');"
+instance RenderRoute App where
+    data Route App = HomeR | FibR Int
+        deriving (Show, Read, Eq, Ord)
+
+    renderRoute HomeR = ([], [])
+    renderRoute (FibR i) = (["fib", toPathPiece i], [])
+
+parseRoute' [] = Just HomeR
+parseRoute' ["fib", i] = FibR <$> fromPathPiece i
+parseRoute' _ = Nothing
+
+
+instance YesodDispatch App where
+    yesodDispatch yesodRunnerEnv req sendResponse =
+        let maybeRoute = parseRoute' (pathInfo req)
+            handler =
+                case maybeRoute of
+                    Nothing -> notFound
+                    Just HomeR -> getHomeR
+                    Just (FibR i) -> getFibR i
+         in yesodRunner handler yesodRunnerEnv maybeRoute req sendResponse
+
+getHomeR = redirect (FibR 1)
+
+fibs :: [Int]
+fibs = 0 : scanl (+) 1 fibs
+
+getFibR i = return $ show $ fibs !! i
 
 main :: IO ()
-main = warp 3000 $ liteApp $ do
-    dispatchTo getHomeR
-    onStatic (pack "style.css") $ dispatchTo getStyleR
-    onStatic (pack "script.js") $ dispatchTo getScriptR
+main = warp 3000 App
