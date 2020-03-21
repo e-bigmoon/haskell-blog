@@ -1,20 +1,19 @@
 ---
-title: SQL Joins
-date: 2020/01/11
+title: Yesod for Haskellers
+published: 2020/03/21
+# updated: 2018/04/07
 ---
 
-# Yesod for Haskellers
+本書の大部分は Yesod 内部処理の詳細についてはあまり深掘りせず、良くある一般的なタスクの実現方法に関する実用的な情報が得られるように構成されています。また、本書は Haskell の知識を前提としていますが、いくつもの Haskell ライブラリを紹介するような典型的な形式には従っていません。多くの熟練したHaskeller は、このように実装の詳細を隠されることで不快になるかもしれません。この章の目的はそのような不安に対処することです。
 
-この本の大部分は, 表面化において何が起こっているかの詳細についてあまり深掘りせず, どのように一般的なタスクを成し遂げるかについての実用的な情報を与えるために作られている. この本はHaskellについての知識を想定するが, 多くのHaskellライブラリの紹介のような典型的な形式には従っていない. 多くの熟練したHaskellerは, このように実装詳細を隠されることで不快になるかもしれない. この章の目的は, そのような不安に対処することである.
-
-この章においては, 簡単な最小限のウェブアプリケーションから始め, より複雑な例を構築し, その途上でコンポーネントや型について説明を加える.
+本章は簡単な最小限の Web アプリケーションから始めて、より複雑な例を構築します。そして、それらの例を通じてコンポーネントや型についての説明を行います。
 
 ## Hello Warp
 
-考えうる中で最も単純な最小限のアプリケーションから始めましょう. 
+これ以上はありえないと思うぐらいシンプルなアプリケーションから始めましょう。
 
-``` haskell
-
+```haskell
+-- Example1.hs
 {-# LANGUAGE OverloadedStrings #-}
 import           Network.HTTP.Types       (status200)
 import           Network.Wai              (Application, responseLBS)
@@ -28,24 +27,24 @@ app _req sendResponse = sendResponse $ responseLBS
     status200
     [("Content-Type", "text/plain")]
     "Hello Warp!"
-
 ```
 
-少し待ちなさい, ここにはYesodは全くない! 心配しないで下さい, すぐにそこにたどり着くだろう. 我々は, ゼロから取り組んでおり, Yesodにおける第１段階はWAI, つまりウェブアプリケーションインターフェイスである. WAIはウェブサーバやテストフレームワークのようなウェブハンドラと, ウェブアプリケーションの間に位置する. 今回の場合, ハンドラは高パフォーマンスウェブサーバであるWarpであり, アプリケーションは`app`関数ある. 
+ちょっと待ってください。Yesod と関係無いじゃないですか！心配しないで下さい、すぐに Yesod につながります。私たちは本当にゼロから作り上げようとしています。その際 Yesod の土台となるのは WAI です。つまり Web アプリケーションインターフェースです。WAI は Web サーバやテストフレームワークのような web ハンドラと web アプリケーションの間に位置します。今回の場合、ハンドラは高パフォーマンス web サーバの Warp で、アプリケーションは `app` 関数です。
 
-この謎めいた`Application`の型は何であろうか? これは型シノニムであり, 次のように定義される:
+この謎の `Application` 型は何でしょうか？この型は以下の型シノニムとして定義されています。
 
-``` haskell
+```haskell
 type Application = Request
                 -> (Response -> IO ResponseReceived)
                 -> IO ResponseReceived
 ```
 
-`Request`値はリクエストされたパスや, クエリストリング, リクエストヘッダ, リクエストボディ, クライアントのIPアドレスのような情報を含む. 2つ目の引数は"レスポンスを送る"関数である. 単にアプリケーションに`IO Response`を返させる代わりに, `bracket`関数の機能と同様に, WAIは完全な例外安全を許すために, 継続渡しスタイルを用いる.   
-これは単純なディスパッチを行うために用いられる:
+`Request` の値はリクエストされたパス、クエリ文字列、リクエストヘッダ、リクエストボディ、クライアントのIPアドレスのような情報を含みます。2つ目の引数は "レスポンスを送る" 関数です。アプリケーションが単純に `IO Response` を返すのではなく、WAI は継続渡しスタイルを利用することで、完全な例外安全を実現しています。これは `bracket` 関数と同じやり方です。
 
+これは単純なディスパッチ処理に利用することができます。
 
-``` haskell
+```haskell
+-- Example2.hs
 {-# LANGUAGE OverloadedStrings #-}
 import           Network.HTTP.Types       (status200)
 import           Network.Wai              (Application, pathInfo, responseLBS)
@@ -67,11 +66,12 @@ app req sendResponse =
             "You requested something else"
 ```
 
-WAIはパスを個々の断片(文字列の手前のスラッシュで)に分割し, テキストに変換することを要求する. これにより, パターンマッチングが容易になる. もし, 元々の変換されない`ByteString`が必要であれば, `rawPathInfo`を用いることができる. 利用可能なフィールドに関するより深い情報に関しては, WAIハンドブックを参照しなさい. 
+WAI はパスを (文字列の手前のスラッシュで) 個々の断片に分割してから、テキストに変換します。そのため、パターンマッチが使えます。もし、元々の変換されていない `ByteString` が必要であれば `rawPathInfo` を利用してください。利用可能なフィールドに関するより詳細な情報に関しては WAI Haddock を参照してください。
 
-これによりリクエスト側が対処される; レスポンスについてはどうであろうか? すでに`responseLBS`については見ており, これは遅延`ByteString`からレスポンスを作るための便利な方法である. この関数は3つの引数を取る: ステータスコードと, レスポンスヘッダ(キー/値のペア)のリストと, ボディ自身である. しかし, `responseLBS`は単に都合上のラッパである. 表面下では. WAIはblaze-builderの`Builder`データ型を用いて, 生バイト列を表現する. 他のレベルを掘り下げ, それを直接使ってみよう:
+このようにしてリクエスト側が処理されます。では、レスポンスについてはどうでしょうか？コード中の `responseLBS` は遅延 `ByteString` からレスポンスを生成するための便利な方法です。この関数は引数として、ステータスコード、レスポンスヘッダ (キー/値のペア) のリスト、ボディ自身の3つを取ります。しかし `responseLBS` はただの便利なラッパーです。内部の WAI は生バイト列を表現するために blaze-builder パッケージの `Builder` データ型を利用しています。別のレベルを掘り下げて、直接使ってみましょう。
 
-``` haskell
+```haskell
+-- Example3.hs
 {-# LANGUAGE OverloadedStrings #-}
 import           Blaze.ByteString.Builder (Builder, fromByteString)
 import           Network.HTTP.Types       (status200)
@@ -87,10 +87,10 @@ app _req sendResponse = sendResponse $ responseBuilder
     [("Content-Type", "text/plain")]
 ```
 
-これにより効率的にレスポンスボディを構築するための素晴らしい機会が開けてくる. なぜならば, `Builder`によって, O(1)の結合操作が可能になるためである. また, blaze-builderの頂点にあるblaze-htmlを, 活用することもできる. 
+`Builder` の連結操作は O(1) なので、効率的にレスポンスボディを構築することができそうです。また、blaze-builder の上に構築されている blaze-html を活用することもできます。
 
-
-``` haskell
+```haskell
+-- Example4.hs
 {-# LANGUAGE OverloadedStrings #-}
 import           Network.HTTP.Types            (status200)
 import           Network.Wai                   (Application, responseBuilder)
