@@ -8,8 +8,497 @@
         <name>BIG MOON</name>
         <email>it@e-bigmoon.com</email>
     </author>
-    <updated>February 19, 2020</updated>
+    <updated></updated>
     <entry>
+    <title>cabal install コマンドについて</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html</id>
+    <published>March 25, 2020</published>
+    <updated></updated>
+    <summary type="html"><![CDATA[<ul>
+<li><code>stack install</code> と全く同じ動作をする <strong>cabal</strong> コマンドは <code>cabal install all:exes</code> です。</li>
+</ul>
+<hr />
+<p>今回利用した <strong>cabal</strong> と <strong>stack</strong> のバージョンは以下の通りです。</p>
+<pre class="shell"><code>$ cabal -V
+cabal-install version 3.0.0.0
+compiled using version 3.0.0.0 of the Cabal library 
+
+$ stack --version
+Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commits) x86_64 hpack-0.31.2</code></pre>
+<p>この記事では <code>stack install</code> コマンドと <code>cabal install</code> コマンドの挙動の違いなどについて調査した結果等をまとめています。</p>
+<!--more-->
+<h2 id="プロジェクトの構成">プロジェクトの構成</h2>
+<p>例えば、<code>cabal.project</code>が以下のようなパッケージ構成になっていて、<strong>executable</strong> (mainExe1, mainExe2, subExe1, subExe2) が定義されているとしましょう。</p>
+<pre class="shell"><code>$ tree .
+.
+├── app
+│   ├── Main1.hs
+│   └── Main2.hs
+├── cabal.project
+├── stack.yaml
+├── stack.yaml.lock
+├── subs
+│   ├── pkg1
+│   │   ├── app
+│   │   │   └── Main.hs
+│   │   └── pkg1.cabal
+│   └── pkg2
+│       ├── app
+│       │   └── Main.hs
+│       └── pkg2.cabal
+└── app.cabal</code></pre>
+<p><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/2020/03-25/">プロジェクトのコード</a></p>
+<h2 id="stack-install-と-cabal-install-の違い">stack install と cabal install の違い</h2>
+<table>
+<thead>
+<tr class="header">
+<th>　</th>
+<th><code>stack install</code></th>
+<th><code>cabal install</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>インストール時の挙動</td>
+<td>コピー</td>
+<td><strong>シンボリックリンク</strong></td>
+</tr>
+<tr class="even">
+<td>インストール先ディレクトリの指定オプション</td>
+<td><code>local-bin-path</code></td>
+<td><code>--installdir</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="cabal-install">cabal install</h3>
+<p><code>cabal install</code> に指定可能なコマンドをいくつか試してみて、実際に何がインストールされるか一覧にしました。</p>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th style="text-align: center;"><code>subExe1</code></th>
+<th style="text-align: center;"><code>subExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cabal install</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install .</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install pkg1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install pkg2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install . pkg1 pkg2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app pkg1 pkg2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install all</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td>*注意点</td>
+</tr>
+<tr class="odd">
+<td><code>cabal install all:exes</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<ul>
+<li><code>cabal install</code> や <code>stack install .</code> の挙動など、いくつか <strong>stack</strong> と異なる場合があるので注意が必要です。</li>
+<li>注意点: 全てのパッケージに <code>executable</code> が含まれている場合に限り実行可能です。
+<ul>
+<li><code>cabal install all</code> で <code>executable</code> が含まれていないパッケージがある場合は以下のようなエラーになります。</li>
+</ul></li>
+</ul>
+<pre class="shell"><code>cabal: Cannot build the executables in the package pkg2 because it does not
+contain any executables. Check the .cabal file for the package and make sure
+that it properly declares the components that you expect.</code></pre>
+<ul>
+<li><code>stack install</code> に相当するコマンドは <code>cabal install all:exes</code> です。</li>
+</ul>
+<h3 id="stack-install">stack install</h3>
+<p>同様に <code>stack install</code> も確認しました。</p>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th style="text-align: center;"><code>subExe1</code></th>
+<th style="text-align: center;"><code>subExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>stack install</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install .</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install app</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install pkg1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install pkg2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install . pkg1 pkg2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="odd">
+<td><code>stack install app pkg1 pkg2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install all</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="odd">
+<td><code>stack install all:exes</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+</tbody>
+</table>
+<p>エラーその1</p>
+<pre class="shell"><code>$ stack install . pkg1 pkg2
+The following errors occurred while parsing the build targets:
+- The package pkg1 was specified in multiple, incompatible ways: . pkg1
+- The package pkg2 was specified in multiple, incompatible ways: . pkg2</code></pre>
+<p>エラーその2</p>
+<pre class="shell"><code>$ stack install all
+Error: While constructing the build plan, the following exceptions were encountered:
+Unknown package: all
+Some different approaches to resolving this:
+Plan construction failed.</code></pre>
+<h3 id="その他の指定方法">その他の指定方法</h3>
+<h4 id="cabal">cabal</h4>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cabal install app:exe</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="even">
+<td><code>cabal install app:exes</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app:exe:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install app:exe:mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install app:mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install exes</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install exe:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install exe:mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>エラー1</p>
+<pre class="shell"><code>$ cabal install --installdir=./bin app:exe
+cabal: Unknown target &#39;app:exe&#39;.
+The package app has no component &#39;exe&#39;.</code></pre>
+<h4 id="stack">stack</h4>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>stack install app:exe</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="even">
+<td><code>stack install app:exes</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="odd">
+<td><code>stack install app:exe:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install app:exe:mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install app:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install app:mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install exes</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="even">
+<td><code>stack install exe:mainExe1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="odd">
+<td><code>stack install exe:mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="even">
+<td><code>stack install mainExe1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー3</td>
+</tr>
+<tr class="odd">
+<td><code>stack install mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー3</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>エラー1</p>
+<pre class="shell"><code>$ stack install app:exe
+Error parsing targets: Component exe does not exist in package app</code></pre>
+<p>エラー2</p>
+<pre class="shell"><code>$ stack install exe:mainExe1
+Error parsing targets: Unknown local package: exe</code></pre>
+<p>エラー3</p>
+<pre class="shell"><code>$ stack install mainExe1
+Error: While constructing the build plan, the following exceptions were encountered:
+Unknown package: mainExe1
+Some different approaches to resolving this:
+Plan construction failed.</code></pre>
+<h2 id="cabal-install-のオプション">cabal install のオプション</h2>
+<table>
+<colgroup>
+<col style="width: 47%" />
+<col style="width: 52%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>オプション</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>--installdir=&lt;path&gt;</code></td>
+<td>インストール先のパスを指定</td>
+</tr>
+<tr class="even">
+<td><code>--install-method=copy</code></td>
+<td>シンボリックリンクではなく、実体がコピーされる。<br><strong>Docker</strong> にバイナリをコピーする際や <strong>Windows</strong> 環境などで利用することがあります。</td>
+</tr>
+<tr class="odd">
+<td><code>--overwrite-policy=always</code></td>
+<td>すでにファイルが存在する場合でも、常に上書きします。</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><code>--overwrite-policy=always</code> を毎回指定するのが面倒な場合は</p>
+<pre class="shell"><code>$ cabal user-config update -a overwrite-policy:always</code></pre>
+<p>というコマンドで <code>~/.cabal/config</code> に設定できます。</p>
+<h2 id="次期バージョンで変更になる点など">次期バージョンで変更になる点など</h2>
+<p>リリースまでに内容が変更になる場合がありますのでご注意ください。</p>
+<hr />
+<ul>
+<li><a href="https://github.com/haskell/cabal/pull/6519/files">Copy on windows #6519</a></li>
+</ul>
+<p><strong>Windows</strong> 環境において <code>cabal install</code> の際のデフォルトの挙動が変更されます。シンボリックリンクが作成できない場合は自動的にコピーになります。</p>
+<hr />
+<ul>
+<li><a href="https://github.com/haskell/cabal/pull/6428">Implement cabal install -z #6428</a></li>
+</ul>
+<p>ローカルのプロジェクト設定を無視するオプション <code>-z</code>, <code>--ignore-project</code> が追加されます。</p>
+<hr />
+<ul>
+<li><a href="https://github.com/haskell/cabal/pull/6576">Resolve #6369 and #6393: Allow cabal v2-install pkgname:exename or http://example.com/package.tar.gz(#sha256=abcde…) #6576</a></li>
+</ul>
+<pre class="shell"><code>$ cabal install &#39;https://hackage.haskell.org/package/cabal-fmt-0.1.2/cabal-fmt-0.1.2.tar.gz#sha256=aae556efbcaddfd65c6a1c1811b122b0d8c8d00624c8c2e36aabb5e9f9ea9840&#39;</code></pre>]]></summary>
+</entry>
+<entry>
     <title>HUnit で日本語が文字化けする問題</title>
     <link href="https://haskell.e-bigmoon.com/posts/2020/02-19-hunit-show-unicode.html" />
     <id>https://haskell.e-bigmoon.com/posts/2020/02-19-hunit-show-unicode.html</id>
@@ -1566,166 +2055,6 @@ Flags for format:
 <span id="cb24-7"><a href="#cb24-7"></a><span class="dv">2000</span></span></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <p>何かに使えないかなー。</p>]]></summary>
-</entry>
-<entry>
-    <title>let, where, let...in の使い分け</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/08-24-let-where-letin.html</id>
-    <published>August 24, 2019</published>
-    <updated>March  2, 2020</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p>アルバイトの学生に良く質問される内容の1つに「<code>let</code>, <code>where</code>, <code>let...in</code> はどういう風に使い分ければ良いですか？」というものがあります。ちょっと前に <strong>twitter</strong> でも同じような話題を見かけたので、少しまとめてみました。</p>
-<p>また、様々な Haskell 書籍で同様の内容について触れられていますが、明確な指針は無く個人の好みという感じがします。</p>
-<!--more-->
-<h2 id="let-を使うタイミング-do-の中">let を使うタイミング (do の中)</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">-- let version</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>      z <span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
-<ul>
-<li>上記のコードのように <code>do</code> の中で束縛された変数 <code>x</code> を使って新しい変数 <code>y</code> を宣言する時に良く使います</li>
-<li>他の変数に依存していない <code>z</code> はどの書き方でも書けますが、通常は <code>let</code> で続けて書くことが多いと思います</li>
-<li><code>let</code> は <code>do</code> (またはリスト内包表記) 以外では使えません</li>
-<li>内部的には <code>do { let decls; stmts } = let decls in do { stmts }</code> という変換が行われます。(リスト内包表記は <code>[ e | let decls, Q ] = let decls in [ e | Q ]</code> という変換です。)</li>
-</ul>
-<h3 id="where-で書いた場合">where で書いた場合</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- where version</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z)</span>
-<span id="cb2-6"><a href="#cb2-6"></a>  <span class="kw">where</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
-<ul>
-<li><code>where</code> を使って <code>x</code> を宣言することはできません。(<code>do</code> を脱糖した形を見ると、できない感じが伝わりやすいかもしれません)</li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- do を使わない形</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>f <span class="ot">=</span> <span class="fu">return</span> <span class="dv">1</span> <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z))</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">where</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
-<ul>
-<li>何百行も続く巨大な <code>do</code> だと <code>where</code> で宣言されている変数までの距離が遠いため、可読性が落ちます。<code>z</code> を <code>where</code> で書くか <code>let</code> で書くかはケースバイケースかもしれません</li>
-</ul>
-<h3 id="letin-で書いた場合">let…in で書いた場合</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- let...in version</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>   <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
-<ul>
-<li><code>let...in</code> を使うとインデントに気配りする必要があるので面倒です
-<ul>
-<li>例えば <code>do</code> の中で <code>let</code> と <code>in</code> の先頭を合わせるとコンパイルエラーになります</li>
-</ul></li>
-</ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- let...in version (compile error)</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a>  <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
-<h2 id="where-を使うタイミング-ガード">where を使うタイミング (ガード)</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>calcBmi cm kg</span>
-<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">=</span> <span class="st">&quot;痩せてるね&quot;</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">=</span> <span class="st">&quot;普通だね&quot;</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">=</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>  <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> <span class="st">&quot;太っているね&quot;</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>  <span class="kw">where</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>    bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
-<span id="cb6-9"><a href="#cb6-9"></a>    m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="co">-- *Main&gt; putStrLn $ calcBmi 170 60</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a><span class="co">-- 普通だね</span></span></code></pre></div>
-<ul>
-<li>このように、ガードで共通する変数を宣言する場合に <code>where</code> を使うと見通しが良くなります。</li>
-<li><code>do</code> の中ではないため、当然 <code>let</code> は使えません</li>
-</ul>
-<h3 id="letin-で書いた場合-1">let…in で書いた場合</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">{-# LANGUAGE MultiWayIf #-}</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>calcBmi cm kg <span class="ot">=</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a>  <span class="kw">let</span> m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a>      bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
-<span id="cb7-7"><a href="#cb7-7"></a>  <span class="kw">in</span> <span class="kw">if</span> <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">-&gt;</span> <span class="st">&quot;痩せてるね&quot;</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;普通だね&quot;</span></span>
-<span id="cb7-9"><a href="#cb7-9"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
-<span id="cb7-10"><a href="#cb7-10"></a>        <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">-&gt;</span> <span class="st">&quot;太っているね&quot;</span></span></code></pre></div>
-<ul>
-<li>もし <code>let...in</code> を使って同じように書く場合は、上記のように <code>MultiWayIf</code> を使うことになるでしょう。</li>
-</ul>
-<h2 id="letin-を使うタイミング">let…in を使うタイミング</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
-<span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
-<span id="cb8-6"><a href="#cb8-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
-<span id="cb8-7"><a href="#cb8-7"></a></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> (\s <span class="ot">-&gt;</span> <span class="kw">let</span> (x,s&#39;) <span class="ot">=</span> app st s <span class="kw">in</span> (g x, s&#39;))</span></code></pre></div>
-<ul>
-<li>こんな感じの関数を書くときにはとても便利です</li>
-<li>ただ、このようなケースというのはあまり遭遇しないので、個人的には使わないようにしています。無くてもほぼ困らないです
-<ul>
-<li>理由1: レイアウトルールを気にしなければならない点がとても面倒なので</li>
-<li>理由2: ポイントフリースタイルで書くのが好きなので</li>
-</ul></li>
-</ul>
-<h3 id="where-で書いた場合-1">where で書いた場合</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
-<span id="cb9-6"><a href="#cb9-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a>  <span class="fu">fmap</span> g <span class="ot">=</span> <span class="dt">S</span> <span class="op">.</span> f g</span>
-<span id="cb9-11"><a href="#cb9-11"></a></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="ot">f ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (b, <span class="dt">State</span>)</span>
-<span id="cb9-13"><a href="#cb9-13"></a>f g st s <span class="ot">=</span> (g x, s&#39;)</span>
-<span id="cb9-14"><a href="#cb9-14"></a>  <span class="kw">where</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a>    (x,s&#39;) <span class="ot">=</span> app st s</span>
-<span id="cb9-16"><a href="#cb9-16"></a></span>
-<span id="cb9-17"><a href="#cb9-17"></a><span class="co">-- もしくは</span></span>
-<span id="cb9-18"><a href="#cb9-18"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
-<span id="cb9-19"><a href="#cb9-19"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
-<span id="cb9-20"><a href="#cb9-20"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> f</span>
-<span id="cb9-21"><a href="#cb9-21"></a>    <span class="kw">where</span></span>
-<span id="cb9-22"><a href="#cb9-22"></a>      f s <span class="ot">=</span> (g x, s&#39;)</span>
-<span id="cb9-23"><a href="#cb9-23"></a>        <span class="kw">where</span></span>
-<span id="cb9-24"><a href="#cb9-24"></a>          (x,s&#39;) <span class="ot">=</span> app st s</span></code></pre></div>
-<ul>
-<li><code>let...in</code> で書いたときよりも可読性が落ちてしまったように思います</li>
-</ul>
-<h2 id="where-と-letin-の違い">where と let…in の違い</h2>
-<p><code>let...in</code> と <code>where</code> の明確な違いは <code>let...in</code> が式なのに対して <code>where</code> が節だという点です。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- OK</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a>f <span class="ot">=</span> <span class="kw">if</span> <span class="kw">let</span> x <span class="ot">=</span> <span class="dt">True</span> <span class="kw">in</span> x <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="co">-- NG</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a>g <span class="ot">=</span> <span class="kw">if</span> (x <span class="kw">where</span> x <span class="ot">=</span> <span class="dt">True</span>) <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span></code></pre></div>
-<p>構文上のどこに式が出現できるかという規則については <code>Haskell 2010 Language Report</code> に詳しく記載されています。</p>
-<h2 id="まとめ">まとめ</h2>
-<p>このように、<code>let</code>, <code>where</code>, <code>let...in</code> はどちらでも書けることが多いので、適材適所で自分の感性を信じて使いこなすと良いのではないかと思います。</p>
-<p>そういえばラムダノートさんから<a href="https://www.lambdanote.com/collections/haskell">プログラミングHaskellの第2版</a>が発売されましたね。書籍の内容が個人的にとても好きなので、弊社のアルバイトの人には推薦図書として英語版を読んでもらっていました。</p>
-<p>これからは日本語で読めるようになったので、これを機に Haskell に入門してみるのも良いかもしれません。</p>
-<h2 id="参考リソース">参考リソース</h2>
-<ul>
-<li><a href="https://www.haskell.org/onlinereport/haskell2010/">Haskell 2010 Language Report</a></li>
-<li>すごいHaskellたのしく学ぼう！</li>
-<li>Programming in Haskell 2nd Edition</li>
-</ul>]]></summary>
 </entry>
 
 </feed>

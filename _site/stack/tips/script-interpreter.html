@@ -172,7 +172,7 @@
           <span>記事公開日: 2018/03/19</span><br>
           
           
-          <span>最終更新日: 2018/05/05</span>
+          <span>最終更新日: 2020/03/25</span>
           
         </div>
         <h1 class="post-title">script interpreter + stack script でスクリプティング！</h1>
@@ -182,29 +182,29 @@
         <h2 id="stack-script-コマンドとは">stack script コマンドとは？</h2>
 <p><strong>stack</strong> を使って自分で作成したプログラムを実行する方法はいくつかあります。</p>
 <ul>
-<li><strong>stack repl (または stack ghci)</strong></li>
-<li><strong>stack exec</strong></li>
-<li><strong>stack script</strong></li>
+<li><code>stack repl</code> (または <code>stack ghci</code>) コマンド</li>
+<li><code>stack exec</code> コマンド</li>
+<li><code>stack run</code> コマンド</li>
+<li><code>stack script</code> コマンド</li>
 </ul>
-<p><strong>stack script</strong> コマンドは、利用する <strong>resolver</strong> を明示的に必ず指定するため、通常は利用するパッケージを指定することなく実行できます。</p>
-<p>もちろん明示的にパッケージを明記することも可能です。</p>
+<p><code>stack script</code> コマンドは、利用する <strong>resolver</strong> を明示的に必ず指定するため、通常は利用するパッケージを指定することなく実行できます。</p>
+<p>もちろん明示的にパッケージを指定することも可能です。</p>
 <h3 id="使い方">使い方</h3>
-<p>具体的には、このように使います。</p>
-<p>ファイル名は自由ですが、<code>--resolver lts-11.7</code> のようにスナップショットの指定は必須です。</p>
-<pre class="shell"><code>$ stack script --resolver lts-11.7 App.hs</code></pre>
+<p>具体的には以下のように使います。ファイル名は自由ですが、<code>--resolver lts-15.5</code> のようにスナップショットの指定は必須です。</p>
+<pre class="shell"><code>$ stack script --resolver lts-15.5 Main.hs</code></pre>
 <p>また、アプリケーションが引数を利用する場合はいつも通り <code>--</code> で区切ります。</p>
-<pre class="shell"><code>$ stack script --resolver lts-11.7 -- App.hs [1,2,3]</code></pre>
-<p>注意点として <strong>stack script</strong> で処理するファイルには <code>main</code> 関数が含まれている必要があります。</p>
+<pre class="shell"><code>$ stack script --resolver lts-15.5 -- Main.hs [1,2,3]</code></pre>
+<p>注意点として <code>stack script</code> で処理するファイルには <code>main</code> 関数が含まれている必要があります。</p>
 <h2 id="script-interpreter-形式とは">script interpreter 形式とは？</h2>
 <p>一言で言えばシェルスクリプトの <strong>Haskell</strong> バージョンです。</p>
-<p><strong>script interpreter</strong> 形式のメリットは容易に実行可能な形式で配布できる点にあります。</p>
+<p><code>script interpreter</code> 形式のメリットは容易に実行可能な形式で配布できる点にあります。</p>
 <p>例えば <strong>ghci</strong> に大量のオプションを渡す必要があるなど、毎回入力するのが面倒な場合に便利です。</p>
 <h3 id="使い方-1">使い方</h3>
 <p>通常の <strong>Haskell</strong> ファイルの先頭に次の1行を追加するだけです。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#!/usr/bin/env stack</span></span></code></pre></div>
-<p>実際には、そのすぐ次の行に <strong>stack repl</strong> や <strong>stack script</strong> などを指定して使うことになります。</p>
+<p>実際には、そのすぐ次の行に <code>stack repl</code> や <code>stack script</code> などを指定して使うことになります。</p>
 <h2 id="組み合わせてみよう">組み合わせてみよう！</h2>
-<p><strong>script interpreter</strong> と <strong>stack script</strong> を組み合わせると非常にポータブルな <strong>Haskell</strong> スクリプトを作ることができます。</p>
+<p><code>script interpreter</code> と <code>stack script</code> を組み合わせると非常にポータブルな <strong>Haskell</strong> スクリプトを作ることができます。</p>
 <p>個人的には以下のようなメリットを感じています。</p>
 <ul>
 <li><strong>スナップショット</strong>が明示的に指定されるため、いつでも動くサンプルが簡単に作れる</li>
@@ -213,27 +213,27 @@
 </ul>
 <h3 id="使い方-2">使い方</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="co">-- stack script --resolver lts-11.7</span></span></code></pre></div>
-<p><strong>lts-11.7</strong> の部分は自分の好きな<a href="https://www.stackage.org/">スナップショット</a>を指定しましょう。</p>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co">-- stack script --resolver lts-15.5</span></span></code></pre></div>
+<p><strong>lts-15.5</strong> の部分は自分の好きな<a href="https://www.stackage.org/">スナップショット</a>を指定しましょう。</p>
 <p>実際に実行する場合はシェルスクリプト同様に実行権限を付与し、ファイルを実行します。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a>$ <span class="fu">chmod</span> u+x Main.hs</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ex">./Main.hs</span></span></code></pre></div>
+<pre class="shell"><code>$ chmod u+x Main.hs
+./Main.hs</code></pre>
 <h3 id="明示的にパッケージを指定する場合">明示的にパッケージを指定する場合</h3>
-<p>基本的にはパッケージを省略して動作しますが、ごく稀に明示的にパッケージを指定する必要があります。</p>
+<p>基本的にはパッケージを指定することなく動作しますが、ごく稀に明示的にパッケージを指定する必要があります。</p>
 <p>その場合は、このように <code>--package</code> 引数を指定する事で実行できるようになります。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="co">-- stack script --resolver lts-11.7 --package yesod --package yesod-core</span></span></code></pre></div>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co">-- stack script --resolver lts-15.5 --package yesod --package yesod-core</span></span></code></pre></div>
 <p>パッケージが多い場合は複数行コメントにすると見やすくなります。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="co">{- stack script</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="co">   --resolver lts-11.7</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">   --resolver lts-15.5</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a><span class="co">   --package yesod</span></span>
 <span id="cb7-5"><a href="#cb7-5"></a><span class="co">   --package yesod-core</span></span>
 <span id="cb7-6"><a href="#cb7-6"></a><span class="co">-}</span></span></code></pre></div>
 <h2 id="具体例">具体例</h2>
-<p>以下のコードは <strong>Yesod</strong> のサンプルアプリケーションを <strong>stack interpreter</strong> + <strong>stack script</strong> にしたものです。</p>
+<p>以下のコードは <strong>Yesod</strong> のサンプルアプリケーションを <code>stack interpreter</code> + <code>stack script</code> にしたものです。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="co">-- stack script --resolver lts-11.7</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co">-- stack script --resolver lts-15.5</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a></span>
 <span id="cb8-4"><a href="#cb8-4"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
 <span id="cb8-5"><a href="#cb8-5"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
@@ -254,9 +254,9 @@
 <span id="cb8-20"><a href="#cb8-20"></a></span>
 <span id="cb8-21"><a href="#cb8-21"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
 <span id="cb8-22"><a href="#cb8-22"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
-<p>上記のファイルを <strong>YesodEx.hs</strong> として保存して実行してみましょう。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a>$ <span class="fu">chmod</span> u+x YesodEx.hs</span>
-<span id="cb9-2"><a href="#cb9-2"></a>$ <span class="ex">./YesodEx.hs</span></span></code></pre></div>
+<p>上記のファイルを <code>YesodEx.hs</code> として保存して実行してみましょう。</p>
+<pre class="shell"><code>$ chmod u+x YesodEx.hs
+$ ./YesodEx.hs</code></pre>
 <p><a href="http://localhost:3000">http://localhost:3000</a> にアクセスすると <strong>Hello World</strong> の文字が表示されたのではないでしょうか。</p>
 <p>このようにとても簡単に実行できるため、シェルスクリプトの代わりに <strong>Haskell</strong> でスクリプトを書くことも普通にできるようになります。</p>
       </article>

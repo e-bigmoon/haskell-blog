@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>cabal install コマンドについて</title>
+  <meta name="description" content="stack install と全く同じ動作をする cabal コマンドは cabal install all:exes です。
+
+
+今回利用した cabal と stack のバージョンは以下の通りです。
+$ cabal -V
+cabal-install version 3.0.0.0
+compiled using">
+  <link rel="canonical" href="../../posts/2020/03-25-cabal-install.html">
+  <link rel="alternate" type="application/atom+xml" title="cabal install コマンドについて" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="cabal install コマンドについて" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2020/03-25-cabal-install.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="cabal install コマンドについて" />
+  <meta property="og:description" content="stack install と全く同じ動作をする cabal コマンドは cabal install all:exes です。
+
+
+今回利用した cabal と stack のバージョンは以下の通りです。
+$ cabal -V
+cabal-install version 3.0.0.0
+compiled using" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/index.html" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="white-text">
+        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
+        Contact
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../contact.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-lead-pencil left blue-text"></i>
+        Contact
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on March 25, 2020
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        
+          <br>
+          <i class="mdi mdi-calendar"></i>&nbsp;
+          Last Updated 
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">cabal install コマンドについて</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a>, <a title="All pages tagged 'cabal'." href="../../tags/cabal.html">cabal</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=cabal install コマンドについて&url=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <ul>
+<li><code>stack install</code> と全く同じ動作をする <strong>cabal</strong> コマンドは <code>cabal install all:exes</code> です。</li>
+</ul>
+<hr />
+<p>今回利用した <strong>cabal</strong> と <strong>stack</strong> のバージョンは以下の通りです。</p>
+<pre class="shell"><code>$ cabal -V
+cabal-install version 3.0.0.0
+compiled using version 3.0.0.0 of the Cabal library 
+
+$ stack --version
+Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commits) x86_64 hpack-0.31.2</code></pre>
+<p>この記事では <code>stack install</code> コマンドと <code>cabal install</code> コマンドの挙動の違いなどについて調査した結果等をまとめています。</p>
+<!--more-->
+<h2 id="プロジェクトの構成">プロジェクトの構成</h2>
+<p>例えば、<code>cabal.project</code>が以下のようなパッケージ構成になっていて、<strong>executable</strong> (mainExe1, mainExe2, subExe1, subExe2) が定義されているとしましょう。</p>
+<pre class="shell"><code>$ tree .
+.
+├── app
+│   ├── Main1.hs
+│   └── Main2.hs
+├── cabal.project
+├── stack.yaml
+├── stack.yaml.lock
+├── subs
+│   ├── pkg1
+│   │   ├── app
+│   │   │   └── Main.hs
+│   │   └── pkg1.cabal
+│   └── pkg2
+│       ├── app
+│       │   └── Main.hs
+│       └── pkg2.cabal
+└── app.cabal</code></pre>
+<p><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/2020/03-25/">プロジェクトのコード</a></p>
+<h2 id="stack-install-と-cabal-install-の違い">stack install と cabal install の違い</h2>
+<table>
+<thead>
+<tr class="header">
+<th>　</th>
+<th><code>stack install</code></th>
+<th><code>cabal install</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>インストール時の挙動</td>
+<td>コピー</td>
+<td><strong>シンボリックリンク</strong></td>
+</tr>
+<tr class="even">
+<td>インストール先ディレクトリの指定オプション</td>
+<td><code>local-bin-path</code></td>
+<td><code>--installdir</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="cabal-install">cabal install</h3>
+<p><code>cabal install</code> に指定可能なコマンドをいくつか試してみて、実際に何がインストールされるか一覧にしました。</p>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th style="text-align: center;"><code>subExe1</code></th>
+<th style="text-align: center;"><code>subExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cabal install</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install .</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install pkg1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install pkg2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install . pkg1 pkg2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app pkg1 pkg2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install all</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td>*注意点</td>
+</tr>
+<tr class="odd">
+<td><code>cabal install all:exes</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<ul>
+<li><code>cabal install</code> や <code>stack install .</code> の挙動など、いくつか <strong>stack</strong> と異なる場合があるので注意が必要です。</li>
+<li>注意点: 全てのパッケージに <code>executable</code> が含まれている場合に限り実行可能です。
+<ul>
+<li><code>cabal install all</code> で <code>executable</code> が含まれていないパッケージがある場合は以下のようなエラーになります。</li>
+</ul></li>
+</ul>
+<pre class="shell"><code>cabal: Cannot build the executables in the package pkg2 because it does not
+contain any executables. Check the .cabal file for the package and make sure
+that it properly declares the components that you expect.</code></pre>
+<ul>
+<li><code>stack install</code> に相当するコマンドは <code>cabal install all:exes</code> です。</li>
+</ul>
+<h3 id="stack-install">stack install</h3>
+<p>同様に <code>stack install</code> も確認しました。</p>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th style="text-align: center;"><code>subExe1</code></th>
+<th style="text-align: center;"><code>subExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>stack install</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install .</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install app</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install pkg1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install pkg2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install . pkg1 pkg2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="odd">
+<td><code>stack install app pkg1 pkg2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install all</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="odd">
+<td><code>stack install all:exes</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+</tbody>
+</table>
+<p>エラーその1</p>
+<pre class="shell"><code>$ stack install . pkg1 pkg2
+The following errors occurred while parsing the build targets:
+- The package pkg1 was specified in multiple, incompatible ways: . pkg1
+- The package pkg2 was specified in multiple, incompatible ways: . pkg2</code></pre>
+<p>エラーその2</p>
+<pre class="shell"><code>$ stack install all
+Error: While constructing the build plan, the following exceptions were encountered:
+Unknown package: all
+Some different approaches to resolving this:
+Plan construction failed.</code></pre>
+<h3 id="その他の指定方法">その他の指定方法</h3>
+<h4 id="cabal">cabal</h4>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cabal install app:exe</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="even">
+<td><code>cabal install app:exes</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app:exe:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install app:exe:mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install app:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install app:mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install exes</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install exe:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install exe:mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>cabal install mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>cabal install mainExe2</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>エラー1</p>
+<pre class="shell"><code>$ cabal install --installdir=./bin app:exe
+cabal: Unknown target 'app:exe'.
+The package app has no component 'exe'.</code></pre>
+<h4 id="stack">stack</h4>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド</th>
+<th style="text-align: center;"><code>mainExe1</code></th>
+<th style="text-align: center;"><code>mainExe2</code></th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>stack install app:exe</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="even">
+<td><code>stack install app:exes</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー1</td>
+</tr>
+<tr class="odd">
+<td><code>stack install app:exe:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install app:exe:mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install app:mainExe1</code></td>
+<td style="text-align: center;">O</td>
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>stack install app:mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">O</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>stack install exes</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="even">
+<td><code>stack install exe:mainExe1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="odd">
+<td><code>stack install exe:mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー2</td>
+</tr>
+<tr class="even">
+<td><code>stack install mainExe1</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー3</td>
+</tr>
+<tr class="odd">
+<td><code>stack install mainExe2</code></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>*エラー3</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>エラー1</p>
+<pre class="shell"><code>$ stack install app:exe
+Error parsing targets: Component exe does not exist in package app</code></pre>
+<p>エラー2</p>
+<pre class="shell"><code>$ stack install exe:mainExe1
+Error parsing targets: Unknown local package: exe</code></pre>
+<p>エラー3</p>
+<pre class="shell"><code>$ stack install mainExe1
+Error: While constructing the build plan, the following exceptions were encountered:
+Unknown package: mainExe1
+Some different approaches to resolving this:
+Plan construction failed.</code></pre>
+<h2 id="cabal-install-のオプション">cabal install のオプション</h2>
+<table>
+<colgroup>
+<col style="width: 47%" />
+<col style="width: 52%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>オプション</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>--installdir=&lt;path&gt;</code></td>
+<td>インストール先のパスを指定</td>
+</tr>
+<tr class="even">
+<td><code>--install-method=copy</code></td>
+<td>シンボリックリンクではなく、実体がコピーされる。<br><strong>Docker</strong> にバイナリをコピーする際や <strong>Windows</strong> 環境などで利用することがあります。</td>
+</tr>
+<tr class="odd">
+<td><code>--overwrite-policy=always</code></td>
+<td>すでにファイルが存在する場合でも、常に上書きします。</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><code>--overwrite-policy=always</code> を毎回指定するのが面倒な場合は</p>
+<pre class="shell"><code>$ cabal user-config update -a overwrite-policy:always</code></pre>
+<p>というコマンドで <code>~/.cabal/config</code> に設定できます。</p>
+<h2 id="次期バージョンで変更になる点など">次期バージョンで変更になる点など</h2>
+<p>リリースまでに内容が変更になる場合がありますのでご注意ください。</p>
+<hr />
+<ul>
+<li><a href="https://github.com/haskell/cabal/pull/6519/files">Copy on windows #6519</a></li>
+</ul>
+<p><strong>Windows</strong> 環境において <code>cabal install</code> の際のデフォルトの挙動が変更されます。シンボリックリンクが作成できない場合は自動的にコピーになります。</p>
+<hr />
+<ul>
+<li><a href="https://github.com/haskell/cabal/pull/6428">Implement cabal install -z #6428</a></li>
+</ul>
+<p>ローカルのプロジェクト設定を無視するオプション <code>-z</code>, <code>--ignore-project</code> が追加されます。</p>
+<hr />
+<ul>
+<li><a href="https://github.com/haskell/cabal/pull/6576">Resolve #6369 and #6393: Allow cabal v2-install pkgname:exename or http://example.com/package.tar.gz(#sha256=abcde…) #6576</a></li>
+</ul>
+<pre class="shell"><code>$ cabal install 'https://hackage.haskell.org/package/cabal-fmt-0.1.2/cabal-fmt-0.1.2.tar.gz#sha256=aae556efbcaddfd65c6a1c1811b122b0d8c8d00624c8c2e36aabb5e9f9ea9840'</code></pre>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2020/02-19-hunit-show-unicode.html"><i class="material-icons left">navigate_before</i>HUnit で日本語が文字化けする問題</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=cabal install コマンドについて&url=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-google-plus white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+
+  <div class="footer-copyright">
+
+    <div class="container">
+      © 2017-2019 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
