@@ -5,6 +5,10 @@ tags: bigmoon, cabal
 # updated: 2020/03/25
 ---
 
+- `stack install` と全く同じ動作をする **cabal** コマンドは `cabal install all:exes` です。
+
+---
+
 今回利用した **cabal** と **stack** のバージョンは以下の通りです。
 
 ```shell
