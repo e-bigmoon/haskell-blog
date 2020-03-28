@@ -1,7 +1,7 @@
 ---
 title: Haskell Yesod
 published: 2018/03/18
-updated: 2020/03/20
+updated: 2020/03/27
 ---
 
 ## Yesod クイックスタートガイド
@@ -10,7 +10,7 @@ updated: 2020/03/20
 
 ### 1. Stack をインストールしましょう
 
-[FP Complete get started guide](https://tech.fpcomplete.com/haskell/get-started) を参考に、ビルドツール `Stack` をインストールしましょう。
+[FP Complete get started guide](https://tech.fpcomplete.com/haskell/get-started) を参考に、ビルドツール **Stack** をインストールしましょう。
 
 POSIX システムでは以下のコマンドでインストールが完了します。
 
@@ -18,14 +18,14 @@ POSIX システムでは以下のコマンドでインストールが完了し�
 $ curl -sSL https://get.haskellstack.org/ | sh
 ```
 
-### 2. プロジェクトの雛形を用意しましょう
+### 2. プロジェクトのテンプレートを用意しましょう
 
 ```shell
 $ stack new my-project yesodweb/sqlite
 $ cd my-project
 ```
 
-その他の雛形については [GitHub](https://github.com/yesodweb/stack-templates) を確認してください。
+その他のテンプレートについては [GitHub](https://github.com/yesodweb/stack-templates) を確認してください。
 
 ### 3. yesod コマンドをインストールしましょう
 
@@ -45,7 +45,7 @@ $ stack build
 $ stack exec -- yesod devel
 ```
 
-もしここで `GHC_PACKAGE_PATH` というエラーメッセージが表示された人は、最新の `yesod-bin` をインストールする必要があります。
+もしここで `GHC_PACKAGE_PATH` というエラーメッセージが表示された人は、最新の **yesod-bin** をインストールする必要があります。
 
 以下のコマンドを実行してみてください。
 
@@ -54,7 +54,7 @@ $ stack build yesod-bin-1.4.11
 $ stack exec -- yesod devel
 ```
 
-また、プロジェクトの雛形に `minimal` を選択した場合、`yesod devel` コマンドは動作しないと思うので注意してください。
+また、プロジェクトのテンプレートに **minimal** を選択した場合、`yesod devel` コマンドは動作しないと思うので注意してください。
 
 ### 6. Yesod サーバーへアクセスしてみましょう
 
@@ -278,4 +278,4 @@ $ sudo apt-get install -y libpq-dev
 - [persistent-sqlite](https://hackage.haskell.org/package/persistent-sqlite)
 - [persistent-template](https://hackage.haskell.org/package/persistent-template)
 - [shakespeare](https://hackage.haskell.org/package/shakespeare)
-- [nicolashery/vscode-language-yesod](https://github.com/nicolashery/vscode-language-yesod)
+- [e-bigmoon/vscode-language-yesod](https://github.com/e-bigmoon/vscode-language-yesod)

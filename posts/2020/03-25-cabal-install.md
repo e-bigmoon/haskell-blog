@@ -2,7 +2,7 @@
 title: cabal install コマンドについて
 author: Shinya Yamaguchi
 tags: bigmoon, cabal
-# updated: 2020/03/25
+updated: 2020/03/27
 ---
 
 - `stack install` と全く同じ動作をする **cabal** コマンドは `cabal install all:exes` です。
@@ -26,7 +26,7 @@ Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commi
 
 ## プロジェクトの構成
 
-例えば、`cabal.project`が以下のようなパッケージ構成になっていて、**executable** (mainExe1, mainExe2, subExe1, subExe2) が定義されているとしましょう。
+例えば、プロジェクトが以下のような構成になっていて、**executable** (mainExe1, mainExe2, subExe1, subExe2) が定義されているとしましょう。
 
 ```shell
 $ tree .
@@ -36,7 +36,6 @@ $ tree .
 │   └── Main2.hs
 ├── cabal.project
 ├── stack.yaml
-├── stack.yaml.lock
 ├── subs
 │   ├── pkg1
 │   │   ├── app
@@ -57,7 +56,7 @@ $ tree .
 
 　| `stack install` | `cabal install`
 -------| ----------------|-------------------
-インストール時の挙動 | コピー | **シンボリックリンク**
+インストール方法 | コピー | **シンボリックリンク**
 インストール先ディレクトリの指定オプション | `local-bin-path` | `--installdir`
 
 ### cabal install
@@ -79,8 +78,8 @@ $ tree .
 ---
 
 - `cabal install` や `stack install .` の挙動など、いくつか **stack** と異なる場合があるので注意が必要です。
-- 注意点: 全てのパッケージに `executable` が含まれている場合に限り実行可能です。
-  - `cabal install all` で `executable` が含まれていないパッケージがある場合は以下のようなエラーになります。
+- 注意点: 全てのパッケージに **executable** が含まれている場合に限り実行可能です。
+  - `cabal install all` で **executable** が含まれていないパッケージがある場合は以下のようなエラーになります。
 
 ```shell
 cabal: Cannot build the executables in the package pkg2 because it does not
@@ -106,7 +105,7 @@ that it properly declares the components that you expect.
 `stack install all`           |   |   |   |  | *エラー2
 `stack install all:exes`      |   |   |   |  | *エラー2
 
-エラーその1
+エラー 1
 
 ```shell
 $ stack install . pkg1 pkg2
@@ -115,7 +114,7 @@ The following errors occurred while parsing the build targets:
 - The package pkg2 was specified in multiple, incompatible ways: . pkg2
 ```
 
-エラーその2
+エラー 2
 
 ```shell
 $ stack install all
@@ -148,7 +147,7 @@ Plan construction failed.
 エラー1
 
 ```shell
-$ cabal install --installdir=./bin app:exe
+$ cabal install app:exe
 cabal: Unknown target 'app:exe'.
 The package app has no component 'exe'.
 ```
@@ -195,15 +194,13 @@ Some different approaches to resolving this:
 Plan construction failed.
 ```
 
-
-
-## cabal install のオプション
+## cabal install で良く使うオプション
 
 オプション | 内容
 ----------|-----------
 `--installdir=<path>` | インストール先のパスを指定
 `--install-method=copy` | シンボリックリンクではなく、実体がコピーされる。<br>**Docker** にバイナリをコピーする際や **Windows** 環境などで利用することがあります。
-`--overwrite-policy=always` | すでにファイルが存在する場合でも、常に上書きします。
+`--overwrite-policy=always` | すでに実行ファイルが存在する場合でも、常に上書きします。
 
 ---
 

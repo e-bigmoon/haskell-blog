@@ -1,7 +1,7 @@
 ---
 title: Haskell Development
 published: 2017/10/24
-updated: 2019/12/24
+updated: 2020/03/27
 ---
 
 <div class="row">
@@ -68,7 +68,7 @@ updated: 2019/12/24
 
 - [hoogle](etc/hoogle.html)
 
-## wip
+## WIP
 
 _ | stack | cabal
 -----|------|--------
@@ -76,8 +76,8 @@ _ | stack | cabal
 バージョン確認 | [stack --version](tips/stack-version.html) | [cabal -V](tips/cabal-version.html)
 削除 | [stack clean --full](tips/stack-uninstall.html)
 
-  </div>
-  <div class="col s12 m6">
+</div>
+<div class="col s12 m6">
 
 ## チュートリアル
 
@@ -135,43 +135,83 @@ _ | stack | cabal
 - [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
 - [VS Code と haskell-ide-engine で Haskell 開発環境を構築する - Qiita](https://qiita.com/waddlaw/items/b83cd10311200095fe87)
 
+</div>
+</div>
+
 ## リンク
 
-- Haskell
-  - [haskell.org](https://www.haskell.org/)
-  - [haskell wiki](https://wiki.haskell.org/Haskell)
-  - [Try Haskell](http://tryhaskell.org/)
-- GHC (Glasgow Haskell Compiler)
-  - [Glasgow Haskell Compiler User's Guide](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/)
-  - [GHC Developer Wiki](https://ghc.haskell.org/trac/ghc/)
-  - [ghc-proposals/ghc-proposals](https://github.com/ghc-proposals/ghc-proposals)
-  - [Glasgow Haskell Compiler - GitLab](https://gitlab.haskell.org/ghc/ghc)
-  - [Glasgow Haskell Compiler - GitHub](https://github.com/ghc/ghc)
-- パッケージ
-  - [Hackage](https://hackage.haskell.org/)
-  - [Stackage](https://www.stackage.org/)
-  - [Hackage Dependency Monitor](http://packdeps.haskellers.com/)
-  - [Hackage Matrix Builder 3rd](https://matrix.hackage.haskell.org/)
-  - [hdiff](http://hdiff.luite.com/)
-- 型検索
-  - [Hoogle](https://hoogle.haskell.org/)
-- スタイルガイド
-  - [tweag/guides](https://github.com/tweag/guides)
-  - [input-output-hk/cardano-sl](https://github.com/input-output-hk/cardano-sl/blob/develop/docs/style-guide.md)
-  - [serokell/serokell-util](https://github.com/serokell/serokell-util/blob/master/serokell-style.md)
-  - [kowainik](https://kowainik.github.io/posts/2019-02-06-style-guide)
-- Haskell 情報収集
-  - [Haskell News](http://haskellnews.org/)
-  - [Haskell Weekly](https://haskellweekly.news/)
-  - [planet haskell](https://planet.haskell.org/)
-  - [Haskell mailing list](http://haskell.1045720.n5.nabble.com/)
-  - [r/haskell/ - reddit](https://www.reddit.com/r/haskell/)
-- コミュニティ
-  - [Haskell-jp](https://haskell.jp/)
-- 学習
-  - [wikibooks](https://en.wikibooks.org/wiki/Haskell)
-  - [FP Complete's Haskell Homepage](https://haskell.fpcomplete.com/)
-- [その他](etc/links.html)
+<div class="row">
+<div class="col s12 m6">
 
-  </div>
+### Haskell
+
+- [haskell.org](https://www.haskell.org/)
+- [haskell wiki](https://wiki.haskell.org/Haskell)
+- [Try Haskell](http://tryhaskell.org/)
+
+### 情報収集
+
+- [Haskell Weekly](https://haskellweekly.news/newsletter.html)
+- [planet haskell](https://planet.haskell.org/)
+- [Haskell mailing list](http://haskell.1045720.n5.nabble.com/)
+- [r/haskell/ - reddit](https://www.reddit.com/r/haskell/)
+- [discourse](https://discourse.haskell.org/)
+- [Haskell Antenna](https://haskell.jp/antenna/)
+
+### コミュニティ
+
+- [Haskell-jp](https://haskell.jp/)
+
+### 学習
+
+- [wikibooks](https://en.wikibooks.org/wiki/Haskell)
+- [FP Complete's Haskell Homepage](https://haskell.fpcomplete.com/)
+- [Haskell荘園](https://scrapbox.io/haskell-shoen/)
+
+### スタイルガイド
+
+- [tweag/guides](https://github.com/tweag/guides)
+- [input-output-hk/cardano-sl](https://github.com/input-output-hk/cardano-sl/blob/develop/docs/style-guide.md)
+- [serokell/style](https://github.com/serokell/style/blob/master/haskell.md)
+- [kowainik](https://kowainik.github.io/posts/2019-02-06-style-guide)
+
+### 型検索
+
+- [Hoogle](https://hoogle.haskell.org/)
+
+</div>
+<div class="col s12 m6">
+
+### GHC (Glasgow Haskell Compiler)
+
+- [GHC Development](https://ghc.dev/)
+- [The Glasgow Haskell Compiler - haskell.org](https://www.haskell.org/ghc/)
+- [Glasgow Haskell Compiler User's Guide](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/)
+- [GHC Developer Wiki](https://gitlab.haskell.org/ghc/ghc/-/wikis/home)
+- [ghc-proposals/ghc-proposals](https://github.com/ghc-proposals/ghc-proposals)
+- [Glasgow Haskell Compiler - GitLab](https://gitlab.haskell.org/ghc/ghc)
+- [Glasgow Haskell Compiler - GitHub](https://github.com/ghc/ghc)
+
+### Cabal
+
+- [The Haskell Cabal](https://www.haskell.org/cabal/)
+- [Cabal User Guide](https://www.haskell.org/cabal/users-guide/)
+- [haskell/cabal](https://github.com/haskell/cabal)
+
+### Stack
+
+- [The Haskell Tool Stack](https://docs.haskellstack.org/en/stable/README/)
+- [commercialhaskell/stack](https://github.com/commercialhaskell/stack)
+- [commercialhaskell/lts-haskell](https://github.com/fpco/lts-haskell#readme)
+- [commercialhaskell/stack-templates](https://github.com/commercialhaskell/stack-templates/)
+
+### パッケージ
+
+- [Hackage](https://hackage.haskell.org/)
+- [Stackage](https://www.stackage.org/)
+- [Hackage Dependency Monitor](http://packdeps.haskellers.com/)
+- [Hackage Matrix Builder 3rd](https://matrix.hackage.haskell.org/)
+- [hdiff](http://hdiff.luite.com/)
+
+</div>
 </div>
