@@ -14,7 +14,7 @@ Thinking with Types | 2018/12/22 | Lulu.com | [電子書籍サポートページ
 
 Haskell 中級者向けの型レベルプログラミングに特化した書籍です。電子書籍は [Leanpub.com][ebook-leanpub], 物理書籍は [Lulu.com][ebook-lulu] でそれぞれ購入できます。
 
-書籍の難易度としては「[Haskell入門](./haskell-nyumon.html)」「[入門Haskellプログラミング](./get-programming-with-haskell.html)」「[プログラミングHaskell](./programming-haskell.html)」のどれか1冊を読み終えたレベルであれば最後まで読めるでしょう。「すごいH本」だけを読んだという人だと挫折するかもしれません。
+書籍の難易度としては「[Haskell入門](/books/haskell-nyumon.html)」「[入門Haskellプログラミング](/books/get-programming-with-haskell.html)」「[プログラミングHaskell](/books/programming-haskell.html)」のどれか1冊を読み終えたレベルであれば最後まで読めるでしょう。「[すごいH本](/books/lean-your-a-haskell-for-great-good.html)」だけを読んだという人だと挫折するかもしれません。
 
 この書籍は型レベルプログラミングに関する知識が無くても読み進めることができます。本書を読み進めることで、型とカインドの関係とともに
 
@@ -30,7 +30,9 @@ Haskell 中級者向けの型レベルプログラミングに特化した書籍
 - **Generics**
 - **拡張可能レコード**
 - **Indexed Monad**
-- **Dependent Type (singleton)** といった内容について学習することができます。
+- **Dependent Type (singleton)**
+
+といった内容について学習することができます。
 
 全て比較的簡単な例から始まるため、途中で道に迷うことも無いです。
 
