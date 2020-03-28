@@ -85,13 +85,19 @@ compiled using" />
       </a>
     </li>
     <li>
+      <a href="../../books/" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
       <a href="../../stack/" class="white-text">
         <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
         Development
       </a>
     </li>
     <li>
-      <a href="../../quiz/index.html" class="white-text">
+      <a href="../../quiz/" class="white-text">
         <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
         Quiz
       </a>
@@ -106,12 +112,6 @@ compiled using" />
       <a href="../../yesod/" class="white-text">
         <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
         Yesod
-      </a>
-    </li>
-    <li>
-      <a href="../../contact.html" class="white-text">
-        <i class="mdi mdi-lead-pencil left indigo-text text-lighten-3"></i>
-        Contact
       </a>
     </li>
     <li>
@@ -136,6 +136,12 @@ compiled using" />
       </a>
     </li>
     <li>
+      <a href="../../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
       <a href="../../stack/" class="navbar-text-colour-mobile">
         <i class="mdi mdi-wrench left blue-text"></i>
         Development
@@ -157,12 +163,6 @@ compiled using" />
       <a href="../../yesod/" class="navbar-text-colour-mobile">
         <i class="mdi mdi-earth left blue-text"></i>
         Yesod
-      </a>
-    </li>
-    <li>
-      <a href="../../contact.html" class="navbar-text-colour-mobile">
-        <i class="mdi mdi-lead-pencil left blue-text"></i>
-        Contact
       </a>
     </li>
   </ul>
@@ -190,7 +190,7 @@ compiled using" />
         
           <br>
           <i class="mdi mdi-calendar"></i>&nbsp;
-          Last Updated 
+          Last Updated March 27, 2020
         
         &nbsp;
         
@@ -224,9 +224,6 @@ compiled using" />
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-facebook white-text"></i></a>
     </li>
-    <li>
-      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-google-plus white-text"></i></a>
-    </li>
   </ul>
 </div>
             </div>
@@ -249,7 +246,7 @@ Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commi
 <p>この記事では <code>stack install</code> コマンドと <code>cabal install</code> コマンドの挙動の違いなどについて調査した結果等をまとめています。</p>
 <!--more-->
 <h2 id="プロジェクトの構成">プロジェクトの構成</h2>
-<p>例えば、<code>cabal.project</code>が以下のようなパッケージ構成になっていて、<strong>executable</strong> (mainExe1, mainExe2, subExe1, subExe2) が定義されているとしましょう。</p>
+<p>例えば、プロジェクトが以下のような構成になっていて、<strong>executable</strong> (mainExe1, mainExe2, subExe1, subExe2) が定義されているとしましょう。</p>
 <pre class="shell"><code>$ tree .
 .
 ├── app
@@ -257,7 +254,6 @@ Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commi
 │   └── Main2.hs
 ├── cabal.project
 ├── stack.yaml
-├── stack.yaml.lock
 ├── subs
 │   ├── pkg1
 │   │   ├── app
@@ -280,7 +276,7 @@ Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commi
 </thead>
 <tbody>
 <tr class="odd">
-<td>インストール時の挙動</td>
+<td>インストール方法</td>
 <td>コピー</td>
 <td><strong>シンボリックリンク</strong></td>
 </tr>
@@ -382,9 +378,9 @@ Version 2.1.3, Git revision 636e3a759d51127df2b62f90772def126cdf6d1f (7735 commi
 <hr />
 <ul>
 <li><code>cabal install</code> や <code>stack install .</code> の挙動など、いくつか <strong>stack</strong> と異なる場合があるので注意が必要です。</li>
-<li>注意点: 全てのパッケージに <code>executable</code> が含まれている場合に限り実行可能です。
+<li>注意点: 全てのパッケージに <strong>executable</strong> が含まれている場合に限り実行可能です。
 <ul>
-<li><code>cabal install all</code> で <code>executable</code> が含まれていないパッケージがある場合は以下のようなエラーになります。</li>
+<li><code>cabal install all</code> で <strong>executable</strong> が含まれていないパッケージがある場合は以下のようなエラーになります。</li>
 </ul></li>
 </ul>
 <pre class="shell"><code>cabal: Cannot build the executables in the package pkg2 because it does not
@@ -481,12 +477,12 @@ that it properly declares the components that you expect.</code></pre>
 </tr>
 </tbody>
 </table>
-<p>エラーその1</p>
+<p>エラー 1</p>
 <pre class="shell"><code>$ stack install . pkg1 pkg2
 The following errors occurred while parsing the build targets:
 - The package pkg1 was specified in multiple, incompatible ways: . pkg1
 - The package pkg2 was specified in multiple, incompatible ways: . pkg2</code></pre>
-<p>エラーその2</p>
+<p>エラー 2</p>
 <pre class="shell"><code>$ stack install all
 Error: While constructing the build plan, the following exceptions were encountered:
 Unknown package: all
@@ -574,7 +570,7 @@ Plan construction failed.</code></pre>
 </table>
 <hr />
 <p>エラー1</p>
-<pre class="shell"><code>$ cabal install --installdir=./bin app:exe
+<pre class="shell"><code>$ cabal install app:exe
 cabal: Unknown target 'app:exe'.
 The package app has no component 'exe'.</code></pre>
 <h4 id="stack">stack</h4>
@@ -669,7 +665,7 @@ Error: While constructing the build plan, the following exceptions were encounte
 Unknown package: mainExe1
 Some different approaches to resolving this:
 Plan construction failed.</code></pre>
-<h2 id="cabal-install-のオプション">cabal install のオプション</h2>
+<h2 id="cabal-install-で良く使うオプション">cabal install で良く使うオプション</h2>
 <table>
 <colgroup>
 <col style="width: 47%" />
@@ -692,7 +688,7 @@ Plan construction failed.</code></pre>
 </tr>
 <tr class="odd">
 <td><code>--overwrite-policy=always</code></td>
-<td>すでにファイルが存在する場合でも、常に上書きします。</td>
+<td>すでに実行ファイルが存在する場合でも、常に上書きします。</td>
 </tr>
 </tbody>
 </table>
@@ -727,6 +723,8 @@ Plan construction failed.</code></pre>
         </div>
         <div class="col s6">
           
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2020/03-28-haskell-books.html">Haskell 関連書籍の紹介ページを作りました<i class="material-icons right">navigate_next</i></a>
+          
         </div>
       </div>
 
@@ -742,9 +740,6 @@ Plan construction failed.</code></pre>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-facebook white-text"></i></a>
-    </li>
-    <li>
-      <a class="btn-floating waves-effect waves-light red tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Google+" href="https://plus.google.com/share?url=https://haskell.e-bigmoon.com/posts/2020/03-25-cabal-install.html"><i class="mdi mdi-google-plus white-text"></i></a>
     </li>
   </ul>
 </div>
@@ -764,17 +759,13 @@ Plan construction failed.</code></pre>
     </div>
 
     <footer class="page-footer indigo lighten-1">
-
   <div class="footer-copyright">
-
     <div class="container">
-      © 2017-2019 BIGMOON&nbsp;
+      © 2017-2020 BIGMOON&nbsp;
       Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
       original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
     </div>
-
   </div>
-
 </footer>
 
 
