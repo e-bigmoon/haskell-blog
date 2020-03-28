@@ -1,11 +1,8 @@
 ---
 title: About
 published: 2017/10/22
-updated: 2020/03/01
-tags: template
+updated: 2020/03/27
 ---
-
-## Member
 
 Name | github | twitter
 -----|--------|-------
