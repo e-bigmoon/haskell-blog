@@ -1,0 +1,49 @@
+name: nightly
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "00 15 * * *"
+
+jobs:
+  cabal:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        ghc-version: "8.8.3"
+        cabal-version: "3.0"
+
+    - name: Install dependencies
+      run: |
+        cabal update --index-state=HEAD
+        cabal configure --disable-optimization --write-ghc-environment-files=always -j2
+        cabal build all --only-dependencies
+
+    - name: Build
+      run: cabal build
+
+  stack:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # windows-2019 は pandoc の問題によりブロック
+        # https://github.com/jgm/pandoc/commit/9feefa39319358acc84811e6017aeea60f9140c3
+        os: [ubuntu-18.04, macos-10.15]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mstksg/setup-stack@v2
+
+    - name: Install dependencies
+      run: |
+        echo -e "\nallow-newer: true" >> stack.yaml
+        stack test --resolver=nightly --only-dependencies
+
+    - name: Build
+      run: |
+        stack test --fast --resolver=nightly
+        stack install --fast --resolver=nightly

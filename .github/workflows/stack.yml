@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
       - '*'
-  schedule:
-    - cron: "00 15 * * *"
 
 jobs:
   build:
@@ -20,14 +18,14 @@ jobs:
         # https://github.com/jgm/pandoc/commit/9feefa39319358acc84811e6017aeea60f9140c3
         os: [ubuntu-18.04, macos-10.15]
         resolver: ["lts-15.4"]
-        cache-version: ["2020-03-21"]
+        cache-version: ["2020-03-29"]
 
     steps:
     - uses: actions/checkout@v2
     - uses: mstksg/setup-stack@v2
 
     - name: Cache ~/.stack
-      uses: actions/cache@v1
+      uses: actions/cache@master
       with:
         path: ~/.stack
         key: ${{ runner.os }}-${{ matrix.resolver }}-${{ matrix.cache-version }}-stack
