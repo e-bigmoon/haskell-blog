@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
       - '*'
-  schedule:
-    - cron: "00 15 * * *"
 
 jobs:
   build:
@@ -27,17 +25,13 @@ jobs:
         ghc-version: ${{ matrix.ghc }}
         cabal-version: ${{ matrix.cabal }}
 
-    - name: Cache ~/.cabal/store
-      uses: actions/cache@v1
+    - name: Cache cabal
+      uses: actions/cache@master
       with:
-        path: ~/.cabal/store
-        key: ${{ runner.os }}-${{ matrix.ghc }}-${{ matrix.cache-version }}-cabal-store
-
-    - name: Cache dist-newstyle
-      uses: actions/cache@v1
-      with:
-        path: dist-newstyle
-        key: ${{ runner.os }}-${{ matrix.ghc }}-${{ matrix.cache-version }}-cabal-dist
+        path: |
+          ~/.cabal/store
+          dist-newstyle
+        key: ${{ runner.os }}-${{ matrix.ghc }}-${{ matrix.cache-version }}-cabal
 
     - name: Install dependencies
       run: |
