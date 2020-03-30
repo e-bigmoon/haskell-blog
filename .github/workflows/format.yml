@@ -28,13 +28,11 @@ jobs:
 
     - uses: actions/cache@master
       name: Cache ~/.cabal/bin
-      id: cache-bin
       with:
         path: ~/.cabal/bin
         key: ${{ matrix.cache-version }}-cabal-bin
 
     - name: Install cabal-fmt ormolu
-      if: steps.cache-bin.outputs.cache-hit != 'true'
       run: |
         cabal update
         cabal install cabal-fmt ormolu --overwrite-policy=always --install-method=copy -j2
