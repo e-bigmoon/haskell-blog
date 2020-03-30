@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>cabal-plan license-report 機能の紹介</title>
+  <meta name="description" content="cabal-plan を使って、プロジェクトが依存するパッケージのライセンスを列挙する方法について紹介します。
+本記事は Is there a tool to collect all LICENSE files of used dependencies? を参考にしています。
+$ cabal -V
+cabal-inst">
+  <link rel="canonical" href="../../posts/2020/03-30-cabal-plan-license-report.html">
+  <link rel="alternate" type="application/atom+xml" title="cabal-plan license-report 機能の紹介" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="cabal-plan license-report 機能の紹介" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2020/03-30-cabal-plan-license-report.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="cabal-plan license-report 機能の紹介" />
+  <meta property="og:description" content="cabal-plan を使って、プロジェクトが依存するパッケージのライセンスを列挙する方法について紹介します。
+本記事は Is there a tool to collect all LICENSE files of used dependencies? を参考にしています。
+$ cabal -V
+cabal-inst" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="white-text">
+        <i class="mdi mdi-book-open left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-book-open left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on March 30, 2020
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        
+          <br>
+          <i class="mdi mdi-calendar"></i>&nbsp;
+          Last Updated 
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">cabal-plan license-report 機能の紹介</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a>, <a title="All pages tagged 'package'." href="../../tags/package.html">package</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=cabal-plan license-report 機能の紹介&url=https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <p><a href="https://hackage.haskell.org/package/cabal-plan">cabal-plan</a> を使って、プロジェクトが依存するパッケージのライセンスを列挙する方法について紹介します。</p>
+<p>本記事は <a href="https://www.reddit.com/r/haskell/comments/8vhkwv/is_there_a_tool_to_collect_all_license_files_of/">Is there a tool to collect all LICENSE files of used dependencies?</a> を参考にしています。</p>
+<pre class="shell"><code>$ cabal -V
+cabal-install version 3.0.0.0
+compiled using version 3.0.0.0 of the Cabal library</code></pre>
+<!--more-->
+<h2 id="インストール方法">インストール方法</h2>
+<pre class="shell"><code>$ cabal update
+$ cabal install cabal-plan -f license-report
+$ cabal-plan --version
+cabal-plan 0.6.2.0</code></pre>
+<p>今回の機能を使うためには <strong>license-report</strong> フラグを有効にする必要があります。デフォルトでは無効になっています。</p>
+<h2 id="ライセンスの列挙">ライセンスの列挙</h2>
+<p>具体例として、このブログで試してみましょう。</p>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog">e-bigmoon/haskell-blog</a></li>
+</ul>
+<p>ライセンスファイルを抽出する場合は <code>--licensedir</code> オプションで出力先ディレクトリを指定します。</p>
+<pre class="shell"><code>$ cabal-plan license-report --licensedir=licenses exe:site &gt; blog.md
+WARNING: couldn't find metadata for base-4.13.0.0
+WARNING: couldn't find metadata for hakyll-sass-0.3
+WARNING: license files for array-0.5.4.0 (global/GHC bundled) not copied
+WARNING: license files for binary-0.8.7.0 (global/GHC bundled) not copied
+WARNING: license files for bytestring-0.10.10.0 (global/GHC bundled) not copied
+WARNING: license files for containers-0.6.2.1 (global/GHC bundled) not copied
+WARNING: license files for deepseq-1.4.4.0 (global/GHC bundled) not copied
+WARNING: license files for directory-1.3.6.0 (global/GHC bundled) not copied
+WARNING: license files for filepath-1.4.2.1 (global/GHC bundled) not copied
+WARNING: couldn't find metadata for ghc-boot-th-8.8.3
+WARNING: license files for ghc-prim-0.5.3 (global/GHC bundled) not copied
+WARNING: license files for integer-gmp-1.0.2.0 (global/GHC bundled) not copied
+WARNING: license files for mtl-2.2.2 (global/GHC bundled) not copied
+WARNING: license files for parsec-3.1.14.0 (global/GHC bundled) not copied
+WARNING: license files for pretty-1.1.3.6 (global/GHC bundled) not copied
+WARNING: license files for process-1.6.8.0 (global/GHC bundled) not copied
+WARNING: license files for stm-2.5.0.0 (global/GHC bundled) not copied
+WARNING: license files for template-haskell-2.15.0.0 (global/GHC bundled) not copied
+WARNING: license files for text-1.2.4.0 (global/GHC bundled) not copied
+WARNING: license files for time-1.9.3 (global/GHC bundled) not copied
+WARNING: license files for transformers-0.5.6.2 (global/GHC bundled) not copied
+WARNING: license files for unix-2.7.2.2 (global/GHC bundled) not copied</code></pre>
+<h2 id="出力結果">出力結果</h2>
+<p><code>licenses</code> ディレクトリはだいたいこんな感じでライセンスファイルが格納されています。</p>
+<pre class="shell"><code>$ tree licenses | head -n 20
+licenses
+├── Glob-0.10.0
+│   └── LICENSE.txt
+├── HTTP-4000.3.14
+│   └── LICENSE
+├── HsYAML-0.2.1.0
+│   ├── LICENSE.GPLv2
+│   └── LICENSE.GPLv3
+├── HsYAML-aeson-0.2.0.0
+│   └── LICENSE.GPLv2
+├── JuicyPixels-3.3.5
+│   └── LICENSE
+├── Only-0.1
+│   └── LICENSE
+├── QuickCheck-2.13.2
+│   └── LICENSE
+├── SHA-1.6.4.4
+│   └── LICENSE
+├── StateVar-1.2
+│   └── LICENSE</code></pre>
+<hr />
+<p><code>blog.md</code> の内容を一部を以下に貼り付けます。完全なコードは<a href="https://github.com/e-bigmoon/haskell-blog/sample-code/2020/03-30/blog.md">こちら</a>。</p>
+<h1 id="dependency-license-report">Dependency License Report</h1>
+<p>Bold-faced <strong><code>package-name</code></strong>s denote standard libraries bundled with <code>ghc-8.8.3</code>.</p>
+<h2 id="direct-dependencies-of-bigmoon-haskellers-blogexesite">Direct dependencies of <code>bigmoon-haskellers-blog:exe:site</code></h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Version</th>
+<th><a href="https://spdx.org/licenses/">SPDX</a> License Id</th>
+<th>Description</th>
+<th>Also depended upon by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>base</code></strong></td>
+<td><a href="http://hackage.haskell.org/package/base-4.13.0.0"><code>4.13.0.0</code></a></td>
+<td><em>MISSING</em></td>
+<td><em>MISSING</em></td>
+<td><em>(core library)</em></td>
+</tr>
+<tr class="even">
+<td><code>extensible</code></td>
+<td><a href="http://hackage.haskell.org/package/extensible-0.8"><code>0.8</code></a></td>
+<td><a href="licenses/extensible-0.8/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>Extensible, efficient, optics-friendly data types and effects</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>hakyll</code></td>
+<td><a href="http://hackage.haskell.org/package/hakyll-4.13.2.0"><code>4.13.2.0</code></a></td>
+<td><a href="licenses/hakyll-4.13.2.0/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>A static website compiler library</td>
+<td><code>hakyll-sass</code></td>
+</tr>
+<tr class="even">
+<td><code>hakyll-sass</code></td>
+<td><a href="http://hackage.haskell.org/package/hakyll-sass-0.3"><code>0.3</code></a></td>
+<td><em>MISSING</em></td>
+<td><em>MISSING</em></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>html-entities</code></td>
+<td><a href="http://hackage.haskell.org/package/html-entities-1.1.4.3"><code>1.1.4.3</code></a></td>
+<td><a href="licenses/html-entities-1.1.4.3/LICENSE"><code>MIT</code></a></td>
+<td>A codec library for HTML-escaped text and HTML-entities</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>rio</code></td>
+<td><a href="http://hackage.haskell.org/package/rio-0.1.14.1"><code>0.1.14.1</code></a></td>
+<td><a href="licenses/rio-0.1.14.1/LICENSE"><code>MIT</code></a></td>
+<td>A standard library for Haskell</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>yaml</code></td>
+<td><a href="http://hackage.haskell.org/package/yaml-0.11.3.0"><code>0.11.3.0</code></a></td>
+<td><a href="licenses/yaml-0.11.3.0/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>Support for parsing and rendering YAML documents.</td>
+<td><code>hakyll</code>, <code>pandoc-citeproc</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="indirect-transitive-dependencies">Indirect transitive dependencies</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Version</th>
+<th><a href="https://spdx.org/licenses/">SPDX</a> License Id</th>
+<th>Description</th>
+<th>Depended upon by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Glob</code></td>
+<td><a href="http://hackage.haskell.org/package/Glob-0.10.0"><code>0.10.0</code></a></td>
+<td><a href="licenses/Glob-0.10.0/LICENSE.txt"><code>BSD-3-Clause</code></a></td>
+<td>Globbing library</td>
+<td><code>pandoc</code></td>
+</tr>
+<tr class="even">
+<td><code>HTTP</code></td>
+<td><a href="http://hackage.haskell.org/package/HTTP-4000.3.14"><code>4000.3.14</code></a></td>
+<td><a href="licenses/HTTP-4000.3.14/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>A library for client-side HTTP</td>
+<td><code>pandoc</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="まとめ">まとめ</h2>
+<p>今回は <strong>cabal-plan</strong> を使ってみましたが、同様のツールとして <a href="https://github.com/fossas/fossa-cli/blob/master/docs/integrations/haskell.md#haskell">fossas/fossa-cli</a> や <a href="https://github.com/github/licensed/blob/master/docs/sources/cabal.md">github/licensed</a> なども利用できるようです。</p>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2020/03-28-haskell-books.html"><i class="material-icons left">navigate_before</i>Haskell 関連書籍の紹介ページを作りました</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=cabal-plan license-report 機能の紹介&url=https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+  <div class="footer-copyright">
+    <div class="container">
+      © 2017-2020 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+  </div>
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

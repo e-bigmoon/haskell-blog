@@ -10,6 +10,181 @@
     </author>
     <updated></updated>
     <entry>
+    <title>cabal-plan license-report 機能の紹介</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html</id>
+    <published>March 30, 2020</published>
+    <updated></updated>
+    <summary type="html"><![CDATA[<p><a href="https://hackage.haskell.org/package/cabal-plan">cabal-plan</a> を使って、プロジェクトが依存するパッケージのライセンスを列挙する方法について紹介します。</p>
+<p>本記事は <a href="https://www.reddit.com/r/haskell/comments/8vhkwv/is_there_a_tool_to_collect_all_license_files_of/">Is there a tool to collect all LICENSE files of used dependencies?</a> を参考にしています。</p>
+<pre class="shell"><code>$ cabal -V
+cabal-install version 3.0.0.0
+compiled using version 3.0.0.0 of the Cabal library</code></pre>
+<!--more-->
+<h2 id="インストール方法">インストール方法</h2>
+<pre class="shell"><code>$ cabal update
+$ cabal install cabal-plan -f license-report
+$ cabal-plan --version
+cabal-plan 0.6.2.0</code></pre>
+<p>今回の機能を使うためには <strong>license-report</strong> フラグを有効にする必要があります。デフォルトでは無効になっています。</p>
+<h2 id="ライセンスの列挙">ライセンスの列挙</h2>
+<p>具体例として、このブログで試してみましょう。</p>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog">e-bigmoon/haskell-blog</a></li>
+</ul>
+<p>ライセンスファイルを抽出する場合は <code>--licensedir</code> オプションで出力先ディレクトリを指定します。</p>
+<pre class="shell"><code>$ cabal-plan license-report --licensedir=licenses exe:site &gt; blog.md
+WARNING: couldn&#39;t find metadata for base-4.13.0.0
+WARNING: couldn&#39;t find metadata for hakyll-sass-0.3
+WARNING: license files for array-0.5.4.0 (global/GHC bundled) not copied
+WARNING: license files for binary-0.8.7.0 (global/GHC bundled) not copied
+WARNING: license files for bytestring-0.10.10.0 (global/GHC bundled) not copied
+WARNING: license files for containers-0.6.2.1 (global/GHC bundled) not copied
+WARNING: license files for deepseq-1.4.4.0 (global/GHC bundled) not copied
+WARNING: license files for directory-1.3.6.0 (global/GHC bundled) not copied
+WARNING: license files for filepath-1.4.2.1 (global/GHC bundled) not copied
+WARNING: couldn&#39;t find metadata for ghc-boot-th-8.8.3
+WARNING: license files for ghc-prim-0.5.3 (global/GHC bundled) not copied
+WARNING: license files for integer-gmp-1.0.2.0 (global/GHC bundled) not copied
+WARNING: license files for mtl-2.2.2 (global/GHC bundled) not copied
+WARNING: license files for parsec-3.1.14.0 (global/GHC bundled) not copied
+WARNING: license files for pretty-1.1.3.6 (global/GHC bundled) not copied
+WARNING: license files for process-1.6.8.0 (global/GHC bundled) not copied
+WARNING: license files for stm-2.5.0.0 (global/GHC bundled) not copied
+WARNING: license files for template-haskell-2.15.0.0 (global/GHC bundled) not copied
+WARNING: license files for text-1.2.4.0 (global/GHC bundled) not copied
+WARNING: license files for time-1.9.3 (global/GHC bundled) not copied
+WARNING: license files for transformers-0.5.6.2 (global/GHC bundled) not copied
+WARNING: license files for unix-2.7.2.2 (global/GHC bundled) not copied</code></pre>
+<h2 id="出力結果">出力結果</h2>
+<p><code>licenses</code> ディレクトリはだいたいこんな感じでライセンスファイルが格納されています。</p>
+<pre class="shell"><code>$ tree licenses | head -n 20
+licenses
+├── Glob-0.10.0
+│   └── LICENSE.txt
+├── HTTP-4000.3.14
+│   └── LICENSE
+├── HsYAML-0.2.1.0
+│   ├── LICENSE.GPLv2
+│   └── LICENSE.GPLv3
+├── HsYAML-aeson-0.2.0.0
+│   └── LICENSE.GPLv2
+├── JuicyPixels-3.3.5
+│   └── LICENSE
+├── Only-0.1
+│   └── LICENSE
+├── QuickCheck-2.13.2
+│   └── LICENSE
+├── SHA-1.6.4.4
+│   └── LICENSE
+├── StateVar-1.2
+│   └── LICENSE</code></pre>
+<hr />
+<p><code>blog.md</code> の内容を一部を以下に貼り付けます。完全なコードは<a href="https://github.com/e-bigmoon/haskell-blog/sample-code/2020/03-30/blog.md">こちら</a>。</p>
+<h1 id="dependency-license-report">Dependency License Report</h1>
+<p>Bold-faced <strong><code>package-name</code></strong>s denote standard libraries bundled with <code>ghc-8.8.3</code>.</p>
+<h2 id="direct-dependencies-of-bigmoon-haskellers-blogexesite">Direct dependencies of <code>bigmoon-haskellers-blog:exe:site</code></h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Version</th>
+<th><a href="https://spdx.org/licenses/">SPDX</a> License Id</th>
+<th>Description</th>
+<th>Also depended upon by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>base</code></strong></td>
+<td><a href="http://hackage.haskell.org/package/base-4.13.0.0"><code>4.13.0.0</code></a></td>
+<td><em>MISSING</em></td>
+<td><em>MISSING</em></td>
+<td><em>(core library)</em></td>
+</tr>
+<tr class="even">
+<td><code>extensible</code></td>
+<td><a href="http://hackage.haskell.org/package/extensible-0.8"><code>0.8</code></a></td>
+<td><a href="licenses/extensible-0.8/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>Extensible, efficient, optics-friendly data types and effects</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>hakyll</code></td>
+<td><a href="http://hackage.haskell.org/package/hakyll-4.13.2.0"><code>4.13.2.0</code></a></td>
+<td><a href="licenses/hakyll-4.13.2.0/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>A static website compiler library</td>
+<td><code>hakyll-sass</code></td>
+</tr>
+<tr class="even">
+<td><code>hakyll-sass</code></td>
+<td><a href="http://hackage.haskell.org/package/hakyll-sass-0.3"><code>0.3</code></a></td>
+<td><em>MISSING</em></td>
+<td><em>MISSING</em></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>html-entities</code></td>
+<td><a href="http://hackage.haskell.org/package/html-entities-1.1.4.3"><code>1.1.4.3</code></a></td>
+<td><a href="licenses/html-entities-1.1.4.3/LICENSE"><code>MIT</code></a></td>
+<td>A codec library for HTML-escaped text and HTML-entities</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>rio</code></td>
+<td><a href="http://hackage.haskell.org/package/rio-0.1.14.1"><code>0.1.14.1</code></a></td>
+<td><a href="licenses/rio-0.1.14.1/LICENSE"><code>MIT</code></a></td>
+<td>A standard library for Haskell</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>yaml</code></td>
+<td><a href="http://hackage.haskell.org/package/yaml-0.11.3.0"><code>0.11.3.0</code></a></td>
+<td><a href="licenses/yaml-0.11.3.0/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>Support for parsing and rendering YAML documents.</td>
+<td><code>hakyll</code>, <code>pandoc-citeproc</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="indirect-transitive-dependencies">Indirect transitive dependencies</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Version</th>
+<th><a href="https://spdx.org/licenses/">SPDX</a> License Id</th>
+<th>Description</th>
+<th>Depended upon by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Glob</code></td>
+<td><a href="http://hackage.haskell.org/package/Glob-0.10.0"><code>0.10.0</code></a></td>
+<td><a href="licenses/Glob-0.10.0/LICENSE.txt"><code>BSD-3-Clause</code></a></td>
+<td>Globbing library</td>
+<td><code>pandoc</code></td>
+</tr>
+<tr class="even">
+<td><code>HTTP</code></td>
+<td><a href="http://hackage.haskell.org/package/HTTP-4000.3.14"><code>4000.3.14</code></a></td>
+<td><a href="licenses/HTTP-4000.3.14/LICENSE"><code>BSD-3-Clause</code></a></td>
+<td>A library for client-side HTTP</td>
+<td><code>pandoc</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="まとめ">まとめ</h2>
+<p>今回は <strong>cabal-plan</strong> を使ってみましたが、同様のツールとして <a href="https://github.com/fossas/fossa-cli/blob/master/docs/integrations/haskell.md#haskell">fossas/fossa-cli</a> や <a href="https://github.com/github/licensed/blob/master/docs/sources/cabal.md">github/licensed</a> なども利用できるようです。</p>]]></summary>
+</entry>
+<entry>
     <title>Haskell 関連書籍の紹介ページを作りました</title>
     <link href="https://haskell.e-bigmoon.com/posts/2020/03-28-haskell-books.html" />
     <id>https://haskell.e-bigmoon.com/posts/2020/03-28-haskell-books.html</id>
@@ -1595,94 +1770,6 @@ Flags for format:
 <h2 id="参考リソース">参考リソース</h2>
 <ul>
 <li><a href="http://oleg.fi/gists/posts/2019-08-11-cabal-fmt.html">ANN: cabal-fmt</a></li>
-</ul>]]></summary>
-</entry>
-<entry>
-    <title>NoStarIsType 言語拡張が必要になるとき</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/10-04-NoStarIsType.html</id>
-    <published>October  4, 2019</published>
-    <updated>October 13, 2019</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>λ ghc <span class="op">-</span><span class="dt">V</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="dt">The</span> <span class="dt">Glorious</span> <span class="dt">Glasgow</span> <span class="dt">Haskell</span> <span class="dt">Compilation</span> <span class="dt">System</span>, version <span class="fl">8.8</span><span class="op">.</span><span class="dv">1</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">*</span><span class="dv">10</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>    • <span class="dt">Expected</span> kind ‘<span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> k0’, but ‘10’ has kind ‘<span class="dt">Nat</span>’</span>
-<span id="cb1-7"><a href="#cb1-7"></a>    • <span class="dt">In</span> the <span class="kw">type</span> ‘<span class="dv">10</span> <span class="op">*</span> 10’</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XNoStarIsType</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">*</span><span class="dv">10</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="dv">10</span><span class="op">*</span><span class="dv">10</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="ot">=</span> <span class="dv">100</span></span></code></pre></div>
-<!--more-->
-<h2 id="型レベル四則演算">型レベル四則演算</h2>
-<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/GHC-TypeLits.html">GHC.TypeLits</a> に用意されている関数を使って型レベル自然数の四則演算を行ってみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span> <span class="op">-</span><span class="dt">XTypeOperators</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>λ <span class="kw">import</span> <span class="dt">GHC.TypeLits</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">1</span><span class="op">+</span><span class="dv">1</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="dv">1</span><span class="op">+</span><span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a></span>
-<span id="cb3-8"><a href="#cb3-8"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span><span class="op">-</span><span class="dv">1</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="dv">10</span><span class="op">-</span><span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a><span class="ot">=</span> <span class="dv">9</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a></span>
-<span id="cb3-12"><a href="#cb3-12"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dt">Div</span> <span class="dv">10</span> <span class="dv">2</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="dt">Div</span> <span class="dv">10</span> <span class="dv">2</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="ot">=</span> <span class="dv">5</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a></span>
-<span id="cb3-16"><a href="#cb3-16"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a>    • <span class="dt">Expected</span> kind ‘<span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> k0’, but ‘10’ has kind ‘<span class="dt">Nat</span>’</span>
-<span id="cb3-19"><a href="#cb3-19"></a>    • <span class="dt">In</span> the <span class="kw">type</span> ‘<span class="dv">10</span> <span class="op">*</span> 10’</span></code></pre></div>
-<p>掛け算だけエラーになりましたね・・・。それぞれの演算子のカインドを確認してみましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a>λ <span class="op">:</span>k (<span class="op">+</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">(+) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>λ <span class="op">:</span>k (<span class="op">-</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="ot">(-) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>λ <span class="op">:</span>k <span class="dt">Mod</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="dt">Mod</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>λ <span class="op">:</span>k (<span class="op">*</span>)</span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="ot">(*) ::</span> <span class="op">*</span></span></code></pre></div>
-<p>1つだけ変ですね。これは <code>*</code> が <strong>Bool</strong> や <strong>Maybe</strong> などのよくある基本的な型 (lifted boxed types) のカインドの記号として割り当てられているためです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a>λ <span class="op">:</span>k <span class="dt">Bool</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="op">*</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a>λ <span class="op">:</span>k <span class="dt">Maybe</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
-<p>1つ前の <a href="https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6">GHC 8.6</a> から <strong>StarIsType</strong> 言語拡張がデフォルトで有効になり、<code>*</code> カインドは <code>Type</code> カインドのシノニムとして定義されるようになりました。なので明示的に <strong>StarIsType</strong> を無効にすると直ります。(この辺りの話題については既に <a href="https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/">“TypeOperators =&gt; NoStarIsType”の延期の提案</a> などにまとまっているため、気になる方はご参照ください)</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a>λ <span class="op">:</span>set <span class="op">-</span><span class="dt">XNoStarIsType</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a>λ <span class="op">:</span>k <span class="dt">Bool</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a>λ <span class="op">:</span>k <span class="dt">Maybe</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a></span>
-<span id="cb6-9"><a href="#cb6-9"></a>λ <span class="op">:</span>k (<span class="op">*</span>)</span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="ot">(*) ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Nat</span></span></code></pre></div>
-<p>ということでこれで無事に型レベルの掛け算ができるようになりました。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a>λ <span class="op">:</span>kind<span class="op">!</span> <span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="dv">10</span> <span class="op">*</span> <span class="dv">10</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">=</span> <span class="dv">100</span></span></code></pre></div>
-<h2 id="まとめ">まとめ</h2>
-<p><code>kind!</code> のエイリアスとして <code>k!</code> コマンド欲しい。</p>
-<h2 id="追記">追記</h2>
-<p><code>k!</code> コマンドのマージリクエストが作られました <a href="https://gitlab.haskell.org/ghc/ghc/merge_requests/1934">Allow completion for GHCi commands with option <code>!</code> (#17345)</a></p>
-<p>ありがとうございます :)</p>
-<p>GHC に組み込まれるまでは、<code>~/.ghci</code> や <code>&lt;proj&gt;/.ghci</code> に以下の内容を記述しておけば <code>:kind!</code> のエイリアスとして <code>:k!</code> が使えるようになります。</p>
-<pre><code>:def! k! (\e -&gt; return (&quot;:kind! &quot; ++ e))</code></pre>
-<p>実行結果</p>
-<pre><code>&gt; :k! 1+1
-1+1 :: Nat
-= 2</code></pre>
-<h2 id="参考リソース">参考リソース</h2>
-<ul>
-<li><a href="https://downloads.haskell.org/~ghc/8.8.1/docs/html/users_guide/glasgow_exts.html?highlight=nostaristype#extension-StarIsType">StarIsType - Glasgow Haskell Compiler User’s Guide</a></li>
-<li><a href="https://gitlab.haskell.org/ghc/ghc/wikis/migration/8.6">GHC 8.6.x Migration Guide</a></li>
-<li><a href="https://www.reddit.com/r/haskell_jp/comments/8t8p4j/typeoperators_nostaristype%E3%81%AE%E5%BB%B6%E6%9C%9F%E3%81%AE%E6%8F%90%E6%A1%88/">“TypeOperators =&gt; NoStarIsType”の延期の提案</a></li>
 </ul>]]></summary>
 </entry>
 
