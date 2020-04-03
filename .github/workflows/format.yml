@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        cache-version: ["2020-03-30-2"]
+        cache-version: ["2020-04-03"]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,17 +26,16 @@ jobs:
         ghc-version: "8.8.3"
         cabal-version: "3.0"
 
-    - uses: actions/cache@v1
+    - uses: actions/cache@master
       name: Cache ~/.cabal/bin
       with:
-        path: ~/.cabal/bin
-        key: ${{ matrix.cache-version }}-cabal-bin
+        path: ~/.cabal
+        key: ${{ runner.os }}-${{ matrix.cache-version }}-format-cabal
 
     - name: Install cabal-fmt ormolu
       run: |
         cabal update
         cabal install cabal-fmt ormolu --overwrite-policy=always --install-method=copy -j2
-        ls -al ~/.cabal/bin
 
     - name: Apply cabal-fmt
       run: |
