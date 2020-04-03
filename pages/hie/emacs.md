@@ -100,7 +100,7 @@ $ sudo apt install emacs26
 $ sudo update-alternatives --config emacs
 ```
 
-![きれいに表示されたHIEの画像](/images/hie-emacs.png)
+![きれいに表示されたHIEの画像](/images/hie-/emacs.png)
 
 ### 補足2 : ビルドはできたのにHIEが動かない
 
