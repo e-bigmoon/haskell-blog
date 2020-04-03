@@ -54,3 +54,4 @@ Great original post: [CRYPTOGRAPHIC HASHING IN HASKELL.](https://www.fpcomplete.
 Copyright © 2017–2020 BIGMOON
 
 All rights reserved.
+
