@@ -1,7 +1,7 @@
 ---
 title: VS Code と haskell-ide-engine で Haskell 開発環境を構築する
 published: 2020/04/02
-# updated: 2020/04/02
+updated: 2020/04/03
 ---
 
 ![本家のSSを引用](https://camo.githubusercontent.com/fb828845a665d6bff30340ba61bc9744013773a7/687474703a2f2f692e696d6775722e636f6d2f41637659524f762e676966)
@@ -796,7 +796,7 @@ documentation: True
 - [floskell][floskell-repo]
 - [ormolu][ormolu-repo]
 
-![フォーマッターを適用]](https://camo.githubusercontent.com/03cebefc68034e3f1bf75350c2febaf93128d86d/687474703a2f2f692e696d6775722e636f6d2f63715a5a3848432e676966)
+![フォーマッターを適用](https://camo.githubusercontent.com/03cebefc68034e3f1bf75350c2febaf93128d86d/687474703a2f2f692e696d6775722e636f6d2f63715a5a3848432e676966)
 
 ### 名前の変更
 
