@@ -2,7 +2,7 @@
 title: cabal install コマンドについて
 author: Shinya Yamaguchi
 tags: bigmoon, cabal
-updated: 2020/03/27
+updated: 2020/04/03
 ---
 
 - `stack install` と全く同じ動作をする **cabal** コマンドは `cabal install all:exes` です。
@@ -212,11 +212,7 @@ $ cabal user-config update -a overwrite-policy:always
 
 というコマンドで `~/.cabal/config` に設定できます。
 
-## 次期バージョンで変更になる点など
-
-リリースまでに内容が変更になる場合がありますのでご注意ください。
-
----
+## 3.2.0.0 で変更になる点など
 
 - [Copy on windows #6519](https://github.com/haskell/cabal/pull/6519/files)
 
