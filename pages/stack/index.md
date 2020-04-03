@@ -1,7 +1,7 @@
 ---
 title: Haskell Development
 published: 2017/10/24
-updated: 2020/03/27
+updated: 2020/04/03
 ---
 
 <div class="row">
@@ -124,16 +124,12 @@ _ | stack | cabal
 - [正格性のすべて (翻訳)](/posts/2018/06-25-All-About-Strictness.html)
 - [ContT を使ってコードを綺麗にしよう！](/posts/2018/06-26-cont-param.html)
 - [RecordWildCards と Reader モナド](/posts/2018/08-26-recordwildcards.html)
-- [Haskell 情報収集術 - Qiita](https://qiita.com/waddlaw/items/b7ed253db36c6f8a04fc)
-- [GHC Source Plugin 作ってみた - Qiita](https://qiita.com/waddlaw/items/65b57517f105fcbbe724)
-- [Monoid と DerivingVia - Qiita](https://qiita.com/waddlaw/items/f349bd363963d59e9ef5)
-- [RankNTypes と型レベルリストと extensible - Qiita](https://qiita.com/waddlaw/items/b49e9daa02b2d254fba3)
 
-## エディタ
+## エディタ (IDE)
 
 - [VS Code で Ghcid を使う (翻訳)](/posts/2017/12-24-Ghcid-with-VS-Code.html)
 - [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
-- [VS Code と haskell-ide-engine で Haskell 開発環境を構築する - Qiita](https://qiita.com/waddlaw/items/b83cd10311200095fe87)
+- [VS Code と haskell-ide-engine で Haskell 開発環境を構築する](/hie/vscode.html)
 
 </div>
 </div>
@@ -179,6 +175,13 @@ _ | stack | cabal
 
 - [Hoogle](https://hoogle.haskell.org/)
 
+### Scrapbox
+
+- [haskell-shoen](https://scrapbox.io/haskell-shoen/)
+- [Haskell and Cryptocurrencies](https://scrapbox.io/haskell-and-crypto/)
+- [LugendrePublic](https://scrapbox.io/LugendrePublic/)
+- [herp-technote](https://scrapbox.io/herp-technote/)
+
 </div>
 <div class="col s12 m6">
 
@@ -212,6 +215,7 @@ _ | stack | cabal
 - [Hackage Dependency Monitor](http://packdeps.haskellers.com/)
 - [Hackage Matrix Builder 3rd](https://matrix.hackage.haskell.org/)
 - [hdiff](http://hdiff.luite.com/)
+- [パッケージティアリスト - haskell 荘園](https://scrapbox.io/haskell-shoen/%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%83%86%E3%82%A3%E3%82%A2%E3%83%AA%E3%82%B9%E3%83%88)
 
 </div>
 </div>
