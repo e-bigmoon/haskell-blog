@@ -1,0 +1,957 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>VS Code と haskell-ide-engine で Haskell 開発環境を構築する</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../hie/vscode.html">
+  <link rel="alternate" type="application/atom+xml" title="VS Code と haskell-ide-engine で Haskell 開発環境を構築する" href="../feed.xml" />
+  <link rel="shortcut icon" href="../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="VS Code と haskell-ide-engine で Haskell 開発環境を構築する" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/hie/vscode.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="VS Code と haskell-ide-engine で Haskell 開発環境を構築する" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../books/" class="white-text">
+        <i class="mdi mdi-book-open left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../quiz/" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-book-open left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <div style="float: right;">
+          
+          <span>記事公開日: 2020/04/02</span><br>
+          
+          
+        </div>
+        <h1 class="post-title">VS Code と haskell-ide-engine で Haskell 開発環境を構築する</h1>
+      </div>
+
+      <article class="page-content">
+        <figure>
+<img src="https://camo.githubusercontent.com/fb828845a665d6bff30340ba61bc9744013773a7/687474703a2f2f692e696d6775722e636f6d2f41637659524f762e676966" alt /><figcaption>本家のSSを引用</figcaption>
+</figure>
+<p>この画像は本家リポジトリのスクリーンショットを引用しています。</p>
+<p>現在リリースされている最新バージョンは <a href="https://github.com/haskell/haskell-ide-engine/releases">v1.2</a> です。(HIE はまだ安定して動作しない場合があるのでご注意ください)</p>
+<p>この記事は以下のリビジョンで動作確認しています。</p>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ git rev-parse HEAD
+02815bb04d9ea3501e941ac116673f0968e1d0dd</code></pre>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine/blob/master/Changelog.md#12">v1.2 の変更点</a></li>
+</ul>
+<p>また、<a href="https://github.com/alanz/vscode-hie-server/">vscode-hie-server</a> の最新バージョンは <strong>0.0.37</strong> です。</p>
+<h2 id="実行環境">実行環境</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">環境</th>
+<th style="text-align: left;">バージョン</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">OS</td>
+<td style="text-align: left;">Ubuntu 18.04.4 LTS</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Stack</td>
+<td style="text-align: left;">2.1.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">HIE</td>
+<td style="text-align: left;">Version 1.2 x86_64 ghc-8.8.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">vscode</td>
+<td style="text-align: left;">1.43.2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="haskell-ide-engine-のビルド時間めちゃ長い問題について">haskell-ide-engine のビルド時間めちゃ長い問題について</h2>
+<p>現状、公式からビルド済みのバイナリは配布されていません。</p>
+<p>「[Nix で Haskell IDE Engine をシュッと入れる][vscode-install-nix]」の方法でインストールすれば比較的短時間で終わるみたいです。興味ある方は試してみると良いかもしれません！</p>
+<p>また、その他にも VS Code の Devcontainer 機能を使ったインストール方法もあります。</p>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine#installation-with-ghc-and-hie-as-a-vs-code-devcontainer">Installation with GHC and HIE as a VS Code Devcontainer</a></li>
+<li><a href="https://hmemcpy.com/2020/02/setting-up-a-haskell-development-environment-in-minutes-in-vscode/">Setting up a Haskell development environment in minutes in Visual Studio</a></li>
+</ul>
+<h3 id="ビルド時間-参考">ビルド時間 (参考)</h3>
+<p>参考までに僕の環境 (Mac)</p>
+<ul>
+<li>MacBook Air (Retina, 13-inch, 2018)</li>
+<li>CPU: 1.6 GHz Dual-Core Intel Core i5</li>
+<li>Memory: 16 GB 2133 MHz LPDDR3</li>
+</ul>
+<p>で <strong>v1.0.0.0</strong> をビルドした場合は<strong>22分</strong>かかりました。(色々キャッシュとか効いてるはずなので、フルビルドの場合は1時間~2時間ぐらいかかるかもしれません。)</p>
+<pre class="shell"><code>$ stack ./install.hs hie
+...
+Build completed in 22m31s</code></pre>
+<h2 id="haskell-の開発環境について">Haskell の開発環境について</h2>
+<p>みなさん Haskell の開発環境ってどうしてますか？僕は <a href="https://summer.haskell.org/news/2017-09-15-final-results.html">Vim and Haskell in 2016</a> を参考にしつつ、 <a href="https://github.com/begriffs/haskell-vim-now">haskell-vim-now</a> で環境を整えていました。これはこれで便利なのですが、やっぱり <strong>IDE</strong> を使いたいって思う時ありますよね。</p>
+<p><strong>Haskell</strong> 界隈でもこの話題は昔から問題として認識されていて、Haskell で書かれている <a href="http://leksah.org/">Leksah</a> (10年以上続いているプロジェクト) や <a href="http://haskellformac.com/">Haskell for Mac</a> (有料ですが <strong>SpriteKit</strong> を使ってゲームを作れたりします。開発スピードは遅めです。<strong>Xcode</strong> の <strong>playground</strong> 機能も実装されています。個人的に購入してみましたが <a href="https://docs.haskellstack.org/en/stable/README/">stack</a> と相性が悪いのですぐに使わなくなりました) などの IDE が存在します。</p>
+<p>また、<strong>IDE</strong> を作るのではなく、バックエンドを実装するプロジェクトも存在します。</p>
+<ul>
+<li><a href="https://github.com/digital-asset/ghcide">ghcide</a> (digital-asset 製)</li>
+<li><a href="https://github.com/fpco/ide-backend">ide-backend</a> (fpco 製)
+<ul>
+<li>最近は開発が止まっているようです。</li>
+</ul></li>
+<li><del><a href="https://github.com/DanielG/ghc-mod">ghc-mod</a> (超有名)</del>
+<ul>
+<li><a href="https://www.reddit.com/r/haskell_jp/comments/ajxtlc/%E3%83%84%E3%83%BC%E3%83%AB%E3%81%A8%E3%81%97%E3%81%A6%E3%81%AEghcmod_%E3%81%8C%E3%81%A8%E3%81%86%E3%81%A8%E3%81%86_deprecate%E3%81%AB/">ツールとしてのghc-mod がとうとう deprecateに - reddit</a></li>
+</ul></li>
+<li><del><a href="https://github.com/commercialhaskell/intero">intero</a> (commercialhaskell 製)</del>
+<ul>
+<li><a href="https://www.reddit.com/r/haskell/comments/dr91dv/the_intero_project_has_reached_its_end_of_life/">The intero project has reached it’s end of life cycle -reddit</a></li>
+</ul></li>
+</ul>
+<p>そして、<strong>ghc-mod</strong> と <strong>ide-backend</strong> が力を合わせてすごいやつ作るぞ！となって、絶賛開発中なのがこちら。</p>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine">haskell-ide-engine</a> (略称は HIE)</li>
+</ul>
+<p>将来的には、このプロジェクトに全て統合していくようです。</p>
+<p>説明が長くなりましたが、<a href>Summer of Haskell 2017</a> に <strong>Haskell IDE Engine</strong> というプロジェクトがあり、以下を実装することを目標としていました。</p>
+<ul>
+<li><a href="https://code.visualstudio.com/">Visual Studio Code</a> や <a href="https://www.gnu.org/software/emacs/">Emacs</a>, <a href="https://neovim.io/">NeoVim</a> などの様々なエディタに対してインタフェースを提供するために、完全な <a href="https://langserver.org/">LSP (Language Server Protocol)</a> をサポートする。</li>
+<li>自動補完, 定義へのジャンプ, 型の挿入, 静的解析などの機能を実装するために <a href="https://github.com/commercialhaskell/intero">intero</a>, <a href="https://github.com/DanielG/ghc-mod">ghc-mod</a>, <a href="https://github.com/RefactoringTools/HaRe">HaRe</a>, <a href="https://github.com/commercialhaskell/hindent">hindent</a> などの既存の <strong>Haskell</strong> ツールを統合する。</li>
+</ul>
+<p>今までは自分たちで <a href="https://github.com/ndmitchell/hlint">HLint</a> や <a href="https://github.com/RefactoringTools/HaRe">HaRe</a> などのツールを別途インストールし、実行する必要がありましたが、HIE を使うことでこれらの作業負担が無くなる点も Good Point だと思います。(<a href="https://github.com/haskell/haskell-ide-engine/blob/master/docs/Tools.md">Tools in the ecosystem</a> を見てもらえればわかりますが、本当にたくさんあります。)</p>
+<p>現在使える機能は以下の通りです。</p>
+<ul>
+<li><a href="https://github.com/ndmitchell/hlint">HLint</a>, <a href="https://github.com/DanielG/ghc-mod">ghc-mod</a> を使った静的解析</li>
+<li><a href="https://github.com/mpickering/apply-refact">apply-refact</a> を使ったクイックフィックス</li>
+<li>マウスホバー時の型情報の表示と <a href="https://github.com/ndmitchell/hoogle">Hoogle</a> を使ったドキュメントの表示</li>
+<li>定義へのジャンプ</li>
+<li>トップレベル定義の一覧表示</li>
+<li>ドキュメント内のハイライト参照</li>
+<li>自動補完</li>
+<li><a href="https://github.com/tweag/ormolu">Ormolu</a>, <a href="https://github.com/lspitzner/brittany">brittany</a>, <a href="https://github.com/ennocramer/floskell">Floskell</a> を使ったコード整形</li>
+<li><a href="https://github.com/RefactoringTools/HaRe">HaRe</a> を使った名前変更リファクタリング</li>
+<li>import 文の自動挿入</li>
+<li>import 文からパッケージを <code>.cabal</code> (<a href="https://www.haskell.org/cabal/">Cabal</a>) ファイルや <code>hpack.yaml</code> (<a href="https://github.com/sol/hpack">hpack</a>) に追加</li>
+<li>typo のクイックフィックス</li>
+<li><a href="https://github.com/fendor/hsimport">hsimport</a> を使った import 文の挿入</li>
+<li><a href="https://github.com/ucsd-progsys/liquidhaskell">LiquidHaskell</a> のサポート</li>
+<li>Case splitting</li>
+</ul>
+<p><strong>HIE</strong> は <strong>HLint</strong>, <strong>brittany</strong>, <strong>ghc-mod</strong> 等の各パッケージが提供している <strong>API</strong> を利用して実装しているため、それぞれのバイナリファイルは必要ありません。(つまり、<code>stack install hlint</code> などでインストールしなくても使えるということです)</p>
+<h3 id="その他の開発環境について">その他の開発環境について</h3>
+<p>その他、参考になりそうな記事へのリンクです。</p>
+<ul>
+<li><a href="https://kakkun61.hatenablog.com/entry/2019/11/20/GHC_%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89_%E6%A6%82%E8%A6%B3_%E3%81%A8_PowerShell">GHC 環境構築 概観 と PowerShell</a></li>
+<li><a href="http://syocy.hatenablog.com/entry/init-ghc-8-8-1">HaskellやっていくGHC8.8.1令和元年白露の候</a></li>
+<li><a href="https://kakkun61.hatenablog.com/entry/2019/10/23/%E6%9C%80%E8%BF%91%E3%81%AE%E8%87%AA%E5%88%86%E3%81%AE_Haskell_%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83%EF%BC%88Windows%EF%BC%89">最近の自分の Haskell 開発環境（Windows）</a></li>
+<li><a href="http://marco-lopes.com/articles/Vim-and-Haskell-in-2019/">Vim and Haskell in 2019</a></li>
+</ul>
+<h2 id="hie-のデメリット">HIE のデメリット</h2>
+<p>良い部分だけ紹介するのは不公平なので、利用していて気になっている部分を箇条書きで列挙します。</p>
+<ul>
+<li>プロジェクトごとに異なる <strong>HIE</strong> のバイナリが必要なので、ビルドの時間が長いです。またかなりディスク容量を消費します (<a href="https://github.com/haskell/haskell-ide-engine/issues/904">Wild thought: use ghc-hotswap to load plugins #904</a> という取り組みも今後の野望として考えているようです)</li>
+<li>良くも悪くも安定していないので、<strong>master</strong> ブランチが壊れている場合があります</li>
+<li><strong>macOS</strong> で <strong>TemplateHaskell</strong> を利用しているファイルを開くと <strong>HIE</strong> が動かなくなることがあります
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine/issues/1061">Doesn’t work with Template Haskell #1061</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine/issues/1084">TH exception #1084</a></li>
+</ul></li>
+</ul>
+<p>上記の問題はあるものの、その問題点を確実に上回るメリットがあるため現在も利用を続けています。</p>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine/issues?q=is%3Aissue+is%3Aopen+label%3A%22type%3A+bug%22">type: bug</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine/issues?q=is%3Aissue+is%3Aopen+label%3A%22type%3A+performance%22">type: performance</a></li>
+</ul>
+<h2 id="準備">準備</h2>
+<h3 id="依存関係のインストール">依存関係のインストール</h3>
+<p><strong>git</strong> はすでにインストールされているものとします。</p>
+<pre class="shell"><code># Debian 9/Ubuntu 18.04 or earlier
+$ sudo apt install libicu-dev libtinfo-dev libgmp-dev zlib1g-dev
+
+# Debian 10/Ubuntu 18.10 or later
+$ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev</code></pre>
+<p><strong>zlib1g-dev</strong> は<a href="https://github.com/haskell/haskell-ide-engine#linux-specific-pre-requirements">公式ドキュメント</a>に記載が無いため環境によっては不必要かもしれませんが、ハマりポイントっぽいのでインストールしておいた方が良いと思います。</p>
+<h3 id="stack-のインストール">Stack のインストール</h3>
+<pre class="shell"><code>$ curl -sSL https://get.haskellstack.org/ | sh</code></pre>
+<p>既に <a href="https://docs.haskellstack.org/en/stable/README/">stack</a> をインストールしている人でバージョンが <strong>2.1.1</strong> より小さい場合は、以下のコマンドで更新しましょう。</p>
+<pre class="shell"><code>$ stack upgrade
+
+$ stack --version
+Version 2.1.3, Git revision 0fa51b9925decd937e4a993ad90cb686f88fa282 (7739 commits) x86_64 hpack-0.31.2</code></pre>
+<h3 id="パスを通す">パスを通す</h3>
+<p>すでに設定している方は必要ありません。</p>
+<p>だいたいこんな感じです。必要に応じて変更しましょう。</p>
+<ul>
+<li><strong>Mac</strong> ユーザ</li>
+</ul>
+<pre class="shell"><code>$ echo 'export PATH=$(stack path --local-bin):$PATH' &gt;&gt; ~/.bash_profile
+$ source ~/.bash_profile</code></pre>
+<ul>
+<li><strong>Ubuntu</strong> ユーザ</li>
+</ul>
+<pre class="shell"><code>$ echo 'export PATH=$(stack path --local-bin):$PATH' &gt;&gt; ~/.bashrc
+$ source ~/.bashrc</code></pre>
+<h2 id="hie-が対応している-ghc-のバージョン">HIE が対応している GHC のバージョン</h2>
+<p><code>install.hs</code> スクリプトの <strong>help</strong> コマンドで、利用可能なコマンドの一覧が表示されます。</p>
+<p>利用可能な <strong>GHC</strong> のバージョン一覧もここで確認できます。</p>
+<pre class="shell"><code>$ stack ./install.hs help
+... GHC のインストールが始まる場合があります ...
+
+Usage:
+    stack install.hs &lt;target&gt; [options]
+    or
+    cabal v2-run install.hs --project-file install/shake.project -- &lt;target&gt; [options]
+
+Targets:
+    help                Show help message including all targets
+                        
+    hie                 Install hie with the latest available GHC and the data files
+    latest              Install hie with the latest available GHC
+    data                Get the required data-files for `hie` (Hoogle DB)
+    hie-8.4.2           Install hie for GHC version 8.4.2
+    hie-8.4.3           Install hie for GHC version 8.4.3
+    hie-8.4.4           Install hie for GHC version 8.4.4
+    hie-8.6.4           Install hie for GHC version 8.6.4
+    hie-8.6.5           Install hie for GHC version 8.6.5
+    hie-8.8.1           Install hie for GHC version 8.8.1
+    hie-8.8.2           Install hie for GHC version 8.8.2
+                        
+    dev                 Install hie with the default stack.yaml
+                        
+    icu-macos-fix       Fixes icu related problems in MacOS
+
+Options:
+    -j[N], --jobs[=N]   Allow N jobs/threads at once [default number of CPUs].
+    -s, --silent        Don't print anything.
+    -q, --quiet         Print less (pass repeatedly for even less).
+    -V, --verbose       Print more (pass repeatedly for even more).</code></pre>
+<h2 id="hie-のインストール">HIE のインストール</h2>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine">haskell/haskell-ide-engine</a></li>
+</ul>
+<p><strong>HIE</strong> はビルドに利用した <strong>GHC</strong> のバージョンを利用するプロジェクトでしか動きません。(具体例: <strong>GHC-8.6.5</strong> でビルドした <strong>HIE</strong> は <strong>GHC-8.8.3</strong> を利用するプロジェクトでは使えません)</p>
+<p>そのため、各 <strong>GHC</strong> のバージョンに対応した <strong>HIE</strong> のバイナリファイルを <strong>hie-8.6.5</strong> のようにリネームすることで、この問題を回避しています。</p>
+<p>通常の良くある <code>stack install</code> コマンドではなく <code>install.hs</code> スクリプトを使ったインストール方法を推奨するのは、それらのつまらない作業を全部やってくれるからです。また、このスクリプトは <a href="https://shakebuild.com/">Shake</a> というビルドシステムを利用しているため、OS に依存することなく実行可能です。そのため <strong>Windows</strong> でも <strong>Linux</strong> でも <code>install.hs</code> を使ってインストールを行います。</p>
+<p>インストール方法には</p>
+<ol type="1">
+<li>最新の <strong>GHC</strong> のバージョンに対応する <strong>HIE</strong> をインストールする方法</li>
+<li>指定したバージョンの <strong>GHC</strong> に対応する <strong>HIE</strong> をインストールする方法</li>
+</ol>
+<p>の2パターンがあります。</p>
+<h3 id="hie-をバージョンごとにインストールする方法">HIE をバージョンごとにインストールする方法</h3>
+<p>以下は全て <strong>stack</strong> を使ってインストールする方法になります。<strong>cabal</strong> を使いたい人は後述の方法を試してください。</p>
+<p>2つ以上のバージョンを利用したい場合は、次に説明するインストール方法を単純に組み合わせるだけで大丈夫です。</p>
+<h4 id="最新の-ghc-8.8.2">最新の GHC (8.8.2)</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie</code></pre>
+<p><strong>hie</strong> コマンドは最新版の <strong>HIE</strong> のインストールと <strong>hoogle</strong> ドキュメントの生成の両方を行います。</p>
+<h4 id="ghc-8.8.2">GHC 8.8.2</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie-8.8.2
+$ stack ./install.hs data</code></pre>
+<h4 id="ghc-8.8.1">GHC 8.8.1</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie-8.8.1
+$ stack ./install.hs data</code></pre>
+<h4 id="ghc-8.6.5">GHC 8.6.5</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie-8.6.5
+$ stack ./install.hs data</code></pre>
+<h4 id="ghc-8.6.4">GHC 8.6.4</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie-8.6.4
+$ stack ./install.hs data</code></pre>
+<h4 id="ghc-8.4.4">GHC 8.4.4</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie-8.4.4
+$ stack ./install.hs data</code></pre>
+<h4 id="ghc-8.4.3">GHC 8.4.3</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie-8.4.3
+$ stack ./install.hs data</code></pre>
+<h4 id="ghc-8.4.2">GHC 8.4.2</h4>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
+$ cd haskell-ide-engine
+$ stack ./install.hs hie-8.4.2
+$ stack ./install.hs data</code></pre>
+<h3 id="stack-ではなく-cabal-を使う">stack ではなく cabal を使う</h3>
+<p><strong>HIE</strong> のビルドに <code>stack build</code> ではなく <code>cabal build</code> を使うこともできます。<strong>cabal</strong> のバージョンは <strong>2.4.1.0</strong> 以降であれば利用可能です。</p>
+<p>ただし、<strong>Windows</strong> 環境の場合は <strong>3.0.0.0</strong> 以降でしか動きません。</p>
+<p><strong>cabal</strong> を使う場合の基本形はこんな感じです。<code>cabal-hie-install</code> というスクリプト経由でコマンドを実行します。</p>
+<pre class="shell"><code>$ ./cabal-hie-install help
+... ビルドが実行される場合があります。
+
+Usage:
+    stack install.hs &lt;target&gt; [options]
+    or
+    cabal v2-run install.hs --project-file install/shake.project -- &lt;target&gt; [options]
+
+Targets:
+    help                Show help message including all targets
+                        
+    hie                 Install hie with the latest available GHC and the data files
+    latest              Install hie with the latest available GHC
+    data                Get the required data-files for `hie` (Hoogle DB)
+    hie-8.4.4           Install hie for GHC version 8.4.4
+    hie-8.6.4           Install hie for GHC version 8.6.4
+    hie-8.6.5           Install hie for GHC version 8.6.5
+    hie-8.8.1           Install hie for GHC version 8.8.1
+    hie-8.8.2           Install hie for GHC version 8.8.2
+                        
+    ghcs                Show all GHC versions that can be installed via `cabal-build`.
+                        
+    icu-macos-fix       Fixes icu related problems in MacOS
+
+Options:
+    -j[N], --jobs[=N]   Allow N jobs/threads at once [default number of CPUs].
+    -s, --silent        Don't print anything.
+    -q, --quiet         Print less (pass repeatedly for even less).
+    -V, --verbose       Print more (pass repeatedly for even more).</code></pre>
+<p>利用可能なGHCの一覧は <code>cabal-hie-install ghcs</code> コマンドで確認できます。</p>
+<pre class="shell"><code>$ ./cabal-hie-install ghcs
+********************************************************************************
+Found the following GHC paths:
+ghc-8.4.4: ~/.ghcup/bin/ghc-8.4.4
+ghc-8.6.4: ~/.ghcup/bin/ghc-8.6.4
+ghc-8.6.5: ~/.ghcup/bin/ghc-8.6.5
+ghc-8.8.1: ~/.ghcup/bin/ghc-8.8.1
+ghc-8.8.2: ~/.ghcup/bin/ghc-8.8.2
+
+********************************************************************************</code></pre>
+<p>例として、<strong>GHC-8.8.2</strong> 対応の <strong>HIE</strong> をビルドする場合は以下のようになります。</p>
+<pre class="shell"><code>$ cabal update
+$ ./cabal-hie-install hie-8.8.2
+$ ./cabal-hie-install data</code></pre>
+<h2 id="vscode-の設定">VSCODE の設定</h2>
+<p>無事にインストールが完了し、パスが通っている状態であればこのように <strong>HIE</strong> のバージョンが表示されます。</p>
+<pre class="shell"><code>$ hie --version
+Version 1.2 x86_64 ghc-8.8.2</code></pre>
+<h2 id="トラブルシューティング">トラブルシューティング</h2>
+<p>本家の <a href="https://github.com/haskell/haskell-ide-engine#troubleshooting">Troubleshooting</a> も参考になる場合があります。</p>
+<hr />
+<h3 id="hie-doesnt-work-with-error-cannot-satisfy--package-id-foo">hie doesn’t work with error “cannot satisfy -package-id foo …”</h3>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine/issues/1616">hie doesn’t work with error “cannot satisfy -package-id foo …” on any Linux #1616</a></li>
+</ul>
+<p>上記の <strong>issue</strong> 通り、プロジェクトのルートで以下のコマンドを実行すれば直ります。</p>
+<pre class="shell"><code>$ echo &quot;cradle: { stack: {}}&quot; &gt; hie.yaml
+$ stack build</code></pre>
+<p><code>stack build</code> だけで直る場合もあります。</p>
+<hr />
+<h3 id="mismatching-ghc-versions-ghc-session-is-no-system-ghc-found.-hie-is-8.6.5-you-may-want-to-use-hie-wrapper.check-the-readme-for-more-information">Mismatching GHC versions: GHC session is No System GHC Found., HIE is 8.6.5 You may want to use hie-wrapper.Check the README for more information</h3>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine/issues/1658">Warning “Mismatching GHC versions” in VS Code</a></li>
+</ul>
+<p><strong>vscode</strong> でフォルダを開く際に、プロジェクトルートを開いているか確認してみてください。</p>
+<p>例えば、ホームディレクトリなど、プロジェクトルートではない場所で作業している場合に発生します。</p>
+<hr />
+<h3 id="hie-が見つからない">hie が見つからない</h3>
+<figure>
+<img src="../images/hie/vscode/not-found-hie.png" alt /><figcaption>vscode のポップアップ</figcaption>
+</figure>
+<blockquote>
+<p>hie executable missing, please make sure it is installed, see github.com/haskell/haskell-ide-engine.</p>
+</blockquote>
+<p>画像のようなエラーメッセージが出た時は <strong>hie</strong> が見つからないということなので、以下のように実行ファイルのパスを <code>languageServerHaskell.hieExecutablePath</code> に指定します。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href="#cb22-1"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/hie&quot;,</span></span></code></pre></div>
+<p>どこにインストールしたかわからない人は次のコマンドでパスを確認しましょう。</p>
+<pre class="shell"><code>$ which hie
+~/.local/bin/hie</code></pre>
+<hr />
+<h3 id="print-build-platform-exit-1-failed-というエラーが出る">“print-build-platform” (exit 1): failed というエラーが出る</h3>
+<p>エラーメッセージは以下のような内容が表示されます。</p>
+<pre class="shell"><code>readCreateProcess: &lt;path&gt;/bin/cabal-helper-wrapper &quot;print-build-platform&quot; (exit 1): failed</code></pre>
+<p>このエラーは <a href="https://github.com/alanz/vscode-hie-server/issues/128">cabal-helper-wrapper “print-build-platform” (exit 1): failed. #128</a> の可能性があります。</p>
+<p>下記の内容を <code>.bash_profile</code> 等に追記すると解決する場合があります。</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1"></a><span class="bu">export</span> <span class="va">PATH=$(</span><span class="ex">stack</span> path --compiler-bin<span class="va">)</span>:<span class="va">$PATH</span></span></code></pre></div>
+<hr />
+<h3 id="error-spawn-eacces-というエラーが出て-hie-が起動しない">Error: spawn EACCES というエラーが出て HIE が起動しない</h3>
+<pre class="shell"><code>[Error - 19:07:38] Starting client failed
+Error: spawn EACCES
+	at _errnoException (util.js:1024:11)
+	at ChildProcess.spawn (internal/child_process.js:323:11)
+	at Object.exports.spawn (child_process.js:514:9)
+	at _getServerWorkingDir.then.serverWorkingDir (/home/guchi/.vscode/extensions/alanz.vscode-hie-server-0.0.24/node_modules/vscode-languageclient/lib/main.js:347:40)
+	at &lt;anonymous&gt;</code></pre>
+<p>上記のエラーは、パスの指定が間違っている場合などで出現するようです。</p>
+<p>例えば、以下のパスはどちらも間違っています。自分の設定ファイルを確認してみましょう。</p>
+<ul>
+<li>間違った指定その１</li>
+</ul>
+<div class="sourceCode" id="cb27"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/&quot;,</span></span></code></pre></div>
+<ul>
+<li>間違った指定その2</li>
+</ul>
+<div class="sourceCode" id="cb28"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb28-1"><a href="#cb28-1"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;$</span><span class="fu">{</span><span class="er">HOME</span><span class="fu">}</span><span class="er">/.local/bin/hie&quot;,</span></span></code></pre></div>
+<p>以下のように、正しいパスを指定しましょう。</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb29-1"><a href="#cb29-1"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/hie&quot;,</span></span></code></pre></div>
+<hr />
+<h3 id="text-icu-パッケージのビルドエラー">text-icu パッケージのビルドエラー</h3>
+<p><strong>macOS</strong> 環境だと、以下のようなエラーが出る場合があります。</p>
+<pre class="shell"><code>--  While building custom Setup.hs for package text-icu-0.7.0.1 using:
+      /Users/bm12/.stack/setup-exe-cache/x86_64-osx/Cabal-simple_mPHDZzAJ_1.24.2.0_ghc-8.0.2 --builddir=.stack-work/dist/x86_64-osx/Cabal-1.24.2.0 configure --with-ghc=/Users/bm12/.stack/programs/x86_64-osx/ghc-8.0.2/bin/ghc --with-ghc-pkg=/Users/bm12/.stack/programs/x86_64-osx/ghc-8.0.2/bin/ghc-pkg --user --package-db=clear --package-db=global --package-db=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/pkgdb --libdir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/lib --bindir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/bin --datadir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/share --libexecdir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/libexec --sysconfdir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/etc --docdir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/doc/text-icu-0.7.0.1 --htmldir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/doc/text-icu-0.7.0.1 --haddockdir=/Users/bm12/.stack/snapshots/x86_64-osx/lts-9.21/8.0.2/doc/text-icu-0.7.0.1 --dependency=base=base-4.9.1.0 --dependency=bytestring=bytestring-0.10.8.1 --dependency=deepseq=deepseq-1.4.2.0 --dependency=text=text-1.2.2.2-9UQZjEJZQFSGMffj1Z5g00
+    Process exited with code: ExitFailure 1
+    Logs have been written to: /usr/local/share/haskell-ide-engine/.stack-work/logs/text-icu-0.7.0.1.log
+
+    Configuring text-icu-0.7.0.1...
+    Cabal-simple_mPHDZzAJ_1.24.2.0_ghc-8.0.2: Missing dependencies on foreign
+    libraries:
+    * Missing C libraries: icuuc, icui18n, icudata
+    This problem can usually be solved by installing the system packages that
+    provide these libraries (you may need the &quot;-dev&quot; versions). If the libraries
+    are already installed but in a non-standard location then you can use the
+    flags --extra-include-dirs= and --extra-lib-dirs= to specify where they are.
+make: *** [build] Error 1</code></pre>
+<p>依存しいてるライブラリのパスがわからなくてパッケージのインストールに失敗しているため、以下のコマンドでパッケージをビルドしましょう。</p>
+<pre class="shell"><code>$ stack ./install.hs icu-macos-fix</code></pre>
+<h2 id="vs-code-のインストール">VS Code のインストール</h2>
+<h3 id="ubuntu-18.04-lts">Ubuntu 18.04 LTS</h3>
+<p><a href="https://code.visualstudio.com/docs/setup/linux#_installation">公式ドキュメント</a>で紹介されている、手動でのインストール方法でインストールすることにします。</p>
+<pre class="shell"><code>$ curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor &gt; packages.microsoft.gpg
+$ sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
+$ sudo sh -c 'echo &quot;deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main&quot; &gt; /etc/apt/sources.list.d/vscode.list'
+
+$ sudo apt install apt-transport-https
+$ sudo apt update
+$ sudo apt install code # or code-insiders</code></pre>
+<p><code>code</code> と入力すればすぐに <em>vscode</em> が起動します。</p>
+<pre class="shell"><code>$ code</code></pre>
+<figure>
+<img src="../images/hie/vscode/vscode-welcome.png" alt /><figcaption>vscode 起動時の画面</figcaption>
+</figure>
+<p>以下のようなエラーが出る場合はライブラリが足りないので、追加でインストールしましょう。</p>
+<pre class="shell"><code>$ code
+/usr/share/code/bin/../code: error while loading shared libraries: libXss.so.1: cannot open shared object file: No such file or directory
+
+$ sudo apt install libxss1</code></pre>
+<h3 id="macos-catalina-10.15.3">macOS Catalina (10.15.3)</h3>
+<p><a href="https://code.visualstudio.com/">公式サイト</a>からバイナリが配布されているので、それをインストールするだけです。</p>
+<h2 id="拡張機能-haskell-language-server-の追加">拡張機能 (Haskell Language Server) の追加</h2>
+<p><a href="https://marketplace.visualstudio.com/">VS Code marketplace</a> から <a href="https://marketplace.visualstudio.com/items?itemName=alanz.vscode-hie-server">Haskell Language Server</a> 拡張をインストールします。</p>
+<figure>
+<img src="../images/hie/vscode/haskell-language-server-extension-install.png" alt /><figcaption>マーケットプレイスから Haskell Language Server 拡張をインストール</figcaption>
+</figure>
+<p>インストール完了後、再読み込みすると有効化されます。</p>
+<p>また、<strong>vscode</strong> 内からインストールすることも可能です。</p>
+<figure>
+<img src="../images/hie/vscode/haskell-language-server-extension-install2.png" alt /><figcaption>VSCode 内から Haskell Language Server 拡張をインストール</figcaption>
+</figure>
+<p><strong>Haskell Language Server</strong> をインストールすると <strong>Haskell Syntax Highlighting</strong> 拡張も同時にインストールされるため、何もしなくても色鮮やかなコードが表示されます。</p>
+<figure>
+<img src="../images/hie/vscode/syntax-highlighting.png" alt /><figcaption>シンタックスハイライト</figcaption>
+</figure>
+<h3 id="設定可能な項目">設定可能な項目</h3>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 16%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>名前</th>
+<th>型</th>
+<th>デフォルト値</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>hlintOn</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>maxNumberOfProblems</td>
+<td>number</td>
+<td>100</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>diagnosticsOnChange</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>liquidOn</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>completionSnippetsOn</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>formatOnImportOn</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>formattingProvider</td>
+<td>string</td>
+<td>“brittany”</td>
+<td>Enum: [“brittany”, “floskell”, “ormolu”, “none”]</td>
+</tr>
+<tr class="even">
+<td>hieExecutablePath</td>
+<td>string</td>
+<td>""</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>useCustomHieWrapper</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>useCustomHieWrapperPath</td>
+<td>string</td>
+<td>""</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>noLspParam</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>showTypeForSelection.onHover</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>showTypeForSelection.command.location</td>
+<td>string</td>
+<td>dropdown</td>
+<td>Enum: [“dropdown”, “channel”]</td>
+</tr>
+<tr class="even">
+<td>trace.server</td>
+<td>string</td>
+<td>“off”</td>
+<td>Enum: [“off”, “messages”, “verbose”]</td>
+</tr>
+<tr class="odd">
+<td>logFile</td>
+<td>string</td>
+<td>""</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>enableHIE</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>実際の設定は <a href="https://github.com/alanz/vscode-hie-server/blob/master/package.json">vscode-hie-server/package.json</a> で確認できます。</p>
+<h3 id="利用可能なコマンド">利用可能なコマンド</h3>
+<table>
+<thead>
+<tr class="header">
+<th>コマンド名</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>demoteDef</td>
+<td>Move a definition one level down</td>
+</tr>
+<tr class="even">
+<td>liftOneLevel</td>
+<td>Move definition one level up from where it is now</td>
+</tr>
+<tr class="odd">
+<td>liftTopLevel</td>
+<td>Move a definition to the top level</td>
+</tr>
+<tr class="even">
+<td>genApplicative</td>
+<td>Generalize a monadic function to use applicative</td>
+</tr>
+<tr class="odd">
+<td>deleteDef</td>
+<td>Deletes a definition</td>
+</tr>
+<tr class="even">
+<td>insertType</td>
+<td>Insert type for the expression</td>
+</tr>
+<tr class="odd">
+<td>showType</td>
+<td>Show type for the expression</td>
+</tr>
+<tr class="even">
+<td>caseSplit</td>
+<td>Generate pattern matches for the identifier under the cursor</td>
+</tr>
+<tr class="odd">
+<td>importIdentifier</td>
+<td>Imports a function or type based on a Hoogle search</td>
+</tr>
+<tr class="even">
+<td>restartHie</td>
+<td>Restart the Hie LSP server</td>
+</tr>
+</tbody>
+</table>
+<p>実際のコマンドは <a href="https://github.com/alanz/vscode-hie-server/blob/master/package.json">vscode-hie-server/package.json</a> で確認できます。</p>
+<h2 id="機能について">機能について</h2>
+<p>ここが一番重要ですね！まだまだ開発途中なので出来ることは限られているのですが、それでも凄く便利です。ここから利用するスクリーションは本家リポジトリで紹介されている画像になります。</p>
+<h3 id="cabal-hpack-へのパッケージ追加">cabal, hpack へのパッケージ追加</h3>
+<figure>
+<img src="https://user-images.githubusercontent.com/2488460/43036067-20ae5964-8cf2-11e8-9951-4fd849b3f735.gif" alt /><figcaption>パッケージの追加</figcaption>
+</figure>
+<figure>
+<img src="https://user-images.githubusercontent.com/1387653/40287051-b6f987fe-5c5f-11e8-980f-ed7bfa1b2aec.gif" alt /><figcaption>パッケージの追加</figcaption>
+</figure>
+<h3 id="typo-quick-fixes">typo quick fixes</h3>
+<figure>
+<img src="https://user-images.githubusercontent.com/2488460/43036093-746ae176-8cf2-11e8-8b2d-59799b21c283.gif" alt /><figcaption>typo quick fixes</figcaption>
+</figure>
+<h3 id="不足している-import-の追加-via-hsimport">不足している import の追加 (via hsimport)</h3>
+<figure>
+<img src="https://user-images.githubusercontent.com/2488460/43036113-9bb5d5b0-8cf2-11e8-8e32-20952378cf2b.gif" alt /><figcaption>Add missing imports</figcaption>
+</figure>
+<h3 id="import-宣言の自動挿入">import 宣言の自動挿入</h3>
+<figure>
+<img src="https://user-images.githubusercontent.com/1387653/40287051-b6f987fe-5c5f-11e8-980f-ed7bfa1b2aec.gif" alt /><figcaption>import</figcaption>
+</figure>
+<p>このコマンドは <strong>package.yaml</strong> の依存関係から、選択した関数が含まれるモジュールをリストアップしてくれるので、その中から適切な物を選ぶと、自動的に挿入されます。</p>
+<h3 id="lint">Lint</h3>
+<p><strong>PROBLEMS (問題)</strong> のエリアには <strong>HLint</strong>, <strong>ghc-mod</strong> のエラーや警告が表示されます。クリックすると、該当する行までジャンプするので便利です。</p>
+<figure>
+<img src="https://camo.githubusercontent.com/dcc0d19d6ddee2d7a5aa3e640d8517800871f990/687474703a2f2f692e696d6775722e636f6d2f3176716d3465462e676966" alt /><figcaption>lint</figcaption>
+</figure>
+<h3 id="コードアクションとクイックフィックス">コードアクションとクイックフィックス</h3>
+<p><strong>HLint</strong> に指摘されると行の左側に電球のマークが表示されます。これをクリックして適用するだけで、<strong>HLint</strong> の指摘通りにコードが書き換わります。</p>
+<figure>
+<img src="https://camo.githubusercontent.com/1f81802a108f8a96320e7be75f47924de29afe7a/687474703a2f2f692e696d6775722e636f6d2f644272536935462e676966" alt /><figcaption>quickfix</figcaption>
+</figure>
+<p>失敗することもあるので、あまり使いません。</p>
+<h3 id="マウスホバー時の型情報とドキュメント表示">マウスホバー時の型情報とドキュメント表示</h3>
+<p>マウスホバー時に型の情報とドキュメントが表示されます。ドキュメントの表示は <strong>hoogle</strong> を利用しています。</p>
+<figure>
+<img src="https://camo.githubusercontent.com/fb828845a665d6bff30340ba61bc9744013773a7/687474703a2f2f692e696d6775722e636f6d2f41637659524f762e676966" alt /><figcaption>hoogle</figcaption>
+</figure>
+<h4 id="ドキュメントが表示されない場合">ドキュメントが表示されない場合</h4>
+<p>以下の画像のように、画面上部に <strong>No hoogle db found. Check the README for instructions to generate one</strong> と表示されている場合はデータベースと上手く連携できていない状態です。</p>
+<figure>
+<img src="https://qiita-image-store.s3.amazonaws.com/0/46047/d20edcd0-16f7-b38b-7ca2-a483f861250a.png" alt /><figcaption>No hoogle db found. Check the README for instructions to generate one</figcaption>
+</figure>
+<p>僕の環境では以下のバージョンでエラーとなってしまったので、 最新のLTSで <strong>hoogle</strong> をインストールし直しました。</p>
+<pre class="shell"><code>$ hoogle --version
+Hoogle 5.0.9, http://hoogle.haskell.org/
+
+$ stack install hoogle --resolver lts
+...
+
+$ hoogle --version
+Hoogle 5.0.17.15, https://hoogle.haskell.org/</code></pre>
+<h4 id="プロジェクト固有のデータベースを利用する">プロジェクト固有のデータベースを利用する</h4>
+<p><strong>stack</strong> のプロジェクトルートで通常通り <strong>hoogle</strong> のデータベースを生成すればOKです。</p>
+<pre class="shell"><code>$ stack haddock --keep-going</code></pre>
+<p><strong>cabal</strong> プロジェクトの場合は <code>~/.cabal/config</code> に以下の設定を追記します。</p>
+<pre><code>documentation: True</code></pre>
+<h3 id="定義へのジャンプ">定義へのジャンプ</h3>
+<figure>
+<img src="https://camo.githubusercontent.com/1ade7632d9ddfca985cebe6e58dfb2de55298bfe/687474703a2f2f692e696d6775722e636f6d2f6b6d435532427a2e676966" alt /><figcaption>定義ジャンプ</figcaption>
+</figure>
+<h3 id="全てのトップレベル定義の一覧表示">全てのトップレベル定義の一覧表示</h3>
+<p><code>Ctrl + P</code> でコマンドパレットを開き <strong>@</strong> を入力することでトップレベルに定義された関数の一覧を確認できます。クリックすると、その関数の定義にジャンプします。</p>
+<figure>
+<img src="https://camo.githubusercontent.com/c4a5943c4fd6effbecb731bc72446f6c37240ac3/687474703a2f2f692e696d6775722e636f6d2f474572635971702e676966" alt /><figcaption>トップレベル定義の一覧表示</figcaption>
+</figure>
+<h3 id="ソースコード内のハイライト参照">ソースコード内のハイライト参照</h3>
+<p>マウスでドラッグするだけで、全てハイライトされます。</p>
+<figure>
+<img src="https://camo.githubusercontent.com/9579d2d31032396d24c148972aa07ab9b0007767/687474703a2f2f692e696d6775722e636f6d2f594c6a487332732e676966" alt /><figcaption>ハイライト参照</figcaption>
+</figure>
+<h3 id="自動補完">自動補完</h3>
+<p>文字を入力すると自動的に補完機能が働きます。タブキーで補完完了です。</p>
+<figure>
+<img src="https://camo.githubusercontent.com/c4c25789a4fb77d4e88ada6c179a5d72a8c13665/687474703a2f2f692e696d6775722e636f6d2f775236494a374d2e676966" alt /><figcaption>自動補完</figcaption>
+</figure>
+<h3 id="コード整形">コード整形</h3>
+<p>以下のフォーマッターが利用できます。</p>
+<ul>
+<li><a href="https://github.com/lspitzner/brittany">brittany</a></li>
+<li><a href="https://github.com/ennocramer/floskell">floskell</a></li>
+<li><a href="https://github.com/tweag/ormolu">ormolu</a></li>
+</ul>
+<p>[フォーマッターを適用]](https://camo.githubusercontent.com/03cebefc68034e3f1bf75350c2febaf93128d86d/687474703a2f2f692e696d6775722e636f6d2f63715a5a3848432e676966)</p>
+<h3 id="名前の変更">名前の変更</h3>
+<p><strong>HaRe</strong> を使って名前変更のリファクタリングができます。</p>
+<figure>
+<img src="https://camo.githubusercontent.com/db74493d7eafa915818cde11d7457161c827c0c0/687474703a2f2f692e696d6775722e636f6d2f7a3033473261352e676966" alt /><figcaption>HaReを使ったリファクタリング</figcaption>
+</figure>
+<h2 id="その他の拡張機能について">その他の拡張機能について</h2>
+<p><strong>Haskell</strong> に関する拡張機能はそれほど多くはありませんが、<a href="https://marketplace.visualstudio.com/items?itemName=phoityne.phoityne-vscode">Haskell GHCi debug viewer Phoityne</a> などは <a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/ghci.html#the-ghci-debugger">GHCi debugger</a> が使えるようになるという面白い拡張です。</p>
+<p>一応こんな感じで動きます。</p>
+<figure>
+<img src="../images/hie/vscode/phoityne-vscode.gif" alt /><figcaption>DEMO</figcaption>
+</figure>
+<h2 id="hie-がサポートしているエディタ">HIE がサポートしているエディタ</h2>
+<p><strong>HIE</strong> は <strong>vscode</strong> に限らず <strong>Language Server Protocol</strong> が利用できれば、どんなエディタでも利用できます。公式の <strong>README</strong> で明記があるのは以下のエディタです。</p>
+<ul>
+<li><a href="https://github.com/haskell/haskell-ide-engine#using-hie-with-vs-code">VS Code</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine#using-hie-with-sublime-text">Sublime Text</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine#using-hie-with-vim-or-neovim">Vim, Neovim</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine#using-hie-with-atom">Atom</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine#using-hie-with-emacs">Emacs</a>
+<ul>
+<li><a href="https://haskell.e-bigmoon.com/hie/emacs.html">Emacs で Haskell IDE Engine を使う</a></li>
+</ul></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine#using-hie-with-spacemacs">Spacemacs</a></li>
+<li><a href="https://github.com/haskell/haskell-ide-engine#using-hie-with-oni">Oni</a></li>
+</ul>
+<h2 id="まとめ">まとめ</h2>
+<p><strong>vscode</strong> 内の統合ターミナルウィンドウで以下のコマンドを一度入力しておけば、保存時に自動的にリビルドしてくれるのでオススメです。</p>
+<pre class="shell"><code>$ stack test --fast --file-watch --no-run-tests
+
+# コンパイルの遅さが気になる人はこちらのコマンドが良いです
+$ stack build --fast --file-watch --ghc-options &quot;-j4 +RTS -A128m -n2m -qg -RTS&quot;</code></pre>
+<p>最新の <strong>IDE</strong> 環境でモダンな <strong>Haskell</strong> アプリケーション開発を楽しみましょう！</p>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=VS Code と haskell-ide-engine で Haskell 開発環境を構築する&url=https://haskell.e-bigmoon.com/hie/vscode.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/hie/vscode.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+  <div class="footer-copyright">
+    <div class="container">
+      © 2017-2020 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+  </div>
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../js/init.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
