@@ -1,7 +1,7 @@
 ---
 title: これから Haskell を学ぶ人のための書籍・論文紹介
 published: 2020/03/27
-# updated: 2020/03/27
+updated: 2020/04/04
 ---
 
 Haskell に関連する書籍について、読んだものについては簡単なレビューを添えています。
@@ -99,3 +99,12 @@ SPJ (Simon Peyton Jones) のインタビューなどが載っている書籍
 
 - [型システム入門 (2013/03)](/books/tapl.html)
 - プログラミング言語の基礎理論
+
+## 同人誌
+
+以下、リンクのみです。
+
+- [mixi tech note #01](https://speakerdeck.com/mixi_engineers/mixi-tech-note-number-01)
+- [mixi tech note #02](https://speakerdeck.com/mixi_engineers/mixi-tech-note-number-02)
+- [mixi tech note #03](https://speakerdeck.com/mixi_engineers/mixi-tech-note-number-03)
+- [Haskellで戦う競技プログラミング](https://lab.miz-ar.info/kyopro-haskell/)
