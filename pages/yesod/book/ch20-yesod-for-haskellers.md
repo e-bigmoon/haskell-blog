@@ -116,11 +116,12 @@ myPage = docTypeHtml $ do
         H.h1 "Hello from blaze-html and Warp"
 ```
 
-しかし, 純粋な`Builder`値を用いることに関しては制限がある: `Response`値を返す前に, 完全なレスポンスボディを構築する必要がある. 遅延評価により, それは言うほど悪いものではない. なぜならば, 全てのボディが一度にメモリに留まるわけではないためである. しかし, もし, I/Oを用いて, レスポンスボディを生成する必要があるならば(データベースからデータを読み込む際のように), 問題となるであろう. 
+しかし、純粋な `Builder` の値には `Response` の値を返す前に完全なレスポンスボディを構築しなければならないという制限があります。遅延評価があるので、これは言うほど悪いものではありません。なぜなら、全てのボディが一度にメモリに留まるわけではないためです。しかし、もし I/O を使ってレスポンスボディを生成する必要がある場合は (データベースからデータを読み込む際のように) 問題となるでしょう。
 
-そのような状況に対処するために, WAIはストリーミングレスポンスボディを与えるための方法を提供する. また, それにより, ストリームフラッシュを明確にコントロールすることが可能になる. それがどのように機能するかについて, 見てみよう.
+そのような状況に対処するために WAI はストリーミングレスポンスボディを生成するための方法を提供します。またそれによりストリームのフラッシュを明示的にコントロールできるようになります。これがどのように機能するか見てみましょう。
 
-``` haskell
+```haskell
+-- Example5.hs
 {-# LANGUAGE OverloadedStrings #-}
 import           Blaze.ByteString.Builder           (Builder, fromByteString)
 import           Blaze.ByteString.Builder.Char.Utf8 (fromShow)
@@ -154,16 +155,16 @@ myStream send flush = do
         send $ fromByteString "Got the value: " <>
                fromShow i <>
                fromByteString "\n"
-
 ```
 
-<p class = "info">
-以前はwaiはconduitライブラリーに依存して, データ抽出のストリーミングを行なっていた. しかし, 以来, その依存性を解除している. しかし, conduitはwai-conduit helperパッケージにより, まだWAIのエコシステムにおいてよくサポートされている.
-</p>
+<div class="yesod-book-notice">
+以前の wai は conduit ライブラリに依存してストリーミングデータの抽象化を行っていましたが、現在は依存していません。しかし、conduit は wai-conduit パッケージによって、今もなお WAI エコシステムで良くサポートされています。
+</div>
 
-ストリーミングレスポンスを扱う際の, 他の共通に必要なものは, ファイルハンドルのようなわずかなリソースを安全に割り当てることである. "安全に"とは, 例外が起こった際でも, リソースが解放されることを意味する. これは, 上で述べた継続渡しスタイルが関与する場面である:
+ストリーミングレスポンスを扱う際によく必要になるのは、ファイルハンドルのようなわずかなリソースを安全に割り当てる作業です。*"安全に"* とは、何らかの例外が発生した際にリソースが解放されることを意味します。これは、上で述べた継続渡しスタイルを使います。
 
-``` haskell
+```haskell
+-- Example6.hs
 {-# LANGUAGE OverloadedStrings #-}
 import           Blaze.ByteString.Builder (fromByteString)
 import qualified Data.ByteString          as S
@@ -192,11 +193,12 @@ app _req sendResponse = withFile "index.html" ReadMode $ \handle ->
              in loop
 ```
 
-どのように`withFile`のような, もともと存在する例外安全関数を利用し, 例外を適切に処理しているかについて注意せよ. 
+例外を適切に処理するため、`withFile` のような既存の例外安全関数を活用している点に注目してください。
 
-しかし, ファイルを与える際は`responseFile`を用いると, より効率的である. なぜならば, 不必要なバッファコピーを避けるために, `sendFile`システムコールが用いられるためである:
+しかし、ファイルを返す場合は `responseFile` を使った方が効率的です。なぜなら、不必要なバッファコピーを避けるために `sendfile` システムコールを利用するためです。
 
-``` haskell
+```haskell
+-- Example7.hs
 {-# LANGUAGE OverloadedStrings #-}
 import           Network.HTTP.Types       (status200)
 import           Network.Wai              (Application, responseFile)
@@ -214,7 +216,7 @@ app _req sendResponse = sendResponse $ responseFile
             -- you can also serve specific ranges in the file
 ```
 
-WAIにはここでは扱わなかったような多くの特徴がある. 1つの重要な話題としてはWAIミドルウェアがある. また, リクエストボディについては全く調査しなかった. しかし, Yesodを理解するという目的に関しては, 今のところ十分に説明した. 
+WAI にはここでは扱わなかった多くの特徴がまだまだあります。その中の重要なトピックの1つに、WAI ミドルウェアがあります。また、リクエストボディについては全く調査しませんでした。しかし、Yesod を理解するという目的に対しては、今のところ十分に説明しました。
 
 ## Yesodについて
 
@@ -936,8 +938,23 @@ widgetには他の利点もある. `defaultLayout`関数は, Yesod型クラス�
 
 幸いなことに, この章は表面下において何が起こっているかについて理解するために, Yesodにおける魔法を充分引っ張ってこれた. もちろんこの方法を使いながら, Yesodのエコシステムの残りを分析することもできるが, この本の残りではそれらの大部分は冗長である. 幸いなことに, 今やPersistent, フォーム, セッション, サブサイトの章を読んでいるのだから, より多くのことがわかるはずである.
 
+## 本書のコード
 
-
-
-
-
+- [Example01.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example1.hs)
+- [Example02.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example2.hs)
+- [Example03.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example3.hs)
+- [Example04.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example4.hs)
+- [Example05.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example5.hs)
+- [Example06.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example6.hs)
+- [Example07.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example7.hs)
+- [Example08.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example8.hs)
+- [Example09.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example9.hs)
+- [Example10.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example10.hs)
+- [Example11.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example11.hs)
+- [Example12.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example12.hs)
+- [Example13.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example13.hs)
+- [Example14.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example14.hs)
+- [Example15.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example15.hs)
+- [Example16.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example16.hs)
+- [Example17.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example17.hs)
+- [Example18.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch20/Example18.hs)
