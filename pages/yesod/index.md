@@ -1,7 +1,7 @@
 ---
 title: Haskell Yesod
 published: 2018/03/18
-updated: 2020/04/06
+updated: 2020/04/10
 ---
 
 ## Yesod クイックスタートガイド
@@ -56,6 +56,8 @@ $ stack exec -- yesod devel
 
 また、プロジェクトのテンプレートに **minimal** を選択した場合、`yesod devel` コマンドは動作しないと思うので注意してください。
 
+NOTE: scaffold を生成するためには Stack バージョン 2 以上が必要です。
+
 ### 6. Yesod サーバーへアクセスしてみましょう
 
 [http://localhost:3000/](http://localhost:3000/) にアクセスすれば Yesod アプリケーションを体験できます。
@@ -93,7 +95,7 @@ $ sudo apt-get install -y libpq-dev
 - [Cloning FluxBB](https://siskam.link/2018-04-14-cloning-fluxbb.html) (Yesod と Esqueleto を使ってフォーラムを作るというブログ記事です)
 - [Yesod tutorial](http://yannesposito.com/Scratch/en/blog/Yesod-tutorial-for-newbies/) (これは少し古くなっています。書籍ではより最新の内容に更新されています)
 
-## Yesod ブック (@1bf83029e9045a5ae4cfe8244542dfb4c48edac1)
+## Yesod ブック (@b707dc4953cb1acafd5ad78327bb9ab4467ceaa0)
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
