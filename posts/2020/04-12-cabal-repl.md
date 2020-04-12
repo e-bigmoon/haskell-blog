@@ -123,13 +123,13 @@ $ cabal repl -v0 --repl-options="-XNoImplicitPrelude"
 $ cabal repl -v0 --repl-options="-XNoImplicitPrelude" --repl-options="-XNoStarIsType"
 ```
 
-### **REPL** 依存関係を追加
+### **REPL** に依存関係を追加
 
-**REPL** を動かす際、少し複雑なファイルの場合はいくつかの依存関係が追加で必要になることがあります。
+**REPL** を動かす際、少し複雑なファイルの場合は **base** 以外のパッケージを利用していることがほとんどです。
 
-そういう時には `-b` (`--build-depends`) オプションを利用します。このオプションは `stack repl --package` と同じような感じです。
+そういう時には `-b` (`--build-depends`) オプションを利用します。このオプションは `stack repl --package` と同じような感じでパッケージを追加できます。
 
-**vector** パッケージを追加で読み込む例です。**vector** パッケージのビルドが走る場合があります。
+**vector** パッケージを追加で読み込む例です。(**vector** パッケージのビルドが走る場合があります。)
 
 ```shell
 $ cabal repl -b vector
@@ -162,6 +162,8 @@ $ cabal repl -b aeson==1.4.7.1
 ...
 Prelude>
 ```
+
+-----
 
 ここで、パッケージを追加した際は追加したパッケージが依存しているパッケージも含めて読み込まれる点に注意してください。(つまり、推移的に依存関係が追加されます)
 
