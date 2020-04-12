@@ -1,7 +1,7 @@
 ---
 title: cabal コマンドとの対応表
 published: 2018/11/30
-updated: 2020/04/10
+updated: 2020/04/12
 ---
 
 ## 注意点
@@ -14,6 +14,8 @@ updated: 2020/04/10
 - [Why Not Both?](https://medium.com/@fommil/why-not-both-8adadb71a5ed)
 - [Announcing cabal new-build: Nix-style local builds](http://blog.ezyang.com/2016/05/announcing-cabal-new-build-nix-style-local-builds/)
 - [Introduction to Cabal](https://haskell-at-work.com/episodes/2018-05-13-introduction-to-cabal.html)
+- [The Haskell Cabal | Overview](https://www.haskell.org/cabal/)
+  - [haskell/cabal-website](https://github.com/haskell/cabal-website)
 
 ## stack と cabal
 
@@ -67,7 +69,7 @@ stack | cabal | 備考
 `stack init` | `cabal init -n --is-executable` <br> `cabal init --simple` <br> `cabal init --lib` <br> `cabal init --exe` <br> `cabal init --libandexe` | [#5707][cabal-5707], [#5759][cabal-5759], [#5864][cabal-5864], [#6676][cabal-6676]
 `stack build` | `cabal build`
 `stack test` | `cabal test`
-`stack repl` <br> `stack ghci` | `cabal repl`
+`stack repl` <br> `stack ghci` | `cabal repl` | [cabal repl コマンドについて](/posts/2020/04-10-cabal-repl.html)
 `stack repl --package <pkg1> <pkg2>` | `cabal repl --build-dep <pkg1>, <pkg2>` <br> `cabal repl -b <pkg1>, <pkg2>` | [#5845][cabal-5845]
 `stack clean` | `cabal clean`
 `stack run` | `cabal run`
