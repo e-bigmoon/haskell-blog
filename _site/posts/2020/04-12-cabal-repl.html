@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>cabal repl コマンドについて</title>
+  <meta name="description" content="cabal repl コマンドは
+
+ghci, ghc --interactive
+stack repl, stack ghci
+
+などと同じように cabal で REPL 環境を実行するためのコマンドです。
+cabal プロジェクト内で実行する場合と、cabal プロジェクト外で実行する場合で挙動が少し異なります。">
+  <link rel="canonical" href="../../posts/2020/04-12-cabal-repl.html">
+  <link rel="alternate" type="application/atom+xml" title="cabal repl コマンドについて" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="cabal repl コマンドについて" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2020/04-12-cabal-repl.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="cabal repl コマンドについて" />
+  <meta property="og:description" content="cabal repl コマンドは
+
+ghci, ghc --interactive
+stack repl, stack ghci
+
+などと同じように cabal で REPL 環境を実行するためのコマンドです。
+cabal プロジェクト内で実行する場合と、cabal プロジェクト外で実行する場合で挙動が少し異なります。" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="white-text">
+        <i class="mdi mdi-book-open left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-book-open left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on April 12, 2020
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Shinya Yamaguchi
+        
+        
+          <br>
+          <i class="mdi mdi-calendar"></i>&nbsp;
+          Last Updated 
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">cabal repl コマンドについて</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a>, <a title="All pages tagged 'cabal'." href="../../tags/cabal.html">cabal</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=cabal repl コマンドについて&url=https://haskell.e-bigmoon.com/posts/2020/04-12-cabal-repl.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/04-12-cabal-repl.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <p><code>cabal repl</code> コマンドは</p>
+<ul>
+<li><code>ghci</code>, <code>ghc --interactive</code></li>
+<li><code>stack repl</code>, <code>stack ghci</code></li>
+</ul>
+<p>などと同じように <strong>cabal</strong> で <strong>REPL</strong> 環境を実行するためのコマンドです。</p>
+<p><strong>cabal</strong> プロジェクト内で実行する場合と、<strong>cabal</strong> プロジェクト外で実行する場合で挙動が少し異なります。</p>
+<pre class="shell"><code>$ cabal -V
+cabal-install version 3.2.0.0
+compiled using version 3.2.0.0 of the Cabal library</code></pre>
+<!--more-->
+<h2 id="cabal-プロジェクト外で実行した場合"><strong>cabal</strong> プロジェクト外で実行した場合</h2>
+<p><strong>cabal</strong> は自動的に <strong>fake-package</strong> という環境を用意します。これは使い捨てのダミー <strong>cabal</strong> プロジェクトです。</p>
+<pre class="shell"><code>$ cabal repl
+Resolving dependencies...
+Build profile: -w ghc-8.10.1 -O1
+In order, the following will be built (use -v for more details):
+ - fake-package-0 (lib) (first run)
+Configuring library for fake-package-0..
+Preprocessing library for fake-package-0..
+Warning: No exposed modules
+GHCi, version 8.10.1: https://www.haskell.org/ghc/  :? for help
+Loaded GHCi configuration from /tmp/cabal-repl.-3302/setcwd.ghci
+Prelude&gt;</code></pre>
+<p>生成される内容は <a href="https://github.com/haskell/cabal/blob/cabal-install-v3.2.0.0/cabal-install/Distribution/Client/CmdRepl.hs#L392">withoutProject</a> の中で定義されています。また、ログメッセージの最後に表示されている <code>/tmp/cabal-repl.-3302/</code> ディレクトリに、実際に生成された <strong>cabal</strong> ファイルなどが保存されます。</p>
+<pre class="shell"><code>$ ls /tmp/cabal-repl.-3302/
+dist-newstyle  fake-package.cabal  setcwd.ghci</code></pre>
+<p><code>cabal-install-3.2</code> で生成される <code>fake-package.cabal</code> の内容は以下のようになっています。</p>
+<pre><code>cabal-version: 2.2
+name:          fake-package
+version:       0
+
+library
+    default-language: Haskell2010
+    build-depends:    base -any</code></pre>
+<p><strong>build-depends</strong> に <code>base -any</code> が指定されているため、<strong>GHC</strong> のバージョンに対応した <strong>base</strong> パッケージがデフォルトで利用可能です。</p>
+<p><strong>REPL</strong> の使い方は <strong>ghci</strong> などと同じなので大丈夫でしょう。</p>
+<h3 id="repl-起動時のメッセージを省略する"><strong>REPL</strong> 起動時のメッセージを省略する</h3>
+<p><strong>REPL</strong> 起動時のメッセージを省略するためには <code>-v0</code> オプションを指定します。</p>
+<pre class="shell"><code>$ cabal repl -v0
+Prelude&gt;</code></pre>
+<h3 id="repl-で利用する-ghc-を切り替える"><strong>REPL</strong> で利用する GHC を切り替える</h3>
+<p><code>cabal build</code> などでもおなじみの <code>-w</code> (<code>--with-compiler</code>) オプションを指定するだけです。</p>
+<pre class="shell"><code>$ cabal repl -w ghc-8.8.3
+...
+GHCi, version 8.8.3: https://www.haskell.org/ghc/  :? for help
+Loaded GHCi configuration from /tmp/cabal-repl.-20727/setcwd.ghci
+Prelude&gt;
+
+$ cabal repl -w ghc-8.10.1
+...
+GHCi, version 8.10.1: https://www.haskell.org/ghc/  :? for help
+Loaded GHCi configuration from /tmp/cabal-repl.-20914/setcwd.ghci</code></pre>
+<h3 id="ファイルを指定して-repl-を起動">ファイルを指定して <strong>REPL</strong> を起動</h3>
+<p>例えば <code>ghci A.hs</code> のように <strong>REPL</strong> 起動時にファイル (モジュール) を読み込みたい時があります。</p>
+<p>しかし、これを <strong>cabal</strong> で同じように実行するとエラーになります。</p>
+<pre class="shell"><code>$ cabal repl -v0 A.hs
+cabal: 'repl' doesn't take any extra arguments when outside a project: A.hs</code></pre>
+<p>そのため、一度 <code>cabal repl</code> を実行してから <code>:l</code> コマンドでファイルを読み込む必要があります。</p>
+<pre class="shell"><code>$ cabal repl -v0
+Prelude&gt; :l A.hs
+*A&gt;</code></pre>
+<h3 id="repl-にオプションを渡す"><strong>REPL</strong> にオプションを渡す</h3>
+<p><code>stack repl</code> の <code>--ghci-options</code> に相当するオプションは <code>--repl-options</code> です。</p>
+<pre class="shell"><code>$ cabal repl -v0 --repl-options=&quot;-XNoImplicitPrelude&quot;
+&gt;</code></pre>
+<p>複数指定する場合は <code>--repl-options</code> を何度も指定する必要があります。たぶんこれは<a href="https://github.com/haskell/cabal/pull/6190">仕様</a>っぽいです</p>
+<pre class="shell"><code>$ cabal repl -v0 --repl-options=&quot;-XNoImplicitPrelude&quot; --repl-options=&quot;-XNoStarIsType&quot;</code></pre>
+<h3 id="repl-に依存関係を追加"><strong>REPL</strong> に依存関係を追加</h3>
+<p><strong>REPL</strong> を動かす際、少し複雑なファイルの場合は <strong>base</strong> 以外のパッケージを利用していることがほとんどです。</p>
+<p>そういう時には <code>-b</code> (<code>--build-depends</code>) オプションを利用します。このオプションは <code>stack repl --package</code> と同じような感じでパッケージを追加できます。</p>
+<p><strong>vector</strong> パッケージを追加で読み込む例です。(<strong>vector</strong> パッケージのビルドが走る場合があります。)</p>
+<pre class="shell"><code>$ cabal repl -b vector
+...
+Prelude&gt; import Data.Vector
+Prelude Data.Vector&gt; </code></pre>
+<p>複数のパッケージ <strong>vector</strong>, <strong>aeson</strong> を読み込む例は以下のようになります。</p>
+<pre class="shell"><code>$ cabal repl -b vector -b aeson
+...
+Prelude&gt; import Data.Vector
+Prelude Data.Vector&gt; import Data.Aeson
+Prelude Data.Vector Data.Aeson&gt;</code></pre>
+<p>このように、カンマ区切りで続けてパッケージを指定することも可能です。(<code>-b</code> ではエラーになります)</p>
+<pre class="shell"><code>$ cabal repl -v0 --build-depends=&quot;vector, aeson&quot;
+Prelude&gt;</code></pre>
+<p>パッケージのバージョンを指定することも可能です。バージョンの指定には <strong>build-depends</strong> と同じ記法が使えます。</p>
+<pre class="shell"><code>$ cabal repl -b aeson==1.4.7.1
+...
+Prelude&gt;</code></pre>
+<hr />
+<p>ここで、パッケージを追加した際は追加したパッケージが依存しているパッケージも含めて読み込まれる点に注意してください。(つまり、推移的に依存関係が追加されます)</p>
+<p>例えば <a href="https://hackage.haskell.org/package/deepseq">deepseq</a> パッケージで定義されている <code>Control.DeepSeq</code> は本当なら <strong>import</strong> できないはずです。しかし、<a href="https://hackage.haskell.org/package/vector">vector</a> パッケージは <strong>deepseq</strong> に依存しているため <strong>import</strong> できてしまいます。</p>
+<pre class="shell"><code>$ cabal repl -v0 -b vector
+Prelude&gt; import Control.DeepSeq 
+Prelude Control.DeepSeq&gt;</code></pre>
+<p>この挙動を変更したい場合は <code>--no-transitive-deps</code> オプションを指定します。</p>
+<pre class="shell"><code>$ cabal repl -v0 -b vector --no-transitive-deps
+Prelude&gt; import Control.DeepSeq 
+
+&lt;no location info&gt;: error:
+    Could not load module ‘Control.DeepSeq’
+    It is a member of the hidden package ‘deepseq-1.4.4.0’.
+    Perhaps you need to add ‘deepseq’ to the build-depends in your .cabal file.</code></pre>
+<p>読み込まれるパッケージがどのように変化しているか確認しておきましょう。</p>
+<pre class="shell"><code>$ cabal repl -v0
+Prelude&gt; :show packages 
+active package flags:
+  -package-id base-4.14.0.0
+
+$ cabal repl -v0 -b vector
+Prelude&gt; :show packages 
+active package flags:
+  -package-id transformers-0.5.6.2
+  -package-id primitive-0.7.0.1-26f169240ac34903846f3a33e2517e97382af71bd7fe7cb7262fd6ca4381f53e
+  -package-id array-0.5.4.0
+  -package-id deepseq-1.4.4.0
+  -package-id integer-gmp-1.0.3.0
+  -package-id rts
+  -package-id ghc-prim-0.6.1
+  -package-id vector-0.12.1.2-8dc77cdd80241a59f0811ecc4c067ae98900f833977f73cce9795875f4909da9
+  -package-id base-4.14.0.0
+
+$ cabal repl -v0 -b vector --no-transitive-deps
+Prelude&gt; :show packages 
+active package flags:
+  -package-id vector-0.12.1.2-8dc77cdd80241a59f0811ecc4c067ae98900f833977f73cce9795875f4909da9
+  -package-id base-4.14.0.0</code></pre>
+<h2 id="cabal-プロジェクト内で実行した場合"><strong>cabal</strong> プロジェクト内で実行した場合</h2>
+<p>基本的にはプロジェクト内で <code>cabal repl</code> と実行するとプロジェクトの <strong>cabal</strong> ファイルに従い</p>
+<ul>
+<li>依存関係の追加</li>
+<li>モジュールの追加</li>
+<li>オプションの追加</li>
+</ul>
+<p>などを自動的に行い、<strong>REPL</strong> を起動します。</p>
+<pre class="shell"><code>$ cabal repl -v0
+*MyLib&gt; </code></pre>
+<p>この時、<strong>import</strong> されるモジュールは1つのみです。(これは仕様みたいです)</p>
+<p>そのため、必要なモジュールは自分で <strong>import</strong> する必要があります。</p>
+<h3 id="プロジェクトを無視して-repl-を起動">プロジェクトを無視して <strong>REPL</strong> を起動</h3>
+<p>プロジェクトを無視して <strong>REPL</strong> を起動するためには <code>-z</code> (<code>--ignore-project</code>) オプションを指定します。</p>
+<pre class="shell"><code>$ cabal repl -v0 -z
+Prelude&gt;</code></pre>
+<h2 id="今回紹介したオプション一覧">今回紹介したオプション一覧</h2>
+<table>
+<thead>
+<tr class="header">
+<th>short</th>
+<th>long</th>
+<th>オプションの意味</th>
+<th>stack</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>無し</td>
+<td><code>--repl-options</code></td>
+<td><strong>ghci</strong> に渡すオプション指定</td>
+<td><code>--ghci-options</code></td>
+</tr>
+<tr class="even">
+<td><code>-b</code></td>
+<td><code>--build-depends</code></td>
+<td>依存関係の追加</td>
+<td><code>--package</code></td>
+</tr>
+<tr class="odd">
+<td><code>-z</code></td>
+<td><code>--ignore-project</code></td>
+<td>プロジェクトの <strong>cabal</strong> を無視する</td>
+<td><code>--no-load</code> が近いけど<br>プロジェクトの依存関係は読み込む</td>
+</tr>
+<tr class="even">
+<td>無し</td>
+<td><code>--no-transitive-deps</code></td>
+<td>推移的な依存関係を追加しない</td>
+<td>デフォルトの動作</td>
+</tr>
+<tr class="odd">
+<td><code>-w</code></td>
+<td><code>--with-compiler</code></td>
+<td>利用するコンパイラの指定</td>
+<td><code>-with-ghc</code>?</td>
+</tr>
+<tr class="even">
+<td><code>-v0</code></td>
+<td><code>--verbose=0</code></td>
+<td>起動時のメッセージを省略</td>
+<td>無し</td>
+</tr>
+</tbody>
+</table>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/cabal/users-guide/nix-local-build.html#cabal-v2-repl">5.4.4. cabal v2-repl - Cabal User Manual</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/5454">Add –build-depends flag, associated support to new-repl #5454</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/3565">Cabal repl and cabal build/run conflict over .o object files if ghci has -fobject-code set #3565</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/2592">cabal repl load single module #2592</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/6190">–repl-options doesn’t split on whitespace #6190</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/5845">Allow list for <code>repl --build-depends</code> #5845</a></li>
+<li><a href="https://github.com/haskell/cabal/issues/5374"><code>cabal new-repl</code> only brings one module into scope #5374</a></li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2020/03-30-cabal-plan-license-report.html"><i class="material-icons left">navigate_before</i>cabal-plan license-report 機能の紹介</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=cabal repl コマンドについて&url=https://haskell.e-bigmoon.com/posts/2020/04-12-cabal-repl.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/04-12-cabal-repl.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+  <div class="footer-copyright">
+    <div class="container">
+      © 2017-2020 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+  </div>
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

@@ -10,6 +10,215 @@
     </author>
     <updated></updated>
     <entry>
+    <title>cabal repl コマンドについて</title>
+    <link href="https://haskell.e-bigmoon.com/posts/2020/04-12-cabal-repl.html" />
+    <id>https://haskell.e-bigmoon.com/posts/2020/04-12-cabal-repl.html</id>
+    <published>April 12, 2020</published>
+    <updated></updated>
+    <summary type="html"><![CDATA[<p><code>cabal repl</code> コマンドは</p>
+<ul>
+<li><code>ghci</code>, <code>ghc --interactive</code></li>
+<li><code>stack repl</code>, <code>stack ghci</code></li>
+</ul>
+<p>などと同じように <strong>cabal</strong> で <strong>REPL</strong> 環境を実行するためのコマンドです。</p>
+<p><strong>cabal</strong> プロジェクト内で実行する場合と、<strong>cabal</strong> プロジェクト外で実行する場合で挙動が少し異なります。</p>
+<pre class="shell"><code>$ cabal -V
+cabal-install version 3.2.0.0
+compiled using version 3.2.0.0 of the Cabal library</code></pre>
+<!--more-->
+<h2 id="cabal-プロジェクト外で実行した場合"><strong>cabal</strong> プロジェクト外で実行した場合</h2>
+<p><strong>cabal</strong> は自動的に <strong>fake-package</strong> という環境を用意します。これは使い捨てのダミー <strong>cabal</strong> プロジェクトです。</p>
+<pre class="shell"><code>$ cabal repl
+Resolving dependencies...
+Build profile: -w ghc-8.10.1 -O1
+In order, the following will be built (use -v for more details):
+ - fake-package-0 (lib) (first run)
+Configuring library for fake-package-0..
+Preprocessing library for fake-package-0..
+Warning: No exposed modules
+GHCi, version 8.10.1: https://www.haskell.org/ghc/  :? for help
+Loaded GHCi configuration from /tmp/cabal-repl.-3302/setcwd.ghci
+Prelude&gt;</code></pre>
+<p>生成される内容は <a href="https://github.com/haskell/cabal/blob/cabal-install-v3.2.0.0/cabal-install/Distribution/Client/CmdRepl.hs#L392">withoutProject</a> の中で定義されています。また、ログメッセージの最後に表示されている <code>/tmp/cabal-repl.-3302/</code> ディレクトリに、実際に生成された <strong>cabal</strong> ファイルなどが保存されます。</p>
+<pre class="shell"><code>$ ls /tmp/cabal-repl.-3302/
+dist-newstyle  fake-package.cabal  setcwd.ghci</code></pre>
+<p><code>cabal-install-3.2</code> で生成される <code>fake-package.cabal</code> の内容は以下のようになっています。</p>
+<pre><code>cabal-version: 2.2
+name:          fake-package
+version:       0
+
+library
+    default-language: Haskell2010
+    build-depends:    base -any</code></pre>
+<p><strong>build-depends</strong> に <code>base -any</code> が指定されているため、<strong>GHC</strong> のバージョンに対応した <strong>base</strong> パッケージがデフォルトで利用可能です。</p>
+<p><strong>REPL</strong> の使い方は <strong>ghci</strong> などと同じなので大丈夫でしょう。</p>
+<h3 id="repl-起動時のメッセージを省略する"><strong>REPL</strong> 起動時のメッセージを省略する</h3>
+<p><strong>REPL</strong> 起動時のメッセージを省略するためには <code>-v0</code> オプションを指定します。</p>
+<pre class="shell"><code>$ cabal repl -v0
+Prelude&gt;</code></pre>
+<h3 id="repl-で利用する-ghc-を切り替える"><strong>REPL</strong> で利用する GHC を切り替える</h3>
+<p><code>cabal build</code> などでもおなじみの <code>-w</code> (<code>--with-compiler</code>) オプションを指定するだけです。</p>
+<pre class="shell"><code>$ cabal repl -w ghc-8.8.3
+...
+GHCi, version 8.8.3: https://www.haskell.org/ghc/  :? for help
+Loaded GHCi configuration from /tmp/cabal-repl.-20727/setcwd.ghci
+Prelude&gt;
+
+$ cabal repl -w ghc-8.10.1
+...
+GHCi, version 8.10.1: https://www.haskell.org/ghc/  :? for help
+Loaded GHCi configuration from /tmp/cabal-repl.-20914/setcwd.ghci</code></pre>
+<h3 id="ファイルを指定して-repl-を起動">ファイルを指定して <strong>REPL</strong> を起動</h3>
+<p>例えば <code>ghci A.hs</code> のように <strong>REPL</strong> 起動時にファイル (モジュール) を読み込みたい時があります。</p>
+<p>しかし、これを <strong>cabal</strong> で同じように実行するとエラーになります。</p>
+<pre class="shell"><code>$ cabal repl -v0 A.hs
+cabal: &#39;repl&#39; doesn&#39;t take any extra arguments when outside a project: A.hs</code></pre>
+<p>そのため、一度 <code>cabal repl</code> を実行してから <code>:l</code> コマンドでファイルを読み込む必要があります。</p>
+<pre class="shell"><code>$ cabal repl -v0
+Prelude&gt; :l A.hs
+*A&gt;</code></pre>
+<h3 id="repl-にオプションを渡す"><strong>REPL</strong> にオプションを渡す</h3>
+<p><code>stack repl</code> の <code>--ghci-options</code> に相当するオプションは <code>--repl-options</code> です。</p>
+<pre class="shell"><code>$ cabal repl -v0 --repl-options=&quot;-XNoImplicitPrelude&quot;
+&gt;</code></pre>
+<p>複数指定する場合は <code>--repl-options</code> を何度も指定する必要があります。たぶんこれは<a href="https://github.com/haskell/cabal/pull/6190">仕様</a>っぽいです</p>
+<pre class="shell"><code>$ cabal repl -v0 --repl-options=&quot;-XNoImplicitPrelude&quot; --repl-options=&quot;-XNoStarIsType&quot;</code></pre>
+<h3 id="repl-に依存関係を追加"><strong>REPL</strong> に依存関係を追加</h3>
+<p><strong>REPL</strong> を動かす際、少し複雑なファイルの場合は <strong>base</strong> 以外のパッケージを利用していることがほとんどです。</p>
+<p>そういう時には <code>-b</code> (<code>--build-depends</code>) オプションを利用します。このオプションは <code>stack repl --package</code> と同じような感じでパッケージを追加できます。</p>
+<p><strong>vector</strong> パッケージを追加で読み込む例です。(<strong>vector</strong> パッケージのビルドが走る場合があります。)</p>
+<pre class="shell"><code>$ cabal repl -b vector
+...
+Prelude&gt; import Data.Vector
+Prelude Data.Vector&gt; </code></pre>
+<p>複数のパッケージ <strong>vector</strong>, <strong>aeson</strong> を読み込む例は以下のようになります。</p>
+<pre class="shell"><code>$ cabal repl -b vector -b aeson
+...
+Prelude&gt; import Data.Vector
+Prelude Data.Vector&gt; import Data.Aeson
+Prelude Data.Vector Data.Aeson&gt;</code></pre>
+<p>このように、カンマ区切りで続けてパッケージを指定することも可能です。(<code>-b</code> ではエラーになります)</p>
+<pre class="shell"><code>$ cabal repl -v0 --build-depends=&quot;vector, aeson&quot;
+Prelude&gt;</code></pre>
+<p>パッケージのバージョンを指定することも可能です。バージョンの指定には <strong>build-depends</strong> と同じ記法が使えます。</p>
+<pre class="shell"><code>$ cabal repl -b aeson==1.4.7.1
+...
+Prelude&gt;</code></pre>
+<hr />
+<p>ここで、パッケージを追加した際は追加したパッケージが依存しているパッケージも含めて読み込まれる点に注意してください。(つまり、推移的に依存関係が追加されます)</p>
+<p>例えば <a href="https://hackage.haskell.org/package/deepseq">deepseq</a> パッケージで定義されている <code>Control.DeepSeq</code> は本当なら <strong>import</strong> できないはずです。しかし、<a href="https://hackage.haskell.org/package/vector">vector</a> パッケージは <strong>deepseq</strong> に依存しているため <strong>import</strong> できてしまいます。</p>
+<pre class="shell"><code>$ cabal repl -v0 -b vector
+Prelude&gt; import Control.DeepSeq 
+Prelude Control.DeepSeq&gt;</code></pre>
+<p>この挙動を変更したい場合は <code>--no-transitive-deps</code> オプションを指定します。</p>
+<pre class="shell"><code>$ cabal repl -v0 -b vector --no-transitive-deps
+Prelude&gt; import Control.DeepSeq 
+
+&lt;no location info&gt;: error:
+    Could not load module ‘Control.DeepSeq’
+    It is a member of the hidden package ‘deepseq-1.4.4.0’.
+    Perhaps you need to add ‘deepseq’ to the build-depends in your .cabal file.</code></pre>
+<p>読み込まれるパッケージがどのように変化しているか確認しておきましょう。</p>
+<pre class="shell"><code>$ cabal repl -v0
+Prelude&gt; :show packages 
+active package flags:
+  -package-id base-4.14.0.0
+
+$ cabal repl -v0 -b vector
+Prelude&gt; :show packages 
+active package flags:
+  -package-id transformers-0.5.6.2
+  -package-id primitive-0.7.0.1-26f169240ac34903846f3a33e2517e97382af71bd7fe7cb7262fd6ca4381f53e
+  -package-id array-0.5.4.0
+  -package-id deepseq-1.4.4.0
+  -package-id integer-gmp-1.0.3.0
+  -package-id rts
+  -package-id ghc-prim-0.6.1
+  -package-id vector-0.12.1.2-8dc77cdd80241a59f0811ecc4c067ae98900f833977f73cce9795875f4909da9
+  -package-id base-4.14.0.0
+
+$ cabal repl -v0 -b vector --no-transitive-deps
+Prelude&gt; :show packages 
+active package flags:
+  -package-id vector-0.12.1.2-8dc77cdd80241a59f0811ecc4c067ae98900f833977f73cce9795875f4909da9
+  -package-id base-4.14.0.0</code></pre>
+<h2 id="cabal-プロジェクト内で実行した場合"><strong>cabal</strong> プロジェクト内で実行した場合</h2>
+<p>基本的にはプロジェクト内で <code>cabal repl</code> と実行するとプロジェクトの <strong>cabal</strong> ファイルに従い</p>
+<ul>
+<li>依存関係の追加</li>
+<li>モジュールの追加</li>
+<li>オプションの追加</li>
+</ul>
+<p>などを自動的に行い、<strong>REPL</strong> を起動します。</p>
+<pre class="shell"><code>$ cabal repl -v0
+*MyLib&gt; </code></pre>
+<p>この時、<strong>import</strong> されるモジュールは1つのみです。(これは仕様みたいです)</p>
+<p>そのため、必要なモジュールは自分で <strong>import</strong> する必要があります。</p>
+<h3 id="プロジェクトを無視して-repl-を起動">プロジェクトを無視して <strong>REPL</strong> を起動</h3>
+<p>プロジェクトを無視して <strong>REPL</strong> を起動するためには <code>-z</code> (<code>--ignore-project</code>) オプションを指定します。</p>
+<pre class="shell"><code>$ cabal repl -v0 -z
+Prelude&gt;</code></pre>
+<h2 id="今回紹介したオプション一覧">今回紹介したオプション一覧</h2>
+<table>
+<thead>
+<tr class="header">
+<th>short</th>
+<th>long</th>
+<th>オプションの意味</th>
+<th>stack</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>無し</td>
+<td><code>--repl-options</code></td>
+<td><strong>ghci</strong> に渡すオプション指定</td>
+<td><code>--ghci-options</code></td>
+</tr>
+<tr class="even">
+<td><code>-b</code></td>
+<td><code>--build-depends</code></td>
+<td>依存関係の追加</td>
+<td><code>--package</code></td>
+</tr>
+<tr class="odd">
+<td><code>-z</code></td>
+<td><code>--ignore-project</code></td>
+<td>プロジェクトの <strong>cabal</strong> を無視する</td>
+<td><code>--no-load</code> が近いけど<br>プロジェクトの依存関係は読み込む</td>
+</tr>
+<tr class="even">
+<td>無し</td>
+<td><code>--no-transitive-deps</code></td>
+<td>推移的な依存関係を追加しない</td>
+<td>デフォルトの動作</td>
+</tr>
+<tr class="odd">
+<td><code>-w</code></td>
+<td><code>--with-compiler</code></td>
+<td>利用するコンパイラの指定</td>
+<td><code>-with-ghc</code>?</td>
+</tr>
+<tr class="even">
+<td><code>-v0</code></td>
+<td><code>--verbose=0</code></td>
+<td>起動時のメッセージを省略</td>
+<td>無し</td>
+</tr>
+</tbody>
+</table>
+<h2 id="参考リソース">参考リソース</h2>
+<ul>
+<li><a href="https://www.haskell.org/cabal/users-guide/nix-local-build.html#cabal-v2-repl">5.4.4. cabal v2-repl - Cabal User Manual</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/5454">Add –build-depends flag, associated support to new-repl #5454</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/3565">Cabal repl and cabal build/run conflict over .o object files if ghci has -fobject-code set #3565</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/2592">cabal repl load single module #2592</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/6190">–repl-options doesn’t split on whitespace #6190</a></li>
+<li><a href="https://github.com/haskell/cabal/pull/5845">Allow list for <code>repl --build-depends</code> #5845</a></li>
+<li><a href="https://github.com/haskell/cabal/issues/5374"><code>cabal new-repl</code> only brings one module into scope #5374</a></li>
+</ul>]]></summary>
+</entry>
+<entry>
     <title>cabal-plan license-report 機能の紹介</title>
     <link href="https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html" />
     <id>https://haskell.e-bigmoon.com/posts/2020/03-30-cabal-plan-license-report.html</id>
@@ -1569,205 +1778,6 @@ version:        1.999999999     -- 変更後</code></pre>
 <li>いつものように、変更の完全なリストについては、<a href="https://github.com/mrkkrp/megaparsec/blob/master/CHANGELOG.md">chagelog</a> を参照してください。</li>
 <li><a href="https://markkarpov.com/megaparsec/megaparsec.html">公式チュートリアル</a>を含むすべてのテキストをバージョン8と互換性があるように更新しました。新しい機能の使用方法を説明するセクションを含めるように拡張しました。</li>
 <li><code>hspec-megaparsec</code> などのサテライトパッケージが更新され、バージョン8で動作するようになりました。</li>
-</ul>]]></summary>
-</entry>
-<entry>
-    <title>cabal-fmt の紹介</title>
-    <link href="https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html" />
-    <id>https://haskell.e-bigmoon.com/posts/2019/10-07-cabal-fmt.html</id>
-    <published>October  7, 2019</published>
-    <updated>January 22, 2020</updated>
-    <summary type="html"><![CDATA[<h2 id="はじめに">はじめに</h2>
-<p><a href="https://hackage.haskell.org/package/cabal-fmt">cabal-fmt</a> でできること。</p>
-<ul>
-<li><strong>cabal</strong> ファイルの整形</li>
-<li>フォルダを指定して自動でモジュールを expand できる</li>
-<li>以下のフィールドをアルファベット順で自動的に並べ替え&amp;重複を削除
-<ul>
-<li><strong>exposed-modules</strong></li>
-<li><strong>other-modules</strong></li>
-<li><strong>default-extensions</strong></li>
-<li><strong>other-extensions</strong></li>
-<li><strong>build-depends</strong></li>
-</ul></li>
-</ul>
-<pre class="shell"><code>λ cabal-fmt --version
-0.1.1.1
-
-λ cabal -V
-cabal-install version 3.0.0.0
-compiled using version 3.0.0.0 of the Cabal library
-
-# 使い方
-λ cabal-fmt &lt;proj&gt;.cabal -i</code></pre>
-<p>作者の記事: <a href="http://oleg.fi/gists/posts/2019-08-11-cabal-fmt.html">ANN: cabal-fmt</a></p>
-<!--more-->
-<h2 id="具体例">具体例</h2>
-<h3 id="適用前">適用前</h3>
-<pre class="cabal"><code>cabal-version: 2.4
-name:test
-version:0.1.0.0
-tested-with:
-  GHC ==8.8.1 || ==8.6.5 || ==8.4.4 || ==8.2.2 || ==8.0.2 || ==7.10.3
-  GHCJS ==8.4
-
-executable site
-  main-is:          site.hs
-  other-modules:
-    Config
-    Hakyll.Ext
-  hs-source-dirs:   app
-  ghc-options:
-    -Wcompat -Wall
-    -Wnoncanonical-monad-instances
-    -Wincomplete-uni-patterns -Wincomplete-record-updates -Wredundant-constraints -Wtabs -threaded
-  build-depends:
-      base, lens
-    , blaze-html, conduit-combinators
-    , containers      , filepath
-          , bytestring
-    , extensible
-    
-    
-    , yaml, time
-
-  if !os(windows)
-    build-depends: hakyll-sass
-
-  default-language: Haskell2010</code></pre>
-<h3 id="適用後">適用後</h3>
-<pre class="cabal"><code>cabal-version: 2.4
-name:          test
-version:       0.1.0.0
-tested-with:
-    GHC ==7.10.3
-     || ==8.0.2
-     || ==8.2.2
-     || ==8.4.4
-     || ==8.6.5
-     || ==8.8.1
-  , GHCJS ==8.4
-
-executable site
-  main-is:          site.hs
-  other-modules:
-    Config
-    Hakyll.Ext
-
-  hs-source-dirs:   app
-  ghc-options:
-    -Wcompat -Wall -Wnoncanonical-monad-instances
-    -Wincomplete-uni-patterns -Wincomplete-record-updates
-    -Wredundant-constraints -Wtabs -threaded
-
-  build-depends:
-    , base
-    , blaze-html
-    , bytestring
-    , conduit-combinators
-    , containers
-    , extensible
-    , filepath
-    , lens
-    , time
-    , yaml
-
-  if !os(windows)
-    build-depends: hakyll-sass
-
-  default-language: Haskell2010
-</code></pre>
-<h2 id="インストール">インストール</h2>
-<pre class="shell"><code>λ cabal v2-update
-λ cabal v2-install cabal-fmt
-
-λ cabal-fmt --help
-λ cabal-fmt - .cabal file reformatter
-
-Usage: cabal-fmt [-i|--inplace] [--Werror | --Wno-error | --indent N | --tabular
-                 | --no-tabular] [FILE...] [--version]
-  Reformat .cabal files
-
-Available options:
-  -i,--inplace             process files in-place
-  --Werror                 Treat warnings as errors
-  --indent N               Indentation
-  --tabular                Tabular formatting
-  FILE...                  input files
-  -h,--help                Show this help text
-  --version                Show version</code></pre>
-<h2 id="使い方">使い方</h2>
-<p>基本的には以下のコマンドで終わりです。(<code>&lt;proj&gt;</code> は各自のファイル名に置き換えてください)</p>
-<pre class="shell"><code>λ cabal-fmt &lt;proj&gt;.cabal -i</code></pre>
-<p><code>-i</code> オプション (<code>--inplace</code>) で既存ファイルを上書きするので、結果だけ見たい場合は外しましょう。</p>
-<h3 id="モジュールの自動展開">モジュールの自動展開</h3>
-<p>僕が <code>cabal-fmt</code> を使う理由の最大のポイントはモジュールの自動展開機能です。</p>
-<pre class="cabal"><code>library
-  -- cabal-fmt: expand src
-  exposed-modules:</code></pre>
-<p>記法としては、上記のようにしてモジュールを探索するディレクトリ (今回の場合は <strong>src</strong>) を指定します。</p>
-<p>実際に使ってみましょう。ここでは例として <strong>test-dir</strong> を作りますが、実際には <strong>src</strong>, <strong>app</strong>, <strong>test</strong> などが展開の対象となることが多いと思います。</p>
-<p>また、意図的に <strong>C.md</strong> としている点にも注意してください。</p>
-<pre class="shell"><code>λ mkdir test-dir
-λ touch test-dir/A.hs test-dir/B.hs test-dir/C.md
-λ tree test-dir
-test-dir
-├── A.hs
-├── B.hs
-└── C.md</code></pre>
-<p>適用する <strong>cabal</strong> ファイル (<strong>test.cabal</strong>) の中身は以下の通りです。</p>
-<pre class="cabal"><code>name:    test
-version: 0.1.0.0
-
-library
-  -- cabal-fmt: expand test-dir
-  exposed-modules:</code></pre>
-<p>この状態で <code>cabal-fmt test.cabal -i</code> を実行すると結果は以下のようになります。</p>
-<pre class="cabal"><code>name:    test
-version: 0.1.0.0
-
-library
-  -- cabal-fmt: expand test-dir
-  exposed-modules:
-    A
-    B
-    C
-</code></pre>
-<p><code>.hs</code> ファイルだけ列挙して欲しいところですが、指定したディレクトリ以下の全てを列挙します。そのため、公開したいモジュールと非公開のモジュールはディレクトリを分けて運用するなど、少しだけ工夫する必要があります。</p>
-<p>一応、除外したいモジュールを <code>-Module</code> の形式で指定することもできます。</p>
-<pre class="cabal"><code>name:    test
-version: 0.1.0.0
-
-library
-  -- cabal-fmt: expand test-dir -C
-  exposed-modules:</code></pre>
-<p>適用後</p>
-<pre class="cabal"><code>name:    test
-version: 0.1.0.0
-
-library
-  -- cabal-fmt: expand test-dir -C
-  exposed-modules:
-    A
-    B
-</code></pre>
-<p>この方法を使えば <strong>hspec-discover</strong> や <strong>tasty-discover</strong> のためのファイルなどを除外することができます。</p>
-<h2 id="cabal-format-コマンド">cabal format コマンド</h2>
-<p><code>cabal</code> についてあまり詳しく無いので良くわかりませんが、一応 <strong>cabal format</strong> というコマンドが存在します。(<a href="https://github.com/haskell/cabal/issues/2460"><code>cabal format</code> is not listed in –help message #2460</a>)</p>
-<pre class="shell"><code>λ cabal format --help
-Reformat the .cabal file using the standard style.
-
-Usage: cabal format [FILE]
-
-Flags for format:
- -h --help Show this help text</code></pre>
-<p>実際にこのコマンドでも整形だけなら可能みたいです。ただし、<a href="https://github.com/haskell/cabal/issues/5734"><code>cabal format</code> inlines and removes <code>common</code> stanzas #5734</a> にもある通り <code>common</code> stanza が削除されたりします。</p>
-<p>そのため、<strong>cabal format</strong> コマンドよりも <strong>cabal-fmt</strong> を利用した方が良いと思います。</p>
-<h2 id="まとめ">まとめ</h2>
-<p>便利なので最近良く使ってます。</p>
-<h2 id="参考リソース">参考リソース</h2>
-<ul>
-<li><a href="http://oleg.fi/gists/posts/2019-08-11-cabal-fmt.html">ANN: cabal-fmt</a></li>
 </ul>]]></summary>
 </entry>
 
