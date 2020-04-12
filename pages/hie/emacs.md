@@ -10,7 +10,7 @@ updated: 2020/03/08
 |:-----:|:-------------|
 | OS    | Ubuntu 18.04 |
 | Stack |        2.1.3 |
-| HIE   | Version 1.2, Git revision ee5b98c6bd3610ff90cb5373608a09c5813dcb69 (3829 commits) x86_64 ghc-8.8.2 |
+| HIE   | Version 1.3, Git revision 78eb87b221481d81b8764c821ab3d673e9768464 (3873 commits) x86_64 ghc-8.8.3 |
 | Emacs |         26.3 |
 
 ## 導入手順
@@ -100,7 +100,7 @@ $ sudo apt install emacs26
 $ sudo update-alternatives --config emacs
 ```
 
-![きれいに表示されたHIEの画像](/images/hie-/emacs.png)
+![きれいに表示されたHIEの画像](/images/hie/emacs.png)
 
 ### 補足2 : ビルドはできたのにHIEが動かない
 
