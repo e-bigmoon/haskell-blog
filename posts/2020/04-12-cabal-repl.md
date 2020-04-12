@@ -40,7 +40,7 @@ Loaded GHCi configuration from /tmp/cabal-repl.-3302/setcwd.ghci
 Prelude>
 ```
 
-生成される内容は [withoutProject](https://github.com/haskell/cabal/blob/cabal-install-v3.2.0.0/cabal-install/Distribution/Client/CmdRepl.hs#L392) の中で定義されています。また、ログメッセージの最後に表示されている `/tmp/cabal-repl.-3302/` を確認することで、実際に生成された **cabal** ファイルを確認できます。
+生成される内容は [withoutProject](https://github.com/haskell/cabal/blob/cabal-install-v3.2.0.0/cabal-install/Distribution/Client/CmdRepl.hs#L392) の中で定義されています。また、ログメッセージの最後に表示されている `/tmp/cabal-repl.-3302/` ディレクトリに、実際に生成された **cabal** ファイルなどが保存されます。
 
 ```shell
 $ ls /tmp/cabal-repl.-3302/
@@ -61,6 +61,9 @@ library
 
 **build-depends** に `base -any` が指定されているため、**GHC** のバージョンに対応した **base** パッケージがデフォルトで利用可能です。 
 
+**REPL** の使い方は **ghci** などと同じなので大丈夫でしょう。
+
+### **REPL** 起動時のメッセージを省略する
 
 **REPL** 起動時のメッセージを省略するためには `-v0` オプションを指定します。
 
@@ -68,8 +71,6 @@ library
 $ cabal repl -v0
 Prelude>
 ```
-
-あとはいつも通りです。
 
 ### **REPL** で利用する GHC を切り替える
 
