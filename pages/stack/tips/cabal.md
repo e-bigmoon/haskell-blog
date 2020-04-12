@@ -70,7 +70,6 @@ stack | cabal | 備考
 `stack build` | `cabal build`
 `stack test` | `cabal test`
 `stack repl` <br> `stack ghci` | `cabal repl` | [cabal repl コマンドについて](/posts/2020/04-10-cabal-repl.html)
-`stack repl --package <pkg1> <pkg2>` | `cabal repl --build-dep <pkg1>, <pkg2>` <br> `cabal repl -b <pkg1>, <pkg2>` | [#5845][cabal-5845]
 `stack clean` | `cabal clean`
 `stack run` | `cabal run`
 `stack --version` | `cabal --version` <br> `cabal -V`
