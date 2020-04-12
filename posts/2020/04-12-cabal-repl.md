@@ -167,7 +167,7 @@ Prelude>
 
 ここで、パッケージを追加した際は追加したパッケージが依存しているパッケージも含めて読み込まれる点に注意してください。(つまり、推移的に依存関係が追加されます)
 
-例えば [deepseq](https://hackage.haskell.org/package/deepseq) パッケージで定義されている `Control.DeepSeq` は本当なら **import** できないはずです。しかし、[vector](https://hackage.haskell.org/package/vector) パッケージは **deepseq** に依存しているため **import** できてしまいます。
+例えば [deepseq](https://hackage.haskell.org/package/deepseq) パッケージで定義されている `Control.DeepSeq` は本当なら **import** できないはずです。しかし、[vector](https://hackage.haskell.org/package/vector) パッケージは **deepseq** パッケージに依存しているため **import** できてしまいます。
 
 ```shell
 $ cabal repl -v0 -b vector
