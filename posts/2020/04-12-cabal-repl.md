@@ -129,7 +129,7 @@ $ cabal repl -v0 --repl-options="-XNoImplicitPrelude" --repl-options="-XNoStarIs
 
 そういう時には `-b` (`--build-depends`) オプションを利用します。このオプションは `stack repl --package` と同じような感じでパッケージを追加できます。
 
-**vector** パッケージを追加で読み込む例です。(**vector** パッケージのビルドが走る場合があります。)
+**vector** パッケージを追加で読み込む例です。(パッケージのビルドが走る場合があります。)
 
 ```shell
 $ cabal repl -b vector
