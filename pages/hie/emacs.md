@@ -1,7 +1,7 @@
 ---
 title: Emacs で Haskell IDE Engine を使う
 published: 2018/08/17
-updated: 2020/03/08
+updated: 2020/04/13
 ---
 
 ## 実行環境
@@ -27,11 +27,12 @@ updated: 2020/03/08
 
 ```shell
 $ stack upgrade
+
 $ sudo apt update
 $ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev
 ```
 
-準備ができたらHIEを[リポジトリ](https://github.com/haskell/haskell-ide-engine)からクローンしてインストールしましょう。(以下の例では GHC-8.8.1 を対象としています。)
+準備ができたら **HIE** を[リポジトリ][hie-github]からクローンしてインストールしましょう。(以下の例では **GHC-8.8.3** を対象としています。)
 
 ```shell
 $ git clone https://github.com/haskell/haskell-ide-engine --recurse-submodules
@@ -39,21 +40,23 @@ $ cd haskell-ide-engine
 $ stack ./install.hs hie
 ```
 
+[hie-github]: https://github.com/haskell/haskell-ide-engine
+
 ### 2. 必要なパッケージの入手
 
-EmacsでHIEを使うには次の３つのパッケージが必要です。
+**Emacs** で **HIE** を使うには次の３つのパッケージが必要です。
 
 - [lsp-mode](https://github.com/emacs-lsp/lsp-mode)
 - [lsp-ui](https://github.com/emacs-lsp/lsp-ui)
 - [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
 
-`lsp-mode` は `package.el` でのインストールが推奨されているので、Emacs を起動して以下のコマンドでインストールしましょう。
+**lsp-mode** は `package.el` でのインストールが推奨されているので、**Emacs** を起動して以下のコマンドでインストールしましょう。
 
 ```
 M-x package-install [RET] lsp-mode [RET]
 ```
 
-次に、`lsp-ui` と `lsp-haskell` をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
+次に、**lsp-ui** と **lsp-haskell** をインストールする場所に移動します。次に行う設定ファイルの更新でインストール場所を指定するのでわかりやすい場所に移動しておきましょう。おすすめは `~/.emacs.d/elisp` です。インストールはクローンするだけです。
 
 ```shell
 $ cd ~/.emacs.d/elisp
@@ -140,7 +143,7 @@ error in process filter: or: Symbol's value as variable is void: method
 error in process filter: Symbol's value as variable is void: method
 ```
 
-このエラーはemacs `dash` パッケージが古いことが原因で起こります．最新版の `dash` をインストールしましょう．
+このエラーは emacs `dash` パッケージが古いことが原因で起こります．最新版の `dash` をインストールしましょう．
 
 ### 参考
 
