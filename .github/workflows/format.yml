@@ -17,14 +17,14 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        cache-version: ["2020-04-13"]
+        cache-version: ["2020-05-02"]
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1
+    - uses: actions/setup-haskell@v1.1
       with:
         ghc-version: "8.8.3"
-        cabal-version: "3.0"
+        cabal-version: "3.2.0.0"
 
     - uses: actions/cache@v1
       name: Cache ~/.cabal/store
@@ -32,10 +32,10 @@ jobs:
         path: ~/.cabal/store
         key: ${{ runner.os }}-${{ matrix.cache-version }}-cabal
 
-    - name: Install cabal-fmt ormolu
+    - name: Install cabal-fmt, ormolu
       run: |
         cabal update
-        cabal install cabal-fmt ormolu --overwrite-policy=always --install-method=copy -j2
+        cabal install cabal-fmt ormolu --overwrite-policy=always --install-method=copy -j2 -z
 
     - name: Apply cabal-fmt
       run: |
