@@ -178,7 +178,7 @@
         
           <br>
           <i class="mdi mdi-calendar"></i>&nbsp;
-          Last Updated January 22, 2020
+          Last Updated May  2, 2020
         
         &nbsp;
         
@@ -229,12 +229,12 @@
 </ul>
 <!--more-->
 <h2 id="モチベーション">モチベーション</h2>
-<p>ここでは <code>stack</code> で管理されていて、<code>cabal</code> ファイルにバージョン制約が明記されていないという、良くあるシチュエーションを考えます。</p>
+<p>ここでは <strong>stack</strong> で管理されていて、<strong>cabal</strong> ファイルにバージョン制約が明記されていないという、良くあるシチュエーションを考えます。</p>
 <p>どんなプロジェクトでも良いのですが、具体的には <a href="https://github.com/arcticmatt/dino-brick">arcticmatt/dino-brick</a> のようなプロジェクトです。<code>stack.yaml</code> は以下のようになっています。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-8.23</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="kw">-</span><span class="at"> </span><span class="st">'.'</span></span></code></pre></div>
-<p><code>dino.cabal</code> の <code>dependencies</code> には、ほとんどバージョンが明記されていません。(stack の場合はスナップショットが決まると自動的にパッケージのバージョンが決まるため、明示する必要はあまり無いのです)</p>
+<p><a href="https://github.com/arcticmatt/dino-brick/blob/dino/dino.cabal#L16">dino.cabal の build-depends</a> には、ほとんどバージョンが明記されていません。(<strong>stack</strong> の場合はスナップショットが決まると自動的にパッケージのバージョンが決まるため、明示する必要はあまり無いのです)</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span><span class="kw">:</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
@@ -246,9 +246,9 @@
 <span id="cb2-9"><a href="#cb2-9"></a><span class="at">    , random</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a><span class="at">    , vty</span></span>
 <span id="cb2-11"><a href="#cb2-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
-<p>このプロジェクトを <code>cabal</code> でビルドするためにはどうしたら良いんだろうか？というお話です。何もしなくてもビルドできるプロジェクトも結構あるんですが、ハマる時もあります・・・。</p>
+<p>このプロジェクトを <strong>cabal</strong> でビルドするためにはどうしたら良いんだろうか？というお話です。何もしなくてもビルドできるプロジェクトも結構あるんですが、ハマる時もあります・・・。</p>
 <h2 id="package.yaml-から-cabal-ファイルを生成する">package.yaml から cabal ファイルを生成する</h2>
-<p>リポジトリに <code>package.yaml</code> しか含まれていない場合は、<code>package.yaml</code> から <code>cabal</code> ファイルを生成しましょう。</p>
+<p>リポジトリに <code>package.yaml</code> しか含まれていない場合は、<code>package.yaml</code> から <strong>cabal</strong> ファイルを生成しましょう。</p>
 <p>以下のコマンドでビルドすることなくすぐに生成できます。</p>
 <pre class="shell"><code>$ stack build --dry-run</code></pre>
 <p>今回は <code>dino.cabal</code> が最初からリポジトリに含まれているため何もしなくても良さそうですね。</p>
@@ -256,6 +256,7 @@
 <p>とりあえずビルドしてみましょう。</p>
 <pre class="shell"><code>$ git clone https://github.com/arcticmatt/dino-brick.git
 $ cd dino-brick
+
 $ cabal update
 Downloading the latest package list from hackage.haskell.org
 To revert to previous state run:
@@ -287,10 +288,10 @@ dino-0.1.0.0).</code></pre>
 <p>エラーがいくつも出てしまいました。上記の結果はそのうちの最後の1つだけを表示しています。</p>
 <p>ちなみに <code>stack build</code> だとビルドできます。</p>
 <h3 id="問題点">問題点</h3>
-<p><code>stack</code> だとビルドできて、<code>cabal</code> だと失敗してしまう原因はビルド時にパッケージのバージョンにあります。どのパッケージが原因かと言うと、今回は <a href="https://hackage.haskell.org/package/brick">brick</a> です。</p>
-<p><code>stack</code> の場合は <a href="https://www.stackage.org/lts-8.23">LTS-8.23</a> に含まれるバージョンを利用することになるので <a href="https://www.stackage.org/lts-8.23/package/brick-0.17.2">brick-0.17.2</a> を利用します。</p>
-<p>一方で <code>cabal</code> の場合は <code>cabal update</code> を最後に実行した時の <code>Hackage</code> の最新バージョンが利用されます。これは明示的なバージョン制約が <code>cabal</code> ファイルに記述されていないためです。そのため <a href="https://hackage.haskell.org/package/brick-0.50.1">brick-0.50.1</a> などが利用されます。</p>
-<p>バージョンアップによって後方互換性が保たれている場合は何も考えずにビルドが通るのですが、GHC のバージョンが変わるタイミングなどでは破壊的変更が含まれている場合も多いため、どこかでビルドが壊れます。</p>
+<p><strong>stack</strong> だとビルドできて、<strong>cabal</strong> だと失敗してしまう原因はビルド時にパッケージのバージョンにあります。どのパッケージが原因かと言うと、今回は <a href="https://hackage.haskell.org/package/brick">brick</a> です。</p>
+<p><strong>stack</strong> の場合は <a href="https://www.stackage.org/lts-8.23">LTS-8.23</a> に含まれるバージョンを利用することになるので <a href="https://www.stackage.org/lts-8.23/package/brick-0.17.2">brick-0.17.2</a> を利用します。</p>
+<p>一方で <strong>cabal</strong> の場合は <code>cabal update</code> を最後に実行した時の <strong>Hackage</strong> の最新バージョンが利用されます。これは明示的なバージョン制約が <strong>cabal</strong> ファイルに記述されていないためです。そのため <a href="https://hackage.haskell.org/package/brick-0.50.1">brick-0.50.1</a> などが利用されます。</p>
+<p>バージョンアップによって後方互換性が保たれている場合は何も考えずにビルドが通るのですが、<strong>GHC</strong> のバージョンが変わるタイミングなどでは破壊的変更が含まれている場合も多いため、どこかでビルドが壊れます。</p>
 <p>今回のプロジェクトでは <a href="https://github.com/jtdaugherty/brick/blob/master/CHANGELOG.md#047">brick-0.47</a> の変更によって <code>Brick.Main.customMain</code> の型が変わり、その結果ビルドエラーになりました。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- 0.46</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span>        <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span>
@@ -312,12 +313,12 @@ dino-0.1.0.0).</code></pre>
 <p>このプロジェクトはこれで上手く動きました。</p>
 <p>しかし、どのバージョンで壊れたかどうかを毎回調べるのはかなりつらいです。そのため、もっと良い方法として <code>LTS-8.23</code> のバージョン制約を使ってみましょう。</p>
 <h2 id="cabal-freeze-コマンド">cabal freeze コマンド</h2>
-<p><code>cabal</code> には <code>cabal freeze</code> というコマンドがあります。アプリケーション開発で便利な機能です。</p>
+<p><strong>cabal</strong> には <code>cabal freeze</code> というコマンドがあります。アプリケーション開発で便利な機能です。</p>
 <p>コマンドを実行すると <code>cabal.project.freeze</code> というファイルが作られます。</p>
 <pre class="shell"><code>$ cabal freeze
 Wrote freeze file: dino-brick/cabal.project.freeze</code></pre>
 <p>このファイルは一言でいえば <code>npm</code> の <code>package-lock.json</code> ファイルと同じです。ビルドの再現性を保証するためのものです。</p>
-<p>例えば、先ほどの <code>dino.cabal</code> ファイルで <code>brick</code> のバージョンを <code>^&gt;= 0.46</code> のように指定した場合を考えてみましょう。この指定方法は <code>brick &gt;= 0.46 &amp;&amp; &lt; 0.47</code> と同じ意味になります。(cabal 2.0 から使えます)</p>
+<p>例えば、先ほどの <code>dino.cabal</code> ファイルで <code>brick</code> のバージョンを <code>^&gt;= 0.46</code> のように指定した場合を考えてみましょう。この指定方法は <code>brick &gt;= 0.46 &amp;&amp; &lt; 0.47</code> と同じ意味になります。(<strong>cabal 2.0</strong> から利用可能な記法です)</p>
 <pre class="cabal"><code>library:
   build-depends:
       base &gt;= 4.7 &amp;&amp; &lt; 5
@@ -330,9 +331,9 @@ Wrote freeze file: dino-brick/cabal.project.freeze</code></pre>
     , vty
     , MonadRandom</code></pre>
 <p>例えば、会社のデスクトップPCでビルドしたときに <code>brick-0.46</code> がインストールされたとしましょう。</p>
-<p>次の日の朝、バグフィックスされた <code>brick-0.46.1</code> が Hackage にアップロードされました。</p>
+<p>次の日の朝、バグフィックスされた <code>brick-0.46.1</code> が <strong>Hackage</strong> にアップロードされました。</p>
 <p>その日の午後、自宅のノートPCで <code>cabal update &amp;&amp; cabal build</code> を行った場合、インストールされるのは <code>brick-0.46.1</code> になります。</p>
-<p>つまり、<code>brick ^&gt;= 0.46</code> という指定方法では環境ごとに同じバージョンが使われていることを保証できません。そのため、<code>cabal freeze</code> コマンドで <code>cabal.project.freeze</code> を生成し、コマンドを実行した環境で実際に利用されている具体的なバージョンを記録しておきます。これは <code>stack</code> のスナップショットと同じようなものです。</p>
+<p>つまり、<code>brick ^&gt;= 0.46</code> という指定方法では環境ごとに同じバージョンが使われていることを保証できません。そのため、<code>cabal freeze</code> コマンドで <code>cabal.project.freeze</code> を生成し、コマンドを実行した環境で実際に利用されている具体的なバージョンを記録しておきます。これは <strong>stack</strong> のスナップショットと同じようなものです。</p>
 <p>実際に生成されたファイルの中身はこんな感じです。</p>
 <pre class="cabal"><code>constraints: any.Cabal ==2.4.0.1,
              any.MonadRandom ==0.5.1.2,
@@ -457,9 +458,7 @@ Wrote freeze file: dino-brick/cabal.project.freeze</code></pre>
     , random
     , vty
     , MonadRandom</code></pre>
-<pre class="shell"><code>$ ls cabal.project.freeze 
-cabal.project.freeze
-$ cabal build
+<pre class="shell"><code>$ cabal build
 ...
 [__1] fail (backjumping, conflict set: brick, dino)
 After searching the rest of the dependency tree exhaustively, these were the
@@ -472,7 +471,7 @@ After searching the rest of the dependency tree exhaustively, these were the
 goals I've had most trouble fulfilling: brick, dino</code></pre>
 <p>そもそも制約を満たさない場合は <code>cabal freeze</code> が失敗するみたいです。</p>
 <h2 id="スナップショットに対応した-freeze-ファイルを使おう">スナップショットに対応した freeze ファイルを使おう</h2>
-<p>さて、それではリポジトリを <code>clone</code> した直後に戻しましょう。こんな状態です。</p>
+<p>さて、それではリポジトリを <strong>clone</strong> した直後に戻しましょう。こんな状態です。</p>
 <pre class="shell"><code>$ git clone https://github.com/arcticmatt/dino-brick.git
 $ cd dino-brick
 $ cabal update</code></pre>
@@ -487,7 +486,7 @@ $ cabal update</code></pre>
 <span id="cb13-9"><a href="#cb13-9"></a><span class="at">    , random</span></span>
 <span id="cb13-10"><a href="#cb13-10"></a><span class="at">    , vty</span></span>
 <span id="cb13-11"><a href="#cb13-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
-<p><code>Stackage</code> のスナップショットの <code>URL</code> の後ろに <code>cabal.config</code> を付けた <a href="https://www.stackage.org/lts-8.23/cabal.config">https://www.stackage.org/lts-8.23/cabal.config</a> にアクセスすると <code>cabal.project.freeze</code> ファイルとして利用可能なテキストファイルが表示されます。</p>
+<p><strong>Stackage</strong> のスナップショットの <strong>URL</strong> の後ろに <code>cabal.config</code> を付けた <a href="https://www.stackage.org/lts-8.23/cabal.config">https://www.stackage.org/lts-8.23/cabal.config</a> にアクセスすると <code>cabal.project.freeze</code> ファイルとして利用可能なテキストファイルが表示されます。</p>
 <p>これをそのまま保存してビルドするだけで全てが上手くいきます。</p>
 <pre class="shell"><code>$ curl https://www.stackage.org/lts-8.23/cabal.config &gt; cabal.project.freeze
 $ cabal build
@@ -495,13 +494,13 @@ $ cabal build
 After searching the rest of the dependency tree exhaustively, these were the
 goals I've had most trouble fulfilling: optparse-applicative, base, dino</code></pre>
 <p>おっと忘れていました。<code>LTS-8.23</code> は <code>GHC-8.0.2</code> でしたね。</p>
-<p><code>-w</code> (<code>with-compiler</code> の頭文字) オプションで利用する <code>GHC</code> を切り替えてビルドしましょう！</p>
+<p><code>-w</code> (<code>with-compiler</code> の頭文字) オプションで利用する <strong>GHC</strong> を切り替えてビルドしましょう！</p>
 <pre class="shell"><code>$ cabal build -w ghc-8.0.2</code></pre>
 <h2 id="まとめ">まとめ</h2>
 <ul>
-<li><code>stack</code> でビルドが通っていれば、<code>cabal</code> でも通る</li>
+<li><strong>stack</strong> でビルドが通っていれば、<strong>cabal</strong> でも通る</li>
 <li><code>cabal freeze</code> を使うとスナップショットのようにバージョンを記録できる</li>
-<li><code>Stackage</code> のスナップショットの URL の最後に <code>cabal.config</code> を付けると <code>freeze</code> ファイルを取得できる</li>
+<li><strong>Stackage</strong> のスナップショットの <strong>URL</strong> の最後に <code>cabal.config</code> を付けると <strong>freeze</strong> ファイルを取得できる</li>
 </ul>
 <h2 id="参考リソース">参考リソース</h2>
 <ul>
