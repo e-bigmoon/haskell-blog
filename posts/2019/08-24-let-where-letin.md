@@ -2,7 +2,7 @@
 title: let, where, let...in の使い分け
 author: Shinya Yamaguchi
 tags: bigmoon, haskell
-updated: 2020/03/02
+updated: 2020/05/02
 ---
 
 ## はじめに
@@ -96,7 +96,7 @@ calcBmi cm kg
 ```
 
 - このように、ガードで共通する変数を宣言する場合に `where` を使うと見通しが良くなります。
-- `do` の中ではないため、当然 `let` は使えません
+- `do` の中ではないため、当然 `let` は使えません。
 
 ### let...in で書いた場合
 
@@ -168,7 +168,7 @@ instance Functor ST where
 
 ## where と let...in の違い
 
-`let...in` と `where` の明確な違いは `let...in` が式なのに対して `where` が節だという点です。
+`let...in` と `where` の明確な違いは `let...in` が**式**なのに対して `where` が**節**だという点です。
 
 ```haskell
 -- OK
@@ -186,7 +186,7 @@ g = if (x where x = True) then 1 else 0
 
 そういえばラムダノートさんから[プログラミングHaskellの第2版](https://www.lambdanote.com/collections/haskell)が発売されましたね。書籍の内容が個人的にとても好きなので、弊社のアルバイトの人には推薦図書として英語版を読んでもらっていました。
 
-これからは日本語で読めるようになったので、これを機に Haskell に入門してみるのも良いかもしれません。
+これからは日本語で読めるようになったので、これを機に **Haskell** に入門してみるのも良いかもしれません。
 
 ## 参考リソース
 

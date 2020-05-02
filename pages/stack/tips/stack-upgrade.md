@@ -1,7 +1,7 @@
 ---
 title: Stack の更新
 published: 2017/12/24
-updated: 2019/09/14
+updated: 2029/05/02
 ---
 
 ## stack のアップグレード方法
@@ -10,8 +10,6 @@ updated: 2019/09/14
 
 ```shell
 $ stack upgrade
-
-$ stack --version
 ```
 
 **stack** のバイナリファイルがダウンロードされるため、更新はすぐに終わります。
@@ -38,10 +36,10 @@ $ stack upgrade --git --git-branch release
 
 ```shell
 # バージョン指定 (前のバージョンに戻したい場合などに便利)
-$ stack upgrade --binary-version 2.1.1
+$ stack upgrade --binary-version 2.1.3
 ```
 
-過去のバージョンを指定することで、stack をダウングレードさせることも可能です。
+過去のバージョンを指定することで、**stack** をダウングレードさせることも可能です。
 
 ## stack update コマンドについて
 
@@ -83,5 +81,5 @@ $ export PATH=$PATH:~/.local/bin
 
 ```shell
 $ stack --version
-Version 2.1.3, Git revision 0fa51b9925decd937e4a993ad90cb686f88fa282 (7739 commits) x86_64 hpack-0.31.2
+Version 2.3.1, Git revision de2a7b694f07de7e6cf17f8c92338c16286b2878 (8103 commits) x86_64 hpack-0.33.0
 ```

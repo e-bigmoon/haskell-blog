@@ -2,7 +2,7 @@
 title: stack で管理されたプロジェクトを cabal でビルドするために
 author: Shinya Yamaguchi
 tags: bigmoon, cabal
-updated: 2020/01/22
+updated: 2020/05/02
 ---
 
 Haskell のビルドツールといえば **cabal** と **stack** です。ちょっと前までは **cabal** より **stack** の方が流行っていたのですが、最近は開発も落ち着いているようであまり動きがありません。それよりも **cabal** の **nix-style local build** が非常に使いやすく、近頃では **stack** から **cabal** に移行しているプロジェクトも多くあります。
@@ -19,7 +19,7 @@ Haskell のビルドツールといえば **cabal** と **stack** です。ち�
 
 ## モチベーション
 
-ここでは `stack` で管理されていて、`cabal` ファイルにバージョン制約が明記されていないという、良くあるシチュエーションを考えます。
+ここでは **stack** で管理されていて、**cabal** ファイルにバージョン制約が明記されていないという、良くあるシチュエーションを考えます。
 
 どんなプロジェクトでも良いのですが、具体的には [arcticmatt/dino-brick](https://github.com/arcticmatt/dino-brick) のようなプロジェクトです。`stack.yaml` は以下のようになっています。
 
@@ -29,7 +29,7 @@ packages:
 - '.'
 ```
 
-`dino.cabal` の `dependencies` には、ほとんどバージョンが明記されていません。(stack の場合はスナップショットが決まると自動的にパッケージのバージョンが決まるため、明示する必要はあまり無いのです)
+[dino.cabal の build-depends](https://github.com/arcticmatt/dino-brick/blob/dino/dino.cabal#L16) には、ほとんどバージョンが明記されていません。(**stack** の場合はスナップショットが決まると自動的にパッケージのバージョンが決まるため、明示する必要はあまり無いのです)
 
 ```yaml
 library:
@@ -45,11 +45,11 @@ library:
     , MonadRandom
 ```
 
-このプロジェクトを `cabal` でビルドするためにはどうしたら良いんだろうか？というお話です。何もしなくてもビルドできるプロジェクトも結構あるんですが、ハマる時もあります・・・。
+このプロジェクトを **cabal** でビルドするためにはどうしたら良いんだろうか？というお話です。何もしなくてもビルドできるプロジェクトも結構あるんですが、ハマる時もあります・・・。
 
 ## package.yaml から cabal ファイルを生成する
 
-リポジトリに `package.yaml` しか含まれていない場合は、`package.yaml` から `cabal` ファイルを生成しましょう。
+リポジトリに `package.yaml` しか含まれていない場合は、`package.yaml` から **cabal** ファイルを生成しましょう。
 
 以下のコマンドでビルドすることなくすぐに生成できます。
 
@@ -66,6 +66,7 @@ $ stack build --dry-run
 ```shell
 $ git clone https://github.com/arcticmatt/dino-brick.git
 $ cd dino-brick
+
 $ cabal update
 Downloading the latest package list from hackage.haskell.org
 To revert to previous state run:
@@ -102,13 +103,13 @@ dino-0.1.0.0).
 
 ### 問題点
 
-`stack` だとビルドできて、`cabal` だと失敗してしまう原因はビルド時にパッケージのバージョンにあります。どのパッケージが原因かと言うと、今回は [brick](https://hackage.haskell.org/package/brick) です。
+**stack** だとビルドできて、**cabal** だと失敗してしまう原因はビルド時にパッケージのバージョンにあります。どのパッケージが原因かと言うと、今回は [brick](https://hackage.haskell.org/package/brick) です。
 
-`stack` の場合は [LTS-8.23](https://www.stackage.org/lts-8.23) に含まれるバージョンを利用することになるので [brick-0.17.2](https://www.stackage.org/lts-8.23/package/brick-0.17.2) を利用します。
+**stack** の場合は [LTS-8.23](https://www.stackage.org/lts-8.23) に含まれるバージョンを利用することになるので [brick-0.17.2](https://www.stackage.org/lts-8.23/package/brick-0.17.2) を利用します。
 
-一方で `cabal` の場合は `cabal update` を最後に実行した時の `Hackage` の最新バージョンが利用されます。これは明示的なバージョン制約が `cabal` ファイルに記述されていないためです。そのため [brick-0.50.1](https://hackage.haskell.org/package/brick-0.50.1) などが利用されます。
+一方で **cabal** の場合は `cabal update` を最後に実行した時の **Hackage** の最新バージョンが利用されます。これは明示的なバージョン制約が **cabal** ファイルに記述されていないためです。そのため [brick-0.50.1](https://hackage.haskell.org/package/brick-0.50.1) などが利用されます。
 
-バージョンアップによって後方互換性が保たれている場合は何も考えずにビルドが通るのですが、GHC のバージョンが変わるタイミングなどでは破壊的変更が含まれている場合も多いため、どこかでビルドが壊れます。
+バージョンアップによって後方互換性が保たれている場合は何も考えずにビルドが通るのですが、**GHC** のバージョンが変わるタイミングなどでは破壊的変更が含まれている場合も多いため、どこかでビルドが壊れます。
 
 今回のプロジェクトでは [brick-0.47](https://github.com/jtdaugherty/brick/blob/master/CHANGELOG.md#047) の変更によって `Brick.Main.customMain` の型が変わり、その結果ビルドエラーになりました。
 
@@ -142,7 +143,7 @@ library:
 
 ## cabal freeze コマンド
 
-`cabal` には `cabal freeze` というコマンドがあります。アプリケーション開発で便利な機能です。
+**cabal** には `cabal freeze` というコマンドがあります。アプリケーション開発で便利な機能です。
 
 コマンドを実行すると `cabal.project.freeze` というファイルが作られます。
 
@@ -153,7 +154,7 @@ Wrote freeze file: dino-brick/cabal.project.freeze
 
 このファイルは一言でいえば `npm` の `package-lock.json` ファイルと同じです。ビルドの再現性を保証するためのものです。
 
-例えば、先ほどの `dino.cabal` ファイルで `brick` のバージョンを `^>= 0.46` のように指定した場合を考えてみましょう。この指定方法は `brick >= 0.46 && < 0.47` と同じ意味になります。(cabal 2.0 から使えます)
+例えば、先ほどの `dino.cabal` ファイルで `brick` のバージョンを `^>= 0.46` のように指定した場合を考えてみましょう。この指定方法は `brick >= 0.46 && < 0.47` と同じ意味になります。(**cabal 2.0** から利用可能な記法です)
 
 ```cabal
 library:
@@ -171,11 +172,11 @@ library:
 
 例えば、会社のデスクトップPCでビルドしたときに `brick-0.46` がインストールされたとしましょう。
 
-次の日の朝、バグフィックスされた `brick-0.46.1` が Hackage にアップロードされました。
+次の日の朝、バグフィックスされた `brick-0.46.1` が **Hackage** にアップロードされました。
 
 その日の午後、自宅のノートPCで `cabal update && cabal build` を行った場合、インストールされるのは `brick-0.46.1` になります。
 
-つまり、`brick ^>= 0.46` という指定方法では環境ごとに同じバージョンが使われていることを保証できません。そのため、`cabal freeze` コマンドで `cabal.project.freeze` を生成し、コマンドを実行した環境で実際に利用されている具体的なバージョンを記録しておきます。これは `stack` のスナップショットと同じようなものです。
+つまり、`brick ^>= 0.46` という指定方法では環境ごとに同じバージョンが使われていることを保証できません。そのため、`cabal freeze` コマンドで `cabal.project.freeze` を生成し、コマンドを実行した環境で実際に利用されている具体的なバージョンを記録しておきます。これは **stack** のスナップショットと同じようなものです。
 
 実際に生成されたファイルの中身はこんな感じです。
 
@@ -310,8 +311,6 @@ library:
 ```
 
 ```shell
-$ ls cabal.project.freeze 
-cabal.project.freeze
 $ cabal build
 ...
 [__1] fail (backjumping, conflict set: brick, dino)
@@ -329,7 +328,7 @@ goals I've had most trouble fulfilling: brick, dino
 
 ## スナップショットに対応した freeze ファイルを使おう
 
-さて、それではリポジトリを `clone` した直後に戻しましょう。こんな状態です。
+さて、それではリポジトリを **clone** した直後に戻しましょう。こんな状態です。
 
 ```shell
 $ git clone https://github.com/arcticmatt/dino-brick.git
@@ -351,7 +350,7 @@ library:
     , MonadRandom
 ```
 
-`Stackage` のスナップショットの `URL` の後ろに `cabal.config` を付けた [https://www.stackage.org/lts-8.23/cabal.config](https://www.stackage.org/lts-8.23/cabal.config) にアクセスすると `cabal.project.freeze` ファイルとして利用可能なテキストファイルが表示されます。
+**Stackage** のスナップショットの **URL** の後ろに `cabal.config` を付けた [https://www.stackage.org/lts-8.23/cabal.config](https://www.stackage.org/lts-8.23/cabal.config) にアクセスすると `cabal.project.freeze` ファイルとして利用可能なテキストファイルが表示されます。
 
 これをそのまま保存してビルドするだけで全てが上手くいきます。
 
@@ -365,7 +364,7 @@ goals I've had most trouble fulfilling: optparse-applicative, base, dino
 
 おっと忘れていました。`LTS-8.23` は `GHC-8.0.2` でしたね。
 
-`-w` (`with-compiler` の頭文字) オプションで利用する `GHC` を切り替えてビルドしましょう！
+`-w` (`with-compiler` の頭文字) オプションで利用する **GHC** を切り替えてビルドしましょう！
 
 ```shell
 $ cabal build -w ghc-8.0.2
@@ -373,9 +372,9 @@ $ cabal build -w ghc-8.0.2
 
 ## まとめ
 
-- `stack` でビルドが通っていれば、`cabal` でも通る
+- **stack** でビルドが通っていれば、**cabal** でも通る
 - `cabal freeze` を使うとスナップショットのようにバージョンを記録できる
-- `Stackage` のスナップショットの URL の最後に `cabal.config` を付けると `freeze` ファイルを取得できる
+- **Stackage** のスナップショットの **URL** の最後に `cabal.config` を付けると **freeze** ファイルを取得できる
 
 ## 参考リソース
 
