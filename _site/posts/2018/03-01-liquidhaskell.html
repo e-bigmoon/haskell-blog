@@ -11,14 +11,14 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Liquid Haskell</title>
+  <title>LiquidHaskell でハマった (MEMO)</title>
   <meta name="description" content="はじめに
-Liquid Haskell で少しハマったのでメモとして残しておきます。
+LiquidHaskell で少しハマったのでメモとして残しておきます。
 本来なら先に仕様を書いて実装を書くべきだと思いますが、今回の例は既存のコードにリファインメント型をつけるような場合を想定しています。
-$ liquid
-LiquidHaskell Version 0.8.2.4, Git revisi">
+$ liquid --version
+LiquidHaskell Version 0.8.6.2 no">
   <link rel="canonical" href="../../posts/2018/03-01-liquidhaskell.html">
-  <link rel="alternate" type="application/atom+xml" title="Liquid Haskell" href="../../feed.xml" />
+  <link rel="alternate" type="application/atom+xml" title="LiquidHaskell でハマった (MEMO)" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -32,16 +32,16 @@ LiquidHaskell Version 0.8.2.4, Git revisi">
   
 
   <!-- OGP -->
-  <meta property="og:title" content="Liquid Haskell" />
+  <meta property="og:title" content="LiquidHaskell でハマった (MEMO)" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="/posts/2018/03-01-liquidhaskell.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Liquid Haskell" />
+  <meta property="og:site_name" content="LiquidHaskell でハマった (MEMO)" />
   <meta property="og:description" content="はじめに
-Liquid Haskell で少しハマったのでメモとして残しておきます。
+LiquidHaskell で少しハマったのでメモとして残しておきます。
 本来なら先に仕様を書いて実装を書くべきだと思いますが、今回の例は既存のコードにリファインメント型をつけるような場合を想定しています。
-$ liquid
-LiquidHaskell Version 0.8.2.4, Git revisi" />
+$ liquid --version
+LiquidHaskell Version 0.8.6.2 no" />
 
   <meta name="twitter:card" content="summary" />
   <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
@@ -186,7 +186,7 @@ LiquidHaskell Version 0.8.2.4, Git revisi" />
         
           <br>
           <i class="mdi mdi-calendar"></i>&nbsp;
-          Last Updated March 14, 2018
+          Last Updated May  2, 2020
         
         &nbsp;
         
@@ -197,7 +197,7 @@ LiquidHaskell Version 0.8.2.4, Git revisi" />
       </p>
 
       <div class="post-header">
-        <h1 class="post-title">Liquid Haskell</h1>
+        <h1 class="post-title">LiquidHaskell でハマった (MEMO)</h1>
 
         <div class="row">
         
@@ -215,7 +215,7 @@ LiquidHaskell Version 0.8.2.4, Git revisi" />
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Liquid Haskell&url=https://haskell.e-bigmoon.com/posts/2018/03-01-liquidhaskell.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=LiquidHaskell でハマった (MEMO)&url=https://haskell.e-bigmoon.com/posts/2018/03-01-liquidhaskell.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/03-01-liquidhaskell.html"><i class="mdi mdi-facebook white-text"></i></a>
@@ -229,12 +229,12 @@ LiquidHaskell Version 0.8.2.4, Git revisi" />
 
       <article class="post-content">
         <h2 id="はじめに">はじめに</h2>
-<p>Liquid Haskell で少しハマったのでメモとして残しておきます。</p>
+<p><strong>LiquidHaskell</strong> で少しハマったのでメモとして残しておきます。</p>
 <p>本来なら先に仕様を書いて実装を書くべきだと思いますが、今回の例は既存のコードにリファインメント型をつけるような場合を想定しています。</p>
-<pre class="shell"><code>$ liquid
-LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
-Copyright 2013-18 Regents of the University of California. All Rights Reserved.</code></pre>
-<p>Liquid Haskell を気になってる人向けの記事です。</p>
+<pre class="shell"><code>$ liquid --version
+LiquidHaskell Version 0.8.6.2 no git information
+Copyright 2013-19 Regents of the University of California. All Rights Reserved.</code></pre>
+<p><strong>LiquidHaskell</strong> について気になってる人向けの記事です。</p>
 <!--more-->
 <h2 id="やりたいこと">やりたいこと</h2>
 <p>データの挿入と更新操作を次のような型で表現します。</p>
@@ -242,12 +242,13 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <span id="cb2-2"><a href="#cb2-2"></a>  <span class="kw">deriving</span> <span class="dt">Eq</span></span></code></pre></div>
 <p>上記のデータ型を使って、次のような関数を定義します。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2"></a>adjustBound op lower upper n</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
 <p><code>adjustBound</code> 関数は以下のように動作します。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;</span> adjustBound <span class="dt">Insert</span> <span class="dv">0</span> <span class="dv">10</span> <span class="dv">5</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="dv">11</span></span>
@@ -265,10 +266,10 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <p><code>adjustBound</code> のような関数でバグが無いことを確認するためには何をしたら良いでしょうか？</p>
 <p>型は非常に強力ですが、値について何も教えてくれません。</p>
 <h2 id="バグの少ない世界を目指して">バグの少ない世界を目指して</h2>
-<p>僕が Haskell を使う理由は、第一に <code>楽しい</code> からです。そのため、「勉強しても就職する時に役に立たないでしょ？」などと言われても全く気になりません。(そもそも、就職するために勉強するわけじゃないですよね)</p>
-<p>また Haskell を使えば、正しいソフトウェアを普通に作ることができます。また、<code>hspec</code> などで単体テストを書いたり、<code>QuichCheck</code> などでランダムテストを書くことで、過去に起こった問題を再発させないようにする努力や、バグを少なくするための取り組みが行われています。</p>
+<p>僕が <strong>Haskell</strong> を使う理由は、第一に<strong>楽しい</strong>からです。そのため、「勉強しても就職する時に役に立たないでしょ？」などと言われても全く気になりません。(そもそも、就職するために勉強するわけじゃないですよね)</p>
+<p>また <strong>Haskell</strong> を使えば、正しいソフトウェアを普通に作ることができます。また、<strong>HSpec</strong> などで単体テストを書いたり、<strong>QuichCheck</strong> などでランダムテストを書くことで、過去に起こった問題を再発させないようにする努力や、バグを少なくするための取り組みが行われています。</p>
 <p>しかしながら、個人的にはどれもまだ不安です。もしかしたら、チェックしてない部分にバグがあるんじゃないの・・・？</p>
-<p>そんな心配性の方は <code>Liquid Haskell (LH)</code> を使いましょう！</p>
+<p>そんな心配性の方は <strong>LiquidHaskell (LH)</strong> に触れてみてください。</p>
 <h2 id="型をより厳しく">型をより厳しく</h2>
 <p>最初に定義した <code>Operation</code> 型と <code>adjustBound</code> を再掲します。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- LH.hs</span></span>
@@ -285,45 +286,49 @@ Copyright 2013-18 Regents of the University of California. All Rights Reserved.<
 <span id="cb5-12"><a href="#cb5-12"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
 <span id="cb5-13"><a href="#cb5-13"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
 <p>とりあえず、現在のコードを <code>LH</code> にかけてみます。</p>
-<pre class="shell"><code>$ liquid LH.hs
-LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
-Copyright 2013-18 Regents of the University of California. All Rights Reserved.
+<pre class="shell"><code>$ liquid LH.hs 
+LiquidHaskell Version 0.8.6.2 no git information
+Copyright 2013-19 Regents of the University of California. All Rights Reserved.
 
+Targets: LH.hs
+
+**** [Checking: LH.hs] *********************************************************
 
 **** DONE:  A-Normalization ****************************************************
-
+ 
 
 **** DONE:  Extracted Core using GHC *******************************************
-
+ 
 
 **** DONE:  Transformed Core ***************************************************
-
+ 
 Working 100% [=================================================================]
 
 **** DONE:  annotate ***********************************************************
-
+ 
 
 **** RESULT: SAFE **************************************************************</code></pre>
 <p><code>RESULT: SAFE</code> が表示されれば問題ありません！</p>
 <h3 id="入力を自然数に限定させよう">入力を自然数に限定させよう</h3>
-<p>例えば <code>lower</code> と <code>upper</code> が自然数 (0含む) しか許容しないという仕様が与えられた時、どうしますか？</p>
+<p>例えば、<code>lower</code> 関数と <code>upper</code> 関数に自然数 (0含む) しか許容しないという仕様が与えられた時、どうしますか？</p>
 <p>よくある対応としては、コメントにその旨を書いたり、テストを作ったりという作業になるでしょう。</p>
-<p><code>Liquid Haskell</code> では上記の仕様を <code>事前条件</code> として記述することができます。</p>
+<p><strong>LiquidHaskell</strong> では上記の仕様を<strong>事前条件</strong>として記述することができます。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; _ @-}</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
-<p><code>Nat</code> は <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Prelude.spec">Prelude</a> で以下のように定義されています。つまり、0以上の <code>Int</code> のみを含むリファインメント型です。</p>
+<span id="cb7-3"><a href="#cb7-3"></a>adjustBound op lower upper n</span>
+<span id="cb7-4"><a href="#cb7-4"></a>  <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
+<p><code>Nat</code> は <a href="https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/Prelude.spec#L37">Prelude</a> で以下のように定義されています。つまり、<code>0</code> 以上の <code>Int</code> のみを含むリファインメント型です。</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">{-@ type Nat = {v: Int | v &gt;= 0 } @-}</span></span></code></pre></div>
-<p>これだけです。<code>LH</code> で結果を確かめてみましょう。</p>
+<p>これだけです。<strong>LiquidHaskell</strong> で結果を確かめてみましょう。</p>
 <pre class="shell"><code>$ liquid LH.hs
 ...
 
 **** RESULT: SAFE **************************************************************</code></pre>
-<p><code>SAFE</code> ですね！</p>
-<p>これでもう <code>adjustBound</code> の <code>lower</code> と <code>upper</code> は <code>0</code> 以上の自然数でしか呼び出されていないことが示されました。</p>
+<p><strong>SAFE</strong> ですね！</p>
+<p>これでもう <code>adjustBound</code> の <code>lower</code> と <code>upper</code> は <code>0</code> 以上の自然数でしか呼び出されていないことが保証されました。</p>
 <h3 id="もう少し具体例">もう少し具体例</h3>
-<p>では、別のプログラマが <code>adjustBound</code> を利用した関数を作ったとしましょう。この関数自体に意味はないですが、<code>LH</code> を理解するためにはとても良い例だと思います。</p>
+<p>では、別のプログラマが <code>adjustBound</code> を利用した関数を作ったとしましょう。この関数自体に意味はないですが、<strong>LiquidHaskell</strong> を理解するためにはとても良い例だと思います。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="ot">f ::</span> <span class="dt">Int</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>f <span class="ot">=</span> adjustBound <span class="dt">Insert</span> (<span class="op">-</span><span class="dv">100</span>) (<span class="op">-</span><span class="dv">50</span>) (<span class="op">-</span><span class="dv">70</span>)</span></code></pre></div>
 <p>この関数 <code>f</code> は、型が正しいため当然コンパイルできます。</p>
@@ -331,52 +336,37 @@ Working 100% [=================================================================]
 &gt; f
 -49</code></pre>
 <p>けれども、僕らの仕様では <code>adjustBound</code> の <code>lower</code> と <code>upper</code> には自然数しか適用してはいけないはずです。</p>
-<p>次に <code>LH</code> を実行してみましょう。</p>
+<p>次に <strong>LiquidHaskell</strong> を実行してみましょう。</p>
 <pre class="shell"><code>$ liquid LH.hs
 **** RESULT: UNSAFE ************************************************************
 
-
- LH.hs:18:25-28: Error: Liquid Type Mismatch
-
- 18 | f = adjustBound Insert (-100) (-50) (-70)
-                              ^^^^
-
-
+ LH.hs:17:24-29: Error: Liquid Type Mismatch
+  
+ 17 | f = adjustBound Insert (-100) (-50) (-70)
+                             ^^^^^^
+  
    Inferred type
-    VV : {v : Int | v == (-?a)
-                    &amp;&amp; v == ?b}
-
-  not a subtype of Required type
-    VV : {VV : Int | VV &gt;= 0}
-
-  In Context
-    ?b : {?b : Int | ?b == (-?a)}
-
-    ?a : {?a : Int | ?a == (100 : int)}
+     VV : {v : GHC.Types.Int | v == (-100)}
+  
+   not a subtype of Required type
+     VV : {VV : GHC.Types.Int | VV &gt;= 0}
 
 
- LH.hs:18:32-34: Error: Liquid Type Mismatch
-
- 18 | f = adjustBound Insert (-100) (-50) (-70)
-                                     ^^^
-
-
+ LH.hs:17:31-35: Error: Liquid Type Mismatch
+  
+ 17 | f = adjustBound Insert (-100) (-50) (-70)
+                                    ^^^^^
+  
    Inferred type
-    VV : {v : Int | v == (-?b)
-                    &amp;&amp; v == ?a}
-
-  not a subtype of Required type
-    VV : {VV : Int | VV &gt;= 0}
-
-  In Context
-    ?b : {?b : Int | ?b == (50 : int)}
-
-    ?a : {?a : Int | ?a == (-?b)}</code></pre>
-<p><code>UNSAFE</code> になりましたね。こういうことです。</p>
-<p>つまり、<strong>自分たちが使っている範囲</strong>で <code>Liquid Haskell</code> のリファインメント型について、正しく整合性が取れているのかということを判定しています。</p>
+     VV : {v : GHC.Types.Int | v == (-50)}
+  
+   not a subtype of Required type
+     VV : {VV : GHC.Types.Int | VV &gt;= 0}</code></pre>
+<p><strong>UNSAFE</strong> になりましたね。こういうことです。</p>
+<p>つまり、<strong>自分たちが使っている範囲</strong>で <strong>LiquidHaskell</strong> のリファインメント型について、正しく整合性が取れているかどうかを判定しています。</p>
 <h3 id="戻り値の型も厳しくしよう">戻り値の型も厳しくしよう！</h3>
-<p>先程、事前条件についてリファインメント型を書きました。</p>
-<p>次は事後条件についてリファインメントを書きましょう！</p>
+<p>先程、<strong>事前条件</strong>についてリファインメント型を書きました。</p>
+<p>次は<strong>事後条件</strong>についてリファインメントを書きましょう！</p>
 <p>同様に戻り値の型も自然数という仕様にします。</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">{-@ adjustBound :: _ -&gt; Nat -&gt; Nat -&gt; _ -&gt; Nat @-}</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
@@ -384,8 +374,8 @@ Working 100% [=================================================================]
 <span id="cb13-4"><a href="#cb13-4"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
 <pre class="shell"><code>$ liquid LH.hs
 **** RESULT: SAFE **************************************************************</code></pre>
-<p>リファインメント型 (Refinement type) は <code>篩 (ふるい) 型</code> と訳されている本 (<a href="https://taimen.jp/f/389">入門LiquidHaskell−篩型による静的コード解析−</a>) もありますが、それは <code>Haskell</code> の型の値が条件によって <code>ふるい</code> 落とされて、新しい型 (リファインメント型) になっているというイメージから来ているのだと思います。(読んだこと無いので間違ってたらすみません・・・。)</p>
-<p>追記: チェシャ猫さんから <code>篩型</code> について教えてもらいました！</p>
+<p>リファインメント型 (Refinement type) は <strong>篩 (ふるい) 型</strong> と訳されている本 (<a href="https://taimen.jp/f/389">入門LiquidHaskell−篩型による静的コード解析−</a>) もありますが、それは <strong>Haskell</strong> の型の値が条件によって <strong>ふるい</strong> 落とされて、新しい型 (リファインメント型) になっているというイメージから来ているのだと思います。(読んだこと無いので間違ってたらすみません・・・。)</p>
+<p>追記: チェシャ猫さんから<strong>型</strong> について教えてもらいました！</p>
 <blockquote class="twitter-tweet" data-lang="ja">
 <p lang="ja" dir="ltr">
 &gt; リファインメント型 (Refinement type) は 篩 (ふるい) 型 と訳されている本もありますが<br><br>頒布したときに最も多かった質問は「これ何て読むんですか？」だった。ちなみに「篩型」はこの本で勝手に作った造語ではなく、論文タイトルなどにも使われています。<a href="https://t.co/Du6mK1hqdD">https://t.co/Du6mK1hqdD</a>
@@ -409,67 +399,71 @@ Working 100% [=================================================================]
 <li><code>Update</code> の操作の場合の戻り値は <code>lower</code> 〜 <code>lower `max` (n `min` upper)</code> の間の自然数</li>
 </ol>
 <p>ここからが面白いところです。</p>
-<p>まずは前準備として <code>x 〜 y</code> までの間の自然数を表すリファインメント型と述語を定義します。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">{-@ type Btwn Lo Hi = {v:Int | Lo &lt;= v &amp;&amp; v &lt;= Hi} @-}</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="co">{-@ predicate BtwnP Lo Hi = Lo &lt;= v &amp;&amp; v &lt;= Hi @-}</span></span></code></pre></div>
-<p>では、<code>仕様1</code>を反映させてみましょう。</p>
+<p>まずは前準備として <code>x</code> 〜 <code>y</code> までの間の自然数を表す述語を定義します。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">{-@ predicate BtwnP Lo Hi V = Lo &lt;= V &amp;&amp; V &lt;= Hi @-}</span></span></code></pre></div>
+<p>では、<strong>仕様1</strong>を反映させてみましょう。</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u} -&gt; _ -&gt; Nat @-}</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb16-4"><a href="#cb16-4"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
+<span id="cb16-3"><a href="#cb16-3"></a>adjustBound op lower upper n</span>
+<span id="cb16-4"><a href="#cb16-4"></a>  <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>  <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span></code></pre></div>
 <pre class="shell"><code>$ liquid LH.hs
 **** RESULT: SAFE **************************************************************</code></pre>
-<p>では次に、<code>仕様2</code> と <code>仕様3</code> です。</p>
+<p>では次に、<strong>仕様2</strong> と <strong>仕様3</strong> です。</p>
 <p>リファインメント型は以下のようになります。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">{-@ adjustBound ::</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a><span class="co">      op:Operation -&gt;</span></span>
 <span id="cb18-3"><a href="#cb18-3"></a><span class="co">      l:Nat -&gt;</span></span>
 <span id="cb18-4"><a href="#cb18-4"></a><span class="co">      {u:Nat | l &lt;= u} -&gt;</span></span>
 <span id="cb18-5"><a href="#cb18-5"></a><span class="co">      _ -&gt;</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="co">      {v:Nat | if (isInsert op) then (BtwnP l (u+1)) else BtwnP l u }</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="co">      {v:Nat | if (isInsert op) then (BtwnP l (u+1) v) else BtwnP l u v}</span></span>
 <span id="cb18-7"><a href="#cb18-7"></a><span class="co">@-}</span></span>
 <span id="cb18-8"><a href="#cb18-8"></a><span class="ot">adjustBound ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb18-9"><a href="#cb18-9"></a>adjustBound op lower upper n <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb18-10"><a href="#cb18-10"></a>                             <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span>
-<span id="cb18-11"><a href="#cb18-11"></a></span>
-<span id="cb18-12"><a href="#cb18-12"></a><span class="co">{-@ measure isInsert @-}</span></span>
-<span id="cb18-13"><a href="#cb18-13"></a><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb18-14"><a href="#cb18-14"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
-<span id="cb18-15"><a href="#cb18-15"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
+<span id="cb18-9"><a href="#cb18-9"></a>adjustBound op lower upper n</span>
+<span id="cb18-10"><a href="#cb18-10"></a>  <span class="op">|</span> isInsert op <span class="ot">=</span> upper <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a>  <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> lower <span class="ot">`max`</span> (n <span class="ot">`min`</span> upper)</span>
+<span id="cb18-12"><a href="#cb18-12"></a></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="co">{-@ measure isInsert @-}</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a><span class="ot">isInsert ::</span> <span class="dt">Operation</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb18-15"><a href="#cb18-15"></a>isInsert <span class="dt">Insert</span> <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb18-16"><a href="#cb18-16"></a>isInsert _      <span class="ot">=</span> <span class="dt">False</span></span></code></pre></div>
 <pre class="shell"><code>$ liquid LH.hs
 **** RESULT: SAFE **************************************************************</code></pre>
 <h2 id="はまったポイント">はまったポイント</h2>
-<p><code>if (isInsert op) then (BtwnP l (u+1)) else BtwnP l u</code> の部分でかなりはまりました。</p>
-<p>例えば <code>if</code> の括弧を外した場合は次のようなエラーになります。</p>
-<p><code>if isInsert op then (BtwnP l (u+1)) else BtwnP l u</code></p>
+<p><code>if (isInsert op) then (BtwnP l (u+1) v) else BtwnP l u v</code> の部分でかなりはまりました。</p>
+<p>例えば <code>if</code> の条件式の括弧を外した場合は次のようなエラーになります。</p>
+<p><code>if isInsert op then (BtwnP l (u+1) v) else BtwnP l u v</code></p>
 <pre class="shell"><code>**** RESULT: ERROR *************************************************************
 
 
- LH.hs:10:73: Error: Cannot parse specification:
-
- 10 | {-@ adjustBound :: op:Operation -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; {v:Nat | if isInsert op then (BtwnP l (u+1)) else BtwnP l u } @-}
-                                                                              ^
-
+ LH.hs:13:9: Error: Cannot parse specification:
+  
+ 13 |       {v:Nat | if isInsert op then (BtwnP l (u+1) v) else BtwnP l u v}
+              ^
+  
      unexpected &quot;:&quot;
      expecting operator, white space or &quot;}&quot;</code></pre>
 <p>また、同様に <code>then</code> の括弧を外してもエラーになります。</p>
-<p><code>if (isInsert op) then BtwnP l (u+1) else BtwnP l u</code></p>
+<p><code>if (isInsert op) then BtwnP l (u+1) v else BtwnP l u v</code></p>
 <pre class="shell"><code>**** RESULT: ERROR *************************************************************
 
 
- LH.hs:10:73: Error: Cannot parse specification:
-
- 10 | {-@ adjustBound :: op:Operation -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; {v:Nat | if (isInsert op) then BtwnP l (u+1) else BtwnP l u } @-}
-                                                                              ^
-
+ /LH.hs:13:9: Error: Cannot parse specification:
+  
+ 13 |       {v:Nat | if (isInsert op) then BtwnP l (u+1) v else BtwnP l u v}
+              ^
+  
      unexpected &quot;:&quot;
      expecting operator, white space or &quot;}&quot;</code></pre>
-<p><code>else</code> については括弧があっても無くても <code>SAFE</code> です。</p>
+<p><code>else</code> については括弧があっても無くても <strong>SAFE</strong> です。</p>
 <p>この挙動が本当にわからなくてつらかったです・・・。</p>
 <p>ちなみに、以下のような場合も同様にはまるので、ご注意ください。</p>
-<pre><code>-- UNSAFE
+<pre><code>{-@ type Btwn Lo Hi = {v:Int | Lo &lt;= v &amp;&amp; v &lt;= Hi} @-}
+
+-- Error
 {-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; Btwn l (u+1) @-}
 {-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; Btwn l {u+1} @-}
+{-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; Btwn {l} (u+1) @-}
 
 -- SAFE
 {-@ adjustBound :: _ -&gt; l:Nat -&gt; {u:Nat | l &lt;= u}  -&gt; _ -&gt; Btwn {l} {u+1} @-}</code></pre>
@@ -477,10 +471,14 @@ Working 100% [=================================================================]
 <ul>
 <li><code>if</code> を使う場合は多めに括弧を付けておいた方が良さそう。</li>
 <li><code>{}</code> で囲むと上手くいく場合もある</li>
-<li><code>LiquidHaskell</code> はすごい</li>
+<li><strong>LiquidHaskell</strong> はすごい</li>
 </ul>
 <p>この良くわからない挙動について一緒に考えてくれた友人の tkg さんありがとうございました。</p>
 <p>以上です。</p>
+<h2 id="本記事で利用したコード">本記事で利用したコード</h2>
+<ul>
+<li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/2018/03-01/LH.hs">LH.hs</a></li>
+</ul>
       </article>
 
       <div class="row pager">
@@ -491,7 +489,7 @@ Working 100% [=================================================================]
         </div>
         <div class="col s6">
           
-            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2018/03-03-liquidhaskell-intro.html">Liquid Haskell のインストールと学習方法<i class="material-icons right">navigate_next</i></a>
+            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2018/03-03-liquidhaskell-intro.html">LiquidHaskell のインストールと学習方法<i class="material-icons right">navigate_next</i></a>
           
         </div>
       </div>
@@ -504,7 +502,7 @@ Working 100% [=================================================================]
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Liquid Haskell&url=https://haskell.e-bigmoon.com/posts/2018/03-01-liquidhaskell.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=LiquidHaskell でハマった (MEMO)&url=https://haskell.e-bigmoon.com/posts/2018/03-01-liquidhaskell.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
       <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2018/03-01-liquidhaskell.html"><i class="mdi mdi-facebook white-text"></i></a>
