@@ -1,7 +1,7 @@
 ---
 title: ライブラリ
 published: 2017/07/30
-updated: 2020/02/19
+updated: 2020/05/02
 ---
 
 ## 過去に紹介したライブラリ
@@ -24,8 +24,8 @@ updated: 2020/02/19
 - [Megaparsec 8 (翻訳)](/posts/2019/11-10-megaparsec8.html)
 - [Megaparsec tutorial from IH book (翻訳)](/posts/2019/07-14-megaparsec-tutorial.html)
 
-## Liquid Haskell
+## LiquidHaskell
 
-- [Liquid Haskell](/posts/2018/03-01-liquidhaskell.html)
-- [Liquid Haskell のインストールと学習方法](/posts/2018/03-03-liquidhaskell-intro.html)
+- [LiquidHaskell](/posts/2018/03-01-liquidhaskell.html)
+- [LiquidHaskell のインストールと学習方法](/posts/2018/03-03-liquidhaskell-intro.html)
 - [LiquidHaskell の --prune-unsorted フラグ](/posts/2018/04-14-lh-unsorted-flag.html)

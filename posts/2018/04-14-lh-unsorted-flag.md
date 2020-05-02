@@ -2,14 +2,14 @@
 title: LiquidHaskell の --prune-unsorted フラグ
 author: Shinya Yamaguchi
 tags: bigmoon, liquidhaskell
-updated: 2018/04/14
+updated: 2020/05/02
 ---
 
 ## はじめに
 
-`LiquidHaskell` では `measure` という仕組みを使って `Haskell` の関数を `LH` の述語に持ち上げることができます。
+**LiquidHaskell** では **measure** という仕組みを使って **Haskell** の関数を **LiquidHaskell** の述語に持ち上げることができます。
 
-しかし、以下の `nLen` 関数は `measure` によって持ち上げることができません。
+しかし、以下の `nLen` 関数は **measure** によって持ち上げることができません。
 
 ```hs
 {-@ measure nLen @-}
@@ -18,9 +18,9 @@ nLen [] = 0
 nLen (n:ns) = n + nLen ns
 ```
 
-結論から言えば、これを解決するためには `--prune-unsorted` フラグを利用します。
+結論から言えば、これを解決するためには `--prune-unsorted` フラグを利用します。(**Version 0.8.6.2** ではフラグを有効にしなくても持ち上げることができました)
 
-以下は `measure` の基本的な使い方等についての説明です。
+以下は **measure** の基本的な使い方等についての説明です。
 
 <!--more-->
 
@@ -36,19 +36,22 @@ lLen (_:xs) = 1 + lLen xs
 ```
 
 ```shell
-$ liquid LH.hs
-LiquidHaskell Version 0.8.2.4, Git revision 5b68dc72f628a4c16a77616fb32d8c685580ed2d (dirty)
-Copyright 2013-18 Regents of the University of California. All Rights Reserved.
+$ liquid LH.hs 
+LiquidHaskell Version 0.8.6.2 no git information
+Copyright 2013-19 Regents of the University of California. All Rights Reserved.
 
+Targets: LH.hs
+
+**** [Checking: LH.hs] *********************************************************
 **** DONE:  A-Normalization ****************************************************
 **** DONE:  Extracted Core using GHC *******************************************
 **** DONE:  Transformed Core ***************************************************
-Working 150% [=================================================================]
+Working 100% [=================================================================]
 **** DONE:  annotate ***********************************************************
 **** RESULT: SAFE **************************************************************
 ```
 
-実際にはこんな感じで長さ付きリストのリファインメント型をつけます。先程から**述語**と言っているのはリファインメント型 `{ | }` の `|` の右側のことです。`measure` によってこの部分で `Haskell` で定義した `lLen` 関数が使えるようになります。
+実際にはこんな感じで長さ付きリストのリファインメント型をつけます。先程から**述語**と言っているのはリファインメント型 `{ | }` の `|` の右側のことです。**measure** によってこの部分で **Haskell** で定義した `lLen` 関数が使えるようになります。
 
 ```hs
 {-@ type ListN a N = {v:[a] | lLen v = N} @-}
@@ -68,30 +71,31 @@ badList = [1,2]
 
 ```shell
 **** RESULT: UNSAFE ************************************************************
-Error: Liquid Type Mismatch
-
- 14 | badList = [1,2]
-      ^^^^^^^
+ LH.hs:16:1-15: Error: Liquid Type Mismatch
+  
+ 16 | badList = [1,2]
+      ^^^^^^^^^^^^^^^
+  
    Inferred type
-     VV : {v : [Int] | Main.lLen v == 1 + Main.lLen ?d
-                       && len v == 1 + len ?d
-                       && tail v == ?d
-                       && head v == (1 : int)
-                       && len v >= 0}
-
+     VV : {v : [GHC.Types.Int] | tail v == ?f
+                                 && head v == 1
+                                 && LH.lLen v == 1 + LH.lLen ?f
+                                 && len v == 1 + len ?f
+                                 && len v >= 0}
+  
    not a subtype of Required type
-     VV : {VV : [Int] | Main.lLen VV == 1}
-
+     VV : {VV : [GHC.Types.Int] | LH.lLen VV == 1}
+  
    In Context
-     ?b : {?b : [Int] | Main.lLen ?b == 0
-                        && len ?b == 0
-                        && len ?b >= 0}
-
-     ?d : {?d : [Int] | Main.lLen ?d == 1 + Main.lLen ?b
-                        && len ?d == 1 + len ?b
-                        && tail ?d == ?b
-                        && head ?d == (2 : int)
-                        && len ?d >= 0}
+     ?f : {?f : [GHC.Types.Int] | tail ?f == ?d
+                                  && head ?f == 2
+                                  && LH.lLen ?f == 1 + LH.lLen ?d
+                                  && len ?f == 1 + len ?d
+                                  && len ?f >= 0}
+      
+     ?d : {?d : [GHC.Types.Int] | LH.lLen ?d == 0
+                                  && len ?d == 0
+                                  && len ?d >= 0}
 ```
 
 エラーメッセージがつらいですが、とりあえずは以下の部分に着目すれば良いでしょう。
@@ -105,9 +109,9 @@ not a subtype of Required type
 
 ## measure でエラーが出る場合
 
-`measure` はどんな関数にも使えるわけではありません。
+**measure** はどんな関数にも使えるわけではありません。
 
-例えば、以下のような数値のリストに対して、リストの値の合計を返す関数 `nLen` を考えましょう。(`sum` と同じですが `Preude` とかぶるので名前を変更しています)
+例えば、以下のような数値のリストに対して、リストの値の合計を返す関数 `nLen` を考えましょう。(`sum` と同じですが `Prelude` とかぶるので名前を変更しています)
 
 ```hs
 {-@ measure nLen @-}
@@ -144,6 +148,10 @@ badListSum = [1]
 
 ## まとめ
 
-- 型パラメータが特殊化された関数を `measure` で述語に持ち上げる際には `--prune-unsorted` を使う
+- 型パラメータが特殊化された関数を **measure** で述語に持ち上げる際には `--prune-unsorted` を使う
 
 以上です。
+
+## 本記事で利用したコード
+
+- [LH.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/2018/04-14/LH.hs)

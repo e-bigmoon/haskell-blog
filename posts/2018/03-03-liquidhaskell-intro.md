@@ -1,104 +1,122 @@
 ---
-title: Liquid Haskell のインストールと学習方法
+title: LiquidHaskell のインストールと学習方法
 author: Shinya Yamaguchi
 tags: bigmoon, liquidhaskell
-updated: 2018/03/14
+updated: 2020/05/02
 ---
 
 ## はじめに
 
-`Liquid Haskell` を半年ほど勉強した結果、色々と出来ることが増えて楽しくなってきました。
+**LiquidHaskell** を半年ほど勉強した結果、色々と出来ることが増えて楽しくなってきました。
 
-現状、日本語で詳しく説明しているブログ記事や `Qiita` 記事はほとんどありません。
+現状、日本語で詳しく説明しているブログ記事等はほとんどありません。
 
 とても面白いツールだと思いますので、色々と紹介していけたらと思います。
 
-今回は `Liquid Haskell` の導入方法について簡単に説明したいと思います。
+今回は **LiquidHaskell** の導入方法について簡単に説明したいと思います。
 
 <!--more-->
 
-## Liquid Haskell とは？
+## LiquidHaskell とは？
 
-`Liquid Haskell` は `GHC` の型よりも、さらに厳密な `篩型 (Refinement Type)` の型検査器です。
+**LiquidHaskell** は **GHC** の型よりも、さらに厳密な **篩型 (Refinement Type)** の型検査器です。
 
 既存のコードを変更 (さらには実行すら) することなく利用できるため、既存のプロジェクトの一部にだけ導入することも可能です。
 
-また、つい最近も `GADT` をサポートしたりと、開発はとても活発に行われています。
+また、つい最近も **GADT** をサポートしたりと、開発はとても活発に行われています。
 
-正しいソフトウェアを楽しく作るために、`Liquid Haskell` を学習してみるのはどうでしょうか！
+正しいソフトウェアを楽しく作るために、**LiquidHaskell** を学習してみるのはどうでしょうか！
 
-ちなみに `Liquid` という単語は `液体` と言いたくなりますが、それとはあまり関係なく、実際は `Logically Qualified Data` の略です。(ロゴは `水滴` + `>>=` なので、全く無関係では無いかもですが)
+ちなみに **Liquid** という単語は **液体** を連想させますが、それとはあまり関係なく、実際は `Logically Qualified Data` の略です。(ロゴは **水滴** + **>>=** なので、全く無関係では無いかもですが)
 
 ## インストール
 
-`Liquid Haskell` は以下の2つのリポジトリで開発が進められています。
+**LiquidHaskell** は以下の2つのリポジトリで開発が進められています。
 
 - [ucsd-progsys/liquidhaskell](https://github.com/ucsd-progsys/liquidhaskell)
 - [ucsd-progsys/liquid-fixpoint](https://github.com/ucsd-progsys/liquid-fixpoint)
 
-`liquidhaskell` がフロントエンド (コマンドライン処理やパーサーなどの処理等) を行い `liquid-fixpoint` が `SMT` ソルバに投げるための処理を色々とやっている印象です。(詳しくないので間違ってたらすみません)
+`liquidhaskell` がフロントエンド (コマンドライン処理やパーサーなどの処理等) を行い `liquid-fixpoint` が **SMT** ソルバに投げるための処理を色々とやっている印象です。(詳しくないので間違ってたらすみません)
 
 なので、僕らが関係するのは基本的に `liquidhaskell` リポジトリの方です。(`liquid-fixpoint` はサブモジュールになっています)
 
-また、実際にチェックを行うのは `SMT` ソルバなので、そちらも同様にインストールが必要です。
+また、実際にチェックを行うのは **SMT** ソルバなので、そちらも同様にインストールが必要です。
 
 ### SMT ソルバのインストール
 
-`SMT` ソルバも色々と種類があるようで、公式では以下の3種類が紹介されています。
+**SMT** ソルバも色々と種類があるようで、公式では以下の3種類が紹介されています。
 
-- Z3
-- CVC4
-- MathSat
+- [Z3][z3-github]
+- [CVC4][[cvc4-github]
+- [MathSat][mathsat-official]
 
-どれでもちゃんと動くので好きなソルバを使えば良いのですが、どれを選んだら良いかわからない人は `Z3` にしましょう。
+[z3-github]: https://github.com/Z3Prover/z3
+[cvc4-github]: https://github.com/CVC4/CVC4
+[mathsat-official]: https://mathsat.fbk.eu/
+
+どれでもちゃんと動くので好きなソルバを使えば良いのですが、どれを選んだら良いかわからない人は **Z3** にしましょう。
 
 理由としてはインストール方法が簡単で、性能も良いそうです。
 
-#### Ubuntu
+#### Ubuntu 18.04
 
 ```shell
+$ sudo apt update
 $ sudo apt install z3
 
 $ z3 --version
 Z3 version 4.4.1
 ```
 
-#### Mac (brew)
+#### macOS Catalina 10.15.4
+
+**brew** でインストールする場合は以下の通りです。
 
 ```shell
 $ brew install z3
 
 $ z3 --version
-Z3 version 4.6.0 - 64 bit
+Z3 version 4.8.7 - 64 bit
 ```
 
-### Liquid Haskell のインストール
+### LiquidHaskell のインストール
 
-現状、一番安定しているのは `github` の [**develop**](https://github.com/ucsd-progsys/liquidhaskell) ブランチを `stack` でビルドしてインストールする方法だと思います。
-
-また、その他のインストール方法等は [INSTALL.md](https://github.com/ucsd-progsys/liquidhaskell/blob/develop/INSTALL.md) をご参照下さい。
+現状、一番安定しているのは **hackage** の [liquidhaskell][lh-hackage] を **cabal** と **GHC-8.6.5** の組み合わせでインストールする方法だと思います。その他のインストール方法等は [INSTALL.md][lh-install-doc] をご参照下さい。
 
 ```shell
-$ git clone --recursive git@github.com:ucsd-progsys/liquidhaskell.git
-$ cd liquidhaskell
-$ stack install
+$ ghc -V
+The Glorious Glasgow Haskell Compilation System, version 8.6.5
 
-$ liquid
-LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
-Copyright 2013-18 Regents of the University of California. All Rights Reserved.
+$ cabal -V
+cabal-install version 3.2.0.0
+compiled using version 3.2.0.0 of the Cabal library
 ```
 
-stack プロジェクトで利用する場合は、以下のように `stack exec` コマンドで呼び出します。
+```shell
+$ cabal update
+$ cabal install liquidhaskell
+
+$ liquid --version
+LiquidHaskell Version 0.8.6.2 no git information
+Copyright 2013-19 Regents of the University of California. All Rights Reserved.
+```
+
+**stack** プロジェクトで利用する場合は、以下のように `stack exec` コマンドで呼び出します。
 
 ```shell
 $ stack exec -- liquid
-LiquidHaskell Version 0.8.2.4, Git revision d641244775cd842776cecf2c5d3e9afa01549e76 (dirty)
-Copyright 2013-18 Regents of the University of California. All Rights Reserved.
+LiquidHaskell Version 0.8.6.2 no git information
+Copyright 2013-19 Regents of the University of California. All Rights Reserved.
+
+Targets:
 ```
+
+[lh-hackage]: https://hackage.haskell.org/package/liquidhaskell
+[lh-install-doc]: https://github.com/ucsd-progsys/liquidhaskell/blob/develop/INSTALL.md
 
 ## サンプルプログラム
 
-`myDiv` 関数の例を使って `LiquidHaskell` に慣れましょう！
+シンプルな `0` 除算の例を使って **LiquidHaskell** に慣れましょう！
 
 ```haskell
 -- MyDiv.hs
@@ -124,11 +142,11 @@ $ stack repl -- MyDiv.hs
 
 では、どうしたら本当に安全な `myDiv` を作れるのでしょうか？
 
-その答えは`篩(ふるい)型`にあります。
+その答えは**篩(ふるい)型**にあります。
 
-`Liquid Haskell` では `篩型` を `{-@ ... @-}` のコメント形式で記述します。`Liquid Haskell` を利用するメリットの1つは、篩型の自動推論です。(推論できない場合も多々ありますが、結構色々と推論してくれます)
+**LiquidHaskell** では **篩型** を `{-@ ... @-}` のコメント形式で記述します。**LiquidHaskell** を利用するメリットの1つは、篩型の自動推論です。(推論できない場合も多々ありますが、結構色々と推論してくれます)
 
-先程の `myDiv` には篩型を書いていませんが、こういう場合に `Liquid Haskell` は `Haskell` の型をそのまま篩型として利用します。
+先程の `myDiv` には篩型を書いていませんが、こういう場合に **LiquidHaskell** は **Haskell** の型をそのまま篩型として利用します。
 
 `myDiv` に対して明示的に篩型を書いてみましょう！
 
@@ -144,21 +162,19 @@ myDiv = div
 $ liquid MyDiv.hs
 **** RESULT: UNSAFE ************************************************************
 
- MyDiv.hs:4:11-13: Error: Liquid Type Mismatch
-
- 4 | myDiv = div
-             ^^^
-
+MyDiv.hs:5:1-11: Error: Liquid Type Mismatch
+  
+ 5 | myDiv = div
+     ^^^^^^^^^^^
+  
    Inferred type
-     VV : Int
-
+     VV : GHC.Types.Int
+  
    not a subtype of Required type
-     VV : {VV : Int | VV /= 0}
-
-   In Context
+     VV : {VV : GHC.Types.Int | VV /= 0}
 ```
 
-なぜか `UNSAFE` が表示されましたね。これは `Liquid Haskell` で既に `div` の篩型が定義されているからです。([div](https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/GHC/Real.spec#L19) 以外にも色々ありますが、充実しているとは言い難いと思います)
+なぜか **UNSAFE** が表示されましたね。これは **LiquidHaskell** で既に `div` の篩型が定義されているからです。([`div` 以外にも色々あります](https://github.com/ucsd-progsys/liquidhaskell/blob/develop/include/GHC/Real.spec#L19)が、充実しているとは言い難いと思います)
 
 だいたいこんな感じで、第二引数に **0を含まないInt型** という事前条件がついているのです。
 
@@ -170,7 +186,7 @@ $ liquid MyDiv.hs
 
 ```shell
 not a subtype of Required type
-     VV : {VV : Int | VV /= 0}
+     VV : {VV : GHC.Types.Int | VV /= 0}
 ```
 
 つまり、僕らの定義した篩型は `0` を含む `Int` 型なので、このままだと `div` に `0` が与えられてしまう可能性があるよ！ということを教えてくれています。
@@ -189,7 +205,7 @@ myDiv :: Int -> Int -> Int
 myDiv = div
 ```
 
-これで `SAFE` になります。
+これで **SAFE** になります。
 
 ```shell
 $ liquid MyDiv.hs
@@ -198,7 +214,7 @@ $ liquid MyDiv.hs
 
 `0` を含まない `Int` 型というのは、よく使いそうなので篩型のエイリアスとして定義してみます。
 
-篩型のエイリアスは `type` キーワードを使います。`Haskell` と同じですね。
+篩型のエイリアスは `type` キーワードを使います。**Haskell** と同じですね。
 
 ```haskell
 {-@ type NonZero = {v:Int | v /= 0} @-}
@@ -223,14 +239,14 @@ $ liquid MyDiv.hs
 
 最後に `myDiv` を呼び出す関数を定義してみましょう。
 
-`good` は問題の無い使い方です。
+関数 `good` は問題の無い使い方です。
 
 ```haskell
 good :: Int
 good = myDiv 10 2
 ```
 
-しかし、以下のような関数 `bad` が定義された場合、`Liquid Haskell` は `UNSAFE` を返します。
+しかし、以下のような関数 `bad` が定義された場合、**LiquidHaskell** は **UNSAFE** を返します。
 
 ```haskell
 bad :: Int
@@ -241,27 +257,23 @@ bad = myDiv 10 0
 $ liquid MyDiv.hs
 **** RESULT: UNSAFE ************************************************************
 
- MyDiv.hs:13:7-16: Error: Liquid Type Mismatch
-
- 13 | bad = myDiv 10 0
-            ^^^^^^^^^^
-
+MyDiv.hs:12:16: Error: Liquid Type Mismatch
+  
+ 12 | bad = myDiv 10 0
+                     ^
+  
    Inferred type
-     VV : {v : Int | v == (0 : int)
-                     && v == ?a}
-
+     VV : {v : GHC.Types.Int | v == 0}
+  
    not a subtype of Required type
-     VV : {VV : Int | VV /= 0}
-
-   In Context
-     ?a : {?a : Int | ?a == (0 : int)}
+     VV : {VV : GHC.Types.Int | VV /= 0}
 ```
 
 ## 問題
 
 以下のプログラムは標準入力から入力された数 `n`, `m` で `safeDiv n m` を計算します。
 
-`safeDiv` の `check` を正しく実装して `Liquid Haskell` の結果を `SAFE` にしてみましょう。
+`safeDiv` の `check` を正しく実装して **LiquidHaskell** の結果を **SAFE** にしてみましょう。
 
 ```haskell
 -- Main.hs
@@ -298,30 +310,30 @@ Hint: `div` に `0` を通さないよう `check` でバリデーションすれ
 
 ### エラーメッセージ
 
-現状では、`Liquid Haskell` は以下のエラーメッセージを返します。
+現状では、**LiquidHaskell** は以下のエラーメッセージを返します。
 
 ```shell
 $ liquid Main.hs
 **** RESULT: UNSAFE ************************************************************
 
- Main.hs:24:24-30: Error: Liquid Type Mismatch
-
+Main.hs:24:30: Error: Liquid Type Mismatch
+  
  24 |   | check     = Just $ div n m
-                             ^^^^^^^
-
+                                   ^
+  
    Inferred type
-     VV : {v : Int | v == m}
-
+     VV : {v : GHC.Types.Int | v == m}
+  
    not a subtype of Required type
-     VV : {VV : Int | VV /= 0}
-
+     VV : {VV : GHC.Types.Int | VV /= 0}
+  
    In Context
-     m : Int
+     m : GHC.Types.Int
 ```
 
 ### 実行例
 
-`Liquid Haskell` が `UNSAFE` の場合は実行時エラーが発生します。
+**LiquidHaskell** が **UNSAFE** の場合は実行時エラーが発生します。
 
 ```shell
 $ stack repl -- Main.hs
@@ -336,7 +348,7 @@ $ stack repl -- Main.hs
 *** Exception: divide by zero
 ```
 
-`Liquid Haskell` を `SAFE` にすると、再入力を促すようになります。
+**LiquidHaskell** を **SAFE** にすると、再入力を促すようになります。
 
 ```shell
 *Main> main
@@ -351,7 +363,7 @@ $ stack repl -- Main.hs
 
 ## 興味を持った方へ
 
-`Liquid Haskell` に興味を持った方は以下の文献を読んで `Liquid Haskell` に詳しくなりましょう！(個人的にまとめているやつを貼り付けただけなので雑ですみません・・・)
+**LiquidHaskell** に興味を持った方は以下の文献を読んで **LiquidHaskell** に詳しくなりましょう！(個人的にまとめているやつを貼り付けただけなので雑ですみません・・・)
 
 たぶん、おすすめは以下のチュートリアルです。(僕はまだ読んでないですが、かなり最近できたものなので情報が新しく良いのではないかと思います)
 
@@ -407,7 +419,7 @@ $ stack repl -- Main.hs
 - [Liquid Haskell: Haskell as a Theorem Prover](http://goto.ucsd.edu/~nvazou/thesis/main.pdf)
 - [A Tale of Two Provers Verifying Monoidal String Matching in Liquid Haskell and Coq](https://nikivazou.github.io/static/Haskell17/a-tale.pdf)
 
-### Youtube
+### YouTube
 
 - [Liquid Types for Haskell](https://www.youtube.com/watch?v=LEsEME7JwEE)
 - [Ranjit Jhala - Liquid Haskell](https://www.youtube.com/watch?v=vYh27zz9530)
@@ -421,3 +433,8 @@ $ stack repl -- Main.hs
 - 篩型の型エイリアスは `{-@ type @-}` で記述する
 
 以上です。
+
+## 本記事で利用したコード
+
+- [MyDiv.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/2018/03-03/MyDiv.hs)
+- [Main.hs](https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/2018/03-03/Main.hs)
