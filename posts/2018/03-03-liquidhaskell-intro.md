@@ -47,7 +47,7 @@ updated: 2020/05/02
 **SMT** ソルバも色々と種類があるようで、公式では以下の3種類が紹介されています。
 
 - [Z3][z3-github]
-- [CVC4][[cvc4-github]
+- [CVC4][cvc4-github]
 - [MathSat][mathsat-official]
 
 [z3-github]: https://github.com/Z3Prover/z3
