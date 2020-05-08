@@ -1,15 +1,18 @@
 ---
 title: 競技プログラミング (AtCoder)
 published: 2020/04/08
-# updated: 2020/04/08
+updated: 2020/05/04
 ---
 
 - [AtCoder 公式サイト](https://atcoder.jp/)
 - [テストケース](https://www.dropbox.com/sh/arnpe0ef5wds8cv/AAAk_SECQ2Nc6SVGii3rHX6Fa)
 - [AtCoder Problems](https://kenkoooo.com/atcoder/)
 - [haskell-jp/atcoder-haskell-resources](https://github.com/haskell-jp/atcoder-haskell-resources)
+- [Haskellで戦う競技プログラミング](https://lab.miz-ar.info/kyopro-haskell/)
 
-## 入力処理
+---
+
+- [入出力](/atcoder/io.html)
 
 ### 1行に複数の数値
 
@@ -58,7 +61,3 @@ isAscList = and . (zipWith (<) <*> tail)
 ```
 
 [utility-ht](https://hackage.haskell.org/package/utility-ht) パッケージに [isAscending](https://hackage.haskell.org/package/utility-ht-0.0.15/docs/Data-List-HT.html#v:isAscending) 関数があるので、そちらを使っても良い。
-
-## 参考リソース
-
-- [Haskellで戦う競技プログラミング](https://lab.miz-ar.info/kyopro-haskell/)
