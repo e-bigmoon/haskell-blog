@@ -1,9 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main
-  ( main,
-  )
-where
+module Main (main) where
 
 import Config
 import qualified Data.Yaml as Yaml
