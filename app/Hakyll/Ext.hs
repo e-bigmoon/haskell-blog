@@ -38,7 +38,7 @@ recentFirstWith f = fmap reverse . chronologicalWith f
 sortChronologicalWith ::
   MonadMetadata m => (Identifier -> String) -> [Identifier] -> m [Identifier]
 sortChronologicalWith f =
-  fmap (fmap itemIdentifier) . chronologicalWith f . fmap (flip Item ())
+  fmap (fmap itemIdentifier) . chronologicalWith f . fmap (`Item` ())
 
 sortByM :: (Monad m, Ord k) => (a -> m k) -> [a] -> m [a]
 sortByM f = fmap (map fst . List.sortOn snd) . mapM (fmap <$> (,) <*> f)

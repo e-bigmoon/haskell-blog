@@ -10,30 +10,35 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.os }} (${{ matrix.resolver }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         # windows-2019 は pandoc の問題によりブロック
         # https://github.com/jgm/pandoc/commit/9feefa39319358acc84811e6017aeea60f9140c3
         os: [ubuntu-18.04, macos-10.15]
+        ghc: ["8.8.3"]
+        stack: ["2.3.1"]
         resolver: ["lts-15.8"]
-        cache-version: ["2020-04-13"]
+        cache-version: ["2020-05-02"]
 
     steps:
     - uses: actions/checkout@v2
-    - uses: mstksg/setup-stack@v2
+    - uses: actions/setup-haskell@v1.1.0
+      with:
+        ghc-version: ${{ matrix.ghc }}
+        stack-version: ${{ matrix.stack }}
+        enable-stack: true
 
     - name: Cache ~/.stack
       uses: actions/cache@v1
       with:
         path: ~/.stack
-        key: ${{ runner.os }}-${{ matrix.resolver }}-${{ matrix.cache-version }}-stack
+        key: ${{ runner.os }}-${{ matrix.stack }}-${{ matrix.resolver }}-${{ matrix.cache-version }}-stack
 
     - name: Install dependencies
-      run: stack test --only-dependencies
+      run: stack test --only-dependencies --system-ghc
 
     - name: Build
       run: |
-        stack test --fast
-        stack install --fast
+        stack test --fast --system-ghc
+        stack install --fast --system-ghc

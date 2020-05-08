@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1
+    - uses: actions/setup-haskell@v1.1.0
       with:
         ghc-version: "8.8.3"
-        cabal-version: "3.0"
+        cabal-version: "3.2.0.0"
 
     - name: Install dependencies
       run: |
@@ -33,14 +33,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: mstksg/setup-stack@v2
+    - uses: actions/setup-haskell@v1.1.0
+      with:
+        ghc-version: "8.8.3"
+        stack-version: "2.3.1"
 
     - name: Install dependencies
       run: |
         echo -e "\nallow-newer: true" >> stack.yaml
-        stack test --resolver=nightly --only-dependencies
+        stack test --resolver=nightly --only-dependencies --system-ghc
 
     - name: Build
       run: |
-        stack test --fast --resolver=nightly
-        stack install --fast --resolver=nightly
+        stack test --fast --resolver=nightly --system-ghc
+        stack install --fast --resolver=nightly --system-ghc
