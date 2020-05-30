@@ -187,11 +187,11 @@
 <p>ここでは、例として1つ前のバージョン <strong>array-0.5.2.0</strong> を利用してみましょう。</p>
 <p>ただし、<strong>lts-14.5</strong> には <strong>array-0.5.3.0</strong> しか含まれていないため、スナップショットに <strong>array-0.5.2.0</strong> を追加する必要があります。</p>
 <p>そのためには <strong>extra-deps</strong> を利用します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-13.29</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">-</span><span class="at"> .</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-13.29</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span></code></pre></div>
 <p>これだけです。実際に確認してみましょう。</p>
 <pre class="shell"><code>$ stack build
 array&gt; configure
@@ -220,20 +220,20 @@ rts 1.0</code></pre>
 <p><strong>extra-deps</strong> が優秀なのは <strong>Hackage</strong> などに登録されていないけども <strong>github</strong> などにホスティングされている野良パッケージや、まだ <strong>Hackage</strong> に登録されていない開発バージョンのパッケージをとても簡単に利用できる点です。</p>
 <p>具体例として <a href="https://github.com/waddlaw/single-repo">waddlaw/single-repo</a> を使ってみましょう。</p>
 <p>今回のために作ったサンプルパッケージなので、<strong>Example</strong> モジュールに <strong>singleExample</strong> 関数しか定義していません。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">module</span> <span class="dt">Example</span> <span class="kw">where</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">singleExample ::</span> <span class="dt">String</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>singleExample <span class="ot">=</span> <span class="st">&quot;more single repo&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Example</span> <span class="kw">where</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">singleExample ::</span> <span class="dt">String</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>singleExample <span class="ot">=</span> <span class="st">&quot;more single repo&quot;</span></span></code></pre></div>
 <p>リポジトリのURLは <strong>https://github.com/waddlaw/single-repo</strong> になります。また、どのコミットハッシュを利用するか指定する必要があります。</p>
 <p>ここでは一番最初のコミットハッシュ <strong>9af5f4c6cdc03deb59bba03407321490f0a2aa41</strong> を指定します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># stack.yaml</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-14.5</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">packages</span><span class="kw">:</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">-</span><span class="at"> .</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">-</span><span class="at"> </span><span class="fu">git</span><span class="kw">:</span><span class="at"> https://github.com/waddlaw/single-repo</span><span class="co">       # この行を追加</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 9af5f4c6cdc03deb59bba03407321490f0a2aa41</span><span class="co">  # この行を追加</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># stack.yaml</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-14.5</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">git</span><span class="kw">:</span><span class="at"> https://github.com/waddlaw/single-repo</span><span class="co">       # この行を追加</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 9af5f4c6cdc03deb59bba03407321490f0a2aa41</span><span class="co">  # この行を追加</span></span></code></pre></div>
 <p>あとは普通にビルドするだけです。</p>
 <pre class="shell"><code>$ stack build
 Cloning 9af5f4c6cdc03deb59bba03407321490f0a2aa41 from https://github.com/waddlaw/single-repo
@@ -252,12 +252,12 @@ Installing library in /PFAD/.stack-work/install/x86_64-linux/e45e24d661a5523830a
 Installing executable PFAD-exe in /PFAD/.stack-work/install/x86_64-linux/e45e24d661a5523830acd90eb01354f05f6c2b4a1af4a66fed71976eed516247/8.6.5/bin
 Registering library for PFAD-0.1.0.0..</code></pre>
 <p>ログを見ると、ちゃんとリポジトリをクローンしているようですね。<strong>package.yaml</strong> に <strong>single-repo</strong> を追加して、依存関係をチェックしておきましょう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">...</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="co">dependencies:</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="co">- base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="co">- array</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="co">- single-repo # ここを追加</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="co">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co">...</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="co">dependencies:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="co">- base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="co">- array</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="co">- single-repo # ここを追加</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="co">...</span></span></code></pre></div>
 <pre class="shell"><code>$ stack ls dependencies
 PFAD 0.1.0.0
 array 0.5.2.0
@@ -273,11 +273,11 @@ single-repo 0.1.0.0</code></pre>
 &quot;single repo&quot;</code></pre>
 <p>今度はコミットハッシュ値を変更して、もう一度実行してみます。そのために、<strong>stack.yaml</strong> の <strong>extra-deps</strong> を編集します。</p>
 <p><strong>github</strong> を参照する場合は <strong>git</strong> の代わりに <strong>github</strong> キーワード使えば、省略形が利用できるのでオススメです。コミットのハッシュ値も更新します。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># stack.yaml</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span><span class="co">                       # この行を変更</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span><span class="co">  # この行を変更</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="co"># stack.yaml</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span><span class="co">                       # この行を変更</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span><span class="co">  # この行を変更</span></span></code></pre></div>
 <p>再び同じ手順で実行してみます。</p>
 <pre class="shell"><code>$ stack ghci --no-load
 ...
@@ -293,37 +293,37 @@ single-repo 0.1.0.0</code></pre>
 <li>mega-repo2 パッケージがある</li>
 </ul>
 <p>それぞれ、こんな感じの関数が定義されています。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">-- mega-repo1</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">module</span> <span class="dt">MegaExample1</span> <span class="kw">where</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a></span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="ot">megaExample1 ::</span> <span class="dt">String</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a>megaExample1 <span class="ot">=</span> <span class="st">&quot;mega repo example1&quot;</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">-- mega-repo2</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">module</span> <span class="dt">MegaExample2</span> <span class="kw">where</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="ot">megaExample2 ::</span> <span class="dt">String</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a>megaExample2 <span class="ot">=</span> <span class="st">&quot;mega repo example2&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="co">-- mega-repo1</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">MegaExample1</span> <span class="kw">where</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="ot">megaExample1 ::</span> <span class="dt">String</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>megaExample1 <span class="ot">=</span> <span class="st">&quot;mega repo example1&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co">-- mega-repo2</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">MegaExample2</span> <span class="kw">where</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="ot">megaExample2 ::</span> <span class="dt">String</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>megaExample2 <span class="ot">=</span> <span class="st">&quot;mega repo example2&quot;</span></span></code></pre></div>
 <p>では、実際に使ってみましょう。<strong>extra-deps</strong> に今回利用するパッケージを追記します。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># stack.yaml</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/mega-repo</span><span class="co">                           # この行を追加</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 130b4a853a6cdd1e2f2090b9a9a755ce30ee50d7</span><span class="co">    # この行を追加</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="co"># stack.yaml</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> array-0.5.2.0</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/mega-repo</span><span class="co">                           # この行を追加</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 130b4a853a6cdd1e2f2090b9a9a755ce30ee50d7</span><span class="co">    # この行を追加</span></span></code></pre></div>
 <p>試しにこのままビルドしてみましょう。</p>
 <pre class="shell"><code>$ stack build
 No cabal file found for Archive from https://github.com/waddlaw/mega-repo/archive/130b4a853a6cdd1e2f2090b9a9a755ce30ee50d7.tar.gz</code></pre>
 <p>こんな感じでビルドに失敗します。</p>
 <p>ビルドを直すためには <strong>subdirs</strong> でパッケージを指定するだけです。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># stack.yaml</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span></span>
-<span id="cb15-4"><a href="#cb15-4"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span></span>
-<span id="cb15-5"><a href="#cb15-5"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/mega-repo</span></span>
-<span id="cb15-6"><a href="#cb15-6"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 130b4a853a6cdd1e2f2090b9a9a755ce30ee50d7</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span><span class="co">                                            # この行を追加</span></span>
-<span id="cb15-8"><a href="#cb15-8"></a><span class="at">  </span><span class="kw">-</span><span class="at"> mega-repo1</span><span class="co">                                        # この行を追加</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="co"># stack.yaml</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/mega-repo</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 130b4a853a6cdd1e2f2090b9a9a755ce30ee50d7</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span><span class="co">                                            # この行を追加</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> mega-repo1</span><span class="co">                                        # この行を追加</span></span></code></pre></div>
 <p><strong>ghci</strong> で実際に動かしてみます。</p>
 <pre class="shell"><code>$ stack ghci --package mega-repo1 --no-load
 λ import MegaExample1
@@ -351,14 +351,14 @@ GHCi, version 8.6.5: http://www.haskell.org/ghc/  :? for help
 &lt;command line&gt;: cannot satisfy -package mega-repo2
     (use -v for more information)</code></pre>
 <p>パッケージを複数指定する場合は、単純に <strong>subdirs</strong> を複数指定するだけです。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb18-1"><a href="#cb18-1"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span></span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/mega-repo</span></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 130b4a853a6cdd1e2f2090b9a9a755ce30ee50d7</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span></span>
-<span id="cb18-7"><a href="#cb18-7"></a><span class="at">  </span><span class="kw">-</span><span class="at"> mega-repo1</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="at">  </span><span class="kw">-</span><span class="at"> mega-repo2</span><span class="co">  # この行を追加</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/single-repo</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 16463931082172d6ad780034f6905e373dbc5139</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">github</span><span class="kw">:</span><span class="at"> waddlaw/mega-repo</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true"></a><span class="at">  </span><span class="fu">commit</span><span class="kw">:</span><span class="at"> 130b4a853a6cdd1e2f2090b9a9a755ce30ee50d7</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true"></a><span class="at">  </span><span class="fu">subdirs</span><span class="kw">:</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> mega-repo1</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> mega-repo2</span><span class="co">  # この行を追加</span></span></code></pre></div>
 <p>実行してみます。</p>
 <pre class="shell"><code>$ stack ghci --package mega-repo1 --package mega-repo2
 λ import MegaExample1

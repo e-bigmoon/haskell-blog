@@ -182,26 +182,26 @@
         <h2 id="設定ファイルの内容確認">設定ファイルの内容確認</h2>
 <p>前の章で <strong>stack.yaml</strong> と <strong>package.yaml</strong> を色々と修正したので、ここからは以下の状態で進めていきます。</p>
 <p><strong>stack.yaml</strong> は以下の内容で進めていきます。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-13.29</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">-</span><span class="at"> .</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-13.29</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> .</span></span></code></pre></div>
 <p>また <strong>package.yaml</strong> の <strong>dependencies</strong> は以下のようになっています。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">-</span><span class="at"> base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">-</span><span class="at"> array</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> array</span></span></code></pre></div>
 <h2 id="アプリケーションの作成">アプリケーションの作成</h2>
 <p>ここまででライブラリ (<strong>Minfree.hs</strong>) の作成が終わりました。</p>
 <p>ここからは、そのライブラリを使って動作する実行ファイルを作ってみましょう。</p>
 <p><strong>app/Main.hs</strong> の内容を以下のように書き換えましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode app/main.hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="kw">import</span> <span class="dt">Minfree</span> (minfree)</span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-7"><a href="#cb3-7"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  [xs] <span class="ot">&lt;-</span> getArgs</span>
-<span id="cb3-9"><a href="#cb3-9"></a>  <span class="fu">print</span> <span class="op">$</span> minfree <span class="op">$</span> <span class="fu">read</span> xs</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode app/main.hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span> (minfree)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>  [xs] <span class="ot">&lt;-</span> getArgs</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>  <span class="fu">print</span> <span class="op">$</span> minfree <span class="op">$</span> <span class="fu">read</span> xs</span></code></pre></div>
 <p>ファイルを変更したので、まずはビルドしましょう。</p>
 <pre class="shell"><code>$ stack build</code></pre>
 <p>次に、アプリケーションを実行してみましょう。</p>
@@ -211,16 +211,16 @@
 <h3 id="アプリケーション名の変更">アプリケーション名の変更</h3>
 <p>デフォルトの <strong>PFAD-exe</strong> という名前が気に入らない人は <strong>package.yaml</strong> の <strong>executables</strong> を変更しましょう。</p>
 <p>今回は <strong>PFAD-exe</strong> から <strong>minfree</strong> に変更しました。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">executables</span><span class="kw">:</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="at">  </span><span class="fu">minfree</span><span class="kw">:</span><span class="co"> # ここを変更します</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Main.hs</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         app</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="fu">executables</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">minfree</span><span class="kw">:</span><span class="co"> # ここを変更します</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Main.hs</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         app</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
 <p>ビルドし直せば、指定したコマンド名で実行できるはずです。</p>
 <pre class="shell"><code>$ stack build
 $ stack exec -- minfree [0,1,2,3,4,7]
@@ -233,46 +233,46 @@ $ stack exec -- minfree [0,1,2,3,4,7]
 <p>例えば今回 <strong>minfree</strong> 関数とそれを改良した <strong>minfree’</strong> 関数がありました。</p>
 <p>別のアプリケーションとして <strong>minfree’</strong> を利用するアプリケーション <strong>fastMinfree</strong> を作ってみましょう。</p>
 <p>まずは、複数のアプリケーションをビルドできるように <strong>source-dirs</strong> を削除し、<strong>main</strong> の指定を <strong>app/Main.hs</strong> のようにします。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">executables</span><span class="kw">:</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="at">  </span><span class="fu">minfree</span><span class="kw">:</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> app/Main.hs</span><span class="co">    # この行を変更</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="co">                         # source-dirs: app は削除します</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="fu">executables</span><span class="kw">:</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">minfree</span><span class="kw">:</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> app/Main.hs</span><span class="co">    # この行を変更</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="co">                         # source-dirs: app は削除します</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
 <p>次に <strong>package.yaml</strong> の <strong>executables</strong> に新しいアプリケーションの内容を追記します。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">executables</span><span class="kw">:</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="at">  </span><span class="fu">minfree</span><span class="kw">:</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> app/Main.hs</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
-<span id="cb10-10"><a href="#cb10-10"></a><span class="co">  # ここから下の行を追記しました</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a><span class="at">  </span><span class="fu">fastMinfree</span><span class="kw">:</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> app/FastMinfreeApp.hs</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb10-14"><a href="#cb10-14"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb10-15"><a href="#cb10-15"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb10-16"><a href="#cb10-16"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb10-17"><a href="#cb10-17"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb10-18"><a href="#cb10-18"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="fu">executables</span><span class="kw">:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">minfree</span><span class="kw">:</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> app/Main.hs</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a><span class="co">  # ここから下の行を追記しました</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a><span class="at">  </span><span class="fu">fastMinfree</span><span class="kw">:</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> app/FastMinfreeApp.hs</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
 <p>先ほどのプログラムとほぼ同じですが、以下のように <code>app/FastMinfreeApp.hs</code> を作ってみましょう。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">-- app/FastMinfreeApp.hs</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a></span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="kw">import</span> <span class="dt">Minfree</span> (minfree')</span>
-<span id="cb11-6"><a href="#cb11-6"></a></span>
-<span id="cb11-7"><a href="#cb11-7"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb11-8"><a href="#cb11-8"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb11-9"><a href="#cb11-9"></a>  [xs] <span class="ot">&lt;-</span> getArgs</span>
-<span id="cb11-10"><a href="#cb11-10"></a>  <span class="fu">print</span> <span class="op">$</span> minfree' <span class="op">$</span> <span class="fu">read</span> xs</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="co">-- app/FastMinfreeApp.hs</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.Environment</span> (getArgs)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span> (minfree')</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a>  [xs] <span class="ot">&lt;-</span> getArgs</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true"></a>  <span class="fu">print</span> <span class="op">$</span> minfree' <span class="op">$</span> <span class="fu">read</span> xs</span></code></pre></div>
 <p>実行してみます。</p>
 <pre class="shell"><code>$ stack build
 $ stack exec -- fastMinfree [1,2,3,4,5]

@@ -239,10 +239,10 @@ Twitter で CamelCase の文字列を Camel Case にするという話を見か�
 <!--more-->
 <h2 id="split">split</h2>
 <p>分割するということなので <a href="https://www.stackage.org/package/split">split</a> パッケージを使ってみます。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">import</span> <span class="dt">Data.List.Split</span> (split, startsWithOneOf)</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">splitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>splitCC  <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List.Split</span> (split, startsWithOneOf)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">splitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>splitCC  <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>ghci&gt; splitCC &quot;CamelCase&quot;
 &quot;Camel Case&quot;</code></pre>
@@ -250,41 +250,41 @@ Twitter で CamelCase の文字列を Camel Case にするという話を見か�
 <p><code>split</code> パッケージを使った実装は直感的でコードもコンパクトです。</p>
 <p>しかし、見た感じ効率悪そうですよね。(リスト全体を分割した後で <code>unwords</code> かけるため)</p>
 <p>そのため、<code>fold</code> バージョンも実装してみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">import</span> <span class="dt">Data.Char</span> (isUpper, isSpace)</span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">foldSplitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go []</span>
-<span id="cb3-5"><a href="#cb3-5"></a>  <span class="kw">where</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>    go c acc</span>
-<span id="cb3-7"><a href="#cb3-7"></a>      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">' '</span><span class="op">:</span>c<span class="op">:</span>acc</span>
-<span id="cb3-8"><a href="#cb3-8"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</span>
-<span id="cb3-9"><a href="#cb3-9"></a>    fmt cs</span>
-<span id="cb3-10"><a href="#cb3-10"></a>      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</span>
-<span id="cb3-11"><a href="#cb3-11"></a>      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</span>
-<span id="cb3-12"><a href="#cb3-12"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Char</span> (isUpper, isSpace)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">foldSplitCC ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go []</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>    go c acc</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">' '</span><span class="op">:</span>c<span class="op">:</span>acc</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>    fmt cs</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</span></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>ghci&gt; foldSplitCC &quot;CamelCase&quot;
 &quot;Camel Case&quot;</code></pre>
 <h2 id="quickcheck">QuickCheck</h2>
 <p>念の為 <a href="https://www.stackage.org/package/QuickCheck">QuickCheck</a> を使ってランダムテストを行ってみましょう。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span> <span class="dt">SplitCC</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</span>
-<span id="cb5-8"><a href="#cb5-8"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span>
-<span id="cb5-12"><a href="#cb5-12"></a></span>
-<span id="cb5-13"><a href="#cb5-13"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb5-14"><a href="#cb5-14"></a>main <span class="ot">=</span> quickCheck prop_split</span>
-<span id="cb5-15"><a href="#cb5-15"></a></span>
-<span id="cb5-16"><a href="#cb5-16"></a><span class="ot">prop_split ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a>prop_split xs <span class="ot">=</span> splitCC xs' <span class="op">==</span> foldSplitCC xs'</span>
-<span id="cb5-18"><a href="#cb5-18"></a>  <span class="kw">where</span> xs' <span class="ot">=</span> getString xs</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">SplitCC</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>main <span class="ot">=</span> quickCheck prop_split</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a><span class="ot">prop_split ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>prop_split xs <span class="ot">=</span> splitCC xs' <span class="op">==</span> foldSplitCC xs'</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a>  <span class="kw">where</span> xs' <span class="ot">=</span> getString xs</span></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>$ stack test
 splitcc-0.1.0.0: test (suite: splitcc-test)
@@ -294,36 +294,36 @@ splitcc-0.1.0.0: test (suite: splitcc-test)
 splitcc-0.1.0.0: Test suite splitcc-test passed</code></pre>
 <h2 id="ベンチマーク">ベンチマーク</h2>
 <p>次は <a href="https://github.com/vincenthz/hs-gauge">gauge</a> を使ってどっちが速いか確認してみましょう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">import</span> <span class="dt">Gauge.Main</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">import</span> <span class="dt">Gauge.Main.Options</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a></span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">import</span> <span class="dt">SplitCC</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb7-9"><a href="#cb7-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-10"><a href="#cb7-10"></a>  <span class="kw">let</span> conf <span class="ot">=</span> defaultConfig { displayMode <span class="ot">=</span> <span class="dt">Condensed</span> }</span>
-<span id="cb7-11"><a href="#cb7-11"></a>  sampleData1 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">10</span> charGen</span>
-<span id="cb7-12"><a href="#cb7-12"></a>  sampleData2 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000</span> charGen</span>
-<span id="cb7-13"><a href="#cb7-13"></a>  sampleData3 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">100000</span> charGen</span>
-<span id="cb7-14"><a href="#cb7-14"></a>  sampleData4 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000000</span> charGen</span>
-<span id="cb7-15"><a href="#cb7-15"></a></span>
-<span id="cb7-16"><a href="#cb7-16"></a>  defaultMainWith conf</span>
-<span id="cb7-17"><a href="#cb7-17"></a>    [ bgroup <span class="st">&quot;splitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf splitCC sampleData1</span>
-<span id="cb7-18"><a href="#cb7-18"></a>                       , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf splitCC sampleData2</span>
-<span id="cb7-19"><a href="#cb7-19"></a>                       , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf splitCC sampleData3</span>
-<span id="cb7-20"><a href="#cb7-20"></a>                       , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf splitCC sampleData4</span>
-<span id="cb7-21"><a href="#cb7-21"></a>                       ]</span>
-<span id="cb7-22"><a href="#cb7-22"></a>    , bgroup <span class="st">&quot;foldSplitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf foldSplitCC sampleData1</span>
-<span id="cb7-23"><a href="#cb7-23"></a>                           , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf foldSplitCC sampleData2</span>
-<span id="cb7-24"><a href="#cb7-24"></a>                           , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf foldSplitCC sampleData3</span>
-<span id="cb7-25"><a href="#cb7-25"></a>                           , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf foldSplitCC sampleData4</span>
-<span id="cb7-26"><a href="#cb7-26"></a>                           ]</span>
-<span id="cb7-27"><a href="#cb7-27"></a>    ]</span>
-<span id="cb7-28"><a href="#cb7-28"></a></span>
-<span id="cb7-29"><a href="#cb7-29"></a><span class="ot">charGen ::</span> <span class="dt">Gen</span> <span class="dt">Char</span></span>
-<span id="cb7-30"><a href="#cb7-30"></a>charGen <span class="ot">=</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Gauge.Main</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Gauge.Main.Options</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">SplitCC</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>  <span class="kw">let</span> conf <span class="ot">=</span> defaultConfig { displayMode <span class="ot">=</span> <span class="dt">Condensed</span> }</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>  sampleData1 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">10</span> charGen</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a>  sampleData2 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000</span> charGen</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a>  sampleData3 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">100000</span> charGen</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a>  sampleData4 <span class="ot">&lt;-</span> generate <span class="op">$</span> vectorOf <span class="dv">1000000</span> charGen</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a>  defaultMainWith conf</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true"></a>    [ bgroup <span class="st">&quot;splitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf splitCC sampleData1</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true"></a>                       , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf splitCC sampleData2</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true"></a>                       , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf splitCC sampleData3</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true"></a>                       , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf splitCC sampleData4</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true"></a>                       ]</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true"></a>    , bgroup <span class="st">&quot;foldSplitCC&quot;</span> [ bench <span class="st">&quot;10&quot;</span>      <span class="op">$</span> nf foldSplitCC sampleData1</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true"></a>                           , bench <span class="st">&quot;1000&quot;</span>    <span class="op">$</span> nf foldSplitCC sampleData2</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true"></a>                           , bench <span class="st">&quot;100000&quot;</span>  <span class="op">$</span> nf foldSplitCC sampleData3</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true"></a>                           , bench <span class="st">&quot;1000000&quot;</span> <span class="op">$</span> nf foldSplitCC sampleData4</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true"></a>                           ]</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true"></a>    ]</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true"></a><span class="ot">charGen ::</span> <span class="dt">Gen</span> <span class="dt">Char</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true"></a>charGen <span class="ot">=</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span></code></pre></div>
 <p>実行結果</p>
 <pre class="shell"><code>$ stack bench
 Benchmark splitcc-bench: RUNNING...
@@ -339,43 +339,43 @@ foldSplitCC/1000000                      mean 27.43 ms  ( +- 1.795 ms  )
 Benchmark splitcc-bench: FINISH</code></pre>
 <h2 id="autobench">AutoBench</h2>
 <p>最後に <a href="https://github.com/mathandley/AutoBench">AutoBench</a> を使って視覚的に実行時間の変化を確認してみましょう。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">{-# LANGUAGE DeriveGeneric #-}</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">module</span> <span class="dt">Input</span> (ts, splitCC, foldSplitCC) <span class="kw">where</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="kw">import</span> <span class="dt">Data.Char</span>          (isSpace, isUpper)</span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="kw">import</span> <span class="dt">Data.List.Split</span>    (split, startsWithOneOf)</span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span>    (<span class="dt">Generic</span>)</span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="kw">import</span> <span class="dt">Data.Default</span>         (def)</span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="kw">import</span> <span class="dt">AutoBench.Types</span>      (<span class="dt">DataOpts</span>(..), <span class="dt">TestSuite</span>(..))</span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="kw">import</span> <span class="dt">AutoBench.QuickCheck</span> ()</span>
-<span id="cb9-14"><a href="#cb9-14"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a></span>
-<span id="cb9-16"><a href="#cb9-16"></a><span class="ot">splitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a>splitCC <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>]) <span class="op">.</span> getString</span>
-<span id="cb9-18"><a href="#cb9-18"></a></span>
-<span id="cb9-19"><a href="#cb9-19"></a><span class="ot">foldSplitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb9-20"><a href="#cb9-20"></a>foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go [] <span class="op">.</span> getString</span>
-<span id="cb9-21"><a href="#cb9-21"></a>  <span class="kw">where</span></span>
-<span id="cb9-22"><a href="#cb9-22"></a>    go c acc</span>
-<span id="cb9-23"><a href="#cb9-23"></a>      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">' '</span><span class="op">:</span>c<span class="op">:</span>acc</span>
-<span id="cb9-24"><a href="#cb9-24"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</span>
-<span id="cb9-25"><a href="#cb9-25"></a>    fmt cs</span>
-<span id="cb9-26"><a href="#cb9-26"></a>      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</span>
-<span id="cb9-27"><a href="#cb9-27"></a>      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</span>
-<span id="cb9-28"><a href="#cb9-28"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</span>
-<span id="cb9-29"><a href="#cb9-29"></a></span>
-<span id="cb9-30"><a href="#cb9-30"></a><span class="ot">ts ::</span> <span class="dt">TestSuite</span></span>
-<span id="cb9-31"><a href="#cb9-31"></a>ts  <span class="ot">=</span> def { _dataOpts <span class="ot">=</span> <span class="dt">Gen</span> <span class="dv">0</span> <span class="dv">10000</span> <span class="dv">200000</span> }</span>
-<span id="cb9-32"><a href="#cb9-32"></a></span>
-<span id="cb9-33"><a href="#cb9-33"></a><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</span>
-<span id="cb9-34"><a href="#cb9-34"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">NFData</span>)</span>
-<span id="cb9-35"><a href="#cb9-35"></a></span>
-<span id="cb9-36"><a href="#cb9-36"></a><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></span>
-<span id="cb9-37"><a href="#cb9-37"></a>  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE DeriveGeneric #-}</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Input</span> (ts, splitCC, foldSplitCC) <span class="kw">where</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Char</span>          (isSpace, isUpper)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List.Split</span>    (split, startsWithOneOf)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span>    (<span class="dt">Generic</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Default</span>         (def)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">AutoBench.Types</span>      (<span class="dt">DataOpts</span>(..), <span class="dt">TestSuite</span>(..))</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">AutoBench.QuickCheck</span> ()</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.QuickCheck</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a><span class="ot">splitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a>splitCC <span class="ot">=</span> <span class="fu">unwords</span> <span class="op">.</span> split (startsWithOneOf [<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>]) <span class="op">.</span> getString</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a><span class="ot">foldSplitCC ::</span> <span class="dt">MyString</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>foldSplitCC <span class="ot">=</span> fmt <span class="op">.</span> <span class="fu">foldr</span> go [] <span class="op">.</span> getString</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true"></a>    go c acc</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">isUpper</span> c <span class="ot">=</span> <span class="ch">' '</span><span class="op">:</span>c<span class="op">:</span>acc</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> c<span class="op">:</span>acc</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true"></a>    fmt cs</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">null</span> cs <span class="ot">=</span> cs</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">isSpace</span> (<span class="fu">head</span> cs) <span class="ot">=</span> <span class="fu">tail</span> cs</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> cs</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true"></a></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true"></a><span class="ot">ts ::</span> <span class="dt">TestSuite</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true"></a>ts  <span class="ot">=</span> def { _dataOpts <span class="ot">=</span> <span class="dt">Gen</span> <span class="dv">0</span> <span class="dv">10000</span> <span class="dv">200000</span> }</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true"></a></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">MyString</span> <span class="ot">=</span> <span class="dt">MyString</span> {<span class="ot"> getString ::</span> <span class="dt">String</span> }</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">NFData</span>)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">MyString</span> <span class="kw">where</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true"></a>  arbitrary <span class="ot">=</span> <span class="fu">fmap</span> <span class="dt">MyString</span> <span class="op">$</span> listOf <span class="op">$</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span></code></pre></div>
 <ul>
 <li>AutoBench を利用する際、デフォルトの設定では、入力の型は <code>NFData</code> 型クラスのインスタンスになっている必要があります。</li>
 </ul>
@@ -509,9 +509,9 @@ Benchmark splitcc-bench: FINISH</code></pre>
 <blockquote>
 <p>MyString を定義するのが面倒な場合は以下のようにすると良いよ</p>
 </blockquote>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a>prop_split <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a>  xs <span class="ot">&lt;-</span> listOf <span class="op">$</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span>
-<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">return</span> <span class="op">$</span> splitCC xs <span class="op">==</span> foldSplitCC xs</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>prop_split <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>  xs <span class="ot">&lt;-</span> listOf <span class="op">$</span> elements ([<span class="ch">'a'</span><span class="op">..</span><span class="ch">'z'</span>]<span class="op">++</span>[<span class="ch">'A'</span><span class="op">..</span><span class="ch">'Z'</span>])</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a>  <span class="fu">return</span> <span class="op">$</span> splitCC xs <span class="op">==</span> foldSplitCC xs</span></code></pre></div>
 <blockquote>
 <p><code>splitCC ≥ foldSplitCC (1.00)</code> っていうのはどういう意味</p>
 </blockquote>

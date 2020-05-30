@@ -246,44 +246,44 @@
 <p>ロジックやパフォーマンスの低下は見つかりませんでした。</p>
 <h2 id="パースエラー位置の制御">パースエラー位置の制御</h2>
 <p>新機能について話しましょう。 プリミティブ <code>failure</code> と <code>fancyFailure</code> は <code>parseError</code> に置き換わりました。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">parseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co">-- 現在の 'failure' と 'fancyFailure' は普通の関数:</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a>failure</span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
-<span id="cb1-7"><a href="#cb1-7"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>  <span class="ot">-&gt;</span> m a</span>
-<span id="cb1-10"><a href="#cb1-10"></a>failure us ps <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>  o <span class="ot">&lt;-</span> getOffset</span>
-<span id="cb1-12"><a href="#cb1-12"></a>  parseError (<span class="dt">TrivialError</span> o us ps)</span>
-<span id="cb1-13"><a href="#cb1-13"></a></span>
-<span id="cb1-14"><a href="#cb1-14"></a>fancyFailure</span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
-<span id="cb1-16"><a href="#cb1-16"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a>  <span class="ot">-&gt;</span> m a</span>
-<span id="cb1-18"><a href="#cb1-18"></a>fancyFailure xs <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>  o <span class="ot">&lt;-</span> getOffset</span>
-<span id="cb1-20"><a href="#cb1-20"></a>  parseError (<span class="dt">FancyError</span> o xs)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">parseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="co">-- 現在の 'failure' と 'fancyFailure' は普通の関数:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>failure</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>failure us ps <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>  o <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>  parseError (<span class="dt">TrivialError</span> o us ps)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>fancyFailure</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>fancyFailure xs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>  o <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>  parseError (<span class="dt">FancyError</span> o xs)</span></code></pre></div>
 <p>これはプリミティブの数を減らすという話ではありません (減らすことも良いことですが)。 <code>parseError</code> の主な特徴は、パーサの状態から現在のオフセットを必要とすることなく、任意のオフセットでパースエラーを報告できることです。 これは、パースエラーにしたい位置を既に超えてしまっている場合でも、入力のその位置でパースエラーを作成したい場合に重要です。 これまでは、まず <code>getOffset</code> を介して正しいオフセットを取得し、次にパースエラーを報告する直前に <code>setOffset</code> でオフセットを設定することでしか達成できませんでした。 これは見苦しいだけでなく、エラーが発生しやすくなり、正しいオフセットの復元を忘れることがあります。 <code>mmark</code>の<a href="https://github.com/mmark-md/mmark/blob/8f5534d8068c2b7a139b893639ee5920bcaedd84/Text/MMark/Parser.hs#L787-L790">実例</a>を次に示します。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a>  o' <span class="ot">&lt;-</span> getOffset</span>
-<span id="cb2-2"><a href="#cb2-2"></a>  setOffset o</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="co">-- ↑ これが失敗した場合、これをオフセット「o」で報告する必要があります</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  setOffset (o' <span class="op">+</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>  o' <span class="ot">&lt;-</span> getOffset</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  setOffset o</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>  (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>  <span class="co">-- ↑ これが失敗した場合、これをオフセット「o」で報告する必要があります</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>  setOffset (o' <span class="op">+</span> <span class="dv">2</span>)</span></code></pre></div>
 <p>ここでは完全な状況を説明しませんが、<code>"[]"</code>(<code>+ 2</code>の部分)のパース後にオフセットの増分を考慮するのを忘れたため、このコードにはしばらくバグがあったと言えば十分でしょう。 次のように書けば、同じことをよりうまく表現できます。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>  region (setErrorOffset o) <span class="op">$</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>    (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co">-- 備考</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="ot">region ::</span> <span class="dt">MonadParsec</span> e s m</span>
-<span id="cb3-7"><a href="#cb3-7"></a>  <span class="ot">=&gt;</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> <span class="dt">ParseError</span> s e)</span>
-<span id="cb3-8"><a href="#cb3-8"></a>     <span class="co">-- ^ 'ParseError' の処理方法</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>  <span class="ot">-&gt;</span> m a</span>
-<span id="cb3-10"><a href="#cb3-10"></a>     <span class="co">-- ^ 処理を適用する「region」</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  <span class="ot">-&gt;</span> m a</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>  region (setErrorOffset o) <span class="op">$</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>    (void <span class="op">.</span> hidden <span class="op">.</span> string) <span class="st">&quot;[]&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="co">-- 備考</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="ot">region ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>  <span class="ot">=&gt;</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> <span class="dt">ParseError</span> s e)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>     <span class="co">-- ^ 'ParseError' の処理方法</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>     <span class="co">-- ^ 処理を適用する「region」</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a</span></code></pre></div>
 <p><code>region</code>は<code>getOffset</code> / <code>setOffset</code> ハックと同じ目的で使用されます。 副作用として、エラーが起きた場合にはパースエラーを更新する関数によって現在のオフセットが変更されます。 <code>region</code> は <code>parseError</code> を使用して、古いハックを廃止できます。</p>
 <pre class="haskel"><code>region f m = do
   r &lt;- observing m
@@ -294,44 +294,44 @@
 <h2 id="マルチエラーパーサのより良いストーリー">マルチエラーパーサのより良いストーリー</h2>
 <p>プロジェクトの最初期から、マルチエラーパーサをサポートする方向にゆっくりと動いていました。 バージョン7では、<code>ParseError</code>の代わりに<code>ParseErrorBundle</code>を返すようになりました。 マルチエラーをサポートするための準備はすべてが整っていましたが、複数のパースエラーを報告するための方法がまだ提供されていませんでした。</p>
 <p>マルチエラーパーサに求められる事前条件は、入力に問題のある部分をスキップして、正常であることがわかっている位置からパースを再開できることです。 この部分は、<code>withRecovery</code>プリミティブ（Megaparsec 4.4.0以降で使用可能）を使用して実現されます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- | @'withRecovery' r p@ は、パーサー @p@ が失敗した場合でも解析を続行できます。</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="co">-- この場合、実際の 'ParseError' を引数とする @r@ が呼び出されます。</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="co">-- よくある使い方として、特定のオブジェクトのパースの失敗を意味する値を返すことで、</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- その入力の一部を消費し次のオブジェクトの開始位置に移動します。</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="co">--</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="co">-- @r@ が失敗すると、元のエラーメッセージが 'withRecovery' なしで報告されることに注意してください。</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="co">-- パーサ @r@ を回復してもエラーメッセージに影響することはありません。</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a></span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a>withRecovery</span>
-<span id="cb5-11"><a href="#cb5-11"></a><span class="ot">  ::</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a) <span class="co">-- ^ 失敗の回復方法</span></span>
-<span id="cb5-12"><a href="#cb5-12"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ オリジナルのパーサ</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ 失敗から回復できるパーサ</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="co">-- | @'withRecovery' r p@ は、パーサー @p@ が失敗した場合でも解析を続行できます。</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="co">-- この場合、実際の 'ParseError' を引数とする @r@ が呼び出されます。</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="co">-- よくある使い方として、特定のオブジェクトのパースの失敗を意味する値を返すことで、</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="co">-- その入力の一部を消費し次のオブジェクトの開始位置に移動します。</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="co">--</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="co">-- @r@ が失敗すると、元のエラーメッセージが 'withRecovery' なしで報告されることに注意してください。</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="co">-- パーサ @r@ を回復してもエラーメッセージに影響することはありません。</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>withRecovery</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a><span class="ot">  ::</span> (<span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m a) <span class="co">-- ^ 失敗の回復方法</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ オリジナルのパーサ</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a             <span class="co">-- ^ 失敗から回復できるパーサ</span></span></code></pre></div>
 <p>Megaparsec 8 までのユーザーは、成功と失敗の可能性を含む直和型になるように型<code>a</code>を選択する必要がありました。 たとえば、<code>Either (ParseError s e) Result</code> です。 パースエラーを収集し、後で表示する前に手動で<code>ParseErrorBundle</code>に追加する必要がありました。 言うまでもなく、これらはすべて、ユーザーフレンドリーではない高度な使用例です。</p>
 <p>Megaparsec 8 は、遅延パースエラーのサポートを追加します。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">-- | 後で報告するために 'ParseError'を登録します。</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="co">-- このアクションはパースを終了せず、パースの最後に考慮される</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="co">-- 「遅延」'ParseError'のコレクションに特定の「ParseError」を</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="co">-- 追加する以外は効果がありません。 このコレクションが空の場合のみ、</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="co">-- パーサは成功します。 これは、複数のパースエラーを一度に報告する</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="co">-- 主な方法です。</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="ot">registerParseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m ()</span>
-<span id="cb6-9"><a href="#cb6-9"></a></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="co">-- | 'failure'に似ていますが、 遅延'ParseError'のためのものです。</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a></span>
-<span id="cb6-12"><a href="#cb6-12"></a>registerFailure</span>
-<span id="cb6-13"><a href="#cb6-13"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
-<span id="cb6-14"><a href="#cb6-14"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a>  <span class="ot">-&gt;</span> m ()</span>
-<span id="cb6-17"><a href="#cb6-17"></a></span>
-<span id="cb6-18"><a href="#cb6-18"></a><span class="co">-- | 'fancyFailure'に似ていますが、 遅延'ParseError'のためのものです。</span></span>
-<span id="cb6-19"><a href="#cb6-19"></a></span>
-<span id="cb6-20"><a href="#cb6-20"></a>registerFancyFailure</span>
-<span id="cb6-21"><a href="#cb6-21"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
-<span id="cb6-22"><a href="#cb6-22"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
-<span id="cb6-23"><a href="#cb6-23"></a>  <span class="ot">-&gt;</span> m ()</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co">-- | 後で報告するために 'ParseError'を登録します。</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="co">-- このアクションはパースを終了せず、パースの最後に考慮される</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="co">-- 「遅延」'ParseError'のコレクションに特定の「ParseError」を</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="co">-- 追加する以外は効果がありません。 このコレクションが空の場合のみ、</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="co">-- パーサは成功します。 これは、複数のパースエラーを一度に報告する</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="co">-- 主な方法です。</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="ot">registerParseError ::</span> <span class="dt">MonadParsec</span> e s m <span class="ot">=&gt;</span> <span class="dt">ParseError</span> s e <span class="ot">-&gt;</span> m ()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a><span class="co">-- | 'failure'に似ていますが、 遅延'ParseError'のためのものです。</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>registerFailure</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">Maybe</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待しないアイテム (あれば)</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ 期待するアイテム</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m ()</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a><span class="co">-- | 'fancyFailure'に似ていますが、 遅延'ParseError'のためのものです。</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a>registerFancyFailure</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true"></a><span class="ot">  ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorFancy</span> e) <span class="co">-- ^ Fancy error components</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m ()</span></code></pre></div>
 <p>これらのエラーは <code>withRecovery</code> のエラー処理コールバックに登録でき、結果の型は <code>Maybe Result</code> になります。 これにより、遅延エラーが最終的な <code>ParseErrorBundle</code> に含まれるようになり、遅延エラーのコレクションが空でない場合に パーサが最終的に失敗するようになります。</p>
 <p>以上のことから、マルチエラーパーサを書く習慣がユーザ間でより一般的になることを願っています。</p>
 <h2 id="その他">その他</h2>

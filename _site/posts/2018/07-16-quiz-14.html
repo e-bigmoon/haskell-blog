@@ -231,17 +231,17 @@ bad = readFile &quot;./shift-jis.txt&quot; &gt;&gt;= pu" />
         <h2 id="haskell-quiz-no.14">Haskell Quiz No.14</h2>
 <p>難易度: λ</p>
 <p><code>utf8.txt</code> と <code>shift-jis.txt</code> はそれぞれ <code>utf8</code> と <code>shift-jis</code> で保存されたテキストファイルです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-2"><a href="#cb1-2"></a>bad <span class="ot">=</span> <span class="fu">readFile</span> <span class="st">&quot;./shift-jis.txt&quot;</span> <span class="op">&gt;&gt;=</span> <span class="fu">putStrLn</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">good ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-5"><a href="#cb1-5"></a>good <span class="ot">=</span> <span class="fu">readFile</span> <span class="st">&quot;./utf8.txt&quot;</span> <span class="op">&gt;&gt;=</span> <span class="fu">putStrLn</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>bad <span class="ot">=</span> <span class="fu">readFile</span> <span class="st">&quot;./shift-jis.txt&quot;</span> <span class="op">&gt;&gt;=</span> <span class="fu">putStrLn</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">good ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>good <span class="ot">=</span> <span class="fu">readFile</span> <span class="st">&quot;./utf8.txt&quot;</span> <span class="op">&gt;&gt;=</span> <span class="fu">putStrLn</span></span></code></pre></div>
 <p>上記のプログラムを実行すると、こんな感じでエラーになってしまいます。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> good</span>
-<span id="cb2-2"><a href="#cb2-2"></a>はすける</span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> bad</span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="op">***</span> <span class="dt">Exception</span><span class="op">:</span> <span class="op">./</span>shift<span class="op">-</span>jis<span class="op">.</span>txt<span class="op">:</span> hGetContents<span class="op">:</span> invalid argument (invalid byte <span class="fu">sequence</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> good</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>はすける</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> bad</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="op">***</span> <span class="dt">Exception</span><span class="op">:</span> <span class="op">./</span>shift<span class="op">-</span>jis<span class="op">.</span>txt<span class="op">:</span> hGetContents<span class="op">:</span> invalid argument (invalid byte <span class="fu">sequence</span>)</span></code></pre></div>
 <p><code>shift-jis</code> で保存されたテキストファイルを読むにはどうしたら良いでしょうか？</p>
 <p>答えは<a href="./07-24-quiz-15.html">次回</a>。</p>
 <!--more-->
@@ -250,12 +250,12 @@ bad = readFile &quot;./shift-jis.txt&quot; &gt;&gt;= pu" />
 <h3 id="問題">問題</h3>
 <p>難易度: λλ</p>
 <p>以下のプログラムの実行結果はどうなるでしょうか？</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="co">-- stack script --resolver lts-12.0</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-6"><a href="#cb3-6"></a>main <span class="ot">=</span> runConduit <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> iterMC <span class="fu">print</span> <span class="op">.|</span> <span class="fu">return</span> () <span class="op">.|</span> sinkNull</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="co">-- stack script --resolver lts-12.0</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>main <span class="ot">=</span> runConduit <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> iterMC <span class="fu">print</span> <span class="op">.|</span> <span class="fu">return</span> () <span class="op">.|</span> sinkNull</span></code></pre></div>
 <h3 id="こたえ">こたえ</h3>
 <pre class="shell"><code>$ ./Quiz13.hs</code></pre>
 <p>何も表示されません。</p>

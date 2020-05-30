@@ -227,72 +227,72 @@ expected: &quot;\12495\12473\12465\12523&quot;
 
       <article class="post-content">
         <p><code>HUnit</code> で日本語を扱おうとすると、以下のように文字化けしますよね。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span></code></pre></div>
 <p>この問題は簡単に回避できるので、その方法を紹介します。やり方は <a href="https://github.com/hspec/hspec/issues/384">Human-readable output of unicode characters in expectation results #384</a> の方法そのまんまです。</p>
 <!--more-->
 <h2 id="問題が発生している原因">問題が発生している原因</h2>
 <p>今回使うコードはとてもシンプルです。依存しているパッケージは <a href="https://hackage.haskell.org/package/HUnit">HUnit</a> です。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- Main.hs</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-7"><a href="#cb2-7"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co">-- Main.hs</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
 <p>上記のコードを実行すると、以下のような結果になります。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">$</span> stack repl <span class="co">--package HUnit ./Main.hs</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> bad</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">### Failure:                              </span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">6</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">$</span> stack repl <span class="co">--package HUnit ./Main.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> bad</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="pp">### Failure:                              </span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">6</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>expected<span class="op">:</span> <span class="st">&quot;\12495\12473\12465\12523&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
 <p>この問題は何故発生するかと言うと、<code>HUnit</code> 内部で <code>show</code> 関数を利用しているためです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> <span class="st">&quot;ハスケル&quot;</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">&quot;\12495\12473\12465\12523&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="st">&quot;\12495\12473\12465\12523&quot;</span></span></code></pre></div>
 <p>上記のような文字化けに対応するには <a href="https://hackage.haskell.org/package/unicode-show">unicode-show</a> パッケージの <strong>ushow</strong> 関数が便利です。より詳しい紹介は「<a href="https://haskell.jp/blog/posts/2019/unicode-show.html">日本語をshowしてうまく表示されなかったらunicode-showの紹介（と、pretty-simpleを少し）</a>」を参照してください。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">$</span> stack repl <span class="co">--package HUnit --package unicode-show ./Main.hs</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="op">*</span><span class="dt">Main</span> <span class="dt">Text.Show.Unicode</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> ushow <span class="st">&quot;ハスケル&quot;</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="st">&quot;ハスケル&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="op">$</span> stack repl <span class="co">--package HUnit --package unicode-show ./Main.hs</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="op">*</span><span class="dt">Main</span> <span class="dt">Text.Show.Unicode</span><span class="op">&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> ushow <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="st">&quot;ハスケル&quot;</span></span></code></pre></div>
 <p>ということで、<strong>HUnit</strong> を <strong>ushow</strong> を使うようにしてみましょう。</p>
 <h2 id="解決策">解決策</h2>
 <p>やり方はとても簡単です。<strong>(@?=)</strong> を以下のように再定義するだけです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
-<span id="cb6-2"><a href="#cb6-2"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
-<span id="cb6-6"><a href="#cb6-6"></a></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">HUnit.Assertion</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">HUnit.Assertion</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span></code></pre></div>
 <p>コード全体は以下の通りです。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb7-6"><a href="#cb7-6"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span>
-<span id="cb7-7"><a href="#cb7-7"></a></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
-<span id="cb7-9"><a href="#cb7-9"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
-<span id="cb7-10"><a href="#cb7-10"></a></span>
-<span id="cb7-11"><a href="#cb7-11"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
-<span id="cb7-13"><a href="#cb7-13"></a></span>
-<span id="cb7-14"><a href="#cb7-14"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Assertion</span></span>
-<span id="cb7-15"><a href="#cb7-15"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span>
-<span id="cb7-16"><a href="#cb7-16"></a></span>
-<span id="cb7-17"><a href="#cb7-17"></a><span class="ot">good ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb7-18"><a href="#cb7-18"></a>good <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.HUnit</span> <span class="kw">hiding</span> ((@?=))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Test.HUnit</span> <span class="kw">as</span> <span class="dt">HUnit</span> ((@?=))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Text.Show.Unicode</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="ot">bad ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>bad <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">HUnit.@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">UString</span> a <span class="ot">=</span> <span class="dt">UString</span> a</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>  <span class="kw">deriving</span> (<span class="dt">Eq</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">UString</span> a) <span class="kw">where</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a>  <span class="fu">show</span> (<span class="dt">UString</span> s) <span class="ot">=</span> ushow s</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a><span class="ot">(@?=) ::</span> (<span class="dt">Eq</span> a, <span class="dt">Show</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Assertion</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a>actual <span class="op">@?=</span> expected <span class="ot">=</span> <span class="dt">UString</span> actual <span class="op">HUnit.@?=</span> <span class="dt">UString</span> expected</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true"></a><span class="ot">good ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true"></a>good <span class="ot">=</span> runTestTT (<span class="dt">TestCase</span> <span class="op">$</span> <span class="st">&quot;Haskell&quot;</span> <span class="op">@?=</span> <span class="st">&quot;ハスケル&quot;</span>) <span class="op">&gt;&gt;</span> <span class="fu">return</span> ()</span></code></pre></div>
 <p>実行してみましょう！</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;</span> good</span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="pp">### Failure:</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">15</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a>expected<span class="op">:</span> <span class="st">&quot;ハスケル&quot;</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="op">&gt;</span> good</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="pp">### Failure:</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="op">/</span>home<span class="op">/</span>guchi<span class="op">/</span><span class="dt">Desktop</span><span class="op">/</span>repos<span class="op">/</span>haskell<span class="op">-</span>blog<span class="op">/</span>sample<span class="op">-</span>code<span class="op">/</span><span class="dv">2020</span><span class="op">/</span><span class="dv">02</span><span class="op">-</span><span class="dv">19</span><span class="op">/</span>Main.hs<span class="op">:</span><span class="dv">15</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>expected<span class="op">:</span> <span class="st">&quot;ハスケル&quot;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a> but got<span class="op">:</span> <span class="st">&quot;Haskell&quot;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a><span class="dt">Cases</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Tried</span><span class="op">:</span> <span class="dv">1</span>  <span class="dt">Errors</span><span class="op">:</span> <span class="dv">0</span>  <span class="dt">Failures</span><span class="op">:</span> <span class="dv">1</span></span></code></pre></div>
 <p>こんな感じで他の関数も同様に定義してしまえば良い感じです。</p>
 <h2 id="まとめ">まとめ</h2>
 <p>日本語の文字化けで困っている人向け情報でした。</p>

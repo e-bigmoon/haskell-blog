@@ -202,73 +202,73 @@ Purchase: קנה
 ItemCount count: קנית #{showInt count} #{plural count &quot;דבר&quot; &quot;דברים&quot;}.
 SwitchLanguage: החלף שפה ל:
 Switch: החלף</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a></span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a></span>
-<span id="cb3-10"><a href="#cb3-10"></a>mkMessage <span class="st">&quot;App&quot;</span> <span class="st">&quot;messages&quot;</span> <span class="st">&quot;en&quot;</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a></span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="ot">plural ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a>plural <span class="dv">1</span> x _ <span class="ot">=</span> x</span>
-<span id="cb3-14"><a href="#cb3-14"></a>plural _ _ y <span class="ot">=</span> y</span>
-<span id="cb3-15"><a href="#cb3-15"></a></span>
-<span id="cb3-16"><a href="#cb3-16"></a><span class="fu">showInt</span><span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a><span class="fu">showInt</span> <span class="ot">=</span> <span class="fu">show</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a></span>
-<span id="cb3-19"><a href="#cb3-19"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a></span>
-<span id="cb3-21"><a href="#cb3-21"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
-<span id="cb3-23"><a href="#cb3-23"></a></span>
-<span id="cb3-24"><a href="#cb3-24"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb3-25"><a href="#cb3-25"></a>/     HomeR GET</span>
-<span id="cb3-26"><a href="#cb3-26"></a>/buy  BuyR  GET</span>
-<span id="cb3-27"><a href="#cb3-27"></a>/lang LangR POST</span>
-<span id="cb3-28"><a href="#cb3-28"></a>|]</span>
-<span id="cb3-29"><a href="#cb3-29"></a></span>
-<span id="cb3-30"><a href="#cb3-30"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
-<span id="cb3-32"><a href="#cb3-32"></a>    [whamlet|</span>
-<span id="cb3-33"><a href="#cb3-33"></a>        <span class="kw">&lt;h1&gt;_{</span><span class="dt">MsgHello</span><span class="kw">}</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>        <span class="kw">&lt;form</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">BuyR</span><span class="kw">}&gt;</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a>            <span class="kw">_{</span><span class="dt">MsgEnterItemCount</span><span class="kw">}</span></span>
-<span id="cb3-36"><a href="#cb3-36"></a>            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">text</span><span class="ot"> name=</span><span class="st">count</span><span class="kw">&gt;</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a>            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgPurchase}</span><span class="kw">&gt;</span></span>
-<span id="cb3-38"><a href="#cb3-38"></a>        <span class="kw">&lt;form</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">LangR</span><span class="kw">}</span><span class="ot"> method=</span><span class="st">post</span><span class="kw">&gt;</span></span>
-<span id="cb3-39"><a href="#cb3-39"></a>            <span class="kw">_{</span><span class="dt">MsgSwitchLanguage</span><span class="kw">}</span></span>
-<span id="cb3-40"><a href="#cb3-40"></a>            <span class="kw">&lt;select</span><span class="ot"> name=</span><span class="st">lang</span><span class="kw">&gt;</span></span>
-<span id="cb3-41"><a href="#cb3-41"></a>                <span class="kw">&lt;option</span><span class="ot"> value=</span><span class="st">en</span><span class="kw">&gt;</span>English</span>
-<span id="cb3-42"><a href="#cb3-42"></a>                <span class="kw">&lt;option</span><span class="ot"> value=</span><span class="st">he</span><span class="kw">&gt;</span>Hebrew</span>
-<span id="cb3-43"><a href="#cb3-43"></a>            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgSwitch}</span><span class="kw">&gt;</span></span>
-<span id="cb3-44"><a href="#cb3-44"></a>    |]</span>
-<span id="cb3-45"><a href="#cb3-45"></a></span>
-<span id="cb3-46"><a href="#cb3-46"></a><span class="ot">getBuyR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb3-47"><a href="#cb3-47"></a>getBuyR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-48"><a href="#cb3-48"></a>    count <span class="ot">&lt;-</span> runInputGet <span class="op">$</span> ireq intField <span class="st">&quot;count&quot;</span></span>
-<span id="cb3-49"><a href="#cb3-49"></a>    defaultLayout [whamlet|<span class="kw">&lt;p&gt;_{</span><span class="dt">MsgItemCount</span> count<span class="kw">}</span>|]</span>
-<span id="cb3-50"><a href="#cb3-50"></a></span>
-<span id="cb3-51"><a href="#cb3-51"></a><span class="ot">postLangR ::</span> <span class="dt">Handler</span> ()</span>
-<span id="cb3-52"><a href="#cb3-52"></a>postLangR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-53"><a href="#cb3-53"></a>    lang <span class="ot">&lt;-</span> runInputPost <span class="op">$</span> ireq textField <span class="st">&quot;lang&quot;</span></span>
-<span id="cb3-54"><a href="#cb3-54"></a>    setLanguage lang</span>
-<span id="cb3-55"><a href="#cb3-55"></a>    redirect <span class="dt">HomeR</span></span>
-<span id="cb3-56"><a href="#cb3-56"></a></span>
-<span id="cb3-57"><a href="#cb3-57"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-58"><a href="#cb3-58"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>mkMessage <span class="st">&quot;App&quot;</span> <span class="st">&quot;messages&quot;</span> <span class="st">&quot;en&quot;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a><span class="ot">plural ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a>plural <span class="dv">1</span> x _ <span class="ot">=</span> x</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a>plural _ _ y <span class="ot">=</span> y</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a><span class="fu">showInt</span><span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a><span class="fu">showInt</span> <span class="ot">=</span> <span class="fu">show</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true"></a>/     HomeR GET</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true"></a>/buy  BuyR  GET</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true"></a>/lang LangR POST</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true"></a>|]</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true"></a>    [whamlet|</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true"></a>        <span class="kw">&lt;h1&gt;_{</span><span class="dt">MsgHello</span><span class="kw">}</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true"></a>        <span class="kw">&lt;form</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">BuyR</span><span class="kw">}&gt;</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true"></a>            <span class="kw">_{</span><span class="dt">MsgEnterItemCount</span><span class="kw">}</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true"></a>            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">text</span><span class="ot"> name=</span><span class="st">count</span><span class="kw">&gt;</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true"></a>            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgPurchase}</span><span class="kw">&gt;</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true"></a>        <span class="kw">&lt;form</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">LangR</span><span class="kw">}</span><span class="ot"> method=</span><span class="st">post</span><span class="kw">&gt;</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true"></a>            <span class="kw">_{</span><span class="dt">MsgSwitchLanguage</span><span class="kw">}</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true"></a>            <span class="kw">&lt;select</span><span class="ot"> name=</span><span class="st">lang</span><span class="kw">&gt;</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true"></a>                <span class="kw">&lt;option</span><span class="ot"> value=</span><span class="st">en</span><span class="kw">&gt;</span>English</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true"></a>                <span class="kw">&lt;option</span><span class="ot"> value=</span><span class="st">he</span><span class="kw">&gt;</span>Hebrew</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true"></a>            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgSwitch}</span><span class="kw">&gt;</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true"></a>    |]</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true"></a></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true"></a><span class="ot">getBuyR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true"></a>getBuyR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true"></a>    count <span class="ot">&lt;-</span> runInputGet <span class="op">$</span> ireq intField <span class="st">&quot;count&quot;</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true"></a>    defaultLayout [whamlet|<span class="kw">&lt;p&gt;_{</span><span class="dt">MsgItemCount</span> count<span class="kw">}</span>|]</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true"></a><span class="ot">postLangR ::</span> <span class="dt">Handler</span> ()</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true"></a>postLangR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true"></a>    lang <span class="ot">&lt;-</span> runInputPost <span class="op">$</span> ireq textField <span class="st">&quot;lang&quot;</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true"></a>    setLanguage lang</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true"></a>    redirect <span class="dt">HomeR</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <h2 id="概観">概観</h2>
 <p>既存の良くある i18n の解決策は、gettext や Java message bundle のように文字列検索の原理で機能します。良くあるのは、変数を文字列に挿入する printf の展開です。ご想像の通り、Yesod においては代わりに型に頼っています。これはコンパイラが自動的に誤りを見つけてくれるような、あらゆる標準的な利点があります。</p>
 <p>具体例を取り上げてみましょう。アプリケーションがユーザに言いたいことが2つあるとしましょう。それは hello と言うことと、何人のユーザはシステムにログインしているかということです。これは直和型でモデル化できます。</p>
 <pre class="haskkell"><code>data MyMessage = MsgHello | MsgUsersLoggedIn Int</code></pre>
 <p>このデータ型を英語表現に変換するための関数も書くこともできます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">toEnglish ::</span> <span class="dt">MyMessage</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>toEnglish <span class="dt">MsgHello</span> <span class="ot">=</span> <span class="st">&quot;Hello there!&quot;</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>toEnglish (<span class="dt">MsgUsersLoggedIn</span> <span class="dv">1</span>) <span class="ot">=</span> <span class="st">&quot;There is 1 user logged in.&quot;</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>toEnglish (<span class="dt">MsgUsersLoggedIn</span> i) <span class="ot">=</span> <span class="st">&quot;There are &quot;</span> <span class="op">++</span> <span class="fu">show</span> i <span class="op">++</span> <span class="st">&quot; users logged in.&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">toEnglish ::</span> <span class="dt">MyMessage</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>toEnglish <span class="dt">MsgHello</span> <span class="ot">=</span> <span class="st">&quot;Hello there!&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>toEnglish (<span class="dt">MsgUsersLoggedIn</span> <span class="dv">1</span>) <span class="ot">=</span> <span class="st">&quot;There is 1 user logged in.&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>toEnglish (<span class="dt">MsgUsersLoggedIn</span> i) <span class="ot">=</span> <span class="st">&quot;There are &quot;</span> <span class="op">++</span> <span class="fu">show</span> i <span class="op">++</span> <span class="st">&quot; users logged in.&quot;</span></span></code></pre></div>
 <p>ほかの言語についても同様な関数を書くことができます。この内部 Haskell 的な方法による利点は、特に複数性のような、トリッキーな文法的問題を解決するために Haskell の力を最大限に利用できることです。</p>
 <div class="yesod-book-notice">
 <p>1つのアイテムに関しては1つの方法があり、他の数に関しては、他の方法があると言う意味で、複数性はそれほど複雑ではないと思うかもしれません。それは英語については本当かもしれませんが、すべての言語について当てはまるわけではありません。例えば、ロシア語は6つの異なる形式があり、どれを使うかについては modulus logic で決める必要があります。</p>
@@ -295,8 +295,8 @@ Switch: החלף</code></pre>
 <p>この作業を行えば、すべての Hamlet ファイルで展開記法 <code>{..}</code> を利用できます。<code>instance Yesod App where</code> の前に <code>mkMessage "App" "messages" "en"</code> を挿入するだけです。そうしない限り <code>defaultLayout</code> で i18n は利用できません。もし、デフォルトの言語が <code>"en"</code> ではない場合は、ここで設定します。メッセージファイルにもそれに応じた名前を付けてください。</p>
 <h3 id="型を指定する">型を指定する</h3>
 <p>データ型はメッセージの仕様により作られるため、データコンストラクタの各パラメータにデータ型を指定する必要があります。このために <span class="citation" data-cites="構文を使います">@構文を使います</span>。例えば、<code>data MyMessage = MsgHello | MsgSayAge Int</code> のデータ型を作るためには、以下のように記述します。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">Hello</span><span class="op">:</span> <span class="dt">Hi</span> there<span class="op">!</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="dt">SayAge</span> age<span class="op">@</span><span class="dt">Int</span><span class="op">:</span> <span class="dt">Your</span> age is<span class="op">:</span> <span class="op">#</span>{<span class="fu">show</span> age}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="dt">Hello</span><span class="op">:</span> <span class="dt">Hi</span> there<span class="op">!</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="dt">SayAge</span> age<span class="op">@</span><span class="dt">Int</span><span class="op">:</span> <span class="dt">Your</span> age is<span class="op">:</span> <span class="op">#</span>{<span class="fu">show</span> age}</span></code></pre></div>
 <p>しかし、これには2つの問題点があります。</p>
 <ol type="1">
 <li>すべてのファイルで、このデータ型を指定するのは面倒 (繰り返してはいけない) です</li>
@@ -305,31 +305,31 @@ Switch: החלף</code></pre>
 <p>そのため、型指定は主言語ファイルのみ必須です。これは <code>mkMessage</code> 関数の3番目の引数で指定します。これはまた、アプリケーションが提供するどの言語もユーザの言語リストに一致しない場合のバックアップ言語の指定にもなります。</p>
 <h2 id="rendermessage-型クラス">RenderMessage 型クラス</h2>
 <p><code>mkMessage</code> の呼び出しにより <code>RenderMessage</code> 型クラスのインスタンスが作られます。これは Yesod の i18n における核心部です。<code>RenderMessage</code> 型クラスは以下のように定義されます。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">class</span> <span class="dt">RenderMessage</span> master message <span class="kw">where</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="ot">    renderMessage ::</span> master  <span class="co">-- ^ type that specifies which set of translations to use</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a>                  <span class="ot">-&gt;</span> [<span class="dt">Lang</span>]  <span class="co">-- ^ acceptable languages in descending order of preference</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>                  <span class="ot">-&gt;</span> message <span class="co">-- ^ message to translate</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a>                  <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="co">-- | an RFC1766 / ISO 639-1 language code (eg, @fr@, @en-GB@, etc).</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">type</span> <span class="dt">Lang</span> <span class="ot">=</span> <span class="dt">Text</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">class</span> <span class="dt">RenderMessage</span> master message <span class="kw">where</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="ot">    renderMessage ::</span> master  <span class="co">-- ^ type that specifies which set of translations to use</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>                  <span class="ot">-&gt;</span> [<span class="dt">Lang</span>]  <span class="co">-- ^ acceptable languages in descending order of preference</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>                  <span class="ot">-&gt;</span> message <span class="co">-- ^ message to translate</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>                  <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="co">-- | an RFC1766 / ISO 639-1 language code (eg, @fr@, @en-GB@, etc).</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Lang</span> <span class="ot">=</span> <span class="dt">Text</span></span></code></pre></div>
 <p><code>RenderMessage</code> クラスには2つのパラメータがあることに注意してください。これはマスターサイトとメッセージ型です。理論的には、今回の場合 master 型については省略可能ですが、これはすべてのサイトは各メッセージ型につき同じ翻訳のセットが必要であることを意味します。 フォームのような共有ライブラリにおいては、それはあまりよく機能しない解決策です。</p>
 <p><code>renderMessage</code> 関数はクラスの型パラメータ (master と message) をそれぞれ引数として取ります。残りのパラメータは、優先順位の高い順のユーザが受け入れる言語リストです。このメソッドは、表示可能なユーザが準備した <code>Text</code> を返します。</p>
 <p><code>RenderMessage</code> の単純なインスタンスには、文字列の実際の翻訳を何も含まない場合があります。代わりに、すべての言語に対し、同じ値を表示します。例えば、</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">data</span> <span class="dt">MyMessage</span> <span class="ot">=</span> <span class="dt">Hello</span> <span class="op">|</span> <span class="dt">Greet</span> <span class="dt">Text</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">MyApp</span> <span class="dt">MyMessage</span> <span class="kw">where</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a>    renderMessage _ _ <span class="dt">Hello</span> <span class="ot">=</span> <span class="st">&quot;Hello&quot;</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>    renderMessage _ _ (<span class="dt">Greet</span> name) <span class="ot">=</span> <span class="st">&quot;Welcome, &quot;</span> <span class="op">&lt;&gt;</span> name <span class="op">&lt;&gt;</span> <span class="st">&quot;!&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">MyMessage</span> <span class="ot">=</span> <span class="dt">Hello</span> <span class="op">|</span> <span class="dt">Greet</span> <span class="dt">Text</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">MyApp</span> <span class="dt">MyMessage</span> <span class="kw">where</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>    renderMessage _ _ <span class="dt">Hello</span> <span class="ot">=</span> <span class="st">&quot;Hello&quot;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>    renderMessage _ _ (<span class="dt">Greet</span> name) <span class="ot">=</span> <span class="st">&quot;Welcome, &quot;</span> <span class="op">&lt;&gt;</span> name <span class="op">&lt;&gt;</span> <span class="st">&quot;!&quot;</span></span></code></pre></div>
 <p><code>renderMessage</code> の初めの2つのパラメータが無視されている点に注意してください。これを複数の言語をサポートするように拡張します。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a>renderEn <span class="dt">Hello</span> <span class="ot">=</span> <span class="st">&quot;Hello&quot;</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a>renderEn (<span class="dt">Greet</span> name) <span class="ot">=</span> <span class="st">&quot;Welcome, &quot;</span> <span class="op">&lt;&gt;</span> name <span class="op">&lt;&gt;</span> <span class="st">&quot;!&quot;</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a>renderHe <span class="dt">Hello</span> <span class="ot">=</span> <span class="st">&quot;שלום&quot;</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>renderHe (<span class="dt">Greet</span> name) <span class="ot">=</span> <span class="st">&quot;ברוכים הבאים, &quot;</span> <span class="op">&lt;&gt;</span> name <span class="op">&lt;&gt;</span> <span class="st">&quot;!&quot;</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">MyApp</span> <span class="dt">MyMessage</span> <span class="kw">where</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>    renderMessage _ (<span class="st">&quot;en&quot;</span><span class="op">:</span>_) <span class="ot">=</span> renderEn</span>
-<span id="cb11-7"><a href="#cb11-7"></a>    renderMessage _ (<span class="st">&quot;he&quot;</span><span class="op">:</span>_) <span class="ot">=</span> renderHe</span>
-<span id="cb11-8"><a href="#cb11-8"></a>    renderMessage master (_<span class="op">:</span>langs) <span class="ot">=</span> renderMessage master langs</span>
-<span id="cb11-9"><a href="#cb11-9"></a>    renderMessage _ [] <span class="ot">=</span> renderEn</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>renderEn <span class="dt">Hello</span> <span class="ot">=</span> <span class="st">&quot;Hello&quot;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a>renderEn (<span class="dt">Greet</span> name) <span class="ot">=</span> <span class="st">&quot;Welcome, &quot;</span> <span class="op">&lt;&gt;</span> name <span class="op">&lt;&gt;</span> <span class="st">&quot;!&quot;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a>renderHe <span class="dt">Hello</span> <span class="ot">=</span> <span class="st">&quot;שלום&quot;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a>renderHe (<span class="dt">Greet</span> name) <span class="ot">=</span> <span class="st">&quot;ברוכים הבאים, &quot;</span> <span class="op">&lt;&gt;</span> name <span class="op">&lt;&gt;</span> <span class="st">&quot;!&quot;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">MyApp</span> <span class="dt">MyMessage</span> <span class="kw">where</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a>    renderMessage _ (<span class="st">&quot;en&quot;</span><span class="op">:</span>_) <span class="ot">=</span> renderEn</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a>    renderMessage _ (<span class="st">&quot;he&quot;</span><span class="op">:</span>_) <span class="ot">=</span> renderHe</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>    renderMessage master (_<span class="op">:</span>langs) <span class="ot">=</span> renderMessage master langs</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a>    renderMessage _ [] <span class="ot">=</span> renderEn</span></code></pre></div>
 <p>ここでのアイデアはかなり率直です。各言語に対するヘルパ関数を定義します。そして、それらの言語をキャッチするための節を renderMessage の定義に加えます。最後に、どの言語も一致しなかった時はユーザの優先リストの次の言語の確認に続き、もし、ユーザが指定したすべての言語を網羅しつくしたらデフォルト言語 (今回の場合は英語) を利用するように2つの場合分けを追加する。</p>
 <p>しかし、これらのものを手動で書くことを心配する必要はありません。なぜなら、メッセージファイルのインターフェースがこれらすべてを行ってくれるためです。しかし、表面下で何が起こっているかを知っておくことは、常によい考えです。</p>
 <h2 id="展開">展開</h2>

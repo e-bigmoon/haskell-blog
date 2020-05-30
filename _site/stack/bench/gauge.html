@@ -179,56 +179,56 @@
       <article class="page-content">
         <h2 id="ベンチマークアプリケーションの作成">ベンチマークアプリケーションの作成</h2>
 <p><strong>gauge</strong> の API は <strong>criterion</strong> と互換性があるので、ほとんどプログラムはそのままです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">benchmarks</span><span class="kw">:</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="at">  </span><span class="fu">criterion</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> bench/Criterion.hs</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="at">    </span><span class="kw">-</span><span class="at"> criterion</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co">  # ここから下の行を追記</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="at">  </span><span class="fu">gauge</span><span class="kw">:</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> bench/Gauge.hs</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="at">    </span><span class="kw">-</span><span class="at"> gauge</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">import</span> <span class="dt">Gauge</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-8"><a href="#cb2-8"></a>main <span class="ot">=</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>  defaultMain</span>
-<span id="cb2-10"><a href="#cb2-10"></a>    [ bgroup <span class="st">&quot;fast minfree (whnf)&quot;</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb2-12"><a href="#cb2-12"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb2-13"><a href="#cb2-13"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb2-14"><a href="#cb2-14"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb2-15"><a href="#cb2-15"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb2-16"><a href="#cb2-16"></a>        ]</span>
-<span id="cb2-17"><a href="#cb2-17"></a>    , bgroup <span class="st">&quot;slow minfree (whnf)&quot;</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb2-19"><a href="#cb2-19"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb2-20"><a href="#cb2-20"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb2-21"><a href="#cb2-21"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb2-22"><a href="#cb2-22"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb2-23"><a href="#cb2-23"></a>        ]</span>
-<span id="cb2-24"><a href="#cb2-24"></a>    , bgroup <span class="st">&quot;fast minfree (nf)&quot;</span></span>
-<span id="cb2-25"><a href="#cb2-25"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb2-26"><a href="#cb2-26"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb2-27"><a href="#cb2-27"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb2-28"><a href="#cb2-28"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb2-29"><a href="#cb2-29"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb2-30"><a href="#cb2-30"></a>        ]</span>
-<span id="cb2-31"><a href="#cb2-31"></a>    , bgroup <span class="st">&quot;slow minfree (nf)&quot;</span></span>
-<span id="cb2-32"><a href="#cb2-32"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb2-33"><a href="#cb2-33"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb2-34"><a href="#cb2-34"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb2-35"><a href="#cb2-35"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb2-36"><a href="#cb2-36"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb2-37"><a href="#cb2-37"></a>        ]</span>
-<span id="cb2-38"><a href="#cb2-38"></a>    ]</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">benchmarks</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">criterion</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> bench/Criterion.hs</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> criterion</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="co">  # ここから下の行を追記</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="at">  </span><span class="fu">gauge</span><span class="kw">:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> bench/Gauge.hs</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> gauge</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Gauge</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>main <span class="ot">=</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>  defaultMain</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>    [ bgroup <span class="st">&quot;fast minfree (whnf)&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>        ]</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>    , bgroup <span class="st">&quot;slow minfree (whnf)&quot;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>        ]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a>    , bgroup <span class="st">&quot;fast minfree (nf)&quot;</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a>        ]</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a>    , bgroup <span class="st">&quot;slow minfree (nf)&quot;</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true"></a>        ]</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true"></a>    ]</span></code></pre></div>
 <h2 id="ベンチマークアプリケーションの実行">ベンチマークアプリケーションの実行</h2>
 <p>ベンチマークを実行します。</p>
 <pre class="shell"><code>$ stack bench PFAD:gauge
@@ -244,44 +244,44 @@ std dev              580.0 μs   (384.2 μs .. 866.7 μs)
 Benchmark gauge: FINISH</code></pre>
 <h3 id="displaymode-オプション">displayMode オプション</h3>
 <p><strong>displayMode</strong> を <strong>Condensed</strong> にすると表示結果がコンパクトになります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">import</span> <span class="dt">Gauge</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb4-8"><a href="#cb4-8"></a>main <span class="ot">=</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>  defaultMainWith (defaultConfig {displayMode<span class="ot">=</span><span class="dt">Condensed</span>}) <span class="co">-- この行を変更</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>    [ bgroup <span class="st">&quot;fast minfree (whnf)&quot;</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb4-12"><a href="#cb4-12"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb4-13"><a href="#cb4-13"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb4-14"><a href="#cb4-14"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb4-15"><a href="#cb4-15"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb4-16"><a href="#cb4-16"></a>        ]</span>
-<span id="cb4-17"><a href="#cb4-17"></a>    , bgroup <span class="st">&quot;slow minfree (whnf)&quot;</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb4-19"><a href="#cb4-19"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb4-20"><a href="#cb4-20"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb4-21"><a href="#cb4-21"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb4-22"><a href="#cb4-22"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb4-23"><a href="#cb4-23"></a>        ]</span>
-<span id="cb4-24"><a href="#cb4-24"></a>    , bgroup <span class="st">&quot;fast minfree (nf)&quot;</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb4-26"><a href="#cb4-26"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb4-27"><a href="#cb4-27"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb4-28"><a href="#cb4-28"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb4-29"><a href="#cb4-29"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb4-30"><a href="#cb4-30"></a>        ]</span>
-<span id="cb4-31"><a href="#cb4-31"></a>    , bgroup <span class="st">&quot;slow minfree (nf)&quot;</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb4-33"><a href="#cb4-33"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb4-34"><a href="#cb4-34"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb4-35"><a href="#cb4-35"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb4-36"><a href="#cb4-36"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb4-37"><a href="#cb4-37"></a>        ]</span>
-<span id="cb4-38"><a href="#cb4-38"></a>    ]</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Gauge</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>main <span class="ot">=</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>  defaultMainWith (defaultConfig {displayMode<span class="ot">=</span><span class="dt">Condensed</span>}) <span class="co">-- この行を変更</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>    [ bgroup <span class="st">&quot;fast minfree (whnf)&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>        ]</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>    , bgroup <span class="st">&quot;slow minfree (whnf)&quot;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a>        ]</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a>    , bgroup <span class="st">&quot;fast minfree (nf)&quot;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a>        ]</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a>    , bgroup <span class="st">&quot;slow minfree (nf)&quot;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true"></a>        ]</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true"></a>    ]</span></code></pre></div>
 <pre class="shell"><code>$ stack bench PFAD:gauge
 Running 1 benchmarks...
 Benchmark gauge: RUNNING...
@@ -311,44 +311,44 @@ Benchmark gauge: FINISH</code></pre>
 <h3 id="quickmode-オプション">quickMode オプション</h3>
 <p>ベンチマークは与えられた引数でプログラムを何度か動かすため、ベンチマークの実行に時間がかかりすぎる場合あります。</p>
 <p>とりあえず、すぐに結果が欲しい場合は <strong>quickMode</strong> オプションを <strong>True</strong> に設定しましょう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">import</span> <span class="dt">Gauge</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb6-8"><a href="#cb6-8"></a>main <span class="ot">=</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a>  defaultMainWith (defaultConfig {displayMode<span class="ot">=</span><span class="dt">Condensed</span>, quickMode<span class="ot">=</span><span class="dt">True</span>}) <span class="co">-- この行を変更</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a>    [ bgroup <span class="st">&quot;fast minfree (whnf)&quot;</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb6-12"><a href="#cb6-12"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb6-13"><a href="#cb6-13"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb6-14"><a href="#cb6-14"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb6-15"><a href="#cb6-15"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb6-16"><a href="#cb6-16"></a>        ]</span>
-<span id="cb6-17"><a href="#cb6-17"></a>    , bgroup <span class="st">&quot;slow minfree (whnf)&quot;</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb6-19"><a href="#cb6-19"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb6-20"><a href="#cb6-20"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb6-21"><a href="#cb6-21"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb6-22"><a href="#cb6-22"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb6-23"><a href="#cb6-23"></a>        ]</span>
-<span id="cb6-24"><a href="#cb6-24"></a>    , bgroup <span class="st">&quot;fast minfree (nf)&quot;</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb6-26"><a href="#cb6-26"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb6-27"><a href="#cb6-27"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb6-28"><a href="#cb6-28"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb6-29"><a href="#cb6-29"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb6-30"><a href="#cb6-30"></a>        ]</span>
-<span id="cb6-31"><a href="#cb6-31"></a>    , bgroup <span class="st">&quot;slow minfree (nf)&quot;</span></span>
-<span id="cb6-32"><a href="#cb6-32"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
-<span id="cb6-33"><a href="#cb6-33"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
-<span id="cb6-34"><a href="#cb6-34"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
-<span id="cb6-35"><a href="#cb6-35"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
-<span id="cb6-36"><a href="#cb6-36"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
-<span id="cb6-37"><a href="#cb6-37"></a>        ]</span>
-<span id="cb6-38"><a href="#cb6-38"></a>    ]</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Gauge</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>main <span class="ot">=</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>  defaultMainWith (defaultConfig {displayMode<span class="ot">=</span><span class="dt">Condensed</span>, quickMode<span class="ot">=</span><span class="dt">True</span>}) <span class="co">-- この行を変更</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>    [ bgroup <span class="st">&quot;fast minfree (whnf)&quot;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a>        ]</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a>    , bgroup <span class="st">&quot;slow minfree (whnf)&quot;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> whnf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true"></a>        ]</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true"></a>    , bgroup <span class="st">&quot;fast minfree (nf)&quot;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree' [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true"></a>        ]</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true"></a>    , bgroup <span class="st">&quot;slow minfree (nf)&quot;</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true"></a>        [ bench <span class="st">&quot;n=1&quot;</span>     <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1</span>]</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10&quot;</span>    <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">100</span>]</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true"></a>        , bench <span class="st">&quot;n=100&quot;</span>   <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">1000</span>]</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true"></a>        , bench <span class="st">&quot;n=10000&quot;</span> <span class="op">$</span> nf minfree [<span class="dv">0</span><span class="op">..</span><span class="dv">10000</span>]</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true"></a>        ]</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true"></a>    ]</span></code></pre></div>
 <pre class="shell"><code>$ stack bench PFAD:gauge
 ...
 Running 1 benchmarks...

@@ -246,19 +246,19 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <p>値は必要となった時にのみ計算される</p>
 </blockquote>
 <p>と言いました。詳細を知るために正格言語であるC言語と比較してみましょう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="dt">int</span> add(<span class="dt">int</span> x, <span class="dt">int</span> y) {</span>
-<span id="cb1-4"><a href="#cb1-4"></a>  <span class="cf">return</span> x + y;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>}</span>
-<span id="cb1-6"><a href="#cb1-6"></a></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="dt">int</span> main() {</span>
-<span id="cb1-8"><a href="#cb1-8"></a>  <span class="dt">int</span> five = add(<span class="dv">1</span> + <span class="dv">1</span>, <span class="dv">1</span> + <span class="dv">2</span>);</span>
-<span id="cb1-9"><a href="#cb1-9"></a>  <span class="dt">int</span> seven = add(<span class="dv">1</span> + <span class="dv">2</span>, <span class="dv">1</span> + <span class="dv">3</span>);</span>
-<span id="cb1-10"><a href="#cb1-10"></a></span>
-<span id="cb1-11"><a href="#cb1-11"></a>  printf(<span class="st">&quot;Five: %d</span><span class="sc">\n</span><span class="st">&quot;</span>, five);</span>
-<span id="cb1-12"><a href="#cb1-12"></a>  <span class="cf">return</span> <span class="dv">0</span>;</span>
-<span id="cb1-13"><a href="#cb1-13"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="dt">int</span> add(<span class="dt">int</span> x, <span class="dt">int</span> y) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  <span class="cf">return</span> x + y;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>}</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="dt">int</span> main() {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  <span class="dt">int</span> five = add(<span class="dv">1</span> + <span class="dv">1</span>, <span class="dv">1</span> + <span class="dv">2</span>);</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>  <span class="dt">int</span> seven = add(<span class="dv">1</span> + <span class="dv">2</span>, <span class="dv">1</span> + <span class="dv">3</span>);</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>  printf(<span class="st">&quot;Five: %d</span><span class="sc">\n</span><span class="st">&quot;</span>, five);</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>  <span class="cf">return</span> <span class="dv">0</span>;</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>}</span></code></pre></div>
 <p>私たちの関数 <code>add</code> は <code>x</code> と <code>y</code> の両方の引数で<em>正格</em>です。そして、結果もまた正格になります。つまり</p>
 <ul>
 <li>初めて <code>add</code> が呼ばれる前に <code>1 + 1</code> と <code>1 + 2</code> の両方の結果を計算します。</li>
@@ -267,15 +267,15 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <li>完全に計算された <code>five</code> の値で <code>printf</code> を呼び出します。</li>
 </ul>
 <p>さて、これと等価な Haskell コードと比較してみましょう。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-5"><a href="#cb2-5"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
-<span id="cb2-7"><a href="#cb2-7"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>)</span>
-<span id="cb2-8"><a href="#cb2-8"></a></span>
-<span id="cb2-9"><a href="#cb2-9"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
 <p>正格性解析 (<em>strictness analysis</em>) と呼ばれる仕組みにより、説明よりも効率的な結果となることがありますが、意味的には以下の通りです。</p>
 <ul>
 <li><code>1 + 1</code> や <code>1 + 2</code> の計算をすぐに行うのではなく、コンパイラはこれらの計算のサンク (<em>thunk</em>) (プロミス (<em>promise</em>) として考えることができます) を生成し、<code>add</code> 関数にサンクを渡します。</li>
@@ -297,31 +297,31 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <p>実際のところ、こんなに上手くはいきません。なぜなら、正格性解析によって “やぁ、ちょっと待って、これは後で使うからサンクを確保するよりも2つの数字を加算する方が絶対良いって、じゃあまたね！” という感じで最適化が行われるためです。しかし、遅延性やサンクが発生する可能性のある全ての場所を理解しておくことは、Haskell を書く上で非常に重要なことです。</p>
 <h3 id="バン">バン!</h3>
 <p>さて、どうすれば Haskell の評価をより正格にできるのでしょうか。一番簡単なのはバンパターンを使う方法です。まずはコードを確認してみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>add <span class="op">!</span>x <span class="op">!</span>y <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-6"><a href="#cb3-6"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  <span class="kw">let</span> <span class="op">!</span>five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
-<span id="cb3-8"><a href="#cb3-8"></a>      <span class="op">!</span>seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>)</span>
-<span id="cb3-9"><a href="#cb3-9"></a></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>add <span class="op">!</span>x <span class="op">!</span>y <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>  <span class="kw">let</span> <span class="op">!</span>five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>      <span class="op">!</span>seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
 <p>このコードは正格な C のコードと全く同じように振る舞います。先ほどのコードとの違いは <code>add</code> 関数の <code>x</code> と <code>y</code> の前にバン (<code>!</code>) があることです。これによって GHC は <code>add</code> を評価する前に <code>x</code> と <code>y</code> の値を評価しなければならないと判断します。同様に <code>five</code> と <code>seven</code> の前にも <code>!</code> があるため、 GHC は <code>putStrLn</code> を評価する前にこれらの値を評価します。</p>
 <p>Haskell には多くのものがありますが、バンパターンはただの <code>seq</code> 関数を使ったシンタックスシュガーです。<code>seq</code> 関数の型は以下の通りです。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">seq</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="fu">seq</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span></code></pre></div>
 <p>この型シグネチャを見ると、<code>a</code> の値を無視するような以下の実装にしたくなるでしょう。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">badseq ::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span>
-<span id="cb5-2"><a href="#cb5-2"></a>badseq a b <span class="ot">=</span> b</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">badseq ::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>badseq a b <span class="ot">=</span> b</span></code></pre></div>
 <p>けれども、 <code>seq</code> は GHC が提供しているプリミティブな操作を使って<code>b</code> が評価されるときには、既に <code>a</code> が評価されていることを保証します。ここで先ほどの <code>add</code> 関数をバンパターンの代わりに <code>seq</code> を使って書き換えてみましょう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>add x y <span class="ot">=</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a>  <span class="kw">let</span> part1 <span class="ot">=</span> <span class="fu">seq</span> x part2</span>
-<span id="cb6-4"><a href="#cb6-4"></a>      part2 <span class="ot">=</span> <span class="fu">seq</span> y answer</span>
-<span id="cb6-5"><a href="#cb6-5"></a>      answer <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb6-6"><a href="#cb6-6"></a>   <span class="kw">in</span> part1</span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">-- Or more idiomatically</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>add x y <span class="ot">=</span> x <span class="ot">`seq`</span> y <span class="ot">`seq`</span> x <span class="op">+</span> y</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>add x y <span class="ot">=</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>  <span class="kw">let</span> part1 <span class="ot">=</span> <span class="fu">seq</span> x part2</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>      part2 <span class="ot">=</span> <span class="fu">seq</span> y answer</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>      answer <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>   <span class="kw">in</span> part1</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="co">-- Or more idiomatically</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>add x y <span class="ot">=</span> x <span class="ot">`seq`</span> y <span class="ot">`seq`</span> x <span class="op">+</span> y</span></code></pre></div>
 <p>このコードは以下のような意味になります。</p>
 <ul>
 <li><code>part1</code> は <code>x</code> を評価した後に <code>part2</code> の値を評価します</li>
@@ -331,42 +331,42 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <p>もちろん、<code>let</code> と <code>in</code> を使ってこんなに長いコードを書くのは大変なので、多くのプログラマは最後の行のように <code>seq</code> を中置記法で使います。</p>
 <p><strong>演習</strong> <code>in part1</code> の代わりに <code>in part2</code> とした場合どうなるでしょうか？また <code>in answer</code> ではどうでしょうか？</p>
 <p>バンパターンから <code>let</code> を使う方法への変換はどんな場合でも可能です。先ほどの <code>main</code> 関数は次のように書き換えても同じことです。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb7-2"><a href="#cb7-2"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
-<span id="cb7-4"><a href="#cb7-4"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>)</span>
-<span id="cb7-5"><a href="#cb7-5"></a></span>
-<span id="cb7-6"><a href="#cb7-6"></a>  five <span class="ot">`seq`</span> seven <span class="ot">`seq`</span> <span class="fu">putStrLn</span> (<span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>  five <span class="ot">`seq`</span> seven <span class="ot">`seq`</span> <span class="fu">putStrLn</span> (<span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five)</span></code></pre></div>
 <p>上記のプログラムはバンパターンを使ったものと等しく、<code>seq</code> の動作を理解するために非常に重要な例です。ですが、バンパターンのコードよりも少し読みづらくなってしまったと感じる読者もいると思います。なので、自分が読みやすい好きな方を使ってください。たぶん、ほとんどの人はバンパターンを使うでしょうけども。</p>
 <h3 id="評価を追ってみよう">評価を追ってみよう</h3>
 <p>今まで、サンクの評価について私の説明が全てでした。これから、評価について、もっと直接的に観測するための方法について説明します。<code>Debug.Trace</code> モジュールで定義されている <code>trace</code> 関数は評価された時にメッセージを表示します。以下の2つのプログラムの出力を予想してみてください。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">import</span> <span class="dt">Debug.Trace</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb8-7"><a href="#cb8-7"></a></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb8-9"><a href="#cb8-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a>  <span class="kw">let</span> five <span class="ot">=</span> trace <span class="st">&quot;five&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>))</span>
-<span id="cb8-11"><a href="#cb8-11"></a>      seven <span class="ot">=</span> trace <span class="st">&quot;seven&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>))</span>
-<span id="cb8-12"><a href="#cb8-12"></a></span>
-<span id="cb8-13"><a href="#cb8-13"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">import</span> <span class="dt">Debug.Trace</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb9-8"><a href="#cb9-8"></a></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb9-10"><a href="#cb9-10"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb9-11"><a href="#cb9-11"></a>  <span class="kw">let</span> <span class="op">!</span>five <span class="ot">=</span> trace <span class="st">&quot;five&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>))</span>
-<span id="cb9-12"><a href="#cb9-12"></a>      <span class="op">!</span>seven <span class="ot">=</span> trace <span class="st">&quot;seven&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>))</span>
-<span id="cb9-13"><a href="#cb9-13"></a></span>
-<span id="cb9-14"><a href="#cb9-14"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Debug.Trace</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>  <span class="kw">let</span> five <span class="ot">=</span> trace <span class="st">&quot;five&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>      seven <span class="ot">=</span> trace <span class="st">&quot;seven&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Debug.Trace</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a>  <span class="kw">let</span> <span class="op">!</span>five <span class="ot">=</span> trace <span class="st">&quot;five&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>))</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a>      <span class="op">!</span>seven <span class="ot">=</span> trace <span class="st">&quot;seven&quot;</span> (add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span>))</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
 <p>それぞれのプログラムで表示される内容は・・・</p>
 <p>もうわかりましたね。答えは以下の通りです。</p>
 <ul>
@@ -378,32 +378,32 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <p><strong>質問</strong> もし、全ての <code>add</code> 関数に <code>!</code> をつけたら結果はどう変わるでしょうか？ なぜ <code>!</code> を付けるだけで出力に影響したり (しなかったり) するのでしょうか？</p>
 <h3 id="ボトムの値">ボトムの値</h3>
 <p>今までの例もちゃんと動くので良いのですが、評価の順番を確認する方法として、よりスタンダードな方法があります。それはボトム、すなわち <code>undefined</code> を使うことです。<code>undefined</code> は、評価されたときに実行時例外を投げる点で特別です。 (他の特別な関数や値のように、<code>error</code> 関数も同じ動きをします。) バンが無い場合は <code>seven</code> が評価されないことを確認するために、以下の2つのプログラムを比較してみましょう:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb10-7"><a href="#cb10-7"></a></span>
-<span id="cb10-8"><a href="#cb10-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb10-9"><a href="#cb10-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-10"><a href="#cb10-10"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
-<span id="cb10-11"><a href="#cb10-11"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="fu">undefined</span> <span class="co">-- (1 + 3)</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a></span>
-<span id="cb10-13"><a href="#cb10-13"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a></span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb11-7"><a href="#cb11-7"></a></span>
-<span id="cb11-8"><a href="#cb11-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb11-9"><a href="#cb11-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb11-10"><a href="#cb11-10"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
-<span id="cb11-11"><a href="#cb11-11"></a>      <span class="op">!</span>seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="fu">undefined</span> <span class="co">-- (1 + 3)</span></span>
-<span id="cb11-12"><a href="#cb11-12"></a></span>
-<span id="cb11-13"><a href="#cb11-13"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="fu">undefined</span> <span class="co">-- (1 + 3)</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a>add x y <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true"></a>      <span class="op">!</span>seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="fu">undefined</span> <span class="co">-- (1 + 3)</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
 <p>最初の例は問題なく実行することができます。これは <code>seven</code> が評価されないからですね。しかし、2つ目の例では、<code>seven</code> にバンパターンが付いています。ここで、GHC はこんなことをしています:</p>
 <ul>
 <li><code>add (1 + 2) undefined</code> と言う式を評価します。</li>
@@ -414,61 +414,61 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <li>しかし、次に <code>undefined</code> を評価しようとして、実行時例外が投げられます。</li>
 </ul>
 <p><strong>質問</strong> 上の質問に戻りますが: <code>add</code> 関数の内部にバンパターンを持たせたら、何か変わるでしょうか? 以下のプログラムの出力が何になるか考えてみてください:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a>add <span class="op">!</span>x <span class="op">!</span>y <span class="ot">=</span> x <span class="op">+</span> y</span>
-<span id="cb12-7"><a href="#cb12-7"></a></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb12-9"><a href="#cb12-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
-<span id="cb12-11"><a href="#cb12-11"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="fu">undefined</span> <span class="co">-- (1 + 3)</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a></span>
-<span id="cb12-13"><a href="#cb12-13"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a><span class="ot">add ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>add <span class="op">!</span>x <span class="op">!</span>y <span class="ot">=</span> x <span class="op">+</span> y</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a>  <span class="kw">let</span> five <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span>) (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a>      seven <span class="ot">=</span> add (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="fu">undefined</span> <span class="co">-- (1 + 3)</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Five: &quot;</span> <span class="op">++</span> <span class="fu">show</span> five</span></code></pre></div>
 <p>この動作を正格な言語と比較するためには、実行時例外のようなものを持つ言語が必要ですね。Rust の panic を使うことにしましょう:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">fn</span> add(x<span class="op">:</span> <span class="dt">isize</span><span class="op">,</span> y<span class="op">:</span> <span class="dt">isize</span>) <span class="op">-&gt;</span> <span class="dt">isize</span> <span class="op">{</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span><span class="op">,</span> x<span class="op">,</span> y)<span class="op">;</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a>    x <span class="op">+</span> y</span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="op">}</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a>    <span class="kw">let</span> five <span class="op">=</span> add(<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a>    <span class="kw">let</span> seven <span class="op">=</span> add(<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> <span class="pp">panic!</span>())<span class="op">;</span></span>
-<span id="cb13-9"><a href="#cb13-9"></a></span>
-<span id="cb13-10"><a href="#cb13-10"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span><span class="op">,</span> five)<span class="op">;</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="kw">fn</span> add(x<span class="op">:</span> <span class="dt">isize</span><span class="op">,</span> y<span class="op">:</span> <span class="dt">isize</span>) <span class="op">-&gt;</span> <span class="dt">isize</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span><span class="op">,</span> x<span class="op">,</span> y)<span class="op">;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a>    x <span class="op">+</span> y</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a>    <span class="kw">let</span> five <span class="op">=</span> add(<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a>    <span class="kw">let</span> seven <span class="op">=</span> add(<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> <span class="pp">panic!</span>())<span class="op">;</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span><span class="op">,</span> five)<span class="op">;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
 <p>まず、Rust の名誉のために一言断っておくと、Rust は、このプログラムがどんなにバカげたことをしているのか、多くの警告を出してくれます。確かにそれはそうなんですが、これらの警告は無視して突っ走りましょう。このプログラムは、まず最初に <code>add(1 + 1, 1 + 2)</code> という式を評価します (<code>adding: 2 and 3</code> という出力で確認できます)。そして、2回目の <code>add</code> 関数に入る前に、<code>1 + 2</code> と <code>panic!()</code> のどちらも評価する必要があります。前者はいいですが、後者ではパニックが発生し、そこでショートします。</p>
 <p>Haskell の遅延性を獲得したいのなら、簡単な方法があります。クロージャを使いましょう。クロージャは本質的にはサンクです。Rust の構文でクロージャを書くと、<code>|args| body</code> のようになります。引数なしのクロージャを作ると、サンクのような振る舞いをします。こんな感じです:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">fn</span> add<span class="op">&lt;</span>X<span class="op">,</span> Y<span class="op">&gt;</span>(x<span class="op">:</span> X<span class="op">,</span> y<span class="op">:</span> Y) <span class="op">-&gt;</span> <span class="dt">isize</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a>    <span class="kw">where</span> X<span class="op">:</span> <span class="bu">FnOnce</span>() <span class="op">-&gt;</span> <span class="dt">isize</span><span class="op">,</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a>          Y<span class="op">:</span> <span class="bu">FnOnce</span>() <span class="op">-&gt;</span> <span class="dt">isize</span> <span class="op">{</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a>    <span class="kw">let</span> x <span class="op">=</span> x()<span class="op">;</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a>    <span class="kw">let</span> y <span class="op">=</span> y()<span class="op">;</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span><span class="op">,</span> x<span class="op">,</span> y)<span class="op">;</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a>    x <span class="op">+</span> y</span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="op">}</span></span>
-<span id="cb14-9"><a href="#cb14-9"></a></span>
-<span id="cb14-10"><a href="#cb14-10"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
-<span id="cb14-11"><a href="#cb14-11"></a>    <span class="kw">let</span> five <span class="op">=</span> <span class="op">||</span> add(<span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> <span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
-<span id="cb14-12"><a href="#cb14-12"></a>    <span class="kw">let</span> seven <span class="op">=</span> <span class="op">||</span> add(<span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> <span class="op">||</span> <span class="pp">panic!</span>())<span class="op">;</span></span>
-<span id="cb14-13"><a href="#cb14-13"></a></span>
-<span id="cb14-14"><a href="#cb14-14"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span><span class="op">,</span> five())<span class="op">;</span></span>
-<span id="cb14-15"><a href="#cb14-15"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">fn</span> add<span class="op">&lt;</span>X<span class="op">,</span> Y<span class="op">&gt;</span>(x<span class="op">:</span> X<span class="op">,</span> y<span class="op">:</span> Y) <span class="op">-&gt;</span> <span class="dt">isize</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a>    <span class="kw">where</span> X<span class="op">:</span> <span class="bu">FnOnce</span>() <span class="op">-&gt;</span> <span class="dt">isize</span><span class="op">,</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a>          Y<span class="op">:</span> <span class="bu">FnOnce</span>() <span class="op">-&gt;</span> <span class="dt">isize</span> <span class="op">{</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a>    <span class="kw">let</span> x <span class="op">=</span> x()<span class="op">;</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true"></a>    <span class="kw">let</span> y <span class="op">=</span> y()<span class="op">;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;adding: {} and {}&quot;</span><span class="op">,</span> x<span class="op">,</span> y)<span class="op">;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true"></a>    x <span class="op">+</span> y</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true"></a><span class="op">}</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true"></a>    <span class="kw">let</span> five <span class="op">=</span> <span class="op">||</span> add(<span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> <span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true"></a>    <span class="kw">let</span> seven <span class="op">=</span> <span class="op">||</span> add(<span class="op">||</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> <span class="op">||</span> <span class="pp">panic!</span>())<span class="op">;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true"></a>    <span class="pp">println!</span>(<span class="st">&quot;Five: {}&quot;</span><span class="op">,</span> five())<span class="op">;</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true"></a><span class="op">}</span></span></code></pre></div>
 <p>繰り返しますが、Rust のコンパイラは使われていない <code>seven</code> について文句を言ってきます。が、<code>seven</code> のクロージャを使うことはないので、このプログラムを実行することはできます。</p>
 <p>まだ Rust についてあまり知らない? それなら、みんな大好き Javascript を使ってみましょう:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">function</span> <span class="fu">add</span>(x<span class="op">,</span> y) {</span>
-<span id="cb15-2"><a href="#cb15-2"></a>    <span class="cf">return</span> x() <span class="op">+</span> y()<span class="op">;</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a>}</span>
-<span id="cb15-4"><a href="#cb15-4"></a></span>
-<span id="cb15-5"><a href="#cb15-5"></a><span class="kw">function</span> <span class="fu">panic</span>() {</span>
-<span id="cb15-6"><a href="#cb15-6"></a>    <span class="cf">throw</span> <span class="st">&quot;Panic!&quot;</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a>}</span>
-<span id="cb15-8"><a href="#cb15-8"></a></span>
-<span id="cb15-9"><a href="#cb15-9"></a><span class="kw">var</span> five <span class="op">=</span> ignored <span class="kw">=&gt;</span> add(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
-<span id="cb15-10"><a href="#cb15-10"></a><span class="kw">var</span> seven <span class="op">=</span> ignored <span class="kw">=&gt;</span> add(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> panic)<span class="op">;</span></span>
-<span id="cb15-11"><a href="#cb15-11"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Five: &quot;</span> <span class="op">+</span> five())<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="kw">function</span> <span class="fu">add</span>(x<span class="op">,</span> y) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>    <span class="cf">return</span> x() <span class="op">+</span> y()<span class="op">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a>}</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a><span class="kw">function</span> <span class="fu">panic</span>() {</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a>    <span class="cf">throw</span> <span class="st">&quot;Panic!&quot;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a>}</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true"></a><span class="kw">var</span> five <span class="op">=</span> ignored <span class="kw">=&gt;</span> add(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>)<span class="op">;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true"></a><span class="kw">var</span> seven <span class="op">=</span> ignored <span class="kw">=&gt;</span> add(ignored <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span><span class="op">,</span> panic)<span class="op">;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Five: &quot;</span> <span class="op">+</span> five())<span class="op">;</span></span></code></pre></div>
 <p>よし、今までの話をまとめてみます:</p>
 <ul>
 <li>Haskell の評価戦略はデフォルトで遅延評価です。</li>
@@ -480,28 +480,28 @@ Haskell は (もしかすると、評判のよろしくない？) 遅延 (lazy) 
 <p>ここまでは全て順調ですね。先に進む前に、これらの概念を確実に理解しておいてください。前の章を読み直すのもいいかもしれません。</p>
 <h2 id="平均">平均</h2>
 <p>まだ言及してないことがありました。「評価する」とか「値であることを強要する」というのは具体的にどういうことなのでしょう? この問題を考えるために、average 関数を実装してみましょう。<code>RunningTotal</code> というデータ型を使って、平均値の合計と要素数を取得することにします。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
-<span id="cb16-4"><a href="#cb16-4"></a>  }</span>
-<span id="cb16-5"><a href="#cb16-5"></a></span>
-<span id="cb16-6"><a href="#cb16-6"></a><span class="ot">printAverage ::</span> <span class="dt">RunningTotal</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
-<span id="cb16-7"><a href="#cb16-7"></a>printAverage (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count)</span>
-<span id="cb16-8"><a href="#cb16-8"></a>  <span class="op">|</span> count <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Need at least one value!&quot;</span></span>
-<span id="cb16-9"><a href="#cb16-9"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">print</span> (<span class="fu">fromIntegral</span> <span class="fu">sum</span> <span class="op">/</span> <span class="fu">fromIntegral</span><span class="ot"> count ::</span> <span class="dt">Double</span>)</span>
-<span id="cb16-10"><a href="#cb16-10"></a></span>
-<span id="cb16-11"><a href="#cb16-11"></a><span class="co">-- | A fold would be nicer... we'll see that later</span></span>
-<span id="cb16-12"><a href="#cb16-12"></a><span class="ot">printListAverage ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
-<span id="cb16-13"><a href="#cb16-13"></a>printListAverage <span class="ot">=</span></span>
-<span id="cb16-14"><a href="#cb16-14"></a>  go (<span class="dt">RunningTotal</span> <span class="dv">0</span> <span class="dv">0</span>)</span>
-<span id="cb16-15"><a href="#cb16-15"></a>  <span class="kw">where</span></span>
-<span id="cb16-16"><a href="#cb16-16"></a>    go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb16-17"><a href="#cb16-17"></a>    go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb16-18"><a href="#cb16-18"></a>      <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb16-19"><a href="#cb16-19"></a>       <span class="kw">in</span> go rt xs</span>
-<span id="cb16-20"><a href="#cb16-20"></a></span>
-<span id="cb16-21"><a href="#cb16-21"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb16-22"><a href="#cb16-22"></a>main <span class="ot">=</span> printListAverage [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a>  }</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a><span class="ot">printAverage ::</span> <span class="dt">RunningTotal</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true"></a>printAverage (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true"></a>  <span class="op">|</span> count <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Need at least one value!&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">print</span> (<span class="fu">fromIntegral</span> <span class="fu">sum</span> <span class="op">/</span> <span class="fu">fromIntegral</span><span class="ot"> count ::</span> <span class="dt">Double</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true"></a><span class="co">-- | A fold would be nicer... we'll see that later</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a><span class="ot">printListAverage ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a>printListAverage <span class="ot">=</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true"></a>  go (<span class="dt">RunningTotal</span> <span class="dv">0</span> <span class="dv">0</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true"></a>    go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true"></a>    go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true"></a>      <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true"></a>       <span class="kw">in</span> go rt xs</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true"></a>main <span class="ot">=</span> printListAverage [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p>実行時に統計を取って、メモリ使用量を見てみます:</p>
 <pre class="shell"><code>$ stack ghc average.hs &amp;&amp; ./average +RTS -s</code></pre>
 <p>なんということでしょう。メモリ使用量がぶっ飛んだことになっています!</p>
@@ -516,36 +516,36 @@ Linking average ...
 <p>トータルで 258MB も確保していて、一度に 95MB も確保しています。ただの局所関数の再帰にしては、ばかみたいに多いですね。</p>
 <h3 id="バン-1">バン!</h3>
 <p>あなたは今、「<code>seq</code> とかバンパターンのようなものを使うべきじゃないの?」と考えていると思います。確かに、それも良いでしょう。実際、1つバンパターンを加えて <code>go</code> の再帰に入る前に新しい <code>rt</code> を強制評価すれば、この問題は簡単に解決できそうです。例えば、<code>{-# LANGUAGE BangPatterns #-}</code> をファイルの先頭に追加して、<code>go</code> をこんな風に定義したらどうでしょう:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a>go <span class="op">!</span>rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb19-2"><a href="#cb19-2"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb19-4"><a href="#cb19-4"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a>go <span class="op">!</span>rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <p>しかし、こうしてもメモリ使用量は<em>全く</em>変わりません。なぜこんなことになってしまうのでしょう。これを理解するためには、weak head normal form (弱頭部正規形) というものを理解する必要があります。</p>
 <h3 id="弱頭部正規形">弱頭部正規形</h3>
 <p>まず最初に、このトピックに関して <a href="https://stackoverflow.com/questions/6872898/haskell-what-is-weak-head-normal-form/6889335#6889335">Stack Overflow に素晴らしい回答があることを</a>示しておきます。</p>
 <p>私たちは値であることを強制し、式を評価することについて話し合ってきましたが、それが実際に何を意味しているのかは全く明らかにしませんでした。まず簡単な例から始めましょう。このプログラムの出力はどうなるでしょうか?</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a>main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
 <p>文字列を表示しようとしたときに <code>undefined</code> が原因でエラーになるだろうと予測した方は正解です。このエラーは <code>putStrLn</code> が引数に対して正格であり、また <code>"Hello World"</code> を評価する前に <code>undefined</code> を評価しようとするために起こります。では、少し違う例を試してみましょう:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a>main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="dt">Just</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="dt">Just</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
 <p>「評価する」という言葉を、「サンクがない状態の何かになるまで完全に評価する」という意味で取っている人は、今回も <code>undefined</code> についてエラーを吐く、と答えるでしょう。しかし実際は、例外を吐かずにうまく “Hello World” と表示してくれます。一体どうなっているんでしょう?</p>
 <p>実は、<code>seq</code> で強制評価について話しているときは、<em>弱頭部正規形 (weak head normal form) (WHNF)</em> へ評価するという意味で話しています。ほとんどのデータ型において、これは 1つコンストラクタの層を引き剥がす、という意味になります。<code>Just undefined</code> の場合、<code>Just</code> というデータコンストラクタを引き剥がすだけで、その中の <code>undefined</code> に触れることはありません。(すぐ下でこれに対処する別々の方法をお見せします。)</p>
 <p>標準データコンストラクタ*を扱う場合、<code>seq</code> を利用するということは一番外側のコンストラクタでパターンマッチさせるようなものです。単相化させたいのなら、例えば、<code>seqMaybe :: Maybe a -&gt; b -&gt; b</code> という関数を実装して、上の <code>main</code> で使うことができます。やってみてください。答えは下にあります。</p>
 <ul>
 <li>説明はお待ちください。後で <code>newtype</code> の話を読めば、この変なネーミングの意味を理解できるでしょう。</li>
 </ul>
-<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="ot">seqMaybe ::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span>
-<span id="cb22-2"><a href="#cb22-2"></a>seqMaybe <span class="dt">Nothing</span> b <span class="ot">=</span> b</span>
-<span id="cb22-3"><a href="#cb22-3"></a>seqMaybe (<span class="dt">Just</span> _) b <span class="ot">=</span> b</span>
-<span id="cb22-4"><a href="#cb22-4"></a></span>
-<span id="cb22-5"><a href="#cb22-5"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb22-6"><a href="#cb22-6"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb22-7"><a href="#cb22-7"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="dt">Just</span> <span class="fu">undefined</span> <span class="ot">`seqMaybe`</span> <span class="st">&quot;Hello World&quot;</span></span>
-<span id="cb22-8"><a href="#cb22-8"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">undefined</span> <span class="ot">`seqMaybe`</span> <span class="st">&quot;Goodbye!&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="ot">seqMaybe ::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a>seqMaybe <span class="dt">Nothing</span> b <span class="ot">=</span> b</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>seqMaybe (<span class="dt">Just</span> _) b <span class="ot">=</span> b</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="dt">Just</span> <span class="fu">undefined</span> <span class="ot">`seqMaybe`</span> <span class="st">&quot;Hello World&quot;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">undefined</span> <span class="ot">`seqMaybe`</span> <span class="st">&quot;Goodbye!&quot;</span></span></code></pre></div>
 <p>では、続けましょう。このプログラムは何を表示すると思いますか?</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb23-2"><a href="#cb23-2"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">error</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello&quot;</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> (\x <span class="ot">-&gt;</span> <span class="fu">undefined</span>) <span class="ot">`seq`</span> <span class="st">&quot;World&quot;</span></span>
-<span id="cb23-4"><a href="#cb23-4"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">error</span> <span class="st">&quot;foo&quot;</span> <span class="ot">`seq`</span> <span class="st">&quot;Goodbye!&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">error</span> <span class="ot">`seq`</span> <span class="st">&quot;Hello&quot;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> (\x <span class="ot">-&gt;</span> <span class="fu">undefined</span>) <span class="ot">`seq`</span> <span class="st">&quot;World&quot;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">error</span> <span class="st">&quot;foo&quot;</span> <span class="ot">`seq`</span> <span class="st">&quot;Goodbye!&quot;</span></span></code></pre></div>
 <p><code>error `seq` ...</code> が問題になると思うかもしれません。最終的に <code>error</code> が例外を吐くんじゃないの? ってね。しかし、<code>error</code> は関数です。<code>error</code> が <code>String</code> の値を引数に与えられるまで、例外が吐かれることも、ボトムの値が返されることもないのです。よって、これを評価してもエラーを生成することはありません。ルールとしては、引数よりも少ない値に適用された関数は、自動的に弱頭部正規形になります。</p>
 <p>同じようなロジックは、<code>(\x -&gt; undefined)</code> にも適用できます。これはラムダ式ですが、型としては全ての引数に値が適用されていない関数です。したがって、このラムダ式が評価されても例外を吐くことはありません。言い換えると、この式はすでに弱頭部正規形になっています。</p>
 <p>しかし、<code>error "foo"</code> は引数が完全に適用された関数です。これはもう関数ではなく、値です。そして弱頭部正規形に評価しようとするときに、例外が爆発して顔面に飛んできます。</p>
@@ -558,72 +558,72 @@ Linking average ...
 </ul>
 <h3 id="average-関数を修正する">average 関数を修正する</h3>
 <p>弱頭部正規形を理解したところで、例に戻って最初のバンパターンが、なぜ何もしてくれなかったのか見てみましょう:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a>go <span class="op">!</span>rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb24-2"><a href="#cb24-2"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb24-4"><a href="#cb24-4"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a>go <span class="op">!</span>rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <p>弱頭部正規形では、強制評価はコンストラクタを剥がすことと同じです。これはさっきの節でもうやりましたね! 問題は、<code>RunningTotal</code> データコンストラクタの中に含まれる値が評価されていないこと、それが原因でサンクが蓄積されていることです。これを解決する方法は2つあります。</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb25-2"><a href="#cb25-2"></a>go (<span class="dt">RunningTotal</span> <span class="op">!</span><span class="fu">sum</span> <span class="op">!</span>count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb25-3"><a href="#cb25-3"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb25-4"><a href="#cb25-4"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="op">!</span><span class="fu">sum</span> <span class="op">!</span>count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <p>バンを <code>RunningTotal</code> に置くのはやめて、コンストラクタの<em>中</em>の値に置いて、ループの度に強制的に評価させるようにしています。巨大なサンクの連鎖は無くなり、最大メモリ常駐量は 44kb にまで減少しています。(全体としては、まだ約 192mb 使用しています。これをどうにかするためには、今回の例とは異なる別の最適化を行う必要があります。なので、この値はこの例では全て無視することにします。) もう1つのアプローチは:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb26-2"><a href="#cb26-2"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb26-3"><a href="#cb26-3"></a>  <span class="kw">let</span> <span class="op">!</span>sum' <span class="ot">=</span> <span class="fu">sum</span> <span class="op">+</span> x</span>
-<span id="cb26-4"><a href="#cb26-4"></a>      <span class="op">!</span>count' <span class="ot">=</span> count <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb26-5"><a href="#cb26-5"></a>      rt <span class="ot">=</span> <span class="dt">RunningTotal</span> sum' count'</span>
-<span id="cb26-6"><a href="#cb26-6"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true"></a>  <span class="kw">let</span> <span class="op">!</span>sum' <span class="ot">=</span> <span class="fu">sum</span> <span class="op">+</span> x</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true"></a>      <span class="op">!</span>count' <span class="ot">=</span> count <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true"></a>      rt <span class="ot">=</span> <span class="dt">RunningTotal</span> sum' count'</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <p>このアプローチでは新しい <code>RunningTotal</code> の値を作る<em>前</em>に、新しい sum と count を強制評価します。私はこのバージョンの方がちょっと好きです。というのも、次の繰り返しで値を分解した時ではなく、正しい場所、つまり値を構築するときに評価を強制しているからです。</p>
 <p>この話のポイント: コンテナではなく、実際に評価する必要があるものを評価していることを確認すべし</p>
 <h4 id="翻訳者追記">翻訳者追記</h4>
 <p>実行結果を比較してみました。</p>
 <h5 id="section">1</h5>
-<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb27-2"><a href="#cb27-2"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb27-3"><a href="#cb27-3"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb27-4"><a href="#cb27-4"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <h5 id="section-1">2</h5>
-<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1"></a>go <span class="op">!</span>rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb28-2"><a href="#cb28-2"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb28-3"><a href="#cb28-3"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb28-4"><a href="#cb28-4"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a>go <span class="op">!</span>rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <h5 id="section-2">3</h5>
-<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb29-2"><a href="#cb29-2"></a>go (<span class="dt">RunningTotal</span> <span class="op">!</span><span class="fu">sum</span> <span class="op">!</span>count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb29-3"><a href="#cb29-3"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb29-4"><a href="#cb29-4"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="op">!</span><span class="fu">sum</span> <span class="op">!</span>count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <h5 id="section-3">4</h5>
-<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb30-2"><a href="#cb30-2"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb30-3"><a href="#cb30-3"></a>  <span class="kw">let</span> <span class="op">!</span>sum' <span class="ot">=</span> <span class="fu">sum</span> <span class="op">+</span> x</span>
-<span id="cb30-4"><a href="#cb30-4"></a>      <span class="op">!</span>count' <span class="ot">=</span> count <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb30-5"><a href="#cb30-5"></a>      rt <span class="ot">=</span> <span class="dt">RunningTotal</span> sum' count'</span>
-<span id="cb30-6"><a href="#cb30-6"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true"></a>  <span class="kw">let</span> <span class="op">!</span>sum' <span class="ot">=</span> <span class="fu">sum</span> <span class="op">+</span> x</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true"></a>      <span class="op">!</span>count' <span class="ot">=</span> count <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true"></a>      rt <span class="ot">=</span> <span class="dt">RunningTotal</span> sum' count'</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <h5 id="原文にはありませんがrunningtotal-の定義で正格性注釈をつけています">5 原文にはありませんが、<code>RunningTotal</code> の定義で正格性注釈をつけています。</h5>
-<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
-<span id="cb31-2"><a href="#cb31-2"></a>  {<span class="ot"> sum ::</span> <span class="op">!</span><span class="dt">Int</span></span>
-<span id="cb31-3"><a href="#cb31-3"></a>  ,<span class="ot"> count ::</span> <span class="op">!</span><span class="dt">Int</span></span>
-<span id="cb31-4"><a href="#cb31-4"></a>  }</span>
-<span id="cb31-5"><a href="#cb31-5"></a></span>
-<span id="cb31-6"><a href="#cb31-6"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb31-7"><a href="#cb31-7"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb31-8"><a href="#cb31-8"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb31-9"><a href="#cb31-9"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true"></a>  {<span class="ot"> sum ::</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true"></a>  ,<span class="ot"> count ::</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true"></a>  }</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <h5 id="これも原文にはありませんがstrictdata-拡張を使っています">6 これも原文にはありませんが、<code>StrictData</code> 拡張を使っています。</h5>
-<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb32-1"><a href="#cb32-1"></a><span class="ot">{-# LANGUAGE StrictData #-}</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a></span>
-<span id="cb32-3"><a href="#cb32-3"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb32-4"><a href="#cb32-4"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb32-5"><a href="#cb32-5"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb32-6"><a href="#cb32-6"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE StrictData #-}</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true"></a>go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true"></a>go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true"></a>  <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true"></a>   <span class="kw">in</span> go rt xs</span></code></pre></div>
 <h5 id="deepseq-のセクションのものです">7 deepseq のセクションのものです</h5>
-<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
-<span id="cb33-3"><a href="#cb33-3"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
-<span id="cb33-4"><a href="#cb33-4"></a>  }</span>
-<span id="cb33-5"><a href="#cb33-5"></a><span class="kw">instance</span> <span class="dt">NFData</span> <span class="dt">RunningTotal</span> <span class="kw">where</span></span>
-<span id="cb33-6"><a href="#cb33-6"></a>  rnf (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) <span class="ot">=</span> <span class="fu">sum</span> <span class="ot">`deepseq`</span> count <span class="ot">`deepseq`</span> ()</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true"></a>  }</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">NFData</span> <span class="dt">RunningTotal</span> <span class="kw">where</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true"></a>  rnf (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) <span class="ot">=</span> <span class="fu">sum</span> <span class="ot">`deepseq`</span> count <span class="ot">`deepseq`</span> ()</span></code></pre></div>
 <table>
 <colgroup>
 <col style="width: 12%" />
@@ -702,75 +702,75 @@ Linking average ...
 </table>
 <h3 id="deepseq">deepseq</h3>
 <p><code>seq</code> が弱頭部正規形にしか評価してくれないのはイライラしますよね。<em>正規形</em> (NF) にまで完全に評価したいという状況はいくらでもあります。つまり、値の中の全てのサンクを評価したいということですね。言語レベルでこれを制御する方法はありませんが、半分標準の (GHC についてくるということ) ライブラリに <code>deepseq</code> 関数があります。<code>deepseq</code> は <code>NFData</code> 型クラスの <code>rnf</code> (<strong>r</strong>educe a value to <strong>n</strong>ormal <strong>f</strong>orm) メソッドを使って定義されています。<code>rnf</code> メソッドは値を正規形に簡約する方法を提供します。</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
-<span id="cb34-2"><a href="#cb34-2"></a></span>
-<span id="cb34-3"><a href="#cb34-3"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
-<span id="cb34-4"><a href="#cb34-4"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
-<span id="cb34-5"><a href="#cb34-5"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
-<span id="cb34-6"><a href="#cb34-6"></a>  }</span>
-<span id="cb34-7"><a href="#cb34-7"></a><span class="kw">instance</span> <span class="dt">NFData</span> <span class="dt">RunningTotal</span> <span class="kw">where</span></span>
-<span id="cb34-8"><a href="#cb34-8"></a>  rnf (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) <span class="ot">=</span> <span class="fu">sum</span> <span class="ot">`deepseq`</span> count <span class="ot">`deepseq`</span> ()</span>
-<span id="cb34-9"><a href="#cb34-9"></a></span>
-<span id="cb34-10"><a href="#cb34-10"></a><span class="ot">printAverage ::</span> <span class="dt">RunningTotal</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
-<span id="cb34-11"><a href="#cb34-11"></a>printAverage (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count)</span>
-<span id="cb34-12"><a href="#cb34-12"></a>  <span class="op">|</span> count <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Need at least one value!&quot;</span></span>
-<span id="cb34-13"><a href="#cb34-13"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">print</span> (<span class="fu">fromIntegral</span> <span class="fu">sum</span> <span class="op">/</span> <span class="fu">fromIntegral</span><span class="ot"> count ::</span> <span class="dt">Double</span>)</span>
-<span id="cb34-14"><a href="#cb34-14"></a></span>
-<span id="cb34-15"><a href="#cb34-15"></a><span class="co">-- | A fold would be nicer... we'll see that later</span></span>
-<span id="cb34-16"><a href="#cb34-16"></a><span class="ot">printListAverage ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
-<span id="cb34-17"><a href="#cb34-17"></a>printListAverage <span class="ot">=</span></span>
-<span id="cb34-18"><a href="#cb34-18"></a>  go (<span class="dt">RunningTotal</span> <span class="dv">0</span> <span class="dv">0</span>)</span>
-<span id="cb34-19"><a href="#cb34-19"></a>  <span class="kw">where</span></span>
-<span id="cb34-20"><a href="#cb34-20"></a>    go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb34-21"><a href="#cb34-21"></a>    go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb34-22"><a href="#cb34-22"></a>      <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb34-23"><a href="#cb34-23"></a>       <span class="kw">in</span> rt <span class="ot">`deepseq`</span> go rt xs</span>
-<span id="cb34-24"><a href="#cb34-24"></a></span>
-<span id="cb34-25"><a href="#cb34-25"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb34-26"><a href="#cb34-26"></a>main <span class="ot">=</span> printListAverage [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true"></a>  }</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">NFData</span> <span class="dt">RunningTotal</span> <span class="kw">where</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true"></a>  rnf (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) <span class="ot">=</span> <span class="fu">sum</span> <span class="ot">`deepseq`</span> count <span class="ot">`deepseq`</span> ()</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true"></a><span class="ot">printAverage ::</span> <span class="dt">RunningTotal</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true"></a>printAverage (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true"></a>  <span class="op">|</span> count <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Need at least one value!&quot;</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">print</span> (<span class="fu">fromIntegral</span> <span class="fu">sum</span> <span class="op">/</span> <span class="fu">fromIntegral</span><span class="ot"> count ::</span> <span class="dt">Double</span>)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true"></a></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true"></a><span class="co">-- | A fold would be nicer... we'll see that later</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true"></a><span class="ot">printListAverage ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true"></a>printListAverage <span class="ot">=</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true"></a>  go (<span class="dt">RunningTotal</span> <span class="dv">0</span> <span class="dv">0</span>)</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true"></a>    go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true"></a>    go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true"></a>      <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true"></a>       <span class="kw">in</span> rt <span class="ot">`deepseq`</span> go rt xs</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true"></a></span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true"></a>main <span class="ot">=</span> printListAverage [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p>もう一度言いますが、このプログラムの最大メモリ常駐量は 44kb です。ここでは <code>rnf</code> を含む　<code>NFData</code> 型クラスのインスタンスを定義します。単純にデータコンストラクタ中の全ての値を <code>deepseq</code> するという方法は、<code>NFData</code> インスタンスを定義するときに良く用いられます。これは常套手段なので、実は <code>Generic</code> 導出を使うだけで GHC は自動的にインスタンスを定義します。</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1"></a><span class="ot">{-# LANGUAGE DeriveGeneric #-}</span></span>
-<span id="cb35-2"><a href="#cb35-2"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span> (<span class="dt">Generic</span>)</span>
-<span id="cb35-3"><a href="#cb35-3"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
-<span id="cb35-4"><a href="#cb35-4"></a></span>
-<span id="cb35-5"><a href="#cb35-5"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
-<span id="cb35-6"><a href="#cb35-6"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
-<span id="cb35-7"><a href="#cb35-7"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
-<span id="cb35-8"><a href="#cb35-8"></a>  }</span>
-<span id="cb35-9"><a href="#cb35-9"></a>  <span class="kw">deriving</span> <span class="dt">Generic</span></span>
-<span id="cb35-10"><a href="#cb35-10"></a><span class="kw">instance</span> <span class="dt">NFData</span> <span class="dt">RunningTotal</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE DeriveGeneric #-}</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span> (<span class="dt">Generic</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true"></a>  {<span class="ot"> sum ::</span> <span class="dt">Int</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true"></a>  ,<span class="ot"> count ::</span> <span class="dt">Int</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true"></a>  }</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true"></a>  <span class="kw">deriving</span> <span class="dt">Generic</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">NFData</span> <span class="dt">RunningTotal</span></span></code></pre></div>
 <p><code>NFData</code> 型クラスのインスタンスにすることの一番の魅力は、多くのデータ型に対する抽象化の能力です。(ここでやっているように) スペースリークを避けるだけではなく、値の中のサンクに例外が誤って含まれてしまうというようなことも防げます。例として、<a href="https://haskell-lang.org/library/safe-exceptions">safe-exceptions library</a> の <a href="https://www.stackage.org/haddock/lts-9.3/safe-exceptions-0.1.6.0/Control-Exception-Safe.html#v:tryAnyDeep">tryAnyDeep</a> 関数を見てみてください。</p>
 <p><strong>演習</strong> <code>rnf</code> と <code>seq</code> を使って <code>deepseq</code> を自分で定義してみてください。</p>
 <h4 id="翻訳者追記-1">翻訳者追記</h4>
 <p>演習の解答例</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1"></a><span class="ot">deepseq ::</span> <span class="dt">NFData</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span>
-<span id="cb36-2"><a href="#cb36-2"></a>deepseq x y <span class="ot">=</span> rnf x <span class="ot">`seq`</span> y</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a><span class="ot">deepseq ::</span> <span class="dt">NFData</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true"></a>deepseq x y <span class="ot">=</span> rnf x <span class="ot">`seq`</span> y</span></code></pre></div>
 <h3 id="正格なデータ">正格なデータ</h3>
 <p>これらのアプローチはうまくいきましたが、最適解ではありません。問題は <code>RunningTotal</code> の定義に存在します。ここで私たちが考えているのは、<code>RunningTotal</code> 型の値があるとき、実は2つの <code>Int</code> が存在しているということです。しかし遅延性のせいで <code>RunningTotal</code> の値には、2つの <code>Int</code>、<code>Int</code> に評価することができるサンク、もしくは例外を投げるサンクを持つことができる、という値を含むことができてしまいます。</p>
 <p>そのため、<code>RunningTotal</code> の値に遅延性が入りこむ余地を無くしたいものですね。これは、データ型の定義に<em>正格性注釈</em> (<em>strictness annotations</em>) をつけることで実現できます。</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
-<span id="cb37-2"><a href="#cb37-2"></a>  {<span class="ot"> sum ::</span> <span class="op">!</span><span class="dt">Int</span></span>
-<span id="cb37-3"><a href="#cb37-3"></a>  ,<span class="ot"> count ::</span> <span class="op">!</span><span class="dt">Int</span></span>
-<span id="cb37-4"><a href="#cb37-4"></a>  }</span>
-<span id="cb37-5"><a href="#cb37-5"></a>  <span class="kw">deriving</span> <span class="dt">Generic</span></span>
-<span id="cb37-6"><a href="#cb37-6"></a></span>
-<span id="cb37-7"><a href="#cb37-7"></a><span class="ot">printAverage ::</span> <span class="dt">RunningTotal</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
-<span id="cb37-8"><a href="#cb37-8"></a>printAverage (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count)</span>
-<span id="cb37-9"><a href="#cb37-9"></a>  <span class="op">|</span> count <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Need at least one value!&quot;</span></span>
-<span id="cb37-10"><a href="#cb37-10"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">print</span> (<span class="fu">fromIntegral</span> <span class="fu">sum</span> <span class="op">/</span> <span class="fu">fromIntegral</span><span class="ot"> count ::</span> <span class="dt">Double</span>)</span>
-<span id="cb37-11"><a href="#cb37-11"></a></span>
-<span id="cb37-12"><a href="#cb37-12"></a><span class="co">-- | A fold would be nicer... we'll see that later</span></span>
-<span id="cb37-13"><a href="#cb37-13"></a><span class="ot">printListAverage ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
-<span id="cb37-14"><a href="#cb37-14"></a>printListAverage <span class="ot">=</span></span>
-<span id="cb37-15"><a href="#cb37-15"></a>  go (<span class="dt">RunningTotal</span> <span class="dv">0</span> <span class="dv">0</span>)</span>
-<span id="cb37-16"><a href="#cb37-16"></a>  <span class="kw">where</span></span>
-<span id="cb37-17"><a href="#cb37-17"></a>    go rt [] <span class="ot">=</span> printAverage rt</span>
-<span id="cb37-18"><a href="#cb37-18"></a>    go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
-<span id="cb37-19"><a href="#cb37-19"></a>      <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb37-20"><a href="#cb37-20"></a>       <span class="kw">in</span> go rt xs</span>
-<span id="cb37-21"><a href="#cb37-21"></a></span>
-<span id="cb37-22"><a href="#cb37-22"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb37-23"><a href="#cb37-23"></a>main <span class="ot">=</span> printListAverage [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">RunningTotal</span> <span class="ot">=</span> <span class="dt">RunningTotal</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true"></a>  {<span class="ot"> sum ::</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true"></a>  ,<span class="ot"> count ::</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true"></a>  }</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true"></a>  <span class="kw">deriving</span> <span class="dt">Generic</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true"></a><span class="ot">printAverage ::</span> <span class="dt">RunningTotal</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true"></a>printAverage (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true"></a>  <span class="op">|</span> count <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Need at least one value!&quot;</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="fu">print</span> (<span class="fu">fromIntegral</span> <span class="fu">sum</span> <span class="op">/</span> <span class="fu">fromIntegral</span><span class="ot"> count ::</span> <span class="dt">Double</span>)</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true"></a></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true"></a><span class="co">-- | A fold would be nicer... we'll see that later</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true"></a><span class="ot">printListAverage ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true"></a>printListAverage <span class="ot">=</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true"></a>  go (<span class="dt">RunningTotal</span> <span class="dv">0</span> <span class="dv">0</span>)</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true"></a>    go rt [] <span class="ot">=</span> printAverage rt</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true"></a>    go (<span class="dt">RunningTotal</span> <span class="fu">sum</span> count) (x<span class="op">:</span>xs) <span class="ot">=</span></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true"></a>      <span class="kw">let</span> rt <span class="ot">=</span> <span class="dt">RunningTotal</span> (<span class="fu">sum</span> <span class="op">+</span> x) (count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true"></a>       <span class="kw">in</span> go rt xs</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true"></a></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true"></a>main <span class="ot">=</span> printListAverage [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p><code>RunningTotal</code> の定義で <code>Int</code> の前にバンを置いただけです。他に正格性や評価を指定するようなものはありません。しかし、これらのフィールドに正格性注釈を置くことで、簡単ですが重要なことを言うことができます:</p>
 <p><strong><code>RunningTotal</code> 型の値を評価するときは、必ずその中に含まれる2つの <code>Int</code> も評価しなければならない</strong></p>
 <p>さきほど説明したように、2つ目の <code>go</code> は コンストラクタを剥ぎ取ることで、<code>RunningTotal</code> の値が強制評価されます。前回まではバンパターンを使う必要があった <code>sum</code> と <code>count</code> の強制評価が、ここでは自動化されています。</p>
@@ -783,9 +783,9 @@ Linking average ...
 </ul>
 <h3 id="newtype-の興味深いケース">newtype の興味深いケース</h3>
 <p>よく似たデータ型を3つ定義してみましょう。</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1"></a><span class="kw">data</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="dt">Foo</span> <span class="dt">Int</span></span>
-<span id="cb38-2"><a href="#cb38-2"></a><span class="kw">data</span> <span class="dt">Bar</span> <span class="ot">=</span> <span class="dt">Bar</span> <span class="op">!</span><span class="dt">Int</span></span>
-<span id="cb38-3"><a href="#cb38-3"></a><span class="kw">newtype</span> <span class="dt">Baz</span> <span class="ot">=</span> <span class="dt">Baz</span> <span class="dt">Int</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Foo</span> <span class="ot">=</span> <span class="dt">Foo</span> <span class="dt">Int</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Bar</span> <span class="ot">=</span> <span class="dt">Bar</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">Baz</span> <span class="ot">=</span> <span class="dt">Baz</span> <span class="dt">Int</span></span></code></pre></div>
 <p>ゲームをしましょう。以下のコードを <code>main</code> 関数に置いたときの出力を推測してみてください。以下の説明を読む前に、それぞれのケースを頭の中で考えてくださいね。</p>
 <ol type="1">
 <li><code>case undefined of { Foo _ -&gt; putStrLn "Still alive!" }</code></li>
@@ -805,57 +805,57 @@ Linking average ...
 <p>演習の解答例: エラーを吐く。<code>seq</code> によって <code>Baz undefined</code> 、つまり <code>undefined</code> が評価されるため。</p>
 <h3 id="便利な演算子と関数">便利な演算子と関数</h3>
 <p>すでにお気づきかもしれませんが、<code>seq</code> と <code>deepseq</code> をあらゆるところで使うのは不都合なことがあります。バンパターンも助けにはなりますが、強制評価を行う方法は他にもあります。おそらく、最も良くに使われているのは <code>$!</code> 演算子でしょう。例えば、以下のように利用します。</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb39-1"><a href="#cb39-1"></a><span class="ot">mysum ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb39-2"><a href="#cb39-2"></a>mysum list0 <span class="ot">=</span></span>
-<span id="cb39-3"><a href="#cb39-3"></a>  go list0 <span class="dv">0</span></span>
-<span id="cb39-4"><a href="#cb39-4"></a>  <span class="kw">where</span></span>
-<span id="cb39-5"><a href="#cb39-5"></a>    go [] total <span class="ot">=</span> total</span>
-<span id="cb39-6"><a href="#cb39-6"></a>    go (x<span class="op">:</span>xs) total <span class="ot">=</span> go xs <span class="op">$!</span> total <span class="op">+</span> x</span>
-<span id="cb39-7"><a href="#cb39-7"></a></span>
-<span id="cb39-8"><a href="#cb39-8"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> mysum [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a><span class="ot">mysum ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a>mysum list0 <span class="ot">=</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true"></a>  go list0 <span class="dv">0</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true"></a>    go [] total <span class="ot">=</span> total</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true"></a>    go (x<span class="op">:</span>xs) total <span class="ot">=</span> go xs <span class="op">$!</span> total <span class="op">+</span> x</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> mysum [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p>上の例では、<code>go</code> 関数の再帰に入る前に <code>total + x</code> を強制評価しています。結果、スペースリークを防ぐことができます。(演習: 同じことを、バンパターンと <code>seq</code> 関数を使ってやってみてください。)</p>
 <p><code>$!!</code> 演算子も同様ですが、<code>seq</code> ではなく <code>deepseq</code> を利用しています。そのため、この演算子を使うと正規形に評価されます。</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb40-1"><a href="#cb40-1"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
-<span id="cb40-2"><a href="#cb40-2"></a></span>
-<span id="cb40-3"><a href="#cb40-3"></a><span class="ot">average ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span></span>
-<span id="cb40-4"><a href="#cb40-4"></a>average list0 <span class="ot">=</span></span>
-<span id="cb40-5"><a href="#cb40-5"></a>  go list0 (<span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb40-6"><a href="#cb40-6"></a>  <span class="kw">where</span></span>
-<span id="cb40-7"><a href="#cb40-7"></a>    go [] (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
-<span id="cb40-8"><a href="#cb40-8"></a>    go (x<span class="op">:</span>xs) (total, count) <span class="ot">=</span> go xs <span class="op">$!!</span> (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb40-9"><a href="#cb40-9"></a></span>
-<span id="cb40-10"><a href="#cb40-10"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> average [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true"></a><span class="ot">average ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true"></a>average list0 <span class="ot">=</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true"></a>  go list0 (<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true"></a>    go [] (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true"></a>    go (x<span class="op">:</span>xs) (total, count) <span class="ot">=</span> go xs <span class="op">$!!</span> (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true"></a></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> average [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p>他にも、いい感じの補助関数に <code>force</code> というものがあります。これは、対象の式が弱頭部正規形に評価されるとき、実際には正規形に評価します。例えば、上記の <code>go</code> 関数はこのように書き換えることができます。</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb41-1"><a href="#cb41-1"></a>go [] (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
-<span id="cb41-2"><a href="#cb41-2"></a>go (x<span class="op">:</span>xs) (total, count) <span class="ot">=</span> go xs <span class="op">$!</span> force (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true"></a>go [] (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true"></a>go (x<span class="op">:</span>xs) (total, count) <span class="ot">=</span> go xs <span class="op">$!</span> force (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><strong>演習</strong> これらの便利な関数と演算子を、<code>seq</code> と <code>deepseq</code> を使って自分で定義してみましょう。</p>
 <h4 id="翻訳者追記-3">翻訳者追記</h4>
 <p>演習の解答例</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb42-1"><a href="#cb42-1"></a><span class="ot">force ::</span> (<span class="dt">NFData</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</span>
-<span id="cb42-2"><a href="#cb42-2"></a>force x <span class="ot">=</span> x <span class="ot">`deepseq`</span> x</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true"></a><span class="ot">force ::</span> (<span class="dt">NFData</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true"></a>force x <span class="ot">=</span> x <span class="ot">`deepseq`</span> x</span></code></pre></div>
 <h2 id="データ構造">データ構造</h2>
 <p>はい、以上が一番複雑な部分でした。もしもそれら全てを理解していたら、残りは自然に理解できて、より深く理解するための用語を少し導入するだけになります。</p>
 <p>このプログラムの出力はどうなるでしょうか:</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb43-1"><a href="#cb43-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
-<span id="cb43-2"><a href="#cb43-2"></a></span>
-<span id="cb43-3"><a href="#cb43-3"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
 <p>えー、これまでに紹介した原理を使うと、一番外側のコンストラクタがあるので、<code>Cons undefined undefined</code> は既に弱頭部正規形になっています。なので、このプログラムは例外を吐くことなく “Hello World” と表示します。いいですね。さて、<code>Cons</code> は <code>:</code> データコンストラクタと等しいことを思い出してください。そうすると、上記の例はこうなります。</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb44-1"><a href="#cb44-1"></a>main <span class="ot">=</span> (<span class="fu">undefined</span><span class="op">:</span><span class="fu">undefined</span>) <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true"></a>main <span class="ot">=</span> (<span class="fu">undefined</span><span class="op">:</span><span class="fu">undefined</span>) <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
 <p>ということは、リストは遅延データ構造だということですね。最初の要素はボトムで、残りの要素もボトムです。しかし全体としてはボトムではありません。少し違う例を試してみましょう。</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb45-1"><a href="#cb45-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a <span class="op">!</span>(<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
-<span id="cb45-2"><a href="#cb45-2"></a></span>
-<span id="cb45-3"><a href="#cb45-3"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a <span class="op">!</span>(<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> <span class="fu">undefined</span> <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
 <p>これは顔面で爆発します! 後続のリストが正格だからです。しかし、以下の例は大丈夫です。</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb46-1"><a href="#cb46-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a <span class="op">!</span>(<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
-<span id="cb46-2"><a href="#cb46-2"></a></span>
-<span id="cb46-3"><a href="#cb46-3"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> (<span class="dt">Cons</span> <span class="fu">undefined</span> <span class="dt">Nil</span>) <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> a <span class="op">!</span>(<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> (<span class="dt">Cons</span> <span class="fu">undefined</span> <span class="dt">Nil</span>) <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
 <p>このリストの定義では、リストそのものについては詳細の全てを知る必要があります。しかし、値は undefined のままでもいいのです。これは<em>スパイン正格</em> (<em>spine strict</em>) と呼ばれています。対照的に、値に対して正格な<em>値正格</em> (<em>value strict}</em>) にすることも可能です。やってみましょう。</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb47-1"><a href="#cb47-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> <span class="op">!</span>a <span class="op">!</span>(<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
-<span id="cb47-2"><a href="#cb47-2"></a></span>
-<span id="cb47-3"><a href="#cb47-3"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> (<span class="dt">Cons</span> <span class="fu">undefined</span> <span class="dt">Nil</span>) <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> <span class="op">!</span>a <span class="op">!</span>(<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true"></a>main <span class="ot">=</span> <span class="dt">Cons</span> <span class="fu">undefined</span> (<span class="dt">Cons</span> <span class="fu">undefined</span> <span class="dt">Nil</span>) <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello World&quot;</span></span></code></pre></div>
 <p>これは期待通り、顔面で爆発するでしょう。</p>
 <p>お分かりかもしれませんが、もう1つリストの定義が残っています。値に対して正格で、残りはそうではないものです。</p>
-<div class="sourceCode" id="cb48"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb48-1"><a href="#cb48-1"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> <span class="op">!</span>a (<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">List</span> a <span class="ot">=</span> <span class="dt">Cons</span> <span class="op">!</span>a (<span class="dt">List</span> a) <span class="op">|</span> <span class="dt">Nil</span></span></code></pre></div>
 <p>実際のところ、Haskell このパターンのデータ構造を知りません。よって名前もありません。(もしもこんなデータ構造があって名前があるのなら、教えてください。どんな使われ方をしているのか気になります。)</p>
 <p>なので、通常のリストは遅延リストです。他にもいくつかデータ型を見てみましょう。</p>
 <h3 id="ベクター">ベクター</h3>
@@ -867,10 +867,10 @@ Linking average ...
 </ol>
 <p>最初は成功します。ベクターは完全なスパインとして定義されるからです。そのため、ボトムを含んでいるかどうかは無関係です。2番目は失敗します。後続のリストのスパインが undefined だからです。最後の例も (当然) 失敗します。リスト全体が undefined だからです。</p>
 <p>さて、<em>アンボックスベクター</em> (<em>unboxed vectors</em>) についても見てみましょう。推論の都合上、GHC を少し手助けしてやる必要があります。なので、プログラムの先頭に以下のような <code>fromList</code> が定義されているとしましょう。</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb49-1"><a href="#cb49-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Vector.Unboxed</span> <span class="kw">as</span> <span class="dt">V</span></span>
-<span id="cb49-2"><a href="#cb49-2"></a></span>
-<span id="cb49-3"><a href="#cb49-3"></a><span class="ot">fromList ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">V.Vector</span> <span class="dt">Int</span></span>
-<span id="cb49-4"><a href="#cb49-4"></a>fromList <span class="ot">=</span> V.fromList</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Vector.Unboxed</span> <span class="kw">as</span> <span class="dt">V</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true"></a><span class="ot">fromList ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">V.Vector</span> <span class="dt">Int</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true"></a>fromList <span class="ot">=</span> V.fromList</span></code></pre></div>
 <p>この場合はどうなるでしょうか？</p>
 <ol type="1">
 <li><code>main = fromList [undefined] `seq` putStrLn "Hello World"</code></li>
@@ -885,12 +885,12 @@ Linking average ...
 <p><strong>演習</strong> <code>Data.Sequence.Seq</code> データ型を調べて、遅延、スパイン正格、値正格のいずれかに分類してみましょう。</p>
 <h4 id="翻訳者追記-4">翻訳者追記</h4>
 <p>演習の解答例:</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb50-1"><a href="#cb50-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb50-2"><a href="#cb50-2"></a><span class="co">-- stack script --resolver lts-11.2 --package containers</span></span>
-<span id="cb50-3"><a href="#cb50-3"></a></span>
-<span id="cb50-4"><a href="#cb50-4"></a><span class="kw">import</span> <span class="dt">Data.Sequence</span> (fromList)</span>
-<span id="cb50-5"><a href="#cb50-5"></a></span>
-<span id="cb50-6"><a href="#cb50-6"></a>main <span class="ot">=</span> fromList [<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="fu">undefined</span>,<span class="dv">0</span>,<span class="dv">0</span>] <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Alive!&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true"></a><span class="co">-- stack script --resolver lts-11.2 --package containers</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Sequence</span> (fromList)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true"></a></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true"></a>main <span class="ot">=</span> fromList [<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="fu">undefined</span>,<span class="dv">0</span>,<span class="dv">0</span>] <span class="ot">`seq`</span> <span class="fu">putStrLn</span> <span class="st">&quot;Alive!&quot;</span></span></code></pre></div>
 <p>これを実行すると <code>Alive!</code> と表示されるのでスパイン正格。</p>
 <h2 id="関数の引数">関数の引数</h2>
 <p>関数の引数にボトムの値が適用されたとき、結果がボトムになれば、関数はボトムが与えられた引数に対して正格であると言います。上の例で見たように、<code>Int</code> に対して <code>+</code> を適用する場合、 <code>undefined + x</code> と <code>x + undefined</code> の結果は両方ともボトムとなるため、<code>+</code> はどちらの引数に対しても正格です。</p>
@@ -898,11 +898,11 @@ Linking average ...
 <p>リストの <code>:</code> データコンストラクタは、第1引数と第2引数に対して、どちらも非正格です。しかし、<code>data List a = Cons !a !(List a) | Nil</code> という定義では、<code>Cons</code> はどちらの引数に対しても正格になります。</p>
 <h2 id="fold">Fold</h2>
 <p>遅延性を扱う上でつまづきやすいポイントは、fold です。もっとも悪名高い例は <code>foldl</code> 関数でしょう。こいつは偽りの安心感をいざない、夢と希望をぶち壊してくれます。</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb51-1"><a href="#cb51-1"></a><span class="ot">mysum ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb51-2"><a href="#cb51-2"></a>mysum <span class="ot">=</span> <span class="fu">foldl</span> (<span class="op">+</span>) <span class="dv">0</span></span>
-<span id="cb51-3"><a href="#cb51-3"></a></span>
-<span id="cb51-4"><a href="#cb51-4"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb51-5"><a href="#cb51-5"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> mysum [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true"></a><span class="ot">mysum ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true"></a>mysum <span class="ot">=</span> <span class="fu">foldl</span> (<span class="op">+</span>) <span class="dv">0</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> mysum [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p>翻訳者追記 (上記プログラムの結果)</p>
 <pre class="plain"><code>     169,311,296 bytes allocated in the heap
      230,806,408 bytes copied during GC
@@ -910,29 +910,29 @@ Linking average ...
          903,624 bytes maximum slop
              106 MB total memory in use (0 MB lost due to fragmentation)</code></pre>
 <p>これは限りなく正解に近いですが、最大メモリ常駐量は 53mb にもなっています! 答えはチョンっとつけて正格な左畳み込み <code>foldl'</code> 関数を使うことです。</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb53-1"><a href="#cb53-1"></a><span class="kw">import</span> <span class="dt">Data.List</span> (foldl')</span>
-<span id="cb53-2"><a href="#cb53-2"></a></span>
-<span id="cb53-3"><a href="#cb53-3"></a><span class="ot">mysum ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb53-4"><a href="#cb53-4"></a>mysum <span class="ot">=</span> foldl' (<span class="op">+</span>) <span class="dv">0</span></span>
-<span id="cb53-5"><a href="#cb53-5"></a></span>
-<span id="cb53-6"><a href="#cb53-6"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb53-7"><a href="#cb53-7"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> mysum [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (foldl')</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true"></a></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true"></a><span class="ot">mysum ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true"></a>mysum <span class="ot">=</span> foldl' (<span class="op">+</span>) <span class="dv">0</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true"></a></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> mysum [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p><code>Prelude</code> はなんでこんな絶対におかしい関数 (<code>foldl</code>) を提供しているのでしょうか?</p>
 <figure>
 <img src="https://www.fpcomplete.com/static/hysterical-raisins.jpg" alt /><figcaption>Hysterical Raisins</figcaption>
 </figure>
 <p>ただ、ほとんど全ての正格であると称している関数は、実際のところ弱頭部正規形に対してのみ正格であることに留意しなければいけません。前の <code>average</code> 関数の例を見てみると、まだスペースリークがあります:</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb54-1"><a href="#cb54-1"></a><span class="kw">import</span> <span class="dt">Data.List</span> (foldl')</span>
-<span id="cb54-2"><a href="#cb54-2"></a></span>
-<span id="cb54-3"><a href="#cb54-3"></a><span class="ot">average ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span></span>
-<span id="cb54-4"><a href="#cb54-4"></a>average <span class="ot">=</span></span>
-<span id="cb54-5"><a href="#cb54-5"></a>  divide <span class="op">.</span> foldl' add (<span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb54-6"><a href="#cb54-6"></a>  <span class="kw">where</span></span>
-<span id="cb54-7"><a href="#cb54-7"></a>    divide (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
-<span id="cb54-8"><a href="#cb54-8"></a>    add (total, count) x <span class="ot">=</span> (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb54-9"><a href="#cb54-9"></a></span>
-<span id="cb54-10"><a href="#cb54-10"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb54-11"><a href="#cb54-11"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> average [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (foldl')</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true"></a></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true"></a><span class="ot">average ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true"></a>average <span class="ot">=</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true"></a>  divide <span class="op">.</span> foldl' add (<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true"></a>    divide (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true"></a>    add (total, count) x <span class="ot">=</span> (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true"></a></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> average [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p>翻訳者追記 (上記プログラムの結果)</p>
 <pre class="plain"><code>     306,654,600 bytes allocated in the heap
      390,431,392 bytes copied during GC
@@ -940,18 +940,18 @@ Linking average ...
        1,160,496 bytes maximum slop
              181 MB total memory in use (0 MB lost due to fragmentation)</code></pre>
 <p>私のアドバイスは、正格なフィールドを持つ補助的なデータ型を使うことです。しかしあなたはそうしたくないかもしれませんし、正規形に評価するような <code>foldl'</code> がないことにイライラしているかもしれません。そんなあなたに朗報です。<code>force</code> を使うだけで、簡単に弱頭部正規形へ評価する fold を正規形へ評価する fold にアップグレードすることができます。</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb56-1"><a href="#cb56-1"></a><span class="kw">import</span> <span class="dt">Data.List</span> (foldl')</span>
-<span id="cb56-2"><a href="#cb56-2"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span> (force)</span>
-<span id="cb56-3"><a href="#cb56-3"></a></span>
-<span id="cb56-4"><a href="#cb56-4"></a><span class="ot">average ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span></span>
-<span id="cb56-5"><a href="#cb56-5"></a>average <span class="ot">=</span></span>
-<span id="cb56-6"><a href="#cb56-6"></a>  divide <span class="op">.</span> foldl' add (<span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb56-7"><a href="#cb56-7"></a>  <span class="kw">where</span></span>
-<span id="cb56-8"><a href="#cb56-8"></a>    divide (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
-<span id="cb56-9"><a href="#cb56-9"></a>    add (total, count) x <span class="ot">=</span> force (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb56-10"><a href="#cb56-10"></a></span>
-<span id="cb56-11"><a href="#cb56-11"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb56-12"><a href="#cb56-12"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> average [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (foldl')</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.DeepSeq</span> (force)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true"></a></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true"></a><span class="ot">average ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true"></a>average <span class="ot">=</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true"></a>  divide <span class="op">.</span> foldl' add (<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true"></a>    divide (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true"></a>    add (total, count) x <span class="ot">=</span> force (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true"></a></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> average [<span class="dv">1</span><span class="op">..</span><span class="dv">1000000</span>]</span></code></pre></div>
 <p>翻訳者追記 (上記プログラムの結果)</p>
 <pre class="plain"><code>     240,102,848 bytes allocated in the heap
           54,552 bytes copied during GC
@@ -961,20 +961,20 @@ Linking average ...
 <p>腕のいい水道工事業者のように、<code>force</code> はすぐにリークを止めてくれます!</p>
 <h3 id="ストリーミングデータ">ストリーミングデータ</h3>
 <p>conduit のようなストリーミングデータライブラリの主張の1つに、メモリ使用量が定数オーダーになる、というものがあります。この主張を聞くと、スペースリークについて心配することなく、こいつとおさらばできるという印象を受けます。しかし、弱頭部正規形 vs 正規形の問題はここでも当てはまります。私の言い分を証明するために、conduit で average をひどいやり方で計算してみましょう。</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb58-1"><a href="#cb58-1"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
-<span id="cb58-2"><a href="#cb58-2"></a></span>
-<span id="cb58-3"><a href="#cb58-3"></a><span class="ot">average ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m <span class="dt">Double</span></span>
-<span id="cb58-4"><a href="#cb58-4"></a>average <span class="ot">=</span></span>
-<span id="cb58-5"><a href="#cb58-5"></a>  divide <span class="op">&lt;$&gt;</span> foldlC add (<span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb58-6"><a href="#cb58-6"></a>  <span class="kw">where</span></span>
-<span id="cb58-7"><a href="#cb58-7"></a>    divide (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
-<span id="cb58-8"><a href="#cb58-8"></a>    add (total, count) x <span class="ot">=</span> (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb58-9"><a href="#cb58-9"></a></span>
-<span id="cb58-10"><a href="#cb58-10"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb58-11"><a href="#cb58-11"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> runConduitPure <span class="op">$</span> enumFromToC <span class="dv">1</span> <span class="dv">1000000</span> <span class="op">.|</span> average</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true"></a></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true"></a><span class="ot">average ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m <span class="dt">Double</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true"></a>average <span class="ot">=</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true"></a>  divide <span class="op">&lt;$&gt;</span> foldlC add (<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true"></a>    divide (total, count) <span class="ot">=</span> <span class="fu">fromIntegral</span> total <span class="op">/</span> count</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true"></a>    add (total, count) x <span class="ot">=</span> (total <span class="op">+</span> x, count <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true"></a></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> runConduitPure <span class="op">$</span> enumFromToC <span class="dv">1</span> <span class="dv">1000000</span> <span class="op">.|</span> average</span></code></pre></div>
 <p>以下のコマンドでメモリ使用量を確かめることができます。</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb59-1"><a href="#cb59-1"></a><span class="op">$</span> stack <span class="co">--resolver lts-9.3 ghc --package conduit-combinators -- Main.hs -O2</span></span>
-<span id="cb59-2"><a href="#cb59-2"></a><span class="op">$</span> <span class="op">./</span><span class="dt">Main</span> <span class="op">+</span><span class="dt">RTS</span> <span class="op">-</span>s</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true"></a><span class="op">$</span> stack <span class="co">--resolver lts-9.3 ghc --package conduit-combinators -- Main.hs -O2</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true"></a><span class="op">$</span> <span class="op">./</span><span class="dt">Main</span> <span class="op">+</span><span class="dt">RTS</span> <span class="op">-</span>s</span></code></pre></div>
 <p>翻訳者追記 (上記プログラムの結果)</p>
 <pre class="plain"><code>     265,361,840 bytes allocated in the heap
      205,193,384 bytes copied during GC
@@ -989,38 +989,38 @@ Linking average ...
 </ol>
 <h2 id="連鎖反応">連鎖反応</h2>
 <p>この超正格なプログラムをご覧ください。特別な値正格リストデータ型です。私はふんだんにバンパターンを散りばめ、至るところで <code>seq</code> を呼び出しています。<code>$!</code> も使ってます。メモリ使用量はどうなるでしょうか?</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb61-1"><a href="#cb61-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb61-2"><a href="#cb61-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb61-3"><a href="#cb61-3"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
-<span id="cb61-4"><a href="#cb61-4"></a></span>
-<span id="cb61-5"><a href="#cb61-5"></a><span class="kw">data</span> <span class="dt">StrictList</span> a <span class="ot">=</span> <span class="dt">Cons</span> <span class="op">!</span>a <span class="op">!</span>(<span class="dt">StrictList</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
-<span id="cb61-6"><a href="#cb61-6"></a></span>
-<span id="cb61-7"><a href="#cb61-7"></a><span class="ot">strictMap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">StrictList</span> a <span class="ot">-&gt;</span> <span class="dt">StrictList</span> b</span>
-<span id="cb61-8"><a href="#cb61-8"></a>strictMap _ <span class="dt">Nil</span> <span class="ot">=</span> <span class="dt">Nil</span></span>
-<span id="cb61-9"><a href="#cb61-9"></a>strictMap f (<span class="dt">Cons</span> a list) <span class="ot">=</span></span>
-<span id="cb61-10"><a href="#cb61-10"></a>  <span class="kw">let</span> <span class="op">!</span>b <span class="ot">=</span> f a</span>
-<span id="cb61-11"><a href="#cb61-11"></a>      <span class="op">!</span>list' <span class="ot">=</span> strictMap f list</span>
-<span id="cb61-12"><a href="#cb61-12"></a>   <span class="kw">in</span> b <span class="ot">`seq`</span> list' <span class="ot">`seq`</span> <span class="dt">Cons</span> b list'</span>
-<span id="cb61-13"><a href="#cb61-13"></a></span>
-<span id="cb61-14"><a href="#cb61-14"></a><span class="ot">strictEnum ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StrictList</span> <span class="dt">Int</span></span>
-<span id="cb61-15"><a href="#cb61-15"></a>strictEnum low high <span class="ot">=</span></span>
-<span id="cb61-16"><a href="#cb61-16"></a>  go low</span>
-<span id="cb61-17"><a href="#cb61-17"></a>  <span class="kw">where</span></span>
-<span id="cb61-18"><a href="#cb61-18"></a>    go <span class="op">!</span>x</span>
-<span id="cb61-19"><a href="#cb61-19"></a>      <span class="op">|</span> x <span class="op">==</span> high <span class="ot">=</span> <span class="dt">Cons</span> x <span class="dt">Nil</span></span>
-<span id="cb61-20"><a href="#cb61-20"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Cons</span> x (go <span class="op">$!</span> x <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb61-21"><a href="#cb61-21"></a></span>
-<span id="cb61-22"><a href="#cb61-22"></a><span class="ot">double ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
-<span id="cb61-23"><a href="#cb61-23"></a>double <span class="op">!</span>x <span class="ot">=</span> x <span class="op">*</span> <span class="dv">2</span></span>
-<span id="cb61-24"><a href="#cb61-24"></a></span>
-<span id="cb61-25"><a href="#cb61-25"></a><span class="ot">evens ::</span> <span class="dt">StrictList</span> <span class="dt">Int</span></span>
-<span id="cb61-26"><a href="#cb61-26"></a>evens <span class="ot">=</span> strictMap double <span class="op">$!</span> strictEnum <span class="dv">1</span> <span class="dv">1000000</span></span>
-<span id="cb61-27"><a href="#cb61-27"></a></span>
-<span id="cb61-28"><a href="#cb61-28"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb61-29"><a href="#cb61-29"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb61-30"><a href="#cb61-30"></a>  <span class="kw">let</span> string <span class="ot">=</span> <span class="st">&quot;Hello World&quot;</span></span>
-<span id="cb61-31"><a href="#cb61-31"></a>      string' <span class="ot">=</span> evens <span class="ot">`seq`</span> string</span>
-<span id="cb61-32"><a href="#cb61-32"></a>  <span class="fu">putStrLn</span> string</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE BangPatterns #-}</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true"></a></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">StrictList</span> a <span class="ot">=</span> <span class="dt">Cons</span> <span class="op">!</span>a <span class="op">!</span>(<span class="dt">StrictList</span> a) <span class="op">|</span> <span class="dt">Nil</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true"></a></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true"></a><span class="ot">strictMap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">StrictList</span> a <span class="ot">-&gt;</span> <span class="dt">StrictList</span> b</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true"></a>strictMap _ <span class="dt">Nil</span> <span class="ot">=</span> <span class="dt">Nil</span></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true"></a>strictMap f (<span class="dt">Cons</span> a list) <span class="ot">=</span></span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true"></a>  <span class="kw">let</span> <span class="op">!</span>b <span class="ot">=</span> f a</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true"></a>      <span class="op">!</span>list' <span class="ot">=</span> strictMap f list</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true"></a>   <span class="kw">in</span> b <span class="ot">`seq`</span> list' <span class="ot">`seq`</span> <span class="dt">Cons</span> b list'</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true"></a></span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true"></a><span class="ot">strictEnum ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">StrictList</span> <span class="dt">Int</span></span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true"></a>strictEnum low high <span class="ot">=</span></span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true"></a>  go low</span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true"></a>    go <span class="op">!</span>x</span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true"></a>      <span class="op">|</span> x <span class="op">==</span> high <span class="ot">=</span> <span class="dt">Cons</span> x <span class="dt">Nil</span></span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true"></a>      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Cons</span> x (go <span class="op">$!</span> x <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true"></a></span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true"></a><span class="ot">double ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb61-23"><a href="#cb61-23" aria-hidden="true"></a>double <span class="op">!</span>x <span class="ot">=</span> x <span class="op">*</span> <span class="dv">2</span></span>
+<span id="cb61-24"><a href="#cb61-24" aria-hidden="true"></a></span>
+<span id="cb61-25"><a href="#cb61-25" aria-hidden="true"></a><span class="ot">evens ::</span> <span class="dt">StrictList</span> <span class="dt">Int</span></span>
+<span id="cb61-26"><a href="#cb61-26" aria-hidden="true"></a>evens <span class="ot">=</span> strictMap double <span class="op">$!</span> strictEnum <span class="dv">1</span> <span class="dv">1000000</span></span>
+<span id="cb61-27"><a href="#cb61-27" aria-hidden="true"></a></span>
+<span id="cb61-28"><a href="#cb61-28" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb61-29"><a href="#cb61-29" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb61-30"><a href="#cb61-30" aria-hidden="true"></a>  <span class="kw">let</span> string <span class="ot">=</span> <span class="st">&quot;Hello World&quot;</span></span>
+<span id="cb61-31"><a href="#cb61-31" aria-hidden="true"></a>      string' <span class="ot">=</span> evens <span class="ot">`seq`</span> string</span>
+<span id="cb61-32"><a href="#cb61-32" aria-hidden="true"></a>  <span class="fu">putStrLn</span> string</span></code></pre></div>
 <p>よーく見て、コードをよく読んで、予想してみてください。準備はいいですか? いきましょう。</p>
 <p>翻訳者追記 (上記プログラムの結果)</p>
 <pre class="plain"><code>          51,912 bytes allocated in the heap

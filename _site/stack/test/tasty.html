@@ -248,41 +248,41 @@
 $ tasty-discover
 Usage: tasty-discover src _ dst [OPTION...]</code></pre>
 <p>次に <strong>tasty-discover</strong> を利用するために <strong>test-tasty/Tasty.hs</strong> を作ります。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- test-tasty/Tasty.hs</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="ot">{-# OPTIONS_GHC -F -pgmF tasty-discover #-}</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co">-- test-tasty/Tasty.hs</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">{-# OPTIONS_GHC -F -pgmF tasty-discover #-}</span></span></code></pre></div>
 <p>今までと同様に <strong>test</strong> セクションに <strong>PFAD-tasty</strong> を追加します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="at">  </span><span class="fu">PFAD-test</span><span class="kw">:</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Spec.hs</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         test</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hspec</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a><span class="at">    </span><span class="kw">-</span><span class="at"> QuickCheck</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a><span class="at">  </span><span class="fu">PFAD-doctest</span><span class="kw">:</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> test/doctests.hs</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb4-20"><a href="#cb4-20"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a><span class="at">    </span><span class="kw">-</span><span class="at"> doctest</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a><span class="co">  # ここから下の行を追記</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="at">  </span><span class="fu">PFAD-tasty</span><span class="kw">:</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> Tasty.hs</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at"> test-tasty</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb4-31"><a href="#cb4-31"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a><span class="at">    </span><span class="kw">-</span><span class="at"> tasty</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">PFAD-test</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at">                Spec.hs</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at">         test</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> hspec</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> QuickCheck</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="at">  </span><span class="fu">PFAD-doctest</span><span class="kw">:</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> test/doctests.hs</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> doctest</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a><span class="co">  # ここから下の行を追記</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a><span class="at">  </span><span class="fu">PFAD-tasty</span><span class="kw">:</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a><span class="at">    </span><span class="fu">main</span><span class="kw">:</span><span class="at"> Tasty.hs</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a><span class="at">    </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at"> test-tasty</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a><span class="at">    </span><span class="fu">ghc-options</span><span class="kw">:</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -threaded</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -rtsopts</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -with-rtsopts=-N</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a><span class="at">    </span><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> PFAD</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> tasty</span></span></code></pre></div>
 <p>まだテストケースは何も無い状態ですが、一旦ビルドが通るかどうかテストしてみましょう。</p>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 ...
@@ -298,11 +298,11 @@ All 0 tests passed (0.00s)
 <p><strong>hspec-discover</strong> の場合はファイルの命名規則がありましたが、<strong>tasty-discover</strong> にそういう規則はありません。</p>
 <p>そのため、今回は <strong>test-tasty/Test/Minfree.hs</strong> にテストを書いていこうと思います。</p>
 <pre class="shell"><code>$ mkdir test-tasty/Test</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> () <span class="kw">where</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> () <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span></code></pre></div>
 <p>まだ何もテストが無い状態なので当然何も起きません。</p>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 ...
@@ -316,35 +316,35 @@ All 0 tests passed (0.00s)
 <h3 id="tasty-hunit">tasty-hunit</h3>
 <p><strong>hspec</strong> と同じテストを追加してみましょう。</p>
 <p><strong>tasty</strong> で単体テストを行うためには <a href="https://hackage.haskell.org/package/tasty-hunit">tasty-hunit</a> パッケージを使います。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># package.yaml</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">tests</span><span class="kw">:</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="co">...</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="co">  PFAD-tasty:</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="co">    main: Tasty.hs</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="co">    source-dirs: test-tasty</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="co">    ghc-options:</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="co">    - -threaded</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="co">    - -rtsopts</span></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="co">    - -with-rtsopts=-N</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="co">    dependencies:</span></span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="co">    - PFAD</span></span>
-<span id="cb9-14"><a href="#cb9-14"></a><span class="co">    - tasty</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a><span class="co">    - tasty-hunit   # この行を追記</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="co"># package.yaml</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="co">...</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="co">  PFAD-tasty:</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="co">    main: Tasty.hs</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="co">    source-dirs: test-tasty</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="co">    ghc-options:</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="co">    - -threaded</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a><span class="co">    - -rtsopts</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a><span class="co">    - -with-rtsopts=-N</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a><span class="co">    dependencies:</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a><span class="co">    - PFAD</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a><span class="co">    - tasty</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a><span class="co">    - tasty-hunit   # この行を追記</span></span></code></pre></div>
 <p>テストを追加します。単体テストの場合は関数の接頭辞に <strong>unit_</strong> をつけると自動的にテストが実行されます。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- test-tasty/Test/Minfree.hs</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a></span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb10-10"><a href="#cb10-10"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a></span>
-<span id="cb10-12"><a href="#cb10-12"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb10-13"><a href="#cb10-13"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="co">-- test-tasty/Test/Minfree.hs</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span></code></pre></div>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 ...
 
@@ -356,43 +356,43 @@ All 2 tests passed (0.00s)</code></pre>
 <p>上記の出力結果からわかるように <strong>unit_</strong> 以降の関数名 (<strong>test1</strong>, <strong>test2</strong>) がテストケースの名前として表示されます。</p>
 <h3 id="tasty-quickcheck">tasty-quickcheck</h3>
 <p><strong>QuickCheck</strong> も同様に <strong>tasty</strong> で書く事ができます。その場合は <a href="https://hackage.haskell.org/package/tasty-quickcheck">tasty-quickcheck</a> パッケージを追加します。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="co">...</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="co">  PFAD-tasty:</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="co">    main: Tasty.hs</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a><span class="co">    source-dirs: test-tasty</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="co">    ghc-options:</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="co">    - -threaded</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a><span class="co">    - -rtsopts</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a><span class="co">    - -with-rtsopts=-N</span></span>
-<span id="cb12-11"><a href="#cb12-11"></a><span class="co">    dependencies:</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a><span class="co">    - PFAD</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a><span class="co">    - tasty</span></span>
-<span id="cb12-14"><a href="#cb12-14"></a><span class="co">    - tasty-hunit</span></span>
-<span id="cb12-15"><a href="#cb12-15"></a><span class="co">    - tasty-quickcheck    # この行を追記</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="co">...</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="co">  PFAD-tasty:</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a><span class="co">    main: Tasty.hs</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a><span class="co">    source-dirs: test-tasty</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a><span class="co">    ghc-options:</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a><span class="co">    - -threaded</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a><span class="co">    - -rtsopts</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a><span class="co">    - -with-rtsopts=-N</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a><span class="co">    dependencies:</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a><span class="co">    - PFAD</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a><span class="co">    - tasty</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a><span class="co">    - tasty-hunit</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a><span class="co">    - tasty-quickcheck    # この行を追記</span></span></code></pre></div>
 <p>テストを追加します。<strong>QiuckCheck</strong> の場合は関数の接頭辞に <strong>prop_</strong> をつけると自動的にテストが実行されます。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="kw">import</span> <span class="dt">Test.Tasty.QuickCheck</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a></span>
-<span id="cb13-9"><a href="#cb13-9"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
-<span id="cb13-10"><a href="#cb13-10"></a></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb13-12"><a href="#cb13-12"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
-<span id="cb13-13"><a href="#cb13-13"></a></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb13-15"><a href="#cb13-15"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
-<span id="cb13-16"><a href="#cb13-16"></a></span>
-<span id="cb13-17"><a href="#cb13-17"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
-<span id="cb13-18"><a href="#cb13-18"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
-<span id="cb13-19"><a href="#cb13-19"></a>  <span class="kw">where</span></span>
-<span id="cb13-20"><a href="#cb13-20"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
-<span id="cb13-21"><a href="#cb13-21"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.QuickCheck</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span></code></pre></div>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 ...
 
@@ -405,60 +405,60 @@ Progress 1/2: PFADtest-tasty/Tasty.hs
 All 3 tests passed (0.04s)</code></pre>
 <h3 id="tasty-hspec">tasty-hspec</h3>
 <p>面白いことに <strong>hspec</strong> のテストも <strong>tasty</strong> で書く事ができます。その場合は <a href="https://hackage.haskell.org/package/tasty-hspec">tasty-hspec</a> パッケージを利用します。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="co">...</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a></span>
-<span id="cb15-4"><a href="#cb15-4"></a><span class="co">  PFAD-tasty:</span></span>
-<span id="cb15-5"><a href="#cb15-5"></a><span class="co">    main: Tasty.hs</span></span>
-<span id="cb15-6"><a href="#cb15-6"></a><span class="co">    source-dirs: test-tasty</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a><span class="co">    ghc-options:</span></span>
-<span id="cb15-8"><a href="#cb15-8"></a><span class="co">    - -threaded</span></span>
-<span id="cb15-9"><a href="#cb15-9"></a><span class="co">    - -rtsopts</span></span>
-<span id="cb15-10"><a href="#cb15-10"></a><span class="co">    - -with-rtsopts=-N</span></span>
-<span id="cb15-11"><a href="#cb15-11"></a><span class="co">    dependencies:</span></span>
-<span id="cb15-12"><a href="#cb15-12"></a><span class="co">    - PFAD</span></span>
-<span id="cb15-13"><a href="#cb15-13"></a><span class="co">    - tasty</span></span>
-<span id="cb15-14"><a href="#cb15-14"></a><span class="co">    - tasty-hunit</span></span>
-<span id="cb15-15"><a href="#cb15-15"></a><span class="co">    - tasty-quickcheck</span></span>
-<span id="cb15-16"><a href="#cb15-16"></a><span class="co">    - tasty-hspec         # この行を追記</span></span>
-<span id="cb15-17"><a href="#cb15-17"></a><span class="co">    - hspec               # この行を追記</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="co">...</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a><span class="co">  PFAD-tasty:</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a><span class="co">    main: Tasty.hs</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a><span class="co">    source-dirs: test-tasty</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a><span class="co">    ghc-options:</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a><span class="co">    - -threaded</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true"></a><span class="co">    - -rtsopts</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true"></a><span class="co">    - -with-rtsopts=-N</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true"></a><span class="co">    dependencies:</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true"></a><span class="co">    - PFAD</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true"></a><span class="co">    - tasty</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true"></a><span class="co">    - tasty-hunit</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true"></a><span class="co">    - tasty-quickcheck</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true"></a><span class="co">    - tasty-hspec         # この行を追記</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true"></a><span class="co">    - hspec               # この行を追記</span></span></code></pre></div>
 <p>テストを追加します。<strong>hspec</strong> の場合は関数の接頭辞に <strong>spec_</strong> をつけると自動的にテストが実行されます。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a></span>
-<span id="cb16-3"><a href="#cb16-3"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb16-4"><a href="#cb16-4"></a></span>
-<span id="cb16-5"><a href="#cb16-5"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
-<span id="cb16-6"><a href="#cb16-6"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
-<span id="cb16-7"><a href="#cb16-7"></a><span class="kw">import</span> <span class="dt">Test.Tasty.QuickCheck</span></span>
-<span id="cb16-8"><a href="#cb16-8"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Hspec</span></span>
-<span id="cb16-9"><a href="#cb16-9"></a><span class="kw">import</span> <span class="dt">Test.Hspec.QuickCheck</span> (prop)</span>
-<span id="cb16-10"><a href="#cb16-10"></a></span>
-<span id="cb16-11"><a href="#cb16-11"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
-<span id="cb16-12"><a href="#cb16-12"></a></span>
-<span id="cb16-13"><a href="#cb16-13"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb16-14"><a href="#cb16-14"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
-<span id="cb16-15"><a href="#cb16-15"></a></span>
-<span id="cb16-16"><a href="#cb16-16"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb16-17"><a href="#cb16-17"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
-<span id="cb16-18"><a href="#cb16-18"></a></span>
-<span id="cb16-19"><a href="#cb16-19"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
-<span id="cb16-20"><a href="#cb16-20"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
-<span id="cb16-21"><a href="#cb16-21"></a>  <span class="kw">where</span></span>
-<span id="cb16-22"><a href="#cb16-22"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
-<span id="cb16-23"><a href="#cb16-23"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span>
-<span id="cb16-24"><a href="#cb16-24"></a></span>
-<span id="cb16-25"><a href="#cb16-25"></a><span class="ot">spec_hspec ::</span> <span class="dt">Spec</span></span>
-<span id="cb16-26"><a href="#cb16-26"></a>spec_hspec <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb16-27"><a href="#cb16-27"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span></span>
-<span id="cb16-28"><a href="#cb16-28"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
-<span id="cb16-29"><a href="#cb16-29"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb16-30"><a href="#cb16-30"></a></span>
-<span id="cb16-31"><a href="#cb16-31"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span></span>
-<span id="cb16-32"><a href="#cb16-32"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
-<span id="cb16-33"><a href="#cb16-33"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb16-34"><a href="#cb16-34"></a></span>
-<span id="cb16-35"><a href="#cb16-35"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span></span>
-<span id="cb16-36"><a href="#cb16-36"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.QuickCheck</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Hspec</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Hspec.QuickCheck</span> (prop)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true"></a><span class="ot">spec_hspec ::</span> <span class="dt">Spec</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true"></a>spec_hspec <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true"></a></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span></code></pre></div>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 ...
 
@@ -479,50 +479,50 @@ All 6 tests passed (0.07s)</code></pre>
 <h3 id="tasty">tasty</h3>
 <p><strong>tasty</strong> の形式も当然書く事ができます。</p>
 <p>接頭辞は <strong>test_</strong> です。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
-<span id="cb18-4"><a href="#cb18-4"></a></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
-<span id="cb18-7"><a href="#cb18-7"></a><span class="kw">import</span> <span class="dt">Test.Tasty.QuickCheck</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Hspec</span></span>
-<span id="cb18-9"><a href="#cb18-9"></a><span class="kw">import</span> <span class="dt">Test.Hspec.QuickCheck</span> (prop)</span>
-<span id="cb18-10"><a href="#cb18-10"></a></span>
-<span id="cb18-11"><a href="#cb18-11"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
-<span id="cb18-12"><a href="#cb18-12"></a></span>
-<span id="cb18-13"><a href="#cb18-13"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb18-14"><a href="#cb18-14"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
-<span id="cb18-15"><a href="#cb18-15"></a></span>
-<span id="cb18-16"><a href="#cb18-16"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb18-17"><a href="#cb18-17"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
-<span id="cb18-18"><a href="#cb18-18"></a></span>
-<span id="cb18-19"><a href="#cb18-19"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
-<span id="cb18-20"><a href="#cb18-20"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
-<span id="cb18-21"><a href="#cb18-21"></a>  <span class="kw">where</span></span>
-<span id="cb18-22"><a href="#cb18-22"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
-<span id="cb18-23"><a href="#cb18-23"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span>
-<span id="cb18-24"><a href="#cb18-24"></a></span>
-<span id="cb18-25"><a href="#cb18-25"></a><span class="ot">spec_hspec ::</span> <span class="dt">Spec</span></span>
-<span id="cb18-26"><a href="#cb18-26"></a>spec_hspec <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb18-27"><a href="#cb18-27"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span></span>
-<span id="cb18-28"><a href="#cb18-28"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
-<span id="cb18-29"><a href="#cb18-29"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb18-30"><a href="#cb18-30"></a></span>
-<span id="cb18-31"><a href="#cb18-31"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span></span>
-<span id="cb18-32"><a href="#cb18-32"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
-<span id="cb18-33"><a href="#cb18-33"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
-<span id="cb18-34"><a href="#cb18-34"></a></span>
-<span id="cb18-35"><a href="#cb18-35"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span></span>
-<span id="cb18-36"><a href="#cb18-36"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span>
-<span id="cb18-37"><a href="#cb18-37"></a></span>
-<span id="cb18-38"><a href="#cb18-38"></a><span class="ot">test_tasty ::</span> <span class="dt">TestTree</span></span>
-<span id="cb18-39"><a href="#cb18-39"></a>test_tasty <span class="ot">=</span> testGroup <span class="st">&quot;Unit tests&quot;</span></span>
-<span id="cb18-40"><a href="#cb18-40"></a>  [ testCase <span class="st">&quot;List comparison (different length)&quot;</span> <span class="op">$</span></span>
-<span id="cb18-41"><a href="#cb18-41"></a>      <span class="st">&quot;abc&quot;</span> <span class="ot">`compare`</span> <span class="st">&quot;ab&quot;</span> <span class="op">@?=</span> <span class="dt">GT</span></span>
-<span id="cb18-42"><a href="#cb18-42"></a>  , testCase <span class="st">&quot;List comparison (same length)&quot;</span> <span class="op">$</span></span>
-<span id="cb18-43"><a href="#cb18-43"></a>      <span class="st">&quot;abc&quot;</span> <span class="ot">`compare`</span> <span class="st">&quot;abb&quot;</span> <span class="op">@?=</span> <span class="dt">GT</span></span>
-<span id="cb18-44"><a href="#cb18-44"></a>  ]</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Test.Minfree</span> <span class="kw">where</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Minfree</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.HUnit</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.QuickCheck</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Hspec</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Hspec.QuickCheck</span> (prop)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (nub)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true"></a><span class="ot">unit_case1 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true"></a>unit_case1 <span class="ot">=</span> minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true"></a></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true"></a><span class="ot">unit_case2 ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true"></a>unit_case2 <span class="ot">=</span> minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="op">@?=</span> <span class="dv">15</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true"></a></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true"></a><span class="ot">prop_Minfree ::</span> [<span class="dt">Positive</span> <span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Property</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true"></a>prop_Minfree xs <span class="ot">=</span> preCondition <span class="op">==&gt;</span> minfree ns <span class="op">==</span> minfree' ns</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true"></a>    ns <span class="ot">=</span> <span class="fu">map</span> getPositive xs</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true"></a>    preCondition <span class="ot">=</span> <span class="fu">length</span> (nub xs) <span class="op">==</span> <span class="fu">length</span> xs</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true"></a></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true"></a><span class="ot">spec_hspec ::</span> <span class="dt">Spec</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true"></a>spec_hspec <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true"></a>  describe <span class="st">&quot;minfree&quot;</span> <span class="op">$</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true"></a>      minfree [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true"></a></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true"></a>  describe <span class="st">&quot;minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true"></a>    it <span class="st">&quot;書籍の実行例&quot;</span> <span class="op">$</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true"></a>      minfree' [<span class="dv">8</span>,<span class="dv">23</span>,<span class="dv">9</span>,<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">41</span>,<span class="dv">4</span>,<span class="dv">14</span>,<span class="dv">21</span>,<span class="dv">5</span>,<span class="dv">17</span>,<span class="dv">3</span>,<span class="dv">19</span>,<span class="dv">2</span>,<span class="dv">6</span>] <span class="ot">`shouldBe`</span> <span class="dv">15</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true"></a></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true"></a>  describe <span class="st">&quot;minfree == minfree'&quot;</span> <span class="op">$</span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true"></a>    prop <span class="st">&quot;minfree == minfree'&quot;</span> prop_Minfree</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true"></a></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true"></a><span class="ot">test_tasty ::</span> <span class="dt">TestTree</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true"></a>test_tasty <span class="ot">=</span> testGroup <span class="st">&quot;Unit tests&quot;</span></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true"></a>  [ testCase <span class="st">&quot;List comparison (different length)&quot;</span> <span class="op">$</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true"></a>      <span class="st">&quot;abc&quot;</span> <span class="ot">`compare`</span> <span class="st">&quot;ab&quot;</span> <span class="op">@?=</span> <span class="dt">GT</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true"></a>  , testCase <span class="st">&quot;List comparison (same length)&quot;</span> <span class="op">$</span></span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true"></a>      <span class="st">&quot;abc&quot;</span> <span class="ot">`compare`</span> <span class="st">&quot;abb&quot;</span> <span class="op">@?=</span> <span class="dt">GT</span></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true"></a>  ]</span></code></pre></div>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 ...
 Progress 1/2: PFADtest-tasty/Tasty.hs
@@ -544,35 +544,35 @@ Progress 1/2: PFADtest-tasty/Tasty.hs
 All 8 tests passed (0.04s)</code></pre>
 <h3 id="tasty-expected-failure">tasty-expected-failure</h3>
 <p>時には失敗系のテストを書く事もありますよね。そういう場合は <a href="https://hackage.haskell.org/package/tasty-expected-failure">tasty-expected-failure</a> パッケージを使います。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="co">...</span></span>
-<span id="cb20-3"><a href="#cb20-3"></a></span>
-<span id="cb20-4"><a href="#cb20-4"></a><span class="co">  PFAD-tasty:</span></span>
-<span id="cb20-5"><a href="#cb20-5"></a><span class="co">    main: Tasty.hs</span></span>
-<span id="cb20-6"><a href="#cb20-6"></a><span class="co">    source-dirs: test-tasty</span></span>
-<span id="cb20-7"><a href="#cb20-7"></a><span class="co">    ghc-options:</span></span>
-<span id="cb20-8"><a href="#cb20-8"></a><span class="co">    - -threaded</span></span>
-<span id="cb20-9"><a href="#cb20-9"></a><span class="co">    - -rtsopts</span></span>
-<span id="cb20-10"><a href="#cb20-10"></a><span class="co">    - -with-rtsopts=-N</span></span>
-<span id="cb20-11"><a href="#cb20-11"></a><span class="co">    dependencies:</span></span>
-<span id="cb20-12"><a href="#cb20-12"></a><span class="co">    - PFAD</span></span>
-<span id="cb20-13"><a href="#cb20-13"></a><span class="co">    - tasty</span></span>
-<span id="cb20-14"><a href="#cb20-14"></a><span class="co">    - tasty-hunit</span></span>
-<span id="cb20-15"><a href="#cb20-15"></a><span class="co">    - tasty-quickcheck</span></span>
-<span id="cb20-16"><a href="#cb20-16"></a><span class="co">    - tasty-hspec</span></span>
-<span id="cb20-17"><a href="#cb20-17"></a><span class="co">    - hspec</span></span>
-<span id="cb20-18"><a href="#cb20-18"></a><span class="co">    - tasty-expected-failure  # この行を追加</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a><span class="co">...</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a><span class="co">  PFAD-tasty:</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true"></a><span class="co">    main: Tasty.hs</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true"></a><span class="co">    source-dirs: test-tasty</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true"></a><span class="co">    ghc-options:</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true"></a><span class="co">    - -threaded</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true"></a><span class="co">    - -rtsopts</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true"></a><span class="co">    - -with-rtsopts=-N</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true"></a><span class="co">    dependencies:</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true"></a><span class="co">    - PFAD</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true"></a><span class="co">    - tasty</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true"></a><span class="co">    - tasty-hunit</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true"></a><span class="co">    - tasty-quickcheck</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true"></a><span class="co">    - tasty-hspec</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true"></a><span class="co">    - hspec</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true"></a><span class="co">    - tasty-expected-failure  # この行を追加</span></span></code></pre></div>
 <p><a href="https://hackage.haskell.org/package/tasty-expected-failure-0.11.1.1/docs/Test-Tasty-ExpectedFailure.html#v:expectFail">expectFail</a> 関数を利用します。<strong>expectFail</strong> は <strong>TestTree</strong> を返すため <strong>test_</strong> の接頭辞を使えば良いです。</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="op">...</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">import</span> <span class="dt">Test.Tasty.ExpectedFailure</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a></span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="op">...</span></span>
-<span id="cb21-5"><a href="#cb21-5"></a></span>
-<span id="cb21-6"><a href="#cb21-6"></a><span class="ot">test_failure ::</span> <span class="dt">TestTree</span></span>
-<span id="cb21-7"><a href="#cb21-7"></a>test_failure <span class="ot">=</span> expectFail <span class="op">$</span> testGroup <span class="st">&quot;Unit tests&quot;</span></span>
-<span id="cb21-8"><a href="#cb21-8"></a>  [ testCase <span class="st">&quot;different length&quot;</span> <span class="op">$</span></span>
-<span id="cb21-9"><a href="#cb21-9"></a>      <span class="fu">length</span> <span class="st">&quot;abc&quot;</span> <span class="op">@?=</span> <span class="dv">0</span></span>
-<span id="cb21-10"><a href="#cb21-10"></a>  ]</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="op">...</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.ExpectedFailure</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a><span class="op">...</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true"></a><span class="ot">test_failure ::</span> <span class="dt">TestTree</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true"></a>test_failure <span class="ot">=</span> expectFail <span class="op">$</span> testGroup <span class="st">&quot;Unit tests&quot;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true"></a>  [ testCase <span class="st">&quot;different length&quot;</span> <span class="op">$</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true"></a>      <span class="fu">length</span> <span class="st">&quot;abc&quot;</span> <span class="op">@?=</span> <span class="dv">0</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true"></a>  ]</span></code></pre></div>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 Progress 1/2: PFADtest-tasty/Tasty.hs
 ...
@@ -586,34 +586,34 @@ Progress 1/2: PFADtest-tasty/Tasty.hs
 All 9 tests passed (0.03s)</code></pre>
 <h3 id="tasty-golden">tasty-golden</h3>
 <p>ゴールデンテストは回帰テストみたいな感じです。<strong>CSV</strong> や <strong>json</strong> などの比較に良く使います。<a href="https://hackage.haskell.org/package/tasty-golden">tasty-golden</a> パッケージを利用します。</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">tests</span><span class="kw">:</span></span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="co">...</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a></span>
-<span id="cb23-4"><a href="#cb23-4"></a><span class="co">  PFAD-tasty:</span></span>
-<span id="cb23-5"><a href="#cb23-5"></a><span class="co">    main: Tasty.hs</span></span>
-<span id="cb23-6"><a href="#cb23-6"></a><span class="co">    source-dirs: test-tasty</span></span>
-<span id="cb23-7"><a href="#cb23-7"></a><span class="co">    ghc-options:</span></span>
-<span id="cb23-8"><a href="#cb23-8"></a><span class="co">    - -threaded</span></span>
-<span id="cb23-9"><a href="#cb23-9"></a><span class="co">    - -rtsopts</span></span>
-<span id="cb23-10"><a href="#cb23-10"></a><span class="co">    - -with-rtsopts=-N</span></span>
-<span id="cb23-11"><a href="#cb23-11"></a><span class="co">    dependencies:</span></span>
-<span id="cb23-12"><a href="#cb23-12"></a><span class="co">    - PFAD</span></span>
-<span id="cb23-13"><a href="#cb23-13"></a><span class="co">    - tasty</span></span>
-<span id="cb23-14"><a href="#cb23-14"></a><span class="co">    - tasty-hunit</span></span>
-<span id="cb23-15"><a href="#cb23-15"></a><span class="co">    - tasty-quickcheck</span></span>
-<span id="cb23-16"><a href="#cb23-16"></a><span class="co">    - tasty-hspec</span></span>
-<span id="cb23-17"><a href="#cb23-17"></a><span class="co">    - hspec</span></span>
-<span id="cb23-18"><a href="#cb23-18"></a><span class="co">    - tasty-expected-failure</span></span>
-<span id="cb23-19"><a href="#cb23-19"></a><span class="co">    - tasty-golden            # この行を追加</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a><span class="fu">tests</span><span class="kw">:</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a><span class="co">...</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true"></a><span class="co">  PFAD-tasty:</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true"></a><span class="co">    main: Tasty.hs</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true"></a><span class="co">    source-dirs: test-tasty</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true"></a><span class="co">    ghc-options:</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true"></a><span class="co">    - -threaded</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true"></a><span class="co">    - -rtsopts</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true"></a><span class="co">    - -with-rtsopts=-N</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true"></a><span class="co">    dependencies:</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true"></a><span class="co">    - PFAD</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true"></a><span class="co">    - tasty</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true"></a><span class="co">    - tasty-hunit</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true"></a><span class="co">    - tasty-quickcheck</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true"></a><span class="co">    - tasty-hspec</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true"></a><span class="co">    - hspec</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true"></a><span class="co">    - tasty-expected-failure</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true"></a><span class="co">    - tasty-golden            # この行を追加</span></span></code></pre></div>
 <p>まずは <a href="https://hackage.haskell.org/package/tasty-golden-2.3.2/docs/Test-Tasty-Golden.html#v:goldenVsFile">goldenVsFile</a> を使ってみます。この関数には、期待する結果のファイル (今回は <strong>golden</strong>) と テストで出力された結果を含むファイル (今回は <strong>output</strong>) を指定し、さらに実際の処理を記述します。</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">...</span></span>
-<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Golden</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a></span>
-<span id="cb24-4"><a href="#cb24-4"></a><span class="op">...</span></span>
-<span id="cb24-5"><a href="#cb24-5"></a></span>
-<span id="cb24-6"><a href="#cb24-6"></a><span class="ot">test_goldenFile ::</span> <span class="dt">TestTree</span></span>
-<span id="cb24-7"><a href="#cb24-7"></a>test_goldenFile <span class="ot">=</span> goldenVsFile <span class="st">&quot;goldenVsFile&quot;</span> <span class="st">&quot;./test-tasty/golden&quot;</span> <span class="st">&quot;./test-tasty/output&quot;</span> <span class="op">$</span></span>
-<span id="cb24-8"><a href="#cb24-8"></a>  <span class="fu">writeFile</span> <span class="st">&quot;./test-tasty/output&quot;</span> <span class="st">&quot;aaa&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="op">...</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Golden</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true"></a><span class="op">...</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true"></a><span class="ot">test_goldenFile ::</span> <span class="dt">TestTree</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true"></a>test_goldenFile <span class="ot">=</span> goldenVsFile <span class="st">&quot;goldenVsFile&quot;</span> <span class="st">&quot;./test-tasty/golden&quot;</span> <span class="st">&quot;./test-tasty/output&quot;</span> <span class="op">$</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true"></a>  <span class="fu">writeFile</span> <span class="st">&quot;./test-tasty/output&quot;</span> <span class="st">&quot;aaa&quot;</span></span></code></pre></div>
 <p>ゴールデンファイルが存在しない場合は自動的に出力結果と同じものが生成されます。</p>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 Progress 1/2: PFADtest-tasty/Tasty.hs
@@ -639,14 +639,14 @@ bbb</code></pre>
 <p>また、ファイルとの比較ではなく、文字列と比較する <a href="https://hackage.haskell.org/package/tasty-golden-2.3.2/docs/Test-Tasty-Golden.html#v:goldenVsString">goldenVsString</a> という関数もあります。</p>
 <h4 id="diff-の表示">diff の表示</h4>
 <p>さきほどの関数では表示結果が異なっていることしかわかりませんでした。実際に差分を表示させたい場合は <a href="https://hackage.haskell.org/package/tasty-golden-2.3.2/docs/Test-Tasty-Golden.html#v:goldenVsFileDiff">goldenVsFileDiff</a> 関数を使います。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1"></a><span class="op">...</span></span>
-<span id="cb29-2"><a href="#cb29-2"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Golden</span></span>
-<span id="cb29-3"><a href="#cb29-3"></a></span>
-<span id="cb29-4"><a href="#cb29-4"></a><span class="op">...</span></span>
-<span id="cb29-5"><a href="#cb29-5"></a></span>
-<span id="cb29-6"><a href="#cb29-6"></a><span class="ot">test_goldenFileDiff ::</span> <span class="dt">TestTree</span></span>
-<span id="cb29-7"><a href="#cb29-7"></a>test_goldenFileDiff <span class="ot">=</span> goldenVsFileDiff <span class="st">&quot;goldenVsFileDiff&quot;</span> (\ref new <span class="ot">-&gt;</span> [<span class="st">&quot;diff&quot;</span>, <span class="st">&quot;-u&quot;</span>, ref, new]) <span class="st">&quot;./test-tasty/golden&quot;</span> <span class="st">&quot;./test-tasty/outputDiff&quot;</span> <span class="op">$</span></span>
-<span id="cb29-8"><a href="#cb29-8"></a>  <span class="fu">writeFile</span> <span class="st">&quot;./test-tasty/outputDiff&quot;</span> <span class="st">&quot;aaa&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="op">...</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Tasty.Golden</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true"></a><span class="op">...</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true"></a><span class="ot">test_goldenFileDiff ::</span> <span class="dt">TestTree</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true"></a>test_goldenFileDiff <span class="ot">=</span> goldenVsFileDiff <span class="st">&quot;goldenVsFileDiff&quot;</span> (\ref new <span class="ot">-&gt;</span> [<span class="st">&quot;diff&quot;</span>, <span class="st">&quot;-u&quot;</span>, ref, new]) <span class="st">&quot;./test-tasty/golden&quot;</span> <span class="st">&quot;./test-tasty/outputDiff&quot;</span> <span class="op">$</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true"></a>  <span class="fu">writeFile</span> <span class="st">&quot;./test-tasty/outputDiff&quot;</span> <span class="st">&quot;aaa&quot;</span></span></code></pre></div>
 <p>この関数は差分を表示させるための引数を取ります。基本的な使い方としては <code>(\ref new -&gt; ["diff", "-u", ref, new])</code> で良いでしょう。</p>
 <pre class="shell"><code>$ stack test PFAD:test:PFAD-tasty
 ...

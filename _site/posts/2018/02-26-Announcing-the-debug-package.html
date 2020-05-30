@@ -231,25 +231,25 @@ Haskell は素晴らしい言語ですが、Haskell のデバッグは間違い�
 <p>Original post: <a href="http://neilmitchell.blogspot.jp/2017/12/announcing-debug-package.html">Announcing the ‘debug’ package</a></p>
 <p>Haskell は素晴らしい言語ですが、Haskell のデバッグは間違いなく弱い部分です。この問題をどうにかするために、<a href="https://hackage.haskell.org/package/debug">debug ライブラリ</a> をリリースしました。このライブラリは全てのことを解決するのではなく、一般的なデバッグのタスクに対してシンプルで簡単に使えるような設計を目指しました。デバッグをするにあたって、みなさんが興味を持ってくれるような関数を例に取って見てみましょう。</p>
 <!--more-->
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">module</span> <span class="dt">QuickSort</span>(quicksort) <span class="kw">where</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">import</span> <span class="dt">Data.List</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">quicksort ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a]</span>
-<span id="cb1-5"><a href="#cb1-5"></a>quicksort [] <span class="ot">=</span> []</span>
-<span id="cb1-6"><a href="#cb1-6"></a>quicksort (x<span class="op">:</span>xs) <span class="ot">=</span> quicksort lt <span class="op">++</span> [x] <span class="op">++</span> quicksort gt</span>
-<span id="cb1-7"><a href="#cb1-7"></a>    <span class="kw">where</span> (lt, gt) <span class="ot">=</span> partition (<span class="op">&lt;=</span> x) xs</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">QuickSort</span>(quicksort) <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">quicksort ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> [a]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>quicksort [] <span class="ot">=</span> []</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>quicksort (x<span class="op">:</span>xs) <span class="ot">=</span> quicksort lt <span class="op">++</span> [x] <span class="op">++</span> quicksort gt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>    <span class="kw">where</span> (lt, gt) <span class="ot">=</span> partition (<span class="op">&lt;=</span> x) xs</span></code></pre></div>
 <p><code>TemplateHaskell</code> と <code>ViewPatterns</code> を有効にしてから、<code>Debug</code> をインポートし、コードをインデントして <code>debug</code> の引数に渡してやりましょう。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell, ViewPatterns #-}</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">module</span> <span class="dt">QuickSort</span>(quicksort) <span class="kw">where</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">import</span> <span class="dt">Data.List</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">import</span> <span class="dt">Debug</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a>debug [d|</span>
-<span id="cb2-7"><a href="#cb2-7"></a>   quicksort :: Ord a =&gt; [a] -&gt; [a]</span>
-<span id="cb2-8"><a href="#cb2-8"></a>   quicksort [] = []</span>
-<span id="cb2-9"><a href="#cb2-9"></a>   quicksort (x:xs) = quicksort lt ++ [x] ++ quicksort gt</span>
-<span id="cb2-10"><a href="#cb2-10"></a>       where (lt, gt) = partition (&lt;= x) xs</span>
-<span id="cb2-11"><a href="#cb2-11"></a>   |]</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell, ViewPatterns #-}</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">QuickSort</span>(quicksort) <span class="kw">where</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Debug</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>debug [d|</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>   quicksort :: Ord a =&gt; [a] -&gt; [a]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>   quicksort [] = []</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>   quicksort (x:xs) = quicksort lt ++ [x] ++ quicksort gt</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>       where (lt, gt) = partition (&lt;= x) xs</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>   |]</span></code></pre></div>
 <p>以下のコマンドでデバッガを走らせることができます。</p>
 <pre class="shell"><code>$ ghci QuickSort.hs
 GHCi, version 8.2.1: http://www.haskell.org/ghc/  :? for help

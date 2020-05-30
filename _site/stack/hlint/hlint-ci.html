@@ -193,33 +193,33 @@
 <p>ここでは <code>HLint</code> の内容にしか言及しませんが、機会があれば <code>CI</code> については別途記事にしたいと思います。</p>
 <h2 id="travis-ci">Travis CI</h2>
 <p><code>.travis.yml</code> に以下の内容を記述するだけです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># .travis.yml</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">sudo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">language</span><span class="kw">:</span><span class="at"> generic</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="at">  </span><span class="fu">include</span><span class="kw">:</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">stage</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="at">      </span><span class="fu">script</span><span class="kw">:</span><span class="at"> curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># .travis.yml</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">sudo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="fu">language</span><span class="kw">:</span><span class="at"> generic</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="at">  </span><span class="fu">include</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">stage</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="at">      </span><span class="fu">script</span><span class="kw">:</span><span class="at"> curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span></span></code></pre></div>
 <h2 id="circleci-2.0">CircleCI 2.0</h2>
 <p><code>.circleci/config.yml</code> に以下の内容を記述するだけです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> ubuntu:16.04</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>            apt update</span>
-<span id="cb2-12"><a href="#cb2-12"></a>            apt install -y curl</span>
-<span id="cb2-13"><a href="#cb2-13"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
-<span id="cb2-14"><a href="#cb2-14"></a><span class="fu">workflows</span><span class="kw">:</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a><span class="at">    </span><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="at">      </span><span class="kw">-</span><span class="at"> hlint</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> ubuntu:16.04</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>            apt update</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>            apt install -y curl</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a><span class="fu">workflows</span><span class="kw">:</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a><span class="at">    </span><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> hlint</span></span></code></pre></div>
       </article>
 
       <div class="pager">

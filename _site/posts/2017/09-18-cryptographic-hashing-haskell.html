@@ -247,20 +247,20 @@ cryptonite は現在、Haskell で暗号を扱う際のデファクトスタン�
 <li><code>ByteArray</code> 読み / 書きのアクセスを提供する。<code>ByteArrayAccess</code> の子クラス</li>
 </ul>
 <p>例えば、以下に示すコードは、意味もなく <code>ByteString</code> と <code>Byte</code> の変換をしています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteArray</span> <span class="kw">as</span> <span class="dt">BA</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">import</span> <span class="dt">Data.ByteString</span> (<span class="dt">ByteString</span>)</span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-9"><a href="#cb1-9"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>  B.writeFile <span class="st">&quot;test.txt&quot;</span> <span class="st">&quot;This is a test&quot;</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>  byteString <span class="ot">&lt;-</span> B.readFile <span class="st">&quot;test.txt&quot;</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>  <span class="kw">let</span><span class="ot"> bytes ::</span> <span class="dt">BA.Bytes</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>      bytes <span class="ot">=</span> BA.convert byteString</span>
-<span id="cb1-14"><a href="#cb1-14"></a>  <span class="fu">print</span> bytes</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteArray</span> <span class="kw">as</span> <span class="dt">BA</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.ByteString</span> (<span class="dt">ByteString</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>  B.writeFile <span class="st">&quot;test.txt&quot;</span> <span class="st">&quot;This is a test&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>  byteString <span class="ot">&lt;-</span> B.readFile <span class="st">&quot;test.txt&quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>  <span class="kw">let</span><span class="ot"> bytes ::</span> <span class="dt">BA.Bytes</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>      bytes <span class="ot">=</span> BA.convert byteString</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>  <span class="fu">print</span> bytes</span></code></pre></div>
 <p><code>bytestring</code> ライブラリを使ってファイルの入出力から話を始めたのは、<a href="http://www.snoyman.com/blog/2016/12/beware-of-readfile">入出力は bytestring でやるべき</a> だからです。 <code>convert</code>関数を使うと、<code>ByteString</code> を <code>Bytes</code> に変換することができます。</p>
 <p><strong>練習問題</strong> 上の2つの型クラスの説明を踏まえて <code>convert</code> の型シグネチャは何だと思いますか? 答えは<a href="https://www.stackage.org/haddock/lts-9.4/memory-0.14.7/Data-ByteArray.html#v:convert">こちら</a>。</p>
 <p><code>bytes</code> の値につけた、明示的な型シグネチャに気がつきましたか? えーと、<code>memory</code> と <code>cryptonite</code> を使っていく上で、これは大事です。 こうして、よく GHC に、型推論についてのヒントを与えてやらないといけなくなります。 なぜなら、これらのライブラリの中のかなり多くの関数が、具体的な型ではなく、型クラスを使っているからです。</p>
@@ -278,238 +278,238 @@ cryptonite は現在、Haskell で暗号を扱う際のデファクトスタン�
 <p>うん、コードがあまりない説明になりましたね。 もっと楽しいことをしよう!</p>
 <h2 id="base16-エンコードデコード">Base16 エンコード/デコード</h2>
 <p>ユーザの入力を、Base16 (16進数) に変換してみましょう。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteArray</span>          <span class="kw">as</span> <span class="dt">BA</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">import</span>           <span class="dt">Data.ByteArray.Encoding</span> (convertToBase, <span class="dt">Base</span> (<span class="dt">Base16</span>))</span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
-<span id="cb2-9"><a href="#cb2-9"></a></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-11"><a href="#cb2-11"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>  hFlush stdout</span>
-<span id="cb2-14"><a href="#cb2-14"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
-<span id="cb2-15"><a href="#cb2-15"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
-<span id="cb2-16"><a href="#cb2-16"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
-<span id="cb2-17"><a href="#cb2-17"></a>  <span class="kw">let</span> encoded <span class="ot">=</span> convertToBase <span class="dt">Base16</span><span class="ot"> bs ::</span> <span class="dt">ByteString</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Converted to base 16: &quot;</span> <span class="op">++</span> <span class="fu">show</span> encoded</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteArray</span>          <span class="kw">as</span> <span class="dt">BA</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteArray.Encoding</span> (convertToBase, <span class="dt">Base</span> (<span class="dt">Base16</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>  hFlush stdout</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>  <span class="kw">let</span> encoded <span class="ot">=</span> convertToBase <span class="dt">Base16</span><span class="ot"> bs ::</span> <span class="dt">ByteString</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Converted to base 16: &quot;</span> <span class="op">++</span> <span class="fu">show</span> encoded</span></code></pre></div>
 <p><code>convertToBase</code> は、どんな <code>ByteArrayAccess</code> も、与えられた基数を使って <code>ByteArray</code> に変換することができます。Base16 以外の基数には、Base64 などがあります。</p>
 <p>見てお分かりの通り、上の例では明示的に <code>ByteString</code> の型シグネチャを指定する必要がありました。なぜならそうしなければ、GHC が<code>ByteArrayAccess</code> のインスタンスの内、どれを使うべきなのか判断できないからです。</p>
 <p>既にお分かりかもしれませんが、全く逆の変換を行う、<code>convertFromBase</code>関数も存在します。 この関数は、入力のフォーマットが正しくなかった場合にも対応できるように、<code>Either String ByteArray</code> の値を返します。</p>
 <p><strong>練習問題</strong> 入力に対して、Base16 のデコードを行うプログラムを書いてください (解答はすぐ下)。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteArray</span>          <span class="kw">as</span> <span class="dt">BA</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="kw">import</span>           <span class="dt">Data.ByteArray.Encoding</span> (convertFromBase, <span class="dt">Base</span> (<span class="dt">Base16</span>))</span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
-<span id="cb3-9"><a href="#cb3-9"></a></span>
-<span id="cb3-10"><a href="#cb3-10"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-11"><a href="#cb3-11"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some hexadecimal text: &quot;</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a>  hFlush stdout</span>
-<span id="cb3-14"><a href="#cb3-14"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
-<span id="cb3-15"><a href="#cb3-15"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
-<span id="cb3-16"><a href="#cb3-16"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
-<span id="cb3-17"><a href="#cb3-17"></a>  <span class="kw">case</span> convertFromBase <span class="dt">Base16</span> bs <span class="kw">of</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a>    <span class="dt">Left</span> e <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="st">&quot;Invalid input: &quot;</span> <span class="op">++</span> e</span>
-<span id="cb3-19"><a href="#cb3-19"></a>    <span class="dt">Right</span> decoded <span class="ot">-&gt;</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a>      <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Converted from base 16: &quot;</span> <span class="op">++</span> <span class="fu">show</span> (<span class="ot">decoded ::</span> <span class="dt">ByteString</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteArray</span>          <span class="kw">as</span> <span class="dt">BA</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteArray.Encoding</span> (convertFromBase, <span class="dt">Base</span> (<span class="dt">Base16</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some hexadecimal text: &quot;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a>  hFlush stdout</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>  <span class="kw">case</span> convertFromBase <span class="dt">Base16</span> bs <span class="kw">of</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a>    <span class="dt">Left</span> e <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="st">&quot;Invalid input: &quot;</span> <span class="op">++</span> e</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>    <span class="dt">Right</span> decoded <span class="ot">-&gt;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a>      <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Converted from base 16: &quot;</span> <span class="op">++</span> <span class="fu">show</span> (<span class="ot">decoded ::</span> <span class="dt">ByteString</span>)</span></code></pre></div>
 <p><em>練習問題</em> Base16 の入力を、Base64 のエンコードに変換するプログラムを書いてください。</p>
 <h2 id="正格な-bytestring-のハッシュ">正格な <code>ByteString</code> のハッシュ</h2>
 <p>よし、<code>memory</code> ライブラリに関する説明はもう十分でしょう。 これからは実際に暗号的なものをやっていきます。ユーザの入力を、SHA256 のハッシュ値 (ダイジェスト) に変換してみましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (hash, <span class="dt">SHA256</span> (..), <span class="dt">Digest</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
-<span id="cb4-8"><a href="#cb4-8"></a></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb4-10"><a href="#cb4-10"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>  hFlush stdout</span>
-<span id="cb4-13"><a href="#cb4-13"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
-<span id="cb4-14"><a href="#cb4-14"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
-<span id="cb4-15"><a href="#cb4-15"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
-<span id="cb4-16"><a href="#cb4-16"></a>  <span class="kw">let</span><span class="ot"> digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a>      digest <span class="ot">=</span> hash bs</span>
-<span id="cb4-18"><a href="#cb4-18"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="op">++</span> <span class="fu">show</span> digest</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (hash, <span class="dt">SHA256</span> (..), <span class="dt">Digest</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>  hFlush stdout</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>  <span class="kw">let</span><span class="ot"> digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>      digest <span class="ot">=</span> hash bs</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="op">++</span> <span class="fu">show</span> digest</span></code></pre></div>
 <p>たった今、<code>ByteString</code> (かもしくは <code>ByteArrayAccess</code> のインスタンス) を <code>Digest SHA256</code> に変換するために <code>hash</code> 関数を使いました。 実際、SHA256 以外のハッシュアルゴリズムも指定することができます。</p>
 <p>今回の例では、<code>Digest SHA256</code> という型シグネチャが大事でした。GHC にどんなハッシュを使うのか知らせるためです。しかし次の例では、その代わりの関数が登場します。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (hashWith, <span class="dt">SHA256</span> (..))</span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
-<span id="cb5-8"><a href="#cb5-8"></a></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb5-10"><a href="#cb5-10"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
-<span id="cb5-12"><a href="#cb5-12"></a>  hFlush stdout</span>
-<span id="cb5-13"><a href="#cb5-13"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
-<span id="cb5-14"><a href="#cb5-14"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
-<span id="cb5-15"><a href="#cb5-15"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
-<span id="cb5-16"><a href="#cb5-16"></a>  <span class="kw">let</span> digest <span class="ot">=</span> hashWith <span class="dt">SHA256</span> bs</span>
-<span id="cb5-17"><a href="#cb5-17"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="op">++</span> <span class="fu">show</span> digest</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (hashWith, <span class="dt">SHA256</span> (..))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>  hFlush stdout</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a>  <span class="kw">let</span> digest <span class="ot">=</span> hashWith <span class="dt">SHA256</span> bs</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="op">++</span> <span class="fu">show</span> digest</span></code></pre></div>
 <p><code>Digest</code> の <code>Show</code> インスタンスは、ダイジェストを16進数 (Base16) で表示します。これはいいですね。 しかし、これをBase64 で表示したい欲求にかられたらどうでしょう? 考えてみましょう。 <code>Digest</code> は <code>ByteArrayAccess</code> のインスタンスです。なので、<code>convertToBase</code> を使うことができます (そして、<code>Digest</code> は <code>ByteArray</code>のインスタンスではありません。そうしてしまったら問題が生じるのですが、それはなぜでしょうか? 行き詰まったら、<a href="https://www.stackage.org/haddock/lts-9.3/cryptonite-0.23/Crypto-Hash.html#v:digestFromByteString">この関数のドキュメント</a>を読んでみましょう。答えが載っています。)。</p>
 <p><strong>練習問題</strong> ダイジェストを Base64 でエンコードされた文字列として出力してみましょう (答えはすぐ下)。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (hashWith, <span class="dt">SHA256</span> (..))</span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="kw">import</span>           <span class="dt">Data.ByteArray.Encoding</span> (convertToBase, <span class="dt">Base</span> (<span class="dt">Base64</span>))</span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
-<span id="cb6-9"><a href="#cb6-9"></a></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb6-11"><a href="#cb6-11"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>  hFlush stdout</span>
-<span id="cb6-14"><a href="#cb6-14"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
-<span id="cb6-15"><a href="#cb6-15"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
-<span id="cb6-16"><a href="#cb6-16"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
-<span id="cb6-17"><a href="#cb6-17"></a>  <span class="kw">let</span> digest <span class="ot">=</span> convertToBase <span class="dt">Base64</span> (hashWith <span class="dt">SHA256</span> bs)</span>
-<span id="cb6-18"><a href="#cb6-18"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="op">++</span> <span class="fu">show</span> (<span class="ot">digest ::</span> <span class="dt">ByteString</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (hashWith, <span class="dt">SHA256</span> (..))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteString</span>         (<span class="dt">ByteString</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteArray.Encoding</span> (convertToBase, <span class="dt">Base</span> (<span class="dt">Base64</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>      (encodeUtf8)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.IO</span>            <span class="kw">as</span> <span class="dt">TIO</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.IO</span>               (hFlush, stdout)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>  <span class="fu">putStr</span> <span class="st">&quot;Enter some text: &quot;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a>  hFlush stdout</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>  text <span class="ot">&lt;-</span> TIO.getLine</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>  <span class="kw">let</span> bs <span class="ot">=</span> encodeUtf8 text</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;You entered: &quot;</span> <span class="op">++</span> <span class="fu">show</span> bs</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a>  <span class="kw">let</span> digest <span class="ot">=</span> convertToBase <span class="dt">Base64</span> (hashWith <span class="dt">SHA256</span> bs)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;SHA256 hash: &quot;</span> <span class="op">++</span> <span class="fu">show</span> (<span class="ot">digest ::</span> <span class="dt">ByteString</span>)</span></code></pre></div>
 <p><code>digest</code> が <code>ByteString</code> であることを明確にするために、型シグネチャが必要な理由を押さえてください。</p>
 <h2 id="マッチするファイルがあるかどうか調べる">マッチするファイルがあるかどうか調べる</h2>
 <p>ここにちょっとしたプログラムがあります。ユーザはコマンドライン引数として、複数個のファイル名を渡します。そして、プログラムは同一の内容の全てのファイルのリストを表示します (少なくとも、SHA256 のハッシュ値がマッチするファイルを。それと、以下の定義には、メモリの効率がよろしくない部分があります。見つけてみてください。この点についてはまた後述します)。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)</span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span>         <span class="kw">as</span> <span class="dt">B</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="kw">import</span>           <span class="dt">Data.Foldable</span>           (forM_)</span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">import</span>           <span class="dt">Data.Map.Strict</span>         (<span class="dt">Map</span>)</span>
-<span id="cb7-7"><a href="#cb7-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map.Strict</span>         <span class="kw">as</span> <span class="dt">Map</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">import</span>           <span class="dt">System.Environment</span>      (getArgs)</span>
-<span id="cb7-9"><a href="#cb7-9"></a></span>
-<span id="cb7-10"><a href="#cb7-10"></a><span class="ot">readFile' ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Map</span> (<span class="dt">Digest</span> <span class="dt">SHA256</span>) [<span class="dt">FilePath</span>])</span>
-<span id="cb7-11"><a href="#cb7-11"></a>readFile' fp <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a>  bs <span class="ot">&lt;-</span> B.readFile fp</span>
-<span id="cb7-13"><a href="#cb7-13"></a>  <span class="kw">let</span> digest <span class="ot">=</span> hash bs <span class="co">-- notice lack of type signature :)</span></span>
-<span id="cb7-14"><a href="#cb7-14"></a>  <span class="fu">return</span> <span class="op">$</span> Map.singleton digest [fp]</span>
-<span id="cb7-15"><a href="#cb7-15"></a></span>
-<span id="cb7-16"><a href="#cb7-16"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb7-17"><a href="#cb7-17"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-18"><a href="#cb7-18"></a>  args <span class="ot">&lt;-</span> getArgs</span>
-<span id="cb7-19"><a href="#cb7-19"></a>  m <span class="ot">&lt;-</span> Map.unionsWith (<span class="op">++</span>) <span class="op">&lt;$&gt;</span> <span class="fu">mapM</span> readFile' args</span>
-<span id="cb7-20"><a href="#cb7-20"></a>  forM_ (Map.toList m) <span class="op">$</span> \(digest, files) <span class="ot">-&gt;</span></span>
-<span id="cb7-21"><a href="#cb7-21"></a>    <span class="kw">case</span> files <span class="kw">of</span></span>
-<span id="cb7-22"><a href="#cb7-22"></a>      [] <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;can never happen&quot;</span></span>
-<span id="cb7-23"><a href="#cb7-23"></a>      [_] <span class="ot">-&gt;</span> <span class="fu">return</span> () <span class="co">-- only one file</span></span>
-<span id="cb7-24"><a href="#cb7-24"></a>      <span class="co">--                                     unwords :: [String] -&gt; String</span></span>
-<span id="cb7-25"><a href="#cb7-25"></a>      _ <span class="ot">-&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> digest <span class="op">++</span> <span class="st">&quot;: &quot;</span> <span class="op">++</span> <span class="fu">unwords</span> (<span class="fu">map</span> <span class="fu">show</span> files)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>             (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span>         <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Foldable</span>           (forM_)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Map.Strict</span>         (<span class="dt">Map</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map.Strict</span>         <span class="kw">as</span> <span class="dt">Map</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.Environment</span>      (getArgs)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a><span class="ot">readFile' ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Map</span> (<span class="dt">Digest</span> <span class="dt">SHA256</span>) [<span class="dt">FilePath</span>])</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>readFile' fp <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a>  bs <span class="ot">&lt;-</span> B.readFile fp</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a>  <span class="kw">let</span> digest <span class="ot">=</span> hash bs <span class="co">-- notice lack of type signature :)</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a>  <span class="fu">return</span> <span class="op">$</span> Map.singleton digest [fp]</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true"></a>  args <span class="ot">&lt;-</span> getArgs</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true"></a>  m <span class="ot">&lt;-</span> Map.unionsWith (<span class="op">++</span>) <span class="op">&lt;$&gt;</span> <span class="fu">mapM</span> readFile' args</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true"></a>  forM_ (Map.toList m) <span class="op">$</span> \(digest, files) <span class="ot">-&gt;</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true"></a>    <span class="kw">case</span> files <span class="kw">of</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true"></a>      [] <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;can never happen&quot;</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true"></a>      [_] <span class="ot">-&gt;</span> <span class="fu">return</span> () <span class="co">-- only one file</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true"></a>      <span class="co">--                                     unwords :: [String] -&gt; String</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true"></a>      _ <span class="ot">-&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> digest <span class="op">++</span> <span class="st">&quot;: &quot;</span> <span class="op">++</span> <span class="fu">unwords</span> (<span class="fu">map</span> <span class="fu">show</span> files)</span></code></pre></div>
 <p><strong>練習問題</strong> コマンドライン引数として与えられた全てのファイルの SHA256 ハッシュ値を表示するプログラムを書いてください。</p>
 <p><strong>質問</strong> 上のコードの、どこが非効率的なのでしょうか? 答えは次の章にあります。</p>
 <h2 id="より効率的なファイルハッシュ">より効率的なファイルハッシュ</h2>
 <p>もしもハッシュ関数を使わなければ、さっきのプログラムの実装は、それぞれのファイルの中身をメモリ上に一度に展開するか、O(n^2) のペアの比較をするような変なものになっていたでしょう。 さっきのハッシュを使った実装は、それよりも良い実装です。しかし、まだ問題があります。 <code>Data.ByteString.readFile</code>を使っているので、際限なくメモリを使ってしまう可能性があります。 <code>cryptonite-conduit</code> を使うと、ファイルの内容全てをもっと効率良くハッシュできます。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>         (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)</span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash.Conduit</span> (hashFile)</span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="kw">import</span>           <span class="dt">Data.Foldable</span>       (forM_)</span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="kw">import</span>           <span class="dt">Data.Map.Strict</span>     (<span class="dt">Map</span>)</span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map.Strict</span>     <span class="kw">as</span> <span class="dt">Map</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">import</span>           <span class="dt">System.Environment</span>  (getArgs)</span>
-<span id="cb8-9"><a href="#cb8-9"></a></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="ot">readFile' ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Map</span> (<span class="dt">Digest</span> <span class="dt">SHA256</span>) [<span class="dt">FilePath</span>])</span>
-<span id="cb8-11"><a href="#cb8-11"></a>readFile' fp <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>  digest <span class="ot">&lt;-</span> hashFile fp</span>
-<span id="cb8-13"><a href="#cb8-13"></a>  <span class="fu">return</span> <span class="op">$</span> Map.singleton digest [fp]</span>
-<span id="cb8-14"><a href="#cb8-14"></a></span>
-<span id="cb8-15"><a href="#cb8-15"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb8-16"><a href="#cb8-16"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb8-17"><a href="#cb8-17"></a>  args <span class="ot">&lt;-</span> getArgs</span>
-<span id="cb8-18"><a href="#cb8-18"></a>  m <span class="ot">&lt;-</span> Map.unionsWith (<span class="op">++</span>) <span class="op">&lt;$&gt;</span> <span class="fu">mapM</span> readFile' args</span>
-<span id="cb8-19"><a href="#cb8-19"></a>  forM_ (Map.toList m) <span class="op">$</span> \(digest, files) <span class="ot">-&gt;</span></span>
-<span id="cb8-20"><a href="#cb8-20"></a>    <span class="kw">case</span> files <span class="kw">of</span></span>
-<span id="cb8-21"><a href="#cb8-21"></a>      [] <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;can never happen&quot;</span></span>
-<span id="cb8-22"><a href="#cb8-22"></a>      [_] <span class="ot">-&gt;</span> <span class="fu">return</span> () <span class="co">-- only one file</span></span>
-<span id="cb8-23"><a href="#cb8-23"></a>      _ <span class="ot">-&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> digest <span class="op">++</span> <span class="st">&quot;: &quot;</span> <span class="op">++</span> <span class="fu">unwords</span> (<span class="fu">map</span> <span class="fu">show</span> files)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash</span>         (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Crypto.Hash.Conduit</span> (hashFile)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Foldable</span>       (forM_)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Map.Strict</span>     (<span class="dt">Map</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map.Strict</span>     <span class="kw">as</span> <span class="dt">Map</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">System.Environment</span>  (getArgs)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a><span class="ot">readFile' ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Map</span> (<span class="dt">Digest</span> <span class="dt">SHA256</span>) [<span class="dt">FilePath</span>])</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>readFile' fp <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>  digest <span class="ot">&lt;-</span> hashFile fp</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>  <span class="fu">return</span> <span class="op">$</span> Map.singleton digest [fp]</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a>  args <span class="ot">&lt;-</span> getArgs</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>  m <span class="ot">&lt;-</span> Map.unionsWith (<span class="op">++</span>) <span class="op">&lt;$&gt;</span> <span class="fu">mapM</span> readFile' args</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a>  forM_ (Map.toList m) <span class="op">$</span> \(digest, files) <span class="ot">-&gt;</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a>    <span class="kw">case</span> files <span class="kw">of</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a>      [] <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="st">&quot;can never happen&quot;</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true"></a>      [_] <span class="ot">-&gt;</span> <span class="fu">return</span> () <span class="co">-- only one file</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true"></a>      _ <span class="ot">-&gt;</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> digest <span class="op">++</span> <span class="st">&quot;: &quot;</span> <span class="op">++</span> <span class="fu">unwords</span> (<span class="fu">map</span> <span class="fu">show</span> files)</span></code></pre></div>
 <p>かなりシンプルな変更です (というか、こっちの方が少し読みやすいのではないでしょうか)。 さらに、かなりメモリ効率の良いコードになりました(ファイル数に対して線形時間、ファイルサイズに対しては定数時間です)。</p>
 <h2 id="ストリームハッシュ">ストリーム・ハッシュ</h2>
 <p><code>conduit</code> と聞いて、耳か目が即座に反応したかもしれません。 質問された体で答えましょう。 はい、ハッシュに関してもストリーミング処理ができます。ここに、URL とファイルパスを受け取って、その URL の response body の中身をファイルパスに書きこみ、SHA256 でダイジェストを表示するプログラムがあります。 そして、それぞれのデータチャンクを 1回しか参照しないのがいいですね。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">import</span> <span class="dt">Crypto.Hash</span>         (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)</span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="kw">import</span> <span class="dt">Crypto.Hash.Conduit</span> (sinkHash)</span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="kw">import</span> <span class="dt">Network.HTTP.Simple</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="kw">import</span> <span class="dt">System.Environment</span>  (getArgs)</span>
-<span id="cb9-8"><a href="#cb9-8"></a></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb9-10"><a href="#cb9-10"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb9-11"><a href="#cb9-11"></a>  args <span class="ot">&lt;-</span> getArgs</span>
-<span id="cb9-12"><a href="#cb9-12"></a>  (url, fp) <span class="ot">&lt;-</span></span>
-<span id="cb9-13"><a href="#cb9-13"></a>    <span class="kw">case</span> args <span class="kw">of</span></span>
-<span id="cb9-14"><a href="#cb9-14"></a>      [x, y] <span class="ot">-&gt;</span> <span class="fu">return</span> (x, y)</span>
-<span id="cb9-15"><a href="#cb9-15"></a>      _ <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="st">&quot;Expected: URL FILEPATH&quot;</span></span>
-<span id="cb9-16"><a href="#cb9-16"></a>  req <span class="ot">&lt;-</span> parseRequest url</span>
-<span id="cb9-17"><a href="#cb9-17"></a>  digest <span class="ot">&lt;-</span> runResourceT <span class="op">$</span> httpSink req <span class="op">$</span> \_res <span class="ot">-&gt;</span> getZipSink <span class="op">$</span></span>
-<span id="cb9-18"><a href="#cb9-18"></a>    <span class="dt">ZipSink</span> (sinkFile fp) <span class="op">*&gt;</span></span>
-<span id="cb9-19"><a href="#cb9-19"></a>    <span class="dt">ZipSink</span> sinkHash</span>
-<span id="cb9-20"><a href="#cb9-20"></a>  <span class="fu">print</span> (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Crypto.Hash</span>         (<span class="dt">Digest</span>, <span class="dt">SHA256</span>, hash)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Crypto.Hash.Conduit</span> (sinkHash)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Network.HTTP.Simple</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.Environment</span>  (getArgs)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a>  args <span class="ot">&lt;-</span> getArgs</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a>  (url, fp) <span class="ot">&lt;-</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>    <span class="kw">case</span> args <span class="kw">of</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>      [x, y] <span class="ot">-&gt;</span> <span class="fu">return</span> (x, y)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>      _ <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="st">&quot;Expected: URL FILEPATH&quot;</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a>  req <span class="ot">&lt;-</span> parseRequest url</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a>  digest <span class="ot">&lt;-</span> runResourceT <span class="op">$</span> httpSink req <span class="op">$</span> \_res <span class="ot">-&gt;</span> getZipSink <span class="op">$</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a>    <span class="dt">ZipSink</span> (sinkFile fp) <span class="op">*&gt;</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a>    <span class="dt">ZipSink</span> sinkHash</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>  <span class="fu">print</span> (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>)</span></code></pre></div>
 <p><code>conduit</code> にできるなら、もちろんあなたにもできるはずです。 <code>conduit</code> を使わずに、<code>hashFile</code> を実装してみましょう。 こうすることで、ハッシュの API の内部がいくらか分かります。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">import</span> <span class="dt">Crypto.Hash</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="kw">import</span> <span class="dt">System.Environment</span>  (getArgs)</span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="kw">import</span> <span class="dt">System.IO</span> (withBinaryFile, <span class="dt">IOMode</span> (<span class="dt">ReadMode</span>))</span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="kw">import</span> <span class="dt">Data.Foldable</span> (forM_)</span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a></span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="ot">hashFile ::</span> <span class="dt">HashAlgorithm</span> ha <span class="ot">=&gt;</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Digest</span> ha)</span>
-<span id="cb10-10"><a href="#cb10-10"></a>hashFile fp <span class="ot">=</span> withBinaryFile fp <span class="dt">ReadMode</span> <span class="op">$</span> \h <span class="ot">-&gt;</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a>  <span class="kw">let</span> loop context <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a>        chunk <span class="ot">&lt;-</span> B.hGetSome h <span class="dv">4096</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a>        <span class="kw">if</span> B.null chunk</span>
-<span id="cb10-14"><a href="#cb10-14"></a>          <span class="kw">then</span> <span class="fu">return</span> <span class="op">$</span> hashFinalize context</span>
-<span id="cb10-15"><a href="#cb10-15"></a>          <span class="kw">else</span> loop <span class="op">$!</span> hashUpdate context chunk</span>
-<span id="cb10-16"><a href="#cb10-16"></a>   <span class="kw">in</span> loop hashInit</span>
-<span id="cb10-17"><a href="#cb10-17"></a></span>
-<span id="cb10-18"><a href="#cb10-18"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb10-19"><a href="#cb10-19"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-20"><a href="#cb10-20"></a>  args <span class="ot">&lt;-</span> getArgs</span>
-<span id="cb10-21"><a href="#cb10-21"></a>  forM_ args <span class="op">$</span> \fp <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb10-22"><a href="#cb10-22"></a>    digest <span class="ot">&lt;-</span> hashFile fp</span>
-<span id="cb10-23"><a href="#cb10-23"></a>    <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>) <span class="op">++</span> <span class="st">&quot;  &quot;</span> <span class="op">++</span> fp</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Crypto.Hash</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.Environment</span>  (getArgs)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.IO</span> (withBinaryFile, <span class="dt">IOMode</span> (<span class="dt">ReadMode</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Foldable</span> (forM_)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="ot">hashFile ::</span> <span class="dt">HashAlgorithm</span> ha <span class="ot">=&gt;</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Digest</span> ha)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>hashFile fp <span class="ot">=</span> withBinaryFile fp <span class="dt">ReadMode</span> <span class="op">$</span> \h <span class="ot">-&gt;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>  <span class="kw">let</span> loop context <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>        chunk <span class="ot">&lt;-</span> B.hGetSome h <span class="dv">4096</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>        <span class="kw">if</span> B.null chunk</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>          <span class="kw">then</span> <span class="fu">return</span> <span class="op">$</span> hashFinalize context</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a>          <span class="kw">else</span> loop <span class="op">$!</span> hashUpdate context chunk</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a>   <span class="kw">in</span> loop hashInit</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true"></a>  args <span class="ot">&lt;-</span> getArgs</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true"></a>  forM_ args <span class="op">$</span> \fp <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true"></a>    digest <span class="ot">&lt;-</span> hashFile fp</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true"></a>    <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>) <span class="op">++</span> <span class="st">&quot;  &quot;</span> <span class="op">++</span> fp</span></code></pre></div>
 <p>この実装では <code>Crypto.Hash</code> で提供されている純粋なハッシュ更新用関数を使っています。 今回の場合、いくつかバッファのコピーをスキップすることで、もう少し効率の良い実装を可能にする、可変ハッシュの関数を使うことができます。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">import</span> <span class="dt">Crypto.Hash</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="kw">import</span> <span class="dt">Crypto.Hash.IO</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="kw">import</span> <span class="dt">System.Environment</span>  (getArgs)</span>
-<span id="cb11-6"><a href="#cb11-6"></a><span class="kw">import</span> <span class="dt">System.IO</span> (withBinaryFile, <span class="dt">IOMode</span> (<span class="dt">ReadMode</span>))</span>
-<span id="cb11-7"><a href="#cb11-7"></a><span class="kw">import</span> <span class="dt">Data.Foldable</span> (forM_)</span>
-<span id="cb11-8"><a href="#cb11-8"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span></span>
-<span id="cb11-9"><a href="#cb11-9"></a></span>
-<span id="cb11-10"><a href="#cb11-10"></a><span class="ot">hashFile ::</span> <span class="dt">HashAlgorithm</span> ha <span class="ot">=&gt;</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Digest</span> ha)</span>
-<span id="cb11-11"><a href="#cb11-11"></a>hashFile fp <span class="ot">=</span> withBinaryFile fp <span class="dt">ReadMode</span> <span class="op">$</span> \h <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb11-12"><a href="#cb11-12"></a>  context <span class="ot">&lt;-</span> hashMutableInit</span>
-<span id="cb11-13"><a href="#cb11-13"></a>  <span class="kw">let</span> loop <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb11-14"><a href="#cb11-14"></a>        chunk <span class="ot">&lt;-</span> B.hGetSome h <span class="dv">4096</span></span>
-<span id="cb11-15"><a href="#cb11-15"></a>        <span class="kw">if</span> B.null chunk</span>
-<span id="cb11-16"><a href="#cb11-16"></a>          <span class="kw">then</span> hashMutableFinalize context</span>
-<span id="cb11-17"><a href="#cb11-17"></a>          <span class="kw">else</span> <span class="kw">do</span></span>
-<span id="cb11-18"><a href="#cb11-18"></a>            hashMutableUpdate context chunk</span>
-<span id="cb11-19"><a href="#cb11-19"></a>            loop</span>
-<span id="cb11-20"><a href="#cb11-20"></a>  loop</span>
-<span id="cb11-21"><a href="#cb11-21"></a></span>
-<span id="cb11-22"><a href="#cb11-22"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb11-23"><a href="#cb11-23"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb11-24"><a href="#cb11-24"></a>  args <span class="ot">&lt;-</span> getArgs</span>
-<span id="cb11-25"><a href="#cb11-25"></a>  forM_ args <span class="op">$</span> \fp <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb11-26"><a href="#cb11-26"></a>    digest <span class="ot">&lt;-</span> hashFile fp</span>
-<span id="cb11-27"><a href="#cb11-27"></a>    <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>) <span class="op">++</span> <span class="st">&quot;  &quot;</span> <span class="op">++</span> fp</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-9.3 script</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Crypto.Hash</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Crypto.Hash.IO</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.Environment</span>  (getArgs)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">System.IO</span> (withBinaryFile, <span class="dt">IOMode</span> (<span class="dt">ReadMode</span>))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Foldable</span> (forM_)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true"></a><span class="ot">hashFile ::</span> <span class="dt">HashAlgorithm</span> ha <span class="ot">=&gt;</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Digest</span> ha)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true"></a>hashFile fp <span class="ot">=</span> withBinaryFile fp <span class="dt">ReadMode</span> <span class="op">$</span> \h <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true"></a>  context <span class="ot">&lt;-</span> hashMutableInit</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true"></a>  <span class="kw">let</span> loop <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true"></a>        chunk <span class="ot">&lt;-</span> B.hGetSome h <span class="dv">4096</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true"></a>        <span class="kw">if</span> B.null chunk</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true"></a>          <span class="kw">then</span> hashMutableFinalize context</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true"></a>          <span class="kw">else</span> <span class="kw">do</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true"></a>            hashMutableUpdate context chunk</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true"></a>            loop</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true"></a>  loop</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true"></a></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true"></a>  args <span class="ot">&lt;-</span> getArgs</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true"></a>  forM_ args <span class="op">$</span> \fp <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true"></a>    digest <span class="ot">&lt;-</span> hashFile fp</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true"></a>    <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">show</span> (<span class="ot">digest ::</span> <span class="dt">Digest</span> <span class="dt">SHA256</span>) <span class="op">++</span> <span class="st">&quot;  &quot;</span> <span class="op">++</span> fp</span></code></pre></div>
 <p><strong>練習問題</strong> 遅延入出力と <code>hashlazy</code>関数を使って、<code>hashFile</code> を実装してください (遅延入出力を支持しているわけじゃないですよ。)。</p>
       </article>
 

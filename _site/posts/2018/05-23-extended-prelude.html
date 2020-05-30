@@ -295,28 +295,28 @@ proto" />
 </table>
 <p>カスタム Prelude を使うモチベーションは、自分のよく使う関数を Prelude に入れたいとか、<strong>fromJust</strong> みたいな部分関数を排除したいなど、色々あります。</p>
 <p>実際にカスタム Prelude を使うためにはファイルの先頭に <strong>NoImplicitPrelude</strong> 言語拡張とカスタムPreludeの <strong>import</strong> 宣言を追加する必要があります。(具体例として <strong>rio</strong> パッケージを利用します)</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">{-# LANGUAGE NoImplicitPrelude #-}</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">import</span> <span class="dt">RIO</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="op">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE NoImplicitPrelude #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">RIO</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="op">...</span></span></code></pre></div>
 <p>新しいファイルを作るたびに、ファイルの先頭に上記の宣言を書いても良いのですが、今回はこの作業なしにカスタム Prelude を使う方法をご紹介したいと思います。</p>
 <!--more-->
 <h2 id="default-extensions-を利用する">default-extensions を利用する</h2>
 <p><code>{-# LANGUAGE NoImplicitPrelude #-}</code> を自動的に有効化させることは意外と簡単です。</p>
 <p><strong>package.yaml</strong> や <strong>cabal</strong> ファイルの <strong>default-extensions</strong> に追加するだけです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># package.yaml</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">default-extensions</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">-</span><span class="at"> NoImplicitPrelude</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># package.yaml</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="fu">default-extensions</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> NoImplicitPrelude</span></span></code></pre></div>
 <pre><code># project.cabal
 default-extensions: NoImplicitPrelude</code></pre>
 <p>この場合、全てのファイルで自動的に <strong>NoImplicitPrelude</strong> が有効になるため、カスタム Prelude の import 宣言のみが必要となります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">import</span> <span class="dt">RIO</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="op">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">RIO</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="op">...</span></span></code></pre></div>
 <p>まだ <code>import RIO</code> が残っているので、こいつをなんとかしましょう。</p>
 <h2 id="base-noprelude-パッケージ">base-noprelude パッケージ</h2>
 <p><a href="https://ghc.haskell.org/trac/ghc/ticket/9499?cversion=0&amp;cnum_hist=8">Add -prelude-is flag</a> というチケットで紹介されている方法を使えば、<code>import RIO</code> を記述することなく、<strong>Prelude</strong> のように利用できるようになります。</p>
@@ -324,46 +324,46 @@ default-extensions: NoImplicitPrelude</code></pre>
 <p>具体的には <a href="https://github.com/haskell-hvr/base-noprelude">base-noprelude</a> パッケージを利用します。</p>
 <h3 id="最小構成">最小構成</h3>
 <p>この方法もかなり簡単で、<strong>stack.yaml</strong>, <strong>package.yaml</strong>, <strong>src/Prelude.hs</strong> をちょこっと書くだけで完成です。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># stack.yaml</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> nightly-2018-05-23</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="fu">packages</span><span class="kw">:</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">-</span><span class="at"> .</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">-</span><span class="at"> base-noprelude-4.11.1.0</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># package.yaml</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> extended-prelude</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="kw">-</span><span class="at"> base-noprelude</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">-</span><span class="at"> rio</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="fu">library</span><span class="kw">:</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="at">  </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at"> src</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="at">  </span><span class="fu">other-modules</span><span class="kw">:</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="at">  </span><span class="kw">-</span><span class="at"> Prelude</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">-- src/Prelude.hs</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">module</span> <span class="dt">Prelude</span> (<span class="kw">module</span> <span class="dt">RIO</span>) <span class="kw">where</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">import</span> <span class="dt">RIO</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="co"># stack.yaml</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> nightly-2018-05-23</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> .</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="fu">extra-deps</span><span class="kw">:</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="kw">-</span><span class="at"> base-noprelude-4.11.1.0</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co"># package.yaml</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> extended-prelude</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="kw">-</span><span class="at"> base-noprelude</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="kw">-</span><span class="at"> rio</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="at">  </span><span class="fu">source-dirs</span><span class="kw">:</span><span class="at"> src</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a><span class="at">  </span><span class="fu">other-modules</span><span class="kw">:</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> Prelude</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="co">-- src/Prelude.hs</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Prelude</span> (<span class="kw">module</span> <span class="dt">RIO</span>) <span class="kw">where</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">RIO</span></span></code></pre></div>
 <h3 id="確認">確認</h3>
 <p>ファイルに <code>import RIO</code> を書かなくても本当に良いのか確かめてみます。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- src/Sample.hs</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">module</span> <span class="dt">Sample</span> <span class="kw">where</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="ot">f ::</span> <span class="dt">Text</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a>f <span class="ot">=</span> tshow <span class="st">&quot;a&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="co">-- src/Sample.hs</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Sample</span> <span class="kw">where</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Text</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>f <span class="ot">=</span> tshow <span class="st">&quot;a&quot;</span></span></code></pre></div>
 <p>当然、通常の <strong>Prelude</strong> には <strong>Text</strong> も <strong>tshow</strong> も無いので、<code>import RIO</code> が有効になっていなければ、ビルドエラーになるはずです。</p>
 <p><strong>ghci</strong> で確認してみましょう。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="op">$</span> stack repl</span>
-<span id="cb9-2"><a href="#cb9-2"></a>ghci<span class="op">&gt;</span> f</span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="st">&quot;\&quot;a\&quot;&quot;</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a>ghci<span class="op">&gt;</span> <span class="op">:</span>t fromJust</span>
-<span id="cb9-6"><a href="#cb9-6"></a></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span> <span class="dt">Variable</span> <span class="fu">not</span> <span class="kw">in</span> scope<span class="op">:</span> fromJust</span>
-<span id="cb9-8"><a href="#cb9-8"></a></span>
-<span id="cb9-9"><a href="#cb9-9"></a>ghci<span class="op">&gt;</span> <span class="op">:</span>t view</span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="ot">view ::</span> <span class="dt">MonadReader</span> s m <span class="ot">=&gt;</span> <span class="dt">Getting</span> a s a <span class="ot">-&gt;</span> m a</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="op">$</span> stack repl</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>ghci<span class="op">&gt;</span> f</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="st">&quot;\&quot;a\&quot;&quot;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>ghci<span class="op">&gt;</span> <span class="op">:</span>t fromJust</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span> <span class="dt">Variable</span> <span class="fu">not</span> <span class="kw">in</span> scope<span class="op">:</span> fromJust</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a>ghci<span class="op">&gt;</span> <span class="op">:</span>t view</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a><span class="ot">view ::</span> <span class="dt">MonadReader</span> s m <span class="ot">=&gt;</span> <span class="dt">Getting</span> a s a <span class="ot">-&gt;</span> m a</span></code></pre></div>
 <p>ちゃんと動いてそうですね。</p>
 <h2 id="まとめ">まとめ</h2>
 <p>実際にこの手法で開発を進めているわけではないので、もしかすると落とし穴があるかもしれませんが、思ったより使いやすくてびっくりしました。</p>

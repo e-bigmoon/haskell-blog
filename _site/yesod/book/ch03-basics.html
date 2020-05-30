@@ -183,35 +183,35 @@
 <p>この章の目的は簡単な Yesod アプリケーションを作り、基本的な概念や用語を理解することです。</p>
 <h2 id="hello-world">Hello World</h2>
 <p>まずは Hello World を表示する簡単な Web ページの例を見てみましょう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
-<span id="cb1-10"><a href="#cb1-10"></a>/ HomeR GET</span>
-<span id="cb1-11"><a href="#cb1-11"></a>|]</span>
-<span id="cb1-12"><a href="#cb1-12"></a></span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a></span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
-<span id="cb1-17"><a href="#cb1-17"></a></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-19"><a href="#cb1-19"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HelloWorld</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>/ HomeR GET</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>|]</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">HelloWorld</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout [whamlet|Hello World!|]</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">HelloWorld</span></span></code></pre></div>
 <p>このコードを <code>helloworld.hs</code> というファイル名で保存した後に <code>runhaskell helloworld.hs</code> コマンドを実行することで、ポート3000番で動く Web サーバが立ち上がります。クイックスタートガイドに従って <code>stack</code> で yesod をインストールした場合は <code>runhaskell</code> コマンドの代わりに <code>stack runghc helloworld.hs</code> コマンドを実行してください。そして、ブラウザで <a href="http://localhost:3000">http://localhost:3000</a> にアクセスすれば、次の HTML コードが得られるでしょう。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">&lt;html&gt;&lt;head&gt;&lt;title&gt;&lt;/title&gt;&lt;/head&gt;&lt;body&gt;</span>Hello World!<span class="kw">&lt;/body&gt;&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;&lt;head&gt;&lt;title&gt;&lt;/title&gt;&lt;/head&gt;&lt;body&gt;</span>Hello World!<span class="kw">&lt;/body&gt;&lt;/html&gt;</span></span></code></pre></div>
 <p>本章の残りの部分で、この例を何度か参照します。</p>
 <h2 id="ルーティング">ルーティング</h2>
 <p>多くのモダンな Web フレームワークと同様に Yesod は <a href="https://en.wikipedia.org/wiki/Front_controller">Front controllerパターン</a> を採用しています。これは、Yesod アプリケーションへのあらゆるリクエストは一旦同じポイントに入り、そこからルーティングが行われることを意味します。それとは対照的に、PHP や ASP においては、たいてい複数の異なるファイルを作成し、Web サーバが自動的に関連ファイルを直接リクエストします。</p>
 <p>さらに、Yesod は宣言的な方法でルート (route) を指定します。先ほどの例では以下の部分が該当します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
-<span id="cb3-2"><a href="#cb3-2"></a>/ HomeR GET</span>
-<span id="cb3-3"><a href="#cb3-3"></a>|]</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>mkYesod <span class="st">&quot;HelloWorld&quot;</span> [parseRoutes|</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>/ HomeR GET</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>|]</span></code></pre></div>
 <div class="yesod-book-notice">
 <p><code>mkYesod</code> は Template Haskell 関数、 <code>parseRoutes</code> は準クォート (QuasiQuoter) です。</p>
 </div>
@@ -220,29 +220,29 @@
 <p>リソース名における接尾辞Rは単なる慣習ですが、かなり一般的に使われています。これにより、コードを読んだり理解することが少しだけ楽になります。</p>
 </div>
 <p><code>mkYesod</code> のTH関数は、ルートデータ型、パーサー/レンダー関数、ディスパッチ関数、いくつかの補助的な型など、かなり多くのコードを生成します。ルーティングの章で、それらの詳細について説明しますが、 GHC オプションの <code>-ddump-splices</code> を使えば、生成されるコードをすぐに確認することもでき、それを見やすく整理すると次のようになります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">instance</span> <span class="dt">RenderRoute</span> <span class="dt">HelloWorld</span> <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>    <span class="kw">data</span> <span class="dt">Route</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>        <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a>    renderRoute <span class="dt">HomeR</span> <span class="ot">=</span> ([], [])</span>
-<span id="cb4-5"><a href="#cb4-5"></a></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="kw">instance</span> <span class="dt">ParseRoute</span> <span class="dt">HelloWorld</span> <span class="kw">where</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>    parseRoute ([], _) <span class="ot">=</span> <span class="dt">Just</span> <span class="dt">HomeR</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>    parseRoute _       <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a></span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="kw">instance</span> <span class="dt">YesodDispatch</span> <span class="dt">HelloWorld</span> <span class="kw">where</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>    yesodDispatch env req <span class="ot">=</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>        yesodRunner handler env mroute req</span>
-<span id="cb4-13"><a href="#cb4-13"></a>      <span class="kw">where</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>        mroute <span class="ot">=</span> parseRoute (pathInfo req, textQueryString req)</span>
-<span id="cb4-15"><a href="#cb4-15"></a>        handler <span class="ot">=</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a>            <span class="kw">case</span> mroute <span class="kw">of</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a>                <span class="dt">Nothing</span> <span class="ot">-&gt;</span> notFound</span>
-<span id="cb4-18"><a href="#cb4-18"></a>                <span class="dt">Just</span> <span class="dt">HomeR</span> <span class="ot">-&gt;</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a>                    <span class="kw">case</span> requestMethod req <span class="kw">of</span></span>
-<span id="cb4-20"><a href="#cb4-20"></a>                        <span class="st">&quot;GET&quot;</span> <span class="ot">-&gt;</span> getHomeR</span>
-<span id="cb4-21"><a href="#cb4-21"></a>                        _     <span class="ot">-&gt;</span> badMethod</span>
-<span id="cb4-22"><a href="#cb4-22"></a></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="kw">type</span> <span class="dt">Handler</span> <span class="ot">=</span> <span class="dt">HandlerT</span> <span class="dt">HelloWorld</span> <span class="dt">IO</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderRoute</span> <span class="dt">HelloWorld</span> <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>    <span class="kw">data</span> <span class="dt">Route</span> <span class="dt">HelloWorld</span> <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>        <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    renderRoute <span class="dt">HomeR</span> <span class="ot">=</span> ([], [])</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">ParseRoute</span> <span class="dt">HelloWorld</span> <span class="kw">where</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    parseRoute ([], _) <span class="ot">=</span> <span class="dt">Just</span> <span class="dt">HomeR</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>    parseRoute _       <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodDispatch</span> <span class="dt">HelloWorld</span> <span class="kw">where</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>    yesodDispatch env req <span class="ot">=</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>        yesodRunner handler env mroute req</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>      <span class="kw">where</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>        mroute <span class="ot">=</span> parseRoute (pathInfo req, textQueryString req)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>        handler <span class="ot">=</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>            <span class="kw">case</span> mroute <span class="kw">of</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>                <span class="dt">Nothing</span> <span class="ot">-&gt;</span> notFound</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>                <span class="dt">Just</span> <span class="dt">HomeR</span> <span class="ot">-&gt;</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>                    <span class="kw">case</span> requestMethod req <span class="kw">of</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>                        <span class="st">&quot;GET&quot;</span> <span class="ot">-&gt;</span> getHomeR</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>                        _     <span class="ot">-&gt;</span> badMethod</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Handler</span> <span class="ot">=</span> <span class="dt">HandlerT</span> <span class="dt">HelloWorld</span> <span class="dt">IO</span></span></code></pre></div>
 <div class="yesod-book-notice">
 <p><code>-ddump-splices</code> オプションを利用するだけでなく、アプリケーションの Haddock ドキュメントを生成して、どんな関数やデータ型が生成されたか確認するテクニックも良く使われます。</p>
 </div>
@@ -282,61 +282,61 @@
 <p>Warp は Yesod における最も重要なデプロイメントオプションです。Warp はとりわけ Yesod をホストするために開発された、軽量で高効率なウェブサーバです。また Yesod に限らず Warp は利用可能です。例えば、別の Haskell 開発 (フレームワーク、非フレームワークアプリケーション) や、いくつかのプロダクション環境の標準ファイルサーバとして利用することも可能です。</p>
 <h2 id="リソースと型安全-url">リソースと型安全 URL</h2>
 <p>hello world の例では、リソース (<code>HomeR</code>) を1つだけ定義しました。しかし、ウェブアプリケーションでは普通はページが1つ以上ありますよね。次の例はトップページを含め、ページが3つある例です。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="kw">data</span> <span class="dt">Links</span> <span class="ot">=</span> <span class="dt">Links</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a></span>
-<span id="cb5-9"><a href="#cb5-9"></a>mkYesod <span class="st">&quot;Links&quot;</span> [parseRoutes|</span>
-<span id="cb5-10"><a href="#cb5-10"></a>/ HomeR GET</span>
-<span id="cb5-11"><a href="#cb5-11"></a>/page1 Page1R GET</span>
-<span id="cb5-12"><a href="#cb5-12"></a>/page2 Page2R GET</span>
-<span id="cb5-13"><a href="#cb5-13"></a>|]</span>
-<span id="cb5-14"><a href="#cb5-14"></a></span>
-<span id="cb5-15"><a href="#cb5-15"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Links</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a></span>
-<span id="cb5-17"><a href="#cb5-17"></a>getHomeR  <span class="ot">=</span> defaultLayout [whamlet|<span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Page1R</span><span class="kw">}&gt;</span>Go to page 1!|]</span>
-<span id="cb5-18"><a href="#cb5-18"></a>getPage1R <span class="ot">=</span> defaultLayout [whamlet|<span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Page2R</span><span class="kw">}&gt;</span>Go to page 2!|]</span>
-<span id="cb5-19"><a href="#cb5-19"></a>getPage2R <span class="ot">=</span> defaultLayout [whamlet|<span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}&gt;</span>Go home!|]</span>
-<span id="cb5-20"><a href="#cb5-20"></a></span>
-<span id="cb5-21"><a href="#cb5-21"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">Links</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Links</span> <span class="ot">=</span> <span class="dt">Links</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>mkYesod <span class="st">&quot;Links&quot;</span> [parseRoutes|</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>/ HomeR GET</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>/page1 Page1R GET</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>/page2 Page2R GET</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>|]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Links</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>getHomeR  <span class="ot">=</span> defaultLayout [whamlet|<span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Page1R</span><span class="kw">}&gt;</span>Go to page 1!|]</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a>getPage1R <span class="ot">=</span> defaultLayout [whamlet|<span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">Page2R</span><span class="kw">}&gt;</span>Go to page 2!|]</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true"></a>getPage2R <span class="ot">=</span> defaultLayout [whamlet|<span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}&gt;</span>Go home!|]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">Links</span></span></code></pre></div>
 <p>全体的にこれは Hello World の例と非常に類似しています。今回のファウンデーションは <code>HelloWorld</code> の代わりに <code>Links</code> となっています。また <code>HomeR</code> リソースの他に <code>Page1R</code> と <code>Page2R</code> リソース、さらに2つのハンドラ関数 <code>getPage1R</code> と <code>getPage2R</code> が追加されました。</p>
 <p>唯一本当に新しい部分としては <code>whamlet</code> 準クォートの中身です。構文に関しては “シェイクスピア (Shakespeare)” の章で掘り下げますが、</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">&lt;</span>a href<span class="op">=@</span>{<span class="dt">Page1R</span>}<span class="op">&gt;</span><span class="dt">Go</span> to page <span class="dv">1</span><span class="op">!</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="op">&lt;</span>a href<span class="op">=@</span>{<span class="dt">Page1R</span>}<span class="op">&gt;</span><span class="dt">Go</span> to page <span class="dv">1</span><span class="op">!</span></span></code></pre></div>
 <p>上記のコードが <code>Page1R</code> リソースへのリンクを作成するということは読み取れるでしょう。ここで注意すべき重要な点としては <code>Page1R</code> はデータコンストラクタだという点です。それぞれのリソースをデータコンストラクタにすることで、型安全URL (<strong><em>type-safe URLs</em></strong>) の機能を実現できます。URLを生成するために文字列を操作するのではなく、単純にただの Haskell の値を生成します。アットマーク記号の展開 (<code>@{...}</code>) を利用することで Yesod はユーザに情報を送る前に、これら Haskell の値を自動的にテキスト形式の URL に置き換えます。型安全URLの実装方法ついては、再び <code>-ddump-splices</code> の出力結果を見ることで理解できるでしょう。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">instance</span> <span class="dt">RenderRoute</span> <span class="dt">Links</span> <span class="kw">where</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>    <span class="kw">data</span> <span class="dt">Route</span> <span class="dt">Links</span> <span class="ot">=</span> <span class="dt">HomeR</span> <span class="op">|</span> <span class="dt">Page1R</span> <span class="op">|</span> <span class="dt">Page2R</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>      <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
-<span id="cb7-4"><a href="#cb7-4"></a></span>
-<span id="cb7-5"><a href="#cb7-5"></a>    renderRoute <span class="dt">HomeR</span>  <span class="ot">=</span> ([], [])</span>
-<span id="cb7-6"><a href="#cb7-6"></a>    renderRoute <span class="dt">Page1R</span> <span class="ot">=</span> ([<span class="st">&quot;page1&quot;</span>], [])</span>
-<span id="cb7-7"><a href="#cb7-7"></a>    renderRoute <span class="dt">Page2R</span> <span class="ot">=</span> ([<span class="st">&quot;page2&quot;</span>], [])</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderRoute</span> <span class="dt">Links</span> <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>    <span class="kw">data</span> <span class="dt">Route</span> <span class="dt">Links</span> <span class="ot">=</span> <span class="dt">HomeR</span> <span class="op">|</span> <span class="dt">Page1R</span> <span class="op">|</span> <span class="dt">Page2R</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>      <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>    renderRoute <span class="dt">HomeR</span>  <span class="ot">=</span> ([], [])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>    renderRoute <span class="dt">Page1R</span> <span class="ot">=</span> ([<span class="st">&quot;page1&quot;</span>], [])</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>    renderRoute <span class="dt">Page2R</span> <span class="ot">=</span> ([<span class="st">&quot;page2&quot;</span>], [])</span></code></pre></div>
 <p><code>Links</code> と関連付けられた型 <code>Route</code> は <code>Page1R</code> と <code>Page2R</code> のルートを扱うための追加的なコンストラクタを持ちます。今回の場合 <code>renderRoute</code> の戻り値は HelloWorld の例よりも多くのことを教えてくれます。タプルの第一要素は与えられたルートにおけるパス断片であり、第二要素はクエリ文字列パラメータです。多くの場合、クエリ文字列パラメータは基本的には空リストとなるでしょう。</p>
 <p>型安全URLを過剰に評価しているわけではありません。なぜなら、型安全URLはリンクを切らさずに URL を変更することが可能になるといった、アプリケーション開発においてかなりの柔軟さと堅牢さを与えるからです。ルーティングの章では、ルートがブログポスト ID とブログエントリ URL の関係のようなパラメータを取る例を学びます。</p>
 <p>もしかすると、数値表現のブログポスト ID のルーティングから 年/月/スラグ 形式に切り替えたいと思う読者がいるかもしれません。従来のウェブフレームワークでは、ブログポストを単一参照している全てのルートを適切に更新していました。もし, 何かしらの手違いがあると、実行時に 404 などのエラーが起きてしまいます。Yesod では、ルートが更新されたときにコンパイルが行われ GHC は修正する必要のあるすべての行を正確に指摘します。</p>
 <h2 id="html-以外のレスポンス">HTML 以外のレスポンス</h2>
 <p>Yesod はどんなコンテンツに対しても対応可能であり、一般的なレスポンス形式の多く関しては Yesod でサポートしています。 HTML については既に述べた通りですが、例えば JSON データなら aeson パッケージを利用する事で容易に対応できます。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="ot">{-# LANGUAGE ExtendedDefaultRules #-}</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="ot">{-# LANGUAGE OverloadedStrings    #-}</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="ot">{-# LANGUAGE QuasiQuotes          #-}</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="ot">{-# LANGUAGE TemplateHaskell      #-}</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="ot">{-# LANGUAGE TypeFamilies         #-}</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="kw">import</span> <span class="dt">Yesod</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a></span>
-<span id="cb8-10"><a href="#cb8-10"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb8-11"><a href="#cb8-11"></a>/ HomeR GET</span>
-<span id="cb8-12"><a href="#cb8-12"></a>|]</span>
-<span id="cb8-13"><a href="#cb8-13"></a></span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a></span>
-<span id="cb8-16"><a href="#cb8-16"></a>getHomeR  <span class="ot">=</span> <span class="fu">return</span> <span class="op">$</span> object [<span class="st">&quot;msg&quot;</span> <span class="op">.=</span> <span class="st">&quot;Hello World&quot;</span>]</span>
-<span id="cb8-17"><a href="#cb8-17"></a></span>
-<span id="cb8-18"><a href="#cb8-18"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE ExtendedDefaultRules #-}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings    #-}</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes          #-}</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell      #-}</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies         #-}</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Yesod</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>/ HomeR GET</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>|]</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>getHomeR  <span class="ot">=</span> <span class="fu">return</span> <span class="op">$</span> object [<span class="st">&quot;msg&quot;</span> <span class="op">.=</span> <span class="st">&quot;Hello World&quot;</span>]</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p>JSON レスポンスに関しては <code>Accept</code> リクエストヘッダーによって自動的に HTML と JSON の表現を切り替える方法を含めて、後の章において詳細を述べます。</p>
 <h2 id="the-scaffolded-site">The scaffolded site</h2>
 <p>Yesod をインストールすれば Yesod ライブラリと <code>yesod</code> の実行ファイルが得られます。この実行ファイルにはいくつかのコマンドが存在しますが、はじめに慣れておくべきコマンドは <code>yesod init</code> です。これは、いくつかの質問に答えることでデフォルトの設定で scaffolded site を生成するものです。そのフォルダの中で、追加の依存関係 (バックエンドデータベースなど) を構築するために <code>stack install --only-dependencies</code> を実行し、さらに <code>yesod devel</code> コマンドでサイトを動かすことができます。</p>

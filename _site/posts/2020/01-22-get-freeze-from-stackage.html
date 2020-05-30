@@ -231,21 +231,21 @@
 <h2 id="モチベーション">モチベーション</h2>
 <p>ここでは <strong>stack</strong> で管理されていて、<strong>cabal</strong> ファイルにバージョン制約が明記されていないという、良くあるシチュエーションを考えます。</p>
 <p>どんなプロジェクトでも良いのですが、具体的には <a href="https://github.com/arcticmatt/dino-brick">arcticmatt/dino-brick</a> のようなプロジェクトです。<code>stack.yaml</code> は以下のようになっています。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-8.23</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">packages</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">-</span><span class="at"> </span><span class="st">'.'</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">resolver</span><span class="kw">:</span><span class="at"> lts-8.23</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">packages</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="st">'.'</span></span></code></pre></div>
 <p><a href="https://github.com/arcticmatt/dino-brick/blob/dino/dino.cabal#L16">dino.cabal の build-depends</a> には、ほとんどバージョンが明記されていません。(<strong>stack</strong> の場合はスナップショットが決まると自動的にパッケージのバージョンが決まるため、明示する必要はあまり無いのです)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="at">    , brick</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="at">    , containers</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="at">    , linear</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="at">    , microlens</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="at">    , microlens-th</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="at">    , random</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="at">    , vty</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="at">    , brick</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="at">    , containers</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="at">    , linear</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="at">    , microlens</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="at">    , microlens-th</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="at">    , random</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="at">    , vty</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
 <p>このプロジェクトを <strong>cabal</strong> でビルドするためにはどうしたら良いんだろうか？というお話です。何もしなくてもビルドできるプロジェクトも結構あるんですが、ハマる時もあります・・・。</p>
 <h2 id="package.yaml-から-cabal-ファイルを生成する">package.yaml から cabal ファイルを生成する</h2>
 <p>リポジトリに <code>package.yaml</code> しか含まれていない場合は、<code>package.yaml</code> から <strong>cabal</strong> ファイルを生成しましょう。</p>
@@ -293,11 +293,11 @@ dino-0.1.0.0).</code></pre>
 <p>一方で <strong>cabal</strong> の場合は <code>cabal update</code> を最後に実行した時の <strong>Hackage</strong> の最新バージョンが利用されます。これは明示的なバージョン制約が <strong>cabal</strong> ファイルに記述されていないためです。そのため <a href="https://hackage.haskell.org/package/brick-0.50.1">brick-0.50.1</a> などが利用されます。</p>
 <p>バージョンアップによって後方互換性が保たれている場合は何も考えずにビルドが通るのですが、<strong>GHC</strong> のバージョンが変わるタイミングなどでは破壊的変更が含まれている場合も多いため、どこかでビルドが壊れます。</p>
 <p>今回のプロジェクトでは <a href="https://github.com/jtdaugherty/brick/blob/master/CHANGELOG.md#047">brick-0.47</a> の変更によって <code>Brick.Main.customMain</code> の型が変わり、その結果ビルドエラーになりました。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- 0.46</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span>        <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co">-- 0.47</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="co">-- 0.46</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span>        <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="co">-- 0.47</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="ot">customMain ::</span> <span class="dt">Ord</span> n <span class="ot">=&gt;</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Vty</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">BChan</span> e) <span class="ot">-&gt;</span> <span class="dt">App</span> s e n <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> s</span></code></pre></div>
 <p>このように、原因が特定できれば、修正は簡単です。<code>brick</code> にバージョン制約を付けるだけです。(0.47 でビルドできるようにコードを修正する方法ももちろん考えられます)</p>
 <pre class="cabal"><code>library:
   build-depends:
@@ -475,17 +475,17 @@ goals I've had most trouble fulfilling: brick, dino</code></pre>
 <pre class="shell"><code>$ git clone https://github.com/arcticmatt/dino-brick.git
 $ cd dino-brick
 $ cabal update</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">library</span><span class="kw">:</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="at">    , brick</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="at">    , containers</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="at">    , linear</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="at">    , microlens</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="at">    , microlens-th</span></span>
-<span id="cb13-9"><a href="#cb13-9"></a><span class="at">    , random</span></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="at">    , vty</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="fu">library</span><span class="kw">:</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">build-depends</span><span class="kw">:</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="at">      base &gt;= 4.7 &amp;&amp; &lt; 5</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a><span class="at">    , brick</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a><span class="at">    , containers</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="at">    , linear</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="at">    , microlens</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a><span class="at">    , microlens-th</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a><span class="at">    , random</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a><span class="at">    , vty</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a><span class="at">    , MonadRandom</span></span></code></pre></div>
 <p><strong>Stackage</strong> のスナップショットの <strong>URL</strong> の後ろに <code>cabal.config</code> を付けた <a href="https://www.stackage.org/lts-8.23/cabal.config">https://www.stackage.org/lts-8.23/cabal.config</a> にアクセスすると <code>cabal.project.freeze</code> ファイルとして利用可能なテキストファイルが表示されます。</p>
 <p>これをそのまま保存してビルドするだけで全てが上手くいきます。</p>
 <pre class="shell"><code>$ curl https://www.stackage.org/lts-8.23/cabal.config &gt; cabal.project.freeze

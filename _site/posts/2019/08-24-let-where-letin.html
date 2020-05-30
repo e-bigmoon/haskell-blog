@@ -229,13 +229,13 @@
 <p>また、様々な Haskell 書籍で同様の内容について触れられていますが、明確な指針は無く個人の好みという感じがします。</p>
 <!--more-->
 <h2 id="let-を使うタイミング-do-の中">let を使うタイミング (do の中)</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">-- let version</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>      z <span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co">-- let version</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>      z <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
 <ul>
 <li>上記のコードのように <code>do</code> の中で束縛された変数 <code>x</code> を使って新しい変数 <code>y</code> を宣言する時に良く使います</li>
 <li>他の変数に依存していない <code>z</code> はどの書き方でも書けますが、通常は <code>let</code> で続けて書くことが多いと思います</li>
@@ -243,86 +243,86 @@
 <li>内部的には <code>do { let decls; stmts } = let decls in do { stmts }</code> という変換が行われます。(リスト内包表記は <code>[ e | let decls, Q ] = let decls in [ e | Q ]</code> という変換です。)</li>
 </ul>
 <h3 id="where-で書いた場合">where で書いた場合</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">-- where version</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z)</span>
-<span id="cb2-6"><a href="#cb2-6"></a>  <span class="kw">where</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co">-- where version</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>  <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
 <ul>
 <li><code>where</code> を使って <code>x</code> を宣言することはできません。(<code>do</code> を脱糖した形を見ると、できない感じが伝わりやすいかもしれません)</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">-- do を使わない形</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>f <span class="ot">=</span> <span class="fu">return</span> <span class="dv">1</span> <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z))</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">where</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co">-- do を使わない形</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>f <span class="ot">=</span> <span class="fu">return</span> <span class="dv">1</span> <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> <span class="fu">return</span> ((x<span class="op">+</span><span class="dv">1</span>)<span class="op">+</span>z))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    z <span class="ot">=</span> <span class="dv">2</span></span></code></pre></div>
 <ul>
 <li>何百行も続く巨大な <code>do</code> だと <code>where</code> で宣言されている変数までの距離が遠いため、可読性が落ちます。<code>z</code> を <code>where</code> で書くか <code>let</code> で書くかはケースバイケースかもしれません</li>
 </ul>
 <h3 id="letin-で書いた場合">let…in で書いた場合</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">-- let...in version</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>   <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co">-- let...in version</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>   <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
 <ul>
 <li><code>let...in</code> を使うとインデントに気配りする必要があるので面倒です
 <ul>
 <li>例えば <code>do</code> の中で <code>let</code> と <code>in</code> の先頭を合わせるとコンパイルエラーになります</li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">-- let...in version (compile error)</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a>  <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="co">-- let...in version (compile error)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>  x <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">1</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>  <span class="kw">let</span> y <span class="ot">=</span> x <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>      z <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>  <span class="kw">in</span> <span class="fu">return</span> (y<span class="op">+</span>z)</span></code></pre></div>
 <h2 id="where-を使うタイミング-ガード">where を使うタイミング (ガード)</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>calcBmi cm kg</span>
-<span id="cb6-3"><a href="#cb6-3"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">=</span> <span class="st">&quot;痩せてるね&quot;</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">=</span> <span class="st">&quot;普通だね&quot;</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">=</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>  <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> <span class="st">&quot;太っているね&quot;</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>  <span class="kw">where</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>    bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
-<span id="cb6-9"><a href="#cb6-9"></a>    m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="co">-- *Main&gt; putStrLn $ calcBmi 170 60</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a><span class="co">-- 普通だね</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>calcBmi cm kg</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">=</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">=</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">=</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>  <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">=</span> <span class="st">&quot;太っているね&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>    bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>    m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a><span class="co">-- *Main&gt; putStrLn $ calcBmi 170 60</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a><span class="co">-- 普通だね</span></span></code></pre></div>
 <ul>
 <li>このように、ガードで共通する変数を宣言する場合に <code>where</code> を使うと見通しが良くなります。</li>
 <li><code>do</code> の中ではないため、当然 <code>let</code> は使えません。</li>
 </ul>
 <h3 id="letin-で書いた場合-1">let…in で書いた場合</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">{-# LANGUAGE MultiWayIf #-}</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>calcBmi cm kg <span class="ot">=</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a>  <span class="kw">let</span> m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a>      bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
-<span id="cb7-7"><a href="#cb7-7"></a>  <span class="kw">in</span> <span class="kw">if</span> <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">-&gt;</span> <span class="st">&quot;痩せてるね&quot;</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;普通だね&quot;</span></span>
-<span id="cb7-9"><a href="#cb7-9"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
-<span id="cb7-10"><a href="#cb7-10"></a>        <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">-&gt;</span> <span class="st">&quot;太っているね&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiWayIf #-}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="ot">calcBmi ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>calcBmi cm kg <span class="ot">=</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>  <span class="kw">let</span> m   <span class="ot">=</span> cm <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>      bmi <span class="ot">=</span> kg <span class="op">/</span> (m<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>  <span class="kw">in</span> <span class="kw">if</span> <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">18.5</span> <span class="ot">-&gt;</span> <span class="st">&quot;痩せてるね&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">25.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;普通だね&quot;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>        <span class="op">|</span> bmi <span class="op">&lt;=</span> <span class="fl">30.0</span> <span class="ot">-&gt;</span> <span class="st">&quot;ぽっちゃりだね&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>        <span class="op">|</span> <span class="fu">otherwise</span>   <span class="ot">-&gt;</span> <span class="st">&quot;太っているね&quot;</span></span></code></pre></div>
 <ul>
 <li>もし <code>let...in</code> を使って同じように書く場合は、上記のように <code>MultiWayIf</code> を使うことになるでしょう。</li>
 </ul>
 <h2 id="letin-を使うタイミング">let…in を使うタイミング</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
-<span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
-<span id="cb8-6"><a href="#cb8-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
-<span id="cb8-7"><a href="#cb8-7"></a></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> (\s <span class="ot">-&gt;</span> <span class="kw">let</span> (x,s') <span class="ot">=</span> app st s <span class="kw">in</span> (g x, s'))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> (\s <span class="ot">-&gt;</span> <span class="kw">let</span> (x,s') <span class="ot">=</span> app st s <span class="kw">in</span> (g x, s'))</span></code></pre></div>
 <ul>
 <li>こんな感じの関数を書くときにはとても便利です</li>
 <li>ただ、このようなケースというのはあまり遭遇しないので、個人的には使わないようにしています。無くてもほぼ困らないです
@@ -332,40 +332,40 @@
 </ul></li>
 </ul>
 <h3 id="where-で書いた場合-1">where で書いた場合</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
-<span id="cb9-6"><a href="#cb9-6"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a>  <span class="fu">fmap</span> g <span class="ot">=</span> <span class="dt">S</span> <span class="op">.</span> f g</span>
-<span id="cb9-11"><a href="#cb9-11"></a></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="ot">f ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (b, <span class="dt">State</span>)</span>
-<span id="cb9-13"><a href="#cb9-13"></a>f g st s <span class="ot">=</span> (g x, s')</span>
-<span id="cb9-14"><a href="#cb9-14"></a>  <span class="kw">where</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a>    (x,s') <span class="ot">=</span> app st s</span>
-<span id="cb9-16"><a href="#cb9-16"></a></span>
-<span id="cb9-17"><a href="#cb9-17"></a><span class="co">-- もしくは</span></span>
-<span id="cb9-18"><a href="#cb9-18"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
-<span id="cb9-19"><a href="#cb9-19"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
-<span id="cb9-20"><a href="#cb9-20"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> f</span>
-<span id="cb9-21"><a href="#cb9-21"></a>    <span class="kw">where</span></span>
-<span id="cb9-22"><a href="#cb9-22"></a>      f s <span class="ot">=</span> (g x, s')</span>
-<span id="cb9-23"><a href="#cb9-23"></a>        <span class="kw">where</span></span>
-<span id="cb9-24"><a href="#cb9-24"></a>          (x,s') <span class="ot">=</span> app st s</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="co">-- Programming in Haskell 2nd Edition より引用</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">State</span> <span class="ot">=</span> <span class="dt">Int</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">ST</span> a <span class="ot">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>app (<span class="dt">S</span> st) x <span class="ot">=</span> st x</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>  <span class="fu">fmap</span> g <span class="ot">=</span> <span class="dt">S</span> <span class="op">.</span> f g</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a><span class="ot">f ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (b, <span class="dt">State</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>f g st s <span class="ot">=</span> (g x, s')</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>  <span class="kw">where</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>    (x,s') <span class="ot">=</span> app st s</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a><span class="co">-- もしくは</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">ST</span> <span class="kw">where</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a>  <span class="co">-- fmap :: (a -&gt; b) -&gt; ST a -&gt; ST b</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>  <span class="fu">fmap</span> g st <span class="ot">=</span> <span class="dt">S</span> f</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a>    <span class="kw">where</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true"></a>      f s <span class="ot">=</span> (g x, s')</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true"></a>        <span class="kw">where</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true"></a>          (x,s') <span class="ot">=</span> app st s</span></code></pre></div>
 <ul>
 <li><code>let...in</code> で書いたときよりも可読性が落ちてしまったように思います</li>
 </ul>
 <h2 id="where-と-letin-の違い">where と let…in の違い</h2>
 <p><code>let...in</code> と <code>where</code> の明確な違いは <code>let...in</code> が<strong>式</strong>なのに対して <code>where</code> が<strong>節</strong>だという点です。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">-- OK</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a>f <span class="ot">=</span> <span class="kw">if</span> <span class="kw">let</span> x <span class="ot">=</span> <span class="dt">True</span> <span class="kw">in</span> x <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="co">-- NG</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a>g <span class="ot">=</span> <span class="kw">if</span> (x <span class="kw">where</span> x <span class="ot">=</span> <span class="dt">True</span>) <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="co">-- OK</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>f <span class="ot">=</span> <span class="kw">if</span> <span class="kw">let</span> x <span class="ot">=</span> <span class="dt">True</span> <span class="kw">in</span> x <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="co">-- NG</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>g <span class="ot">=</span> <span class="kw">if</span> (x <span class="kw">where</span> x <span class="ot">=</span> <span class="dt">True</span>) <span class="kw">then</span> <span class="dv">1</span> <span class="kw">else</span> <span class="dv">0</span></span></code></pre></div>
 <p>構文上のどこに式が出現できるかという規則については <code>Haskell 2010 Language Report</code> に詳しく記載されています。</p>
 <h2 id="まとめ">まとめ</h2>
 <p>このように、<code>let</code>, <code>where</code>, <code>let...in</code> はどちらでも書けることが多いので、適材適所で自分の感性を信じて使いこなすと良いのではないかと思います。</p>
