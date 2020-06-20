@@ -2,52 +2,65 @@
 title: time パッケージの使い方
 author: Shinya Yamaguchi
 tags: bigmoon, package
-updated: 2018/09/17
+updated: 2020/06/20
 ---
 
 ## はじめに
 
-Haskell で時間や日付を扱う際に良く利用されるのは [time](https://www.stackage.org/lts-12.9/package/time) パッケージです。
+Haskell で時間や日付を扱う際に良く利用されるのは [time][pkg-time] パッケージです。
 
 このパッケージが使いやすいかどうかは人それぞれですが、使い方を知っておくと便利なのでよく使いそうな関数を簡単に解説しようと思います。
 
 これからの例は以下のコマンドを実行していると仮定して話を進めます。
 
 ```shell
-$ stack repl --package time --resolver lts-12.9
-$ import Data.Time
+$ cabal repl -b time==1.10
 ```
+
+[pkg-time]: https://hackage.haskell.org/package/time
 
 <!--more-->
 
 ## Time パッケージのモジュール構造
 
-基本的には [Data.Time](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time.html) を import して使います。
+基本的には [Data.Time][mod-time] を **import** して使います。
 
 ```haskell
 import Data.Time
 ```
 
-Data.Time は以下のモジュールを再エクスポートしています。
+[mod-time]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time.html
+
+`Data.Time` は以下のモジュールを再エクスポートしています。
 
 モジュール名 | 用途
 -------------|---------
-[Data.Time.Calendar](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html) | 日付
-[Data.Time.Clock](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html) | 全然使わないので良くわからない
-[Data.Time.LocalTime](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-LocalTime.html) | 日本の現在時刻を取得など
-[Data.Time.Format](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html) | 出力の整形
+[Data.Time.Calendar][mod-cal] | 日付
+[Data.Time.Clock][mod-clock] | 全然使わないので良くわからない
+[Data.Time.LocalTime][mod-localtime] | 日本の現在時刻を取得など
+[Data.Time.Format][mod-format] | 出力の整形
+
+[mod-cal]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Calendar.html
+[mod-clock]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Clock.html
+[mod-localtime]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-LocalTime.html
+[mod-format]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Format.html
 
 ### rio を利用している場合
 
-[rio](https://www.stackage.org/lts-12.9/package/rio) を利用している場合は [RIO.Time](https://www.stackage.org/haddock/lts-12.9/rio-0.1.5.0/RIO-Time.html) を import します。
+[rio][pkg-rio] を利用している場合は [RIO.Time][mod-rio-time] を **import** します。
 
 ```haskell
 import RIO.Time
 ```
 
+[pkg-rio]: https://hackage.haskell.org/package/rio
+[mod-rio-time]: https://hackage.haskell.org/package/rio-0.1.17.0/docs/RIO-Time.html
+
 ## Data.Time.LocalTime
 
-現在時刻を取得する場合にこのモジュールを使います。現在時刻を取得したいからと言って [getCurrentTime](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:getCurrentTime) を利用すると日本時間にならないので注意してください。
+現在時刻を取得する場合にこのモジュールを使います。現在時刻を取得したいからと言って [getCurrentTime][func-getCurrentTime] を利用すると日本時間にならないので注意してください。
+
+[func-getCurrentTime]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Clock-POSIX.html#v:getCurrentTime
 
 ### getZonedTime
 
@@ -58,12 +71,12 @@ import RIO.Time
 getZonedTime :: IO ZonedTime
 
 > getZonedTime
-2018-09-17 13:41:05.512522063 JST
+2020-06-20 13:18:40.677811323 JST
 ```
 
 ### getCurrentTimeZone
 
-システムのタイムゾーンを取得します。このタイムゾーンに基づいて `getZonedTime` が計算されます。
+システムのタイムゾーンを取得します。このタイムゾーンに基づいて [getZonedTime][func-getZonedTime] が計算されます。
 
 ```shell
 > :t getCurrentTimeZone
@@ -72,6 +85,8 @@ getCurrentTimeZone :: IO TimeZone
 > getCurrentTimeZone
 JST
 ```
+
+[func-getZonedTime]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-LocalTime.html#v:getZonedTime
 
 ### zonedTimeToUTC
 
@@ -82,7 +97,7 @@ JST
 zonedTimeToUTC :: ZonedTime -> UTCTime
 
 > zonedTimeToUTC <$> getZonedTime
-2018-09-17 04:41:27.907476307 UTC
+2020-06-20 04:20:14.529514141 UTC
 ```
 
 ### utcToZonedTime
@@ -94,14 +109,14 @@ zonedTimeToUTC :: ZonedTime -> UTCTime
 utcToZonedTime :: TimeZone -> UTCTime -> ZonedTime
 
 > utcToZonedTime <$> getCurrentTimeZone <*> getCurrentTime
-2018-09-17 13:41:37.955641567 JST
+2020-06-20 13:20:28.011749783 JST
 ```
 
 ## 1日後の時間を計算するには？
 
 ここで、取得した時間の1日後を計算してみましょう。
 
-そのためには Data.Time.Clock で定義されている [addUTCTime](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Clock.html#v:addUTCTime) を使います。
+そのためには `Data.Time.Clock` で定義されている [addUTCTime][func-addUTCTime] を使います。
 
 ```haskell
 addUTCTime :: NominalDiffTime -> UTCTime -> UTCTime
@@ -119,42 +134,41 @@ nominalDay = 86400
 実際に試してみましょう。1日後を計算してみます。
 
 ```shell
-> t = addUTCTime nominalDay . zonedTimeToUTC <$> getZonedTime
-2018-09-17 10:32:56.880362453 UTC
-
+> t1 = addUTCTime nominalDay . zonedTimeToUTC <$> getZonedTime
 > getZonedTime
-2018-09-17 13:49:09.279378323 JST
+2020-06-20 13:22:26.700694373 JST
 
-> utcToZonedTime <$> getCurrentTimeZone <*> t
-2018-09-18 13:49:16.211737218 JST
+> utcToZonedTime <$> getCurrentTimeZone <*> t1
+2020-06-21 13:22:33.553973172 JST
 ```
 
 同様に1時間後も計算してみましょう。
 
 ```shell
-> t = addUTCTime (60 * 60) . zonedTimeToUTC <$> getZonedTime
-
+> t2 = addUTCTime (60 * 60) . zonedTimeToUTC <$> getZonedTime
 > getZonedTime
-2018-09-17 13:49:33.169797528 JST
+2020-06-20 13:22:58.351335073 JST
 
-> t
-2018-09-17 05:49:36.757498845 UTC
+> t2
+2020-06-20 05:23:04.594425732 UTC
 
-> utcToZonedTime <$> getCurrentTimeZone <*> t
-2018-09-17 14:49:40.930944714 JST
+> utcToZonedTime <$> getCurrentTimeZone <*> t2
+2020-06-20 14:23:12.834203921 JST
 ```
 
 上手くいってますね！
+
+[func-addUTCTime]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Clock.html#v:addUTCTime
 
 ## Data.Time.LocalTime
 
 時刻の取得・計算ができたら、あとは整形して出力するだけです！
 
-Data.Time.LocalTime モジュールの関数を使って出力を整形してみましょう！
+`Data.Time.LocalTime` モジュールの関数を使って出力を整形してみましょう！
 
 ### formatTime
 
-[formatTime](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:formatTime) 関数の使い方がわかれば、任意の形式で出力できるようになります。
+[formatTime][func-formatTime] 関数の使い方がわかれば、任意の形式で出力できるようになります。
 
 ```shell
 > :t formatTime
@@ -171,7 +185,7 @@ formatTime :: TimeLocale -> String -> Day       -> String
 
 型に応じて第三引数が変わるということです。
 
-実際に使えばすぐに慣れます。(第一引数の値は [defaultTimeLocale](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:defaultTimeLocale) を指定しておけば良いのですが、自分でカスタマイズしたものを使うこともあります)
+実際に使えばすぐに慣れます。(第一引数の値は [defaultTimeLocale][func-defaultTimeLocale] を指定しておけば良いのですが、自分でカスタマイズしたものを使うこともあります)
 
 第二引数がフォーマット文字列なので、空文字列を与えれば当然結果も空になります。
 
@@ -180,33 +194,45 @@ formatTime :: TimeLocale -> String -> Day       -> String
 ""
 ```
 
-フォーマットの指定方法については [haddock](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:formatTime) を参照してください。
+フォーマットの指定方法については [haddock][func-formatTime] を参照してください。
 
 ```shell
 > formatTime defaultTimeLocale "%D" <$> getZonedTime
-"09/17/18"
+"06/20/20"
 
 > formatTime defaultTimeLocale "%F" <$> getZonedTime
-"2018-09-17"
+"2020-06-20"
 
 > formatTime defaultTimeLocale "%x" <$> getZonedTime
-"09/17/18"
+"06/20/20"
 
 > formatTime defaultTimeLocale "%Y/%m/%d-%T" <$> getZonedTime
-"2018/09/17-13:52:21"
+"2020/06/20-13:26:44"
 
 > formatTime defaultTimeLocale rfc822DateFormat <$> getZonedTime
-"Sun, 16 Sep 2018 19:53:10 JST"
-
-> formatTime defaultTimeLocale (iso8601DateFormat Nothing) <$> getZonedTime
-"2018-09-16"
+"Sat, 20 Jun 2020 13:26:50 JST"
 ```
+
+[func-formatTime]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Format.html#v:formatTime
+[func-defaultTimeLocale]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Format.html#v:defaultTimeLocale
+
+## Data.Time.Format.ISO8601
+
+**ISO8601** の書式は [Data.Time.Format.ISO8601][mod-iso] モジュールの [iso8601Show][func-iso8601] を利用します。
+
+```shell
+> iso8601Show <$> getZonedTime
+"2020-06-20T13:31:08.7048868+09:00"
+```
+
+[mod-iso]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Format-ISO8601.html
+[func-iso8601]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Format-ISO8601.html#v:iso8601Show
 
 ## 文字列をパーズして ZonedTime や Day の値を作る
 
 ここまでは現在時刻を元に時刻の計算や出力結果の整形を行いました。
 
-しかし、実際のプログラムでは文字列をパーズして `ZonedTime` や `Day` の値に変換したいこともあるでしょう。そのような場合は [parseTimeM](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Format.html#v:parseTimeM) を使うと便利です。
+しかし、実際のプログラムでは文字列をパーズして `ZonedTime` や `Day` の値に変換したいこともあるでしょう。そのような場合は [parseTimeM][func-parseTimeM] を使うと便利です。
 
 ```shell
 > :t parseTimeM
@@ -235,54 +261,57 @@ parseTimeM :: Bool -> TimeLocale -> String -> String -> Maybe ZonedTime
 
 ```shell
 > formatTime defaultTimeLocale "%F" <$> getZonedTime
-"2018-09-17"
+"2020-06-20"
 ```
 
 モナドを `IO` や `Maybe` などに変化させた基本的な例。
 
 ```shell
-> parseTimeM True defaultTimeLocale "%F" "2018-09-17" :: IO ZonedTime
-2018-09-17 00:00:00 +0000
+> parseTimeM True defaultTimeLocale "%F" "2020-06-20" :: IO ZonedTime
+2020-06-20 00:00:00 +0000
 
-> parseTimeM True defaultTimeLocale "%F" "2018-09-17" :: Maybe ZonedTime
-Just 2018-09-17 00:00:00 +0000
+> parseTimeM True defaultTimeLocale "%F" "2020-06-20" :: Maybe ZonedTime
+Just 2020-06-20 00:00:00 +0000
 ```
 
 第一引数を変化させて、入力文字列の空白の有無について確認する例。
 
 ```shell
-> parseTimeM True defaultTimeLocale "%F" " 2018-09-17 " :: IO ZonedTime
-2018-09-17 00:00:00 +0000
+> parseTimeM True defaultTimeLocale "%F" " 2020-06-20 " :: IO ZonedTime
+2020-06-20 00:00:00 +0000
 
-> parseTimeM False defaultTimeLocale "%F" " 2018-09-17 " :: IO ZonedTime
-*** Exception: user error (parseTimeM: no parse of "2018-09-17 ")
+> parseTimeM False defaultTimeLocale "%F" " 2020-06-20 " :: IO ZonedTime
+*** Exception: user error (parseTimeM: no parse of " 2020-06-20 ")
 ```
 
 入力文字列とパーズの書式がマッチしない例
 
 ```shell
-> parseTimeM False defaultTimeLocale "%x" " 2018-09-17 " :: IO ZonedTime
-*** Exception: user error (parseTimeM: no parse of " 2018-09-17 ")
+> parseTimeM False defaultTimeLocale "%x" " 2020-06-20 " :: IO ZonedTime
+*** Exception: user error (parseTimeM: no parse of " 2020-06-20 ")
 ```
 
-Day 型の値をとしてパーズする例
+`Day` 型の値をとしてパーズする例
 
 ```shell
-> parseTimeM True defaultTimeLocale "%F" "2018-09-17" :: IO Day
-2018-09-17
+> parseTimeM True defaultTimeLocale "%F" "2020-06-20" :: IO Day
+2020-06-20
 ```
 
-このようにして日付を取得できれば、今回は説明していませんが [Data.Time.Calendar](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html) の [addDays](https://www.stackage.org/haddock/lts-12.9/time-1.8.0.2/Data-Time-Calendar.html#v:addDays) 関数などを使って日付の計算を行うこともできるようになります。
+このようにして日付を取得できれば、今回は説明していませんが [Data.Time.Calendar][mod-cal] の [addDays][func-addDays] 関数などを使って日付の計算を行うこともできるようになります。
 
 ```shell
-> d = parseTimeM True defaultTimeLocale "%F" "2018-09-17" :: IO Day
+> d = parseTimeM True defaultTimeLocale "%F" "2020-06-20" :: IO Day
 
 > addDays 1 <$> d
-2018-09-18
+2020-06-21
 
 > addDays 35 <$> d
-2018-10-22
+2020-07-25
 ```
+
+[func-parseTimeM]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Format.html#v:parseTimeM
+[func-addDays]: https://hackage.haskell.org/package/time-1.10/docs/Data-Time-Calendar.html#v:addDays
 
 ## まとめ
 
@@ -301,7 +330,7 @@ Haskell入門の **7.7 日付・時刻を扱う** にも3ページほど **time*
 
 ```shell
 > getZonedTime
-2018-09-17 14:44:52.052040178 JST
+2020-06-20 13:41:37.314698155 JST
 ```
 
 <div class="narrow-table">
