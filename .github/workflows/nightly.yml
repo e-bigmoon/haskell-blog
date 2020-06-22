@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, macos-10.15] # windows-2019
+        os: [ubuntu-18.04, macos-10.15, windows-2019]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,6 +23,7 @@ jobs:
 
     - name: Install dependencies & build
       run: |
+        echo ::add-path::C:\msys64\usr\bin\
         cabal update --index-state=HEAD
         cabal build --project=cabal-nightly.project
 
@@ -43,7 +44,9 @@ jobs:
         enable-stack: true
 
     - name: Install dependencies
-      run: stack test --resolver=nightly --only-dependencies
+      run: |
+        echo ::add-path::C:\msys64\usr\bin\
+        stack test --resolver=nightly --only-dependencies
       env:
         STACK_YAML: stack-nightly.yaml
 
