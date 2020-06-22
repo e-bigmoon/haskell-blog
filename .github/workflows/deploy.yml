@@ -12,17 +12,17 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        cache-version: ["2020-05-30"]
+        cache-version: ["2020-06-22"]
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1.1.0
+    - uses: actions/setup-haskell@v1.1
       with:
         ghc-version: "8.8.3"
         cabal-version: "3.2.0.0"
 
     - name: Cache cabal
-      uses: actions/cache@v2.0.0
+      uses: actions/cache@v2.0
       with:
         path: ~/.cabal/store
         key: ${{ runner.os }}-${{ matrix.ghc }}-${{ matrix.cache-version }}-cabal
@@ -52,7 +52,7 @@ jobs:
         fi
         
     - name: Push changes
-      uses: ad-m/github-push-action@v0.6.0
+      uses: ad-m/github-push-action@v0.6
       with:
         github_token: ${{ secrets.GITHUB_TOKEN_DEPLOY }}
         branch: "site"
