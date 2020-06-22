@@ -12,7 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, macos-10.15, windows-2019]
+        # os: [ubuntu-18.04, macos-10.15, windows-2019]
+        os: [ubuntu-18.04]
 
     steps:
     - uses: actions/checkout@v2
@@ -43,11 +44,13 @@ jobs:
         enable-stack: true
 
     - name: Install dependencies
-      run: |
-        # echo -e "\nallow-newer: true" >> stack.yaml
-        stack test --resolver=nightly --only-dependencies --stack-yaml=stack-nightly.yaml
+      run: stack test --resolver=nightly --only-dependencies
+      env:
+        STACK_YAML: stack-nightly.yaml
 
     - name: Build
       run: |
-        stack test --fast --resolver=nightly --stack-yaml=stack-nightly.yaml
-        stack install --fast --resolver=nightly --stack-yaml=stack-nightly.yaml
+        stack test --fast --resolver=nightly
+        stack install --fast --resolver=nightly
+      env:
+        STACK_YAML: stack-nightly.yaml
