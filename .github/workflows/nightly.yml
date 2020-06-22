@@ -6,45 +6,48 @@ on:
 
 jobs:
   cabal:
-    runs-on: ubuntu-18.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, macos-10.15] #windows-2019
+
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-haskell@v1.1
       with:
-        ghc-version: "8.8.3"
+        ghc-version: "8.10.1"
         cabal-version: "3.2.0.0"
 
-    - name: Install dependencies
+    - name: Install dependencies & build
       run: |
+        echo ::add-path::C:\msys64\usr\bin\
         cabal update --index-state=HEAD
-        cabal configure --disable-optimization --write-ghc-environment-files=always -j2
-        cabal build all --only-dependencies
-
-    - name: Build
-      run: cabal build
+        cabal build --project=cabal-nightly.project
 
   stack:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # windows-2019 は pandoc の問題によりブロック
-        # https://github.com/jgm/pandoc/commit/9feefa39319358acc84811e6017aeea60f9140c3
-        os: [ubuntu-18.04, macos-10.15]
+        os: [ubuntu-18.04, macos-10.15] # windows-2019
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-haskell@v1.1
       with:
-        ghc-version: "8.8.3"
+        ghc-version: "8.10.1"
         stack-version: "2.3.1"
         enable-stack: true
 
     - name: Install dependencies
       run: |
-        echo -e "\nallow-newer: true" >> stack.yaml
-        stack test --resolver=nightly --only-dependencies --system-ghc
+        echo ::add-path::C:\msys64\usr\bin\
+        stack test --resolver=nightly --only-dependencies
+      env:
+        STACK_YAML: stack-nightly.yaml
 
     - name: Build
       run: |
-        stack test --fast --resolver=nightly --system-ghc
-        stack install --fast --resolver=nightly --system-ghc
+        stack test --fast --resolver=nightly
+        stack install --fast --resolver=nightly
+      env:
+        STACK_YAML: stack-nightly.yaml
