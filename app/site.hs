@@ -26,9 +26,11 @@ main' siteConfig = hakyllWith hakyllConfig $ do
   match (fromGlob "images/**" .||. fromGlob "js/**" .||. fromGlob "lib/**") $ do
     route idRoute
     compile copyFileCompiler
+
   match "css/*.scss" $ do
     route $ setExtension "css"
     compile (fmap compressCss <$> sassCompiler)
+
   match (fromGlob "pages/**.md") $ do
     route $
       customRoute
@@ -74,6 +76,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
             "templates/default.html"
             (ctxWithTags ctx namedTags)
           >>= relativizeUrls
+
   create ["archive.html"] $ do
     route idRoute
     compile $ do
@@ -86,6 +89,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
         >>= loadAndApplyTemplate "templates/default.html" archiveCtx
         >>= relativizeUrls
+
   match "pages/index.html" $ do
     route (constRoute "index.html")
     compile $ do
@@ -98,8 +102,10 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
         >>= relativizeUrls
+
   match (fromGlob "partials/*" .||. fromGlob "templates/*") $
     compile templateBodyCompiler
+
   create ["feed.xml"] $ do
     route idRoute
     compile $ do
@@ -109,6 +115,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         fmap (take 10) . recentFirst'
           =<< loadAllSnapshots "posts/**" "content"
       renderAtom (atomFeedConfiguration feedConfig) feedCtx posts
+
   -- SEO-related stuff
   create ["sitemap.xml"] $ do
     route idRoute
@@ -121,13 +128,14 @@ main' siteConfig = hakyllWith hakyllConfig $ do
       makeItem ""
         >>= loadAndApplyTemplate "templates/sitemap.xml" sitemapCtx
         >>= relativizeUrls
+
   match "robots.txt" $ do
     route idRoute
     compile $ getResourceBody >>= relativizeUrls
   where
     ctxWithTags :: Context String -> [(String, Tags)] -> Context String
-    ctxWithTags =
-      foldr (\(name, tags) baseCtx -> tagsField name tags <> baseCtx)
+    ctxWithTags = foldr (\(name, tags) baseCtx -> tagsField name tags <> baseCtx)
+
     siteCtx :: Context String
     siteCtx = generalCtx <> styleCtx <> defaultContext
       where
@@ -156,6 +164,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         toField configObj configField item = do
           _metadata <- getMetadata $ itemIdentifier item
           return $ siteConfig ^. configObj ^. configField
+
     postCtx :: Context String
     postCtx =
       mconcat
@@ -174,6 +183,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
             trim'' (ix, x)
               | ix == 0 || ix == (length xs - 1) = x `notElem` [' ', '\n', '\t']
               | otherwise = True
+
     createTagsRules :: Tags -> (String -> String) -> Rules ()
     createTagsRules tags mkTitle = tagsRules tags $ \tag pattern' -> do
       route idRoute
@@ -187,11 +197,13 @@ main' siteConfig = hakyllWith hakyllConfig $ do
           >>= loadAndApplyTemplate "templates/tag.html" ctx
           >>= loadAndApplyTemplate "templates/default.html" ctx
           >>= relativizeUrls
+
     pageTitle, pageUrl :: Identifier -> Compiler String
     pageTitle i =
       getMetadataField i "title" >>= \case
         Just title -> return title
         Nothing -> fail "no 'title' field"
+
     pageUrl i =
       getRoute i >>= \case
         Just filePath -> return (toUrl filePath)
