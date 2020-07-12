@@ -60,7 +60,7 @@ ghcide version: 0.2.0.0 (GHC: 8.8.3) (PATH: /home/yamada/.local/bin/haskell-lang
 
 ### VSCode
 
-拡張機能 Haskell Language Server をインストールし、
+拡張機能 [Haskell Language Server](https://marketplace.visualstudio.com/items?itemName=alanz.vscode-hie-server) をインストールし、
 設定から `haskell-language-server` を指定します。
 
 ![VSCodeの設定](/images/2020/07-12/hls-vscode.png)
