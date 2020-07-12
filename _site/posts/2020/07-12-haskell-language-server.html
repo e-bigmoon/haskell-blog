@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Haskell Language Server のインストール</title>
+  <meta name="description" content="HLS(Haskell Language Server) を 手動で インストールする方法を説明します。
+HLSを 自動で インストールする方法は以下のPRで開発中です。
+
+GitHub Action static binaries and runtime libdir
+Automatic installation o">
+  <link rel="canonical" href="../../posts/2020/07-12-haskell-language-server.html">
+  <link rel="alternate" type="application/atom+xml" title="Haskell Language Server のインストール" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Haskell Language Server のインストール" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/posts/2020/07-12-haskell-language-server.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Haskell Language Server のインストール" />
+  <meta property="og:description" content="HLS(Haskell Language Server) を 手動で インストールする方法を説明します。
+HLSを 自動で インストールする方法は以下のPRで開発中です。
+
+GitHub Action static binaries and runtime libdir
+Automatic installation o" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="white-text">
+        <i class="mdi mdi-book-open left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-book-open left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container post-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+
+      <p class="grey-text">
+        <i class="mdi mdi-calendar"></i>&nbsp;
+        Posted on July 12, 2020
+        
+        
+          &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
+          authored by Wataru Yamada
+        
+        
+          <br>
+          <i class="mdi mdi-calendar"></i>&nbsp;
+          Last Updated 
+        
+        &nbsp;
+        
+          <i class="mdi mdi-folder"></i>&nbsp;
+          <span class="capitalize"></span>
+          <!-- &emsp;<i class="mdi mdi-refresh"></i>&nbsp;UPDATE: {% if page.update %}{{ page.update | date: "%b %-d, %Y" }}{% else %}{{ page.last_modified_at | date: "%b %-d, %Y" }}{% endif %} -->
+        
+      </p>
+
+      <div class="post-header">
+        <h1 class="post-title">Haskell Language Server のインストール</h1>
+
+        <div class="row">
+        
+          <div class="col s6">
+            <i class="post-tag mdi mdi-tag-multiple waves-effect waves-light"></i>
+            <div class="chip"><a title="All pages tagged 'bigmoon'." href="../../tags/bigmoon.html">bigmoon</a></div>
+          </div>
+        
+
+          <div class="col s6">
+            <div style="position: relative; top: 70px;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Haskell Language Server のインストール&url=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <p>HLS(Haskell Language Server) を <strong>手動で</strong> インストールする方法を説明します。</p>
+<p>HLSを <strong>自動で</strong> インストールする方法は以下のPRで開発中です。</p>
+<ul>
+<li><a href="https://github.com/haskell/haskell-language-server/pull/165">GitHub Action static binaries and runtime libdir</a></li>
+<li><a href="https://github.com/alanz/vscode-hie-server/pull/236">Automatic installation of haskell-language-server binaries</a></li>
+</ul>
+<!--more-->
+<h2 id="実行環境">実行環境</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">環境</th>
+<th style="text-align: left;">バージョン</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">OS</td>
+<td style="text-align: left;">Ubuntu 18.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Stack</td>
+<td style="text-align: left;">2.3.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">HLS</td>
+<td style="text-align: left;">ghcide version: 0.2.0.0 (GHC: 8.8.3) (PATH: ~/.local/bin/haskell-language-server) (GIT hash: 768fdcd588f5c37839086c0d787d1cb7438de37b)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="導入手順">導入手順</h2>
+<h3 id="hls-のインストール">1. HLS のインストール</h3>
+<p>インストールには以下のものが必要です。</p>
+<ul>
+<li><a href="https://docs.haskellstack.org/en/stable/README/">stack</a> (バージョン2.1.1以上)
+<ul>
+<li>または、<a href="https://www.haskell.org/cabal/users-guide/">cabal</a></li>
+</ul></li>
+<li><code>icu</code> のライブラリなど</li>
+</ul>
+<p>必要に応じてインストールしておきましょう。</p>
+<pre class="shell"><code>$ stack upgrade
+$ sudo apt update
+$ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev</code></pre>
+<p>準備ができたらHLSを<a href="https://github.com/haskell/haskell-language-server">リポジトリ</a>からクローンしてインストールしましょう。(以下の例では <strong>GHC-8.8.3</strong> を対象としています。)</p>
+<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-language-server --recurse-submodules
+$ cd haskell-language-server
+$ stack ./install.hs hls</code></pre>
+<p>インストールができました。</p>
+<pre class="shell"><code>$ haskell-language-server --version
+ghcide version: 0.2.0.0 (GHC: 8.8.3) (PATH: /home/yamada/.local/bin/haskell-language-server) (GIT hash: 768fdcd588f5c37839086c0d787d1cb7438de37b)</code></pre>
+<h2 id="エディタの設定">エディタの設定</h2>
+<h3 id="vscode">VSCode</h3>
+<p>拡張機能 <a href="https://marketplace.visualstudio.com/items?itemName=alanz.vscode-hie-server">Haskell Language Server</a> をインストールし、 設定から <code>haskell-language-server</code> を指定します。</p>
+<figure>
+<img src="../../images/2020/07-12/hls-vscode.png" alt /><figcaption>VSCodeの設定</figcaption>
+</figure>
+<h3 id="emacs">Emacs</h3>
+<p><a href="../../hie/emacs.html">こちら</a>の記事を参考に、 <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a>, <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a>, <a href="https://github.com/emacs-lsp/lsp-haskell">lsp-haskell</a> をEmacsにインストールします。</p>
+<p>設定ファイルで以下のように <code>haskell-language-server-wrapper</code> を指定します。</p>
+<pre><code>(use-package lsp-haskell
+ :ensure t
+ :config
+ (setq lsp-haskell-process-path-hie &quot;haskell-language-server-wrapper&quot;)
+ ;; Comment/uncomment this line to see interactions between lsp client/server.
+ ;;(setq lsp-log-io t)
+)</code></pre>
+<h3 id="参考">参考</h3>
+<ul>
+<li><a href="https://github.com/haskell/haskell-language-server">haskell-language-server</a></li>
+<li><a href="../../hie/emacs.html">Emacs で Haskell IDE Engine を使う</a></li>
+</ul>
+      </article>
+
+      <div class="row pager">
+        <div class="col s6">
+          
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2020/04-12-cabal-repl.html"><i class="material-icons left">navigate_before</i>cabal repl コマンドについて</a>
+          
+        </div>
+        <div class="col s6">
+          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Haskell Language Server のインストール&url=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- {% if page.mathjax %} -->
+  <!--   {% include mathjax_support.html %} -->
+  <!-- {% endif %} -->
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+  <div class="footer-copyright">
+    <div class="container">
+      © 2017-2020 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+  </div>
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
