@@ -130,6 +130,7 @@ _ | stack | cabal
 - [VS Code で Ghcid を使う (翻訳)](/posts/2017/12-24-Ghcid-with-VS-Code.html)
 - [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
 - [VS Code と haskell-ide-engine で Haskell 開発環境を構築する](/hie/vscode.html)
+- [Haskell Language Server のインストール](/posts/2020/07-12-haskell-language-server.html)
 
 </div>
 </div>
