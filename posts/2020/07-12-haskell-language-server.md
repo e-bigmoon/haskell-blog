@@ -4,7 +4,14 @@ author: Wataru Yamada
 tags: bigmoon
 ---
 
-HLS(Haskell Language Server) のインストール方法
+HLS(Haskell Language Server) を **手動で** インストールする方法を説明します。
+
+HLSを **自動で** インストールする方法は以下のPRで開発中です。
+
+- [GitHub Action static binaries and runtime libdir](https://github.com/haskell/haskell-language-server/pull/165)
+- [Automatic installation of haskell-language-server binaries](https://github.com/alanz/vscode-hie-server/pull/236)
+
+<!--more-->
 
 ## 実行環境
 
@@ -49,6 +56,36 @@ $ haskell-language-server --version
 ghcide version: 0.2.0.0 (GHC: 8.8.3) (PATH: /home/yamada/.local/bin/haskell-language-server) (GIT hash: 768fdcd588f5c37839086c0d787d1cb7438de37b)
 ```
 
+## エディタの設定
+
+### VSCode
+
+拡張機能 Haskell Language Server をインストールし、
+設定から `haskell-language-server` を指定します。
+
+![VSCodeの設定](/images/2020/07-12/hls-vscode.png)
+
+### Emacs
+
+[こちら](/hie/emacs.html)の記事を参考に、
+[lsp-mode](https://github.com/emacs-lsp/lsp-mode),
+[lsp-ui](https://github.com/emacs-lsp/lsp-ui),
+[lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
+をEmacsにインストールします。
+
+設定ファイルで以下のように `haskell-language-server-wrapper` を指定します。
+
+```
+(use-package lsp-haskell
+ :ensure t
+ :config
+ (setq lsp-haskell-process-path-hie "haskell-language-server-wrapper")
+ ;; Comment/uncomment this line to see interactions between lsp client/server.
+ ;;(setq lsp-log-io t)
+)
+```
+
 ### 参考
 
 - [haskell-language-server](https://github.com/haskell/haskell-language-server)
+- [Emacs で Haskell IDE Engine を使う](/hie/emacs.html)
