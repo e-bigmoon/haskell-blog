@@ -32,7 +32,7 @@ $ sudo apt update
 $ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev
 ```
 
-準備ができたらHIEを[リポジトリ][hls-github]からクローンしてインストールしましょう。(以下の例では **GHC-8.8.3** を対象としています。)
+準備ができたらHLSを[リポジトリ][hls-github]からクローンしてインストールしましょう。(以下の例では **GHC-8.8.3** を対象としています。)
 
 ```shell
 $ git clone https://github.com/haskell/haskell-language-server --recurse-submodules
