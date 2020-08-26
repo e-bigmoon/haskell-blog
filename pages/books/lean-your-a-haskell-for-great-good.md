@@ -1,14 +1,14 @@
 ---
-title: すごい Haskell 楽しく学ぼう!
+title: すごい Haskell たのしく学ぼう!
 published: 2020/03/27
-# updated: 2020/03/27
+updated: 2020/08/26
 ---
 
-<img src="/images/books/sugoiH.jpg" alt="すごい Haskell 楽しく学ぼう! 表紙" width="300px">
+<img src="/images/books/sugoiH.jpg" alt="すごい Haskell たのしく学ぼう! 表紙" width="300px">
 
 書籍名           | 発売日  | 発売元    | その他
 ---------------|--------|-----------|----------
-すごい Haskell 楽しく学ぼう! | 2012/05/23 | オーム社 | [出版社サポートページ][ja-support]<br>[Amazon レビュー][ja-review]
+すごい Haskell たのしく学ぼう! | 2012/05/23 | オーム社 | [出版社サポートページ][ja-support]<br>[Amazon レビュー][ja-review]
 Learn You a Haskell for Great Good! | 2011/04/15 | No Starch Press | [書籍サポートページ][en-support]<br>[正誤表][en-errata]<br>[Amazon レビュー][en-review]
 
 ## レビュー (日本語訳)

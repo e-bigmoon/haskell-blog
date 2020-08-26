@@ -1,7 +1,7 @@
 ---
 title: これから Haskell を学ぶ人のための書籍・論文紹介
 published: 2020/03/27
-updated: 2020/04/04
+updated: 2020/08/26
 ---
 
 Haskell に関連する書籍について、読んだものについては簡単なレビューを添えています。
@@ -20,7 +20,7 @@ BIGMOON でアルバイトする人に推薦している書籍は以下の2冊�
 完全に独学で学ぼうと思っている人は以下の書籍から入門すると良いでしょう。
 
 - [入門Haskellプログラミング (2019/07)](/books/get-programming-with-haskell.html)
-- [すごい Haskell 楽しく学ぼう! (2012/05)](/books/lean-your-a-haskell-for-great-good.html)
+- [すごい Haskell たのしく学ぼう! (2012/05)](/books/lean-your-a-haskell-for-great-good.html)
 
 ---
 
@@ -49,6 +49,7 @@ BIGMOON でアルバイトする人に推薦している書籍は以下の2冊�
 
 **Haskell (GHC)** について、もっと知りたい人は以下の書籍を読むと良いでしょう。
 
+- [Algorithm Design with HASKELL (2020/08)](/books/algorithm-design-with-haskell.html)
 - [Practical Haskell (2019/04)](/books/practical-haskell.html)
 - [Thinking with Types (2018/12)](/books/thinking-with-types.html)
 - [純粋関数型データ構造 (2017/04)](/books/purely-functional-data-structures.html)
@@ -85,7 +86,11 @@ SPJ (Simon Peyton Jones) のインタビューなどが載っている書籍
 
 ## 圏論
 
-**Haskell** を使うためなら圏論の知識は必要無いですが、勉強したい人向け。
+**Haskell** プログラムを書くために圏論の知識は必要ありませんが、それでも圏論を勉強したい人向け。
+
+圏論の書籍については [[PDF] 圏と論理へのいざない・レクチャーノート](https://www.math.mi.i.nagoya-u.ac.jp/~kihara/pdf/teach/LectureNotes-category-theory.pdf) の参考文献などを読むと良いのかもしれません。
+
+---
 
 - [数学教室 πの焼き方 (2016/02)](/books/category-pi.html)
 - [圏論の歩き方 (2015/09)](/books/category-arukikata.html)
