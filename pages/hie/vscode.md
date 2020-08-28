@@ -1,7 +1,47 @@
 ---
 title: VS Code と haskell-ide-engine で Haskell 開発環境を構築する
 published: 2020/04/02
-updated: 2020/04/03
+updated: 2020/08/28
+---
+
+---
+
+現在は [haskell-language-server (hls)](https://github.com/haskell/haskell-language-server) に開発が移っており、こちらの方が機能も多く、インストールについても**ビルド不要**でバイナリが自動的に落ちてきます。
+
+**hls** の動作は hie と比べてかなり安定しています。(windows 環境でも問題無く動いているようです)
+
+インストール方法等については [Haskell環境構築2020簡易版 (macOS, Linux向け)](https://scrapbox.io/LugendrePublic/Haskell%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%892020%E7%B0%A1%E6%98%93%E7%89%88_(macOS,_Linux%E5%90%91%E3%81%91)) が参考になります。
+
+補足: 現状 **hie.yaml** ファイルは [Avi-D-coder/implicit-hie](https://github.com/Avi-D-coder/implicit-hie) を使って自動生成した方が良いです。
+
+```shell
+# for cabal
+$ cabal install -z implicit-hie
+
+# for stack
+$ stack install implicit-hie
+
+$ gen-hie > hie.yaml
+```
+
+また、不要になった **hie** のバイナリ等は以下のコマンドで削除できます。
+
+```shell
+# for cabal
+$ rm ~/.cabal/bin/hie*
+
+# for stack
+$ rm ~/.local/bin/hie*
+```
+
+**hls** と周辺ツールとの関係は [The State of Haskell IDEs](https://mpickering.github.io/ide/posts/2020-05-08-state-of-haskell-ide.html) を読むとよくわかります。
+
+---
+
+**注意: 本記事の内容は古くなっているため Haskell 開発環境の構築方法として推奨していません。**
+
+<div style="margin-bottom: 20em;"></div>
+
 ---
 
 ![本家のSSを引用](https://camo.githubusercontent.com/fb828845a665d6bff30340ba61bc9744013773a7/687474703a2f2f692e696d6775722e636f6d2f41637659524f762e676966)
