@@ -1,5 +1,5 @@
 ---
-title: VS Code と haskell-ide-engine で Haskell 開発環境を構築する
+title: (廃止) VS Code と haskell-ide-engine で Haskell 開発環境を構築する
 published: 2020/04/02
 updated: 2020/08/28
 ---
