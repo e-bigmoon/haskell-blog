@@ -172,14 +172,39 @@
           <span>記事公開日: 2020/04/02</span><br>
           
           
-          <span>最終更新日: 2020/04/03</span>
+          <span>最終更新日: 2020/08/28</span>
           
         </div>
         <h1 class="post-title">VS Code と haskell-ide-engine で Haskell 開発環境を構築する</h1>
       </div>
 
       <article class="page-content">
-        <figure>
+        <hr />
+<p>現在は <a href="https://github.com/haskell/haskell-language-server">haskell-language-server (hls)</a> に開発が移っており、こちらの方が機能も多く、インストールについても<strong>ビルド不要</strong>でバイナリが自動的に落ちてきます。</p>
+<p><strong>hls</strong> の動作は hie と比べてかなり安定しています。(windows 環境でも問題無く動いているようです)</p>
+<p>インストール方法等については <a href="https://scrapbox.io/LugendrePublic/Haskell%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%892020%E7%B0%A1%E6%98%93%E7%89%88_(macOS,_Linux%E5%90%91%E3%81%91)">Haskell環境構築2020簡易版 (macOS, Linux向け)</a> が参考になります。</p>
+<p>補足: 現状 <strong>hie.yaml</strong> ファイルは <a href="https://github.com/Avi-D-coder/implicit-hie">Avi-D-coder/implicit-hie</a> を使って自動生成した方が良いです。</p>
+<pre class="shell"><code># for cabal
+$ cabal install -z implicit-hie
+
+# for stack
+$ stack install implicit-hie
+
+$ gen-hie &gt; hie.yaml</code></pre>
+<p>また、不要になった <strong>hie</strong> のバイナリ等は以下のコマンドで削除できます。</p>
+<pre class="shell"><code># for cabal
+$ rm ~/.cabal/bin/hie*
+
+# for stack
+$ rm ~/.local/bin/hie*</code></pre>
+<p><strong>hls</strong> と周辺ツールとの関係は <a href="https://mpickering.github.io/ide/posts/2020-05-08-state-of-haskell-ide.html">The State of Haskell IDEs</a> を読むとよくわかります。</p>
+<hr />
+<p><strong>注意: 本記事の内容は古くなっているため Haskell 開発環境の構築方法として推奨していません。</strong></p>
+<div style="margin-bottom: 20em;">
+
+</div>
+<hr />
+<figure>
 <img src="https://camo.githubusercontent.com/fb828845a665d6bff30340ba61bc9744013773a7/687474703a2f2f692e696d6775722e636f6d2f41637659524f762e676966" alt /><figcaption>本家のSSを引用</figcaption>
 </figure>
 <p>この画像は本家リポジトリのスクリーンショットを引用しています。</p>
@@ -510,7 +535,7 @@ $ stack build</code></pre>
 <p>hie executable missing, please make sure it is installed, see github.com/haskell/haskell-ide-engine.</p>
 </blockquote>
 <p>画像のようなエラーメッセージが出た時は <strong>hie</strong> が見つからないということなので、以下のように実行ファイルのパスを <code>languageServerHaskell.hieExecutablePath</code> に指定します。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/hie&quot;,</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/hie&quot;,</span></span></code></pre></div>
 <p>どこにインストールしたかわからない人は次のコマンドでパスを確認しましょう。</p>
 <pre class="shell"><code>$ which hie
 ~/.local/bin/hie</code></pre>
@@ -520,7 +545,7 @@ $ stack build</code></pre>
 <pre class="shell"><code>readCreateProcess: &lt;path&gt;/bin/cabal-helper-wrapper &quot;print-build-platform&quot; (exit 1): failed</code></pre>
 <p>このエラーは <a href="https://github.com/alanz/vscode-hie-server/issues/128">cabal-helper-wrapper “print-build-platform” (exit 1): failed. #128</a> の可能性があります。</p>
 <p>下記の内容を <code>.bash_profile</code> 等に追記すると解決する場合があります。</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a><span class="bu">export</span> <span class="va">PATH=$(</span><span class="ex">stack</span> path --compiler-bin<span class="va">)</span>:<span class="va">$PATH</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a><span class="bu">export</span> <span class="va">PATH=$(</span><span class="ex">stack</span> path --compiler-bin<span class="va">)</span>:<span class="va">$PATH</span></span></code></pre></div>
 <hr />
 <h3 id="error-spawn-eacces-というエラーが出て-hie-が起動しない">Error: spawn EACCES というエラーが出て HIE が起動しない</h3>
 <pre class="shell"><code>[Error - 19:07:38] Starting client failed
@@ -535,13 +560,13 @@ Error: spawn EACCES
 <ul>
 <li>間違った指定その１</li>
 </ul>
-<div class="sourceCode" id="cb27"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/&quot;,</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/&quot;,</span></span></code></pre></div>
 <ul>
 <li>間違った指定その2</li>
 </ul>
-<div class="sourceCode" id="cb28"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;$</span><span class="fu">{</span><span class="er">HOME</span><span class="fu">}</span><span class="er">/.local/bin/hie&quot;,</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;$</span><span class="fu">{</span><span class="er">HOME</span><span class="fu">}</span><span class="er">/.local/bin/hie&quot;,</span></span></code></pre></div>
 <p>以下のように、正しいパスを指定しましょう。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/hie&quot;,</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a><span class="er">&quot;languageServerHaskell.hieExecutablePath&quot;:</span> <span class="er">&quot;~/.local/bin/hie&quot;,</span></span></code></pre></div>
 <hr />
 <h3 id="text-icu-パッケージのビルドエラー">text-icu パッケージのビルドエラー</h3>
 <p><strong>macOS</strong> 環境だと、以下のようなエラーが出る場合があります。</p>
