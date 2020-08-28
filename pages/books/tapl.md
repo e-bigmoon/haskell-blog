@@ -1,19 +1,19 @@
 ---
 title: 型システム入門
 published: 2020/03/27
-updated: 2020/08/26
+updated: 2020/08/28
 ---
 
-<img src="/images/books/tapl.jpg" alt="型システム入門 表紙" width="200px">
+<img src="/images/books/tapl2.jpg" alt="型システム入門 表紙" width="200px">
 
 書籍名           | 発売日  | 発売元    | その他
 ---------------|--------|--------|----------
 型システム入門 | 2013/03/26 | オーム社 | [出版社サポートページ][ja-support]<br>[著者サポートページ][ja-support2]<br>[正誤表][ja-errata]<br>[Amazon レビュー][ja-review]
 Types and Programming Languages | 2002/02/01 | The MIT Press | [サポートページ][en-support]<br>[正誤表][en-errata]<br>[Amazon レビュー][en-review]
 
-## [WIP] レビュー (日本語訳)
+## レビュー (日本語訳)
 
-32章まできました。(読み始めてから2~3年経過)
+読み始めてから約3年ほどのゆったりペースで読み終わりました。
 
 通称: TAPL (TaPL)
 
@@ -74,6 +74,8 @@ Haskell を学んでいる人にとっては
 ## 関連リンク
 
 - [住井英二郎（監訳者）＆翻訳チーム 「いまこそ学ぶ！ 型システム ～ TAPL日本語出版までの道のり ～」](https://www.youtube.com/watch?v=JELIVTVuFHo)
+- [waddlaw/TAPL](https://github.com/waddlaw/TAPL)
+- [正誤表に載ってない間違い (非公式 by waddlaw)](https://twitter.com/waddlaw/status/1298844362227425283?s=20)
 
 [ja-support]: https://www.ohmsha.co.jp/book/9784274069116/
 [ja-support2]: http://tapl.proofcafe.org/

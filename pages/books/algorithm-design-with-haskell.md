@@ -1,10 +1,10 @@
 ---
 title: Algorithm Design with HASKELL
 published: 2020/08/26
-# updated: 2020/03/27
+updated: 2020/08/28
 ---
 
-<img src="/images/books/algorithm-design-with-haskell.jpg" alt="Algorithm Design with HASKELL 表紙" width="300px">
+<img src="/images/books/algorithm-design-with-haskell.jpg" alt="Algorithm Design with HASKELL 表紙" width="200px">
 
 書籍名           | 発売日 | 発売元  | その他
 ----------------|-------|--------|----------
