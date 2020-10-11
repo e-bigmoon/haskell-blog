@@ -183,7 +183,7 @@
         
           <br>
           <i class="mdi mdi-calendar"></i>&nbsp;
-          Last Updated March  7, 2020
+          Last Updated October 11, 2020
         
         &nbsp;
         
@@ -274,7 +274,7 @@
 <li><p><a href="https://hackage.haskell.org/package/trifecta">trifecta</a> は優れたエラーメッセージを特徴としていますが、あまり文書化されておらず、理解するのが難しいです。 <code>String</code> と <code>ByteString</code> はそのままではパースできますが、<code>Text</code> はパースできません。</p></li>
 <li><p><a href="https://hackage.haskell.org/package/megaparsec">megaparsec</a> は、ここ数年で積極的に開発されてきた <code>parsec</code> のフォークです。現在のバージョンは、速度、柔軟性、パースエラーの品質の間で素晴らしいバランスを取ろうとしました。 <code>parsec</code> の非公式の後継者として、<code>parsec</code> ライブラリを使用したことがあるか、チュートリアルを読んだことがあるユーザにとっては慣習的でなじみのあるものです。</p></li>
 </ul>
-<p>これらすべてのライブラリを網羅しようとするのは現実的ではないため、 <code>megaparsec</code> に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン8をカバーするつもりです。</p>
+<p>これらすべてのライブラリを網羅しようとするのは現実的ではないため、 <code>megaparsec</code> に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン9をカバーするつもりです。</p>
 <p><a name="ParsecT"></a></p>
 <h2 id="parsect-と-parsec-モナド">ParsecT と Parsec モナド</h2>
 <p><code>ParsecT</code>は、主要なパーサモナド変換子であり、<code>megaparsec</code> の中心的なデータ型です。 <code>ParsecT e s m a</code> は、次のようにパラメータ化されています。</p>
@@ -452,7 +452,7 @@
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="ex">single</span> t = token testToken expected</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>  <span class="ex">where</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>    <span class="ex">testToken</span> x = if x == t then Just x else Nothing</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>    <span class="ex">expected</span>    = E.singleton (Tokens (t:<span class="kw">|</span>[]))</span></code></pre></div>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>    <span class="ex">expected</span>    = Set.singleton (Tokens (t:<span class="kw">|</span>[]))</span></code></pre></div>
 <p><code>Tokens</code> 値コンストラクタは、前に説明した型関数 <code>Tokens</code> と何の共通点もありません。 実際、 <code>Tokens</code> は <code>ErrorItem</code> のコンストラクタの1つであり、 一致すると予想される具体的なトークン列 を指定するために使用されます。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>λ<span class="op">&gt;</span> <span class="ex">parseTest</span> (char <span class="st">'a'</span> :: Parser Char) <span class="st">&quot;b&quot;</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="ex">1</span>:1:</span>
@@ -482,10 +482,10 @@
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a>chunk <span class="ot">=</span> tokens (<span class="op">==</span>)</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="co">-- from &quot;Text.Megaparsec.Char&quot; and &quot;Text.Megaparsec.Byte&quot;:</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a><span class="ot">string' ::</span> (<span class="dt">MonadParsec</span> e s m, <span class="dt">CI.FoldCase</span> (<span class="dt">Tokens</span> s))</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a><span class="ot">string' ::</span> (<span class="dt">MonadParsec</span> e s m, <span class="dt">Data.CaseInsensitive.FoldCase</span> (<span class="dt">Tokens</span> s))</span>
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">Tokens</span> s</span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m (<span class="dt">Tokens</span> s)</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a>string' <span class="ot">=</span> tokens ((<span class="op">==</span>) <span class="ot">`on`</span> CI.mk)</span></code></pre></div>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a>string' <span class="ot">=</span> tokens ((<span class="op">==</span>) <span class="ot">`on`</span> Data.CaseInsensitive.mk)</span></code></pre></div>
 <p>それらは入力の一定のチャンクにマッチします。 <code>chunk</code> (<code>Text.Megaparsec.Byte</code> と <code>Text.Megaparsec.Char</code> では <code>string</code> と呼ばれる型制約のあるシノニムを使用する) は大文字と小文字を区別しますが、 <code>string'</code> は大文字と小文字を区別しません。 大文字と小文字を区別しない場合のマッチには <code>case-insensitive</code> パッケージが使われているため、 <code>FoldCase</code> 制約があります。</p>
 <p>新しいコンビネータも使ってみましょう。</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>λ<span class="op">&gt;</span> parseTest (string <span class="st">&quot;foo&quot;</span><span class="ot"> ::</span> <span class="dt">Parser</span> <span class="dt">Text</span>) <span class="st">&quot;foo&quot;</span></span>
@@ -779,6 +779,7 @@ alternatives = foo &lt;|&gt; bar
 <li>と (6) では、<code>RecordWildCards</code> 言語拡張を使用して <code>Authority</code> と <code>Uri</code> の値を作り上げます。</li>
 </ol></li>
 </ul>
+<p><code>void :: Functor f =&gt; f a -&gt; f ()</code> はGHCから未使用の値に関する警告を受け取ることなく、 結果を明示的に破棄してパースするために使用されます。</p>
 <p>GHCiで <code>pUri</code> を試し、それが機能することを確認してください。</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a>λ<span class="op">&gt;</span> <span class="ex">parseTest</span> (pUri <span class="op">&lt;</span>* eof) <span class="st">&quot;https://mark:secret@example.com&quot;</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true"></a><span class="ex">Uri</span></span>
@@ -821,11 +822,12 @@ alternatives = foo &lt;|&gt; bar
 <span id="cb37-5"><a href="#cb37-5" aria-hidden="true"></a>  <span class="op">|</span>       <span class="op">^</span></span>
 <span id="cb37-6"><a href="#cb37-6" aria-hidden="true"></a>unexpected <span class="ch">'/'</span></span>
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true"></a>expecting end <span class="kw">of</span> input</span></code></pre></div>
-<p>パースエラーを改善できそうです。何をすればいいでしょうか？ 何が起きているのかを知る最も簡単な方法は、 組み込みのヘルパー <code>dbg</code> を使うことです。</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="ot">dbg ::</span> (<span class="dt">Stream</span> s, <span class="dt">ShowToken</span> (<span class="dt">Token</span> s), <span class="dt">ShowErrorComponent</span> e, <span class="dt">Show</span> a)</span>
+<p>パースエラーを改善できそうです。何をすればいいでしょうか？ 何が起きているのかを知る最も簡単な方法は、 <code>Text.Megaparsec.Debug</code> モジュールの組み込みのヘルパー <code>dbg</code> を使うことです。</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="ot">dbg ::</span> (<span class="dt">VisualStream</span> s, <span class="dt">ShowToken</span> (<span class="dt">Token</span> s), <span class="dt">ShowErrorComponent</span> e, <span class="dt">Show</span> a)</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">String</span>            <span class="co">-- ^ デバッグ用のラベル</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">ParsecT</span> e s m a   <span class="co">-- ^ デバッグするパーサ</span></span>
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">ParsecT</span> e s m a   <span class="co">-- ^ デバッグメッセージを出力するパーサ</span></span></code></pre></div>
+<p><code>VisualStream</code>型クラスは読み取り可能な形式で画面に出力できる入力ストリーム用に定義されています。 ここでは詳しく説明しません。</p>
 <p>これを <code>pUri</code> で使ってみましょう。</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a><span class="ot">pUri ::</span> <span class="dt">Parser</span> <span class="dt">Uri</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a>pUri <span class="ot">=</span> <span class="kw">do</span></span>
@@ -1403,13 +1405,13 @@ Final state: &quot;branch B&quot;</code></pre>
 <p><a name="nonIndented"></a></p>
 <h2 id="nonindented-と-indentblock"><code>nonIndented</code> と <code>indentBlock</code></h2>
 <p>最も単純な<code>nonIndented</code> から始めましょう。</p>
-<div class="sourceCode" id="cb91"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true"></a><span class="ot">nonIndented ::</span> <span class="dt">MonadParsec</span> e s m</span>
+<div class="sourceCode" id="cb91"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true"></a><span class="ot">nonIndented ::</span> (<span class="dt">TraversableStream</span> s, <span class="dt">MonadParsec</span> e s m)</span>
 <span id="cb91-2"><a href="#cb91-2" aria-hidden="true"></a>  <span class="ot">=&gt;</span> m ()              <span class="co">-- ^ インデント (スペース) の消費方法</span></span>
 <span id="cb91-3"><a href="#cb91-3" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a               <span class="co">-- ^ 内側のパーサ</span></span>
 <span id="cb91-4"><a href="#cb91-4" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a</span></code></pre></div>
 <p>それはその内側のパーサが インデントされていない入力を消費することを確認できます。 これは、Indentation-sensitiveな入力による 高レベルなパーサの背後にあるモデルの一部です。 インデントされていないトップレベルの項目があり、 すべてのインデントされたトークンはそれらのトップレベル定義の 直接的または間接的な子であると述べます。 <code>megaparsec</code>では、これを表現するために追加の状態を必要としません。 インデントは常に相対的なので、 私たちの考えは、参照トークンとインデントトークンのために パーサを明示的に結び付けることです。 そして、パーサの純粋な組み合わせによって Indentation-sensitiveな文法を定義することです。</p>
 <p>それでは、インデントブロックのパーサを どのように定義すればよいのでしょうか。 <code>indentBlock</code>のシグネチャを見てみましょう。</p>
-<div class="sourceCode" id="cb92"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true"></a><span class="ot">indentBlock ::</span> (<span class="dt">MonadParsec</span> e s m, <span class="dt">Token</span> s <span class="op">~</span> <span class="dt">Char</span>)</span>
+<div class="sourceCode" id="cb92"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true"></a><span class="ot">indentBlock ::</span> (<span class="dt">TraversableStream</span> s, <span class="dt">MonadParsec</span> e s m, <span class="dt">Token</span> s <span class="op">~</span> <span class="dt">Char</span>)</span>
 <span id="cb92-2"><a href="#cb92-2" aria-hidden="true"></a>  <span class="ot">=&gt;</span> m ()              <span class="co">-- ^ インデント (スペース) の消費方法</span></span>
 <span id="cb92-3"><a href="#cb92-3" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m (<span class="dt">IndentOpt</span> m a b) <span class="co">-- ^ 「参照」トークン の消費方法</span></span>
 <span id="cb92-4"><a href="#cb92-4" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a</span></code></pre></div>
@@ -1435,7 +1437,7 @@ Final state: &quot;branch B&quot;</code></pre>
 <span id="cb94-3"><a href="#cb94-3" aria-hidden="true"></a></span>
 <span id="cb94-4"><a href="#cb94-4" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
 <span id="cb94-5"><a href="#cb94-5" aria-hidden="true"></a></span>
-<span id="cb94-6"><a href="#cb94-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Applicative</span></span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Applicative</span> <span class="kw">hiding</span> (some)</span>
 <span id="cb94-7"><a href="#cb94-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Monad</span> (void)</span>
 <span id="cb94-8"><a href="#cb94-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
 <span id="cb94-9"><a href="#cb94-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Void</span></span>
@@ -1645,7 +1647,7 @@ Final state: &quot;branch B&quot;</code></pre>
 <span id="cb110-2"><a href="#cb110-2" aria-hidden="true"></a>  <span class="ot">=</span> <span class="dt">Tokens</span> (<span class="dt">NonEmpty</span> t)      <span class="co">-- ^ 空ではないトークンのストリーム</span></span>
 <span id="cb110-3"><a href="#cb110-3" aria-hidden="true"></a>  <span class="op">|</span> <span class="dt">Label</span> (<span class="dt">NonEmpty</span> <span class="dt">Char</span>)    <span class="co">-- ^ ラベル (空ではない)</span></span>
 <span id="cb110-4"><a href="#cb110-4" aria-hidden="true"></a>  <span class="op">|</span> <span class="dt">EndOfInput</span>               <span class="co">-- ^ 入力の終わり</span></span></code></pre></div>
-<p>これが<code>ErrorFancy</code> です。</p>
+<p><code>NonEmpty</code> は空でないリストの型で、<code>Data.List.NonEmpty</code> にあります。 これが<code>ErrorFancy</code> です。</p>
 <div class="sourceCode" id="cb111"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">ErrorFancy</span> e</span>
 <span id="cb111-2"><a href="#cb111-2" aria-hidden="true"></a>  <span class="ot">=</span> <span class="dt">ErrorFail</span> <span class="dt">String</span></span>
 <span id="cb111-3"><a href="#cb111-3" aria-hidden="true"></a>    <span class="co">-- ^ パーサモナドで 'fail'が使われている</span></span>
@@ -1710,7 +1712,7 @@ Final state: &quot;branch B&quot;</code></pre>
 <span id="cb118-3"><a href="#cb118-3" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">Pos</span>               <span class="co">-- ^ 参照インデントレベル</span></span>
 <span id="cb118-4"><a href="#cb118-4" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">Pos</span>               <span class="co">-- ^ 実際のインデントレベル</span></span>
 <span id="cb118-5"><a href="#cb118-5" aria-hidden="true"></a>  <span class="ot">-&gt;</span> m a</span>
-<span id="cb118-6"><a href="#cb118-6" aria-hidden="true"></a>incorrectIndent <span class="fu">ord</span> ref actual <span class="ot">=</span> fancyFailure <span class="op">.</span> E.singleton <span class="op">$</span></span>
+<span id="cb118-6"><a href="#cb118-6" aria-hidden="true"></a>incorrectIndent <span class="fu">ord</span> ref actual <span class="ot">=</span> fancyFailure <span class="op">.</span> Set.singleton <span class="op">$</span></span>
 <span id="cb118-7"><a href="#cb118-7" aria-hidden="true"></a>  <span class="dt">ErrorIndentation</span> <span class="fu">ord</span> ref actual</span></code></pre></div>
 <p>あなたのパーサにカスタムパースエラーコンポーネントを追加する例として、 与えられた<code>Text</code>の値がキーワードではないことを示す、 特別なパースエラーを定義することを通して見てみましょう。</p>
 <p>まず、サポートしたいシナリオを表現するコンストラクタを使用して データ型を定義する必要があります。</p>
@@ -1743,11 +1745,12 @@ Final state: &quot;branch B&quot;</code></pre>
 <span id="cb125-4"><a href="#cb125-4" aria-hidden="true"></a><span class="co">-- レンダリングされた 'String'は常に改行で終わります。</span></span>
 <span id="cb125-5"><a href="#cb125-5" aria-hidden="true"></a></span>
 <span id="cb125-6"><a href="#cb125-6" aria-hidden="true"></a>errorBundlePretty</span>
-<span id="cb125-7"><a href="#cb125-7" aria-hidden="true"></a><span class="ot">  ::</span> ( <span class="dt">Stream</span> s</span>
-<span id="cb125-8"><a href="#cb125-8" aria-hidden="true"></a>     , <span class="dt">ShowErrorComponent</span> e</span>
-<span id="cb125-9"><a href="#cb125-9" aria-hidden="true"></a>     )</span>
-<span id="cb125-10"><a href="#cb125-10" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">ParseErrorBundle</span> s e <span class="co">-- ^ 表示するパースエラーバンドル</span></span>
-<span id="cb125-11"><a href="#cb125-11" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">String</span>               <span class="co">-- ^ バンドルのテキスト表現</span></span></code></pre></div>
+<span id="cb125-7"><a href="#cb125-7" aria-hidden="true"></a><span class="ot">  ::</span> ( <span class="dt">VisualStream</span> s</span>
+<span id="cb125-8"><a href="#cb125-8" aria-hidden="true"></a>     , <span class="dt">TraversableStream</span> s</span>
+<span id="cb125-9"><a href="#cb125-9" aria-hidden="true"></a>     , <span class="dt">ShowErrorComponent</span> e</span>
+<span id="cb125-10"><a href="#cb125-10" aria-hidden="true"></a>     )</span>
+<span id="cb125-11"><a href="#cb125-11" aria-hidden="true"></a>  <span class="ot">=&gt;</span> <span class="dt">ParseErrorBundle</span> s e <span class="co">-- ^ 表示するパースエラーバンドル</span></span>
+<span id="cb125-12"><a href="#cb125-12" aria-hidden="true"></a>  <span class="ot">-&gt;</span> <span class="dt">String</span>               <span class="co">-- ^ バンドルのテキスト表現</span></span></code></pre></div>
 <p>99％のケースで、あなたはこの1つの関数だけを必要とするでしょう。</p>
 <p><a name="ChatchErr"></a></p>
 <h2 id="実行中のパーサでパースエラーをチャッチする">実行中のパーサでパースエラーをチャッチする</h2>
@@ -1767,7 +1770,7 @@ Final state: &quot;branch B&quot;</code></pre>
 <span id="cb127-3"><a href="#cb127-3" aria-hidden="true"></a></span>
 <span id="cb127-4"><a href="#cb127-4" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
 <span id="cb127-5"><a href="#cb127-5" aria-hidden="true"></a></span>
-<span id="cb127-6"><a href="#cb127-6" aria-hidden="true"></a><span class="co">-- import Control.Applicative</span></span>
+<span id="cb127-6"><a href="#cb127-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Applicative</span> <span class="kw">hiding</span> (some)</span>
 <span id="cb127-7"><a href="#cb127-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (intercalate)</span>
 <span id="cb127-8"><a href="#cb127-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Set</span> (<span class="dt">Set</span>)</span>
 <span id="cb127-9"><a href="#cb127-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
@@ -1991,7 +1994,7 @@ Final state: &quot;branch B&quot;</code></pre>
 <span id="cb137-2"><a href="#cb137-2" aria-hidden="true"></a></span>
 <span id="cb137-3"><a href="#cb137-3" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> (main) <span class="kw">where</span></span>
 <span id="cb137-4"><a href="#cb137-4" aria-hidden="true"></a></span>
-<span id="cb137-5"><a href="#cb137-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Applicative</span></span>
+<span id="cb137-5"><a href="#cb137-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Applicative</span> <span class="kw">hiding</span> (some)</span>
 <span id="cb137-6"><a href="#cb137-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
 <span id="cb137-7"><a href="#cb137-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Void</span></span>
 <span id="cb137-8"><a href="#cb137-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Test.Hspec</span></span>
@@ -2097,78 +2100,85 @@ Final state: &quot;branch B&quot;</code></pre>
 <span id="cb146-2"><a href="#cb146-2" aria-hidden="true"></a>  <span class="kw">type</span> <span class="dt">Token</span>  <span class="dt">MyStream</span> <span class="ot">=</span> <span class="dt">WithPos</span> <span class="dt">MyToken</span></span>
 <span id="cb146-3"><a href="#cb146-3" aria-hidden="true"></a>  <span class="kw">type</span> <span class="dt">Tokens</span> <span class="dt">MyStream</span> <span class="ot">=</span> [<span class="dt">WithPos</span> <span class="dt">MyToken</span>]</span>
 <span id="cb146-4"><a href="#cb146-4" aria-hidden="true"></a>  <span class="co">-- …</span></span></code></pre></div>
-<p><code>Stream</code> は <code>Text.Megaparsec.Stream</code> モジュールに 詳しいドキュメントがあります。 足りないメソッドを定義していきましょう。</p>
-<div class="sourceCode" id="cb147"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true"></a>  <span class="co">-- …</span></span>
-<span id="cb147-2"><a href="#cb147-2" aria-hidden="true"></a>  tokenToChunk <span class="dt">Proxy</span> x <span class="ot">=</span> [x]</span>
-<span id="cb147-3"><a href="#cb147-3" aria-hidden="true"></a>  tokensToChunk <span class="dt">Proxy</span> xs <span class="ot">=</span> xs</span>
-<span id="cb147-4"><a href="#cb147-4" aria-hidden="true"></a>  chunkToTokens <span class="dt">Proxy</span> <span class="ot">=</span> <span class="fu">id</span></span>
-<span id="cb147-5"><a href="#cb147-5" aria-hidden="true"></a>  chunkLength <span class="dt">Proxy</span> <span class="ot">=</span> <span class="fu">length</span></span>
-<span id="cb147-6"><a href="#cb147-6" aria-hidden="true"></a>  chunkEmpty <span class="dt">Proxy</span> <span class="ot">=</span> <span class="fu">null</span></span>
-<span id="cb147-7"><a href="#cb147-7" aria-hidden="true"></a>  take1_ (<span class="dt">MyStream</span> _ []) <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb147-8"><a href="#cb147-8" aria-hidden="true"></a>  take1_ (<span class="dt">MyStream</span> str (t<span class="op">:</span>ts)) <span class="ot">=</span> <span class="dt">Just</span></span>
-<span id="cb147-9"><a href="#cb147-9" aria-hidden="true"></a>    ( t</span>
-<span id="cb147-10"><a href="#cb147-10" aria-hidden="true"></a>    , <span class="dt">MyStream</span> (<span class="fu">drop</span> (tokensLength pxy (t<span class="op">:|</span>[])) str) ts</span>
-<span id="cb147-11"><a href="#cb147-11" aria-hidden="true"></a>    )</span>
-<span id="cb147-12"><a href="#cb147-12" aria-hidden="true"></a>  takeN_ n (<span class="dt">MyStream</span> str s)</span>
-<span id="cb147-13"><a href="#cb147-13" aria-hidden="true"></a>    <span class="op">|</span> n <span class="op">&lt;=</span> <span class="dv">0</span>    <span class="ot">=</span> <span class="dt">Just</span> ([], <span class="dt">MyStream</span> str s)</span>
-<span id="cb147-14"><a href="#cb147-14" aria-hidden="true"></a>    <span class="op">|</span> <span class="fu">null</span> s    <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb147-15"><a href="#cb147-15" aria-hidden="true"></a>    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span></span>
-<span id="cb147-16"><a href="#cb147-16" aria-hidden="true"></a>        <span class="kw">let</span> (x, s') <span class="ot">=</span> <span class="fu">splitAt</span> n s</span>
-<span id="cb147-17"><a href="#cb147-17" aria-hidden="true"></a>        <span class="kw">in</span> <span class="kw">case</span> NE.nonEmpty x <span class="kw">of</span></span>
-<span id="cb147-18"><a href="#cb147-18" aria-hidden="true"></a>          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> (x, <span class="dt">MyStream</span> str s')</span>
-<span id="cb147-19"><a href="#cb147-19" aria-hidden="true"></a>          <span class="dt">Just</span> nex <span class="ot">-&gt;</span> <span class="dt">Just</span> (x, <span class="dt">MyStream</span> (<span class="fu">drop</span> (tokensLength pxy nex) str) s')</span>
-<span id="cb147-20"><a href="#cb147-20" aria-hidden="true"></a>  takeWhile_ f (<span class="dt">MyStream</span> str s) <span class="ot">=</span></span>
-<span id="cb147-21"><a href="#cb147-21" aria-hidden="true"></a>    <span class="kw">let</span> (x, s') <span class="ot">=</span> DL.span f s</span>
-<span id="cb147-22"><a href="#cb147-22" aria-hidden="true"></a>    <span class="kw">in</span> <span class="kw">case</span> NE.nonEmpty x <span class="kw">of</span></span>
-<span id="cb147-23"><a href="#cb147-23" aria-hidden="true"></a>      <span class="dt">Nothing</span> <span class="ot">-&gt;</span> (x, <span class="dt">MyStream</span> str s')</span>
-<span id="cb147-24"><a href="#cb147-24" aria-hidden="true"></a>      <span class="dt">Just</span> nex <span class="ot">-&gt;</span> (x, <span class="dt">MyStream</span> (<span class="fu">drop</span> (tokensLength pxy nex) str) s')</span>
-<span id="cb147-25"><a href="#cb147-25" aria-hidden="true"></a>  showTokens <span class="dt">Proxy</span> <span class="ot">=</span> DL.intercalate <span class="st">&quot; &quot;</span></span>
-<span id="cb147-26"><a href="#cb147-26" aria-hidden="true"></a>    <span class="op">.</span> NE.toList</span>
-<span id="cb147-27"><a href="#cb147-27" aria-hidden="true"></a>    <span class="op">.</span> <span class="fu">fmap</span> (showMyToken <span class="op">.</span> tokenVal)</span>
-<span id="cb147-28"><a href="#cb147-28" aria-hidden="true"></a>  tokensLength <span class="dt">Proxy</span> xs <span class="ot">=</span> <span class="fu">sum</span> (tokenLength <span class="op">&lt;$&gt;</span> xs)</span>
-<span id="cb147-29"><a href="#cb147-29" aria-hidden="true"></a>  reachOffset o <span class="dt">PosState</span> {<span class="op">..</span>} <span class="ot">=</span></span>
-<span id="cb147-30"><a href="#cb147-30" aria-hidden="true"></a>    ( prefix <span class="op">++</span> restOfLine</span>
-<span id="cb147-31"><a href="#cb147-31" aria-hidden="true"></a>    , <span class="dt">PosState</span></span>
-<span id="cb147-32"><a href="#cb147-32" aria-hidden="true"></a>        { pstateInput <span class="ot">=</span> <span class="dt">MyStream</span></span>
-<span id="cb147-33"><a href="#cb147-33" aria-hidden="true"></a>            { myStreamInput <span class="ot">=</span> postStr</span>
-<span id="cb147-34"><a href="#cb147-34" aria-hidden="true"></a>            , unMyStream <span class="ot">=</span> post</span>
-<span id="cb147-35"><a href="#cb147-35" aria-hidden="true"></a>            }</span>
-<span id="cb147-36"><a href="#cb147-36" aria-hidden="true"></a>        , pstateOffset <span class="ot">=</span> <span class="fu">max</span> pstateOffset o</span>
-<span id="cb147-37"><a href="#cb147-37" aria-hidden="true"></a>        , pstateSourcePos <span class="ot">=</span> newSourcePos</span>
-<span id="cb147-38"><a href="#cb147-38" aria-hidden="true"></a>        , pstateTabWidth <span class="ot">=</span> pstateTabWidth</span>
-<span id="cb147-39"><a href="#cb147-39" aria-hidden="true"></a>        , pstateLinePrefix <span class="ot">=</span> prefix</span>
-<span id="cb147-40"><a href="#cb147-40" aria-hidden="true"></a>        }</span>
-<span id="cb147-41"><a href="#cb147-41" aria-hidden="true"></a>    )</span>
-<span id="cb147-42"><a href="#cb147-42" aria-hidden="true"></a>    <span class="kw">where</span></span>
-<span id="cb147-43"><a href="#cb147-43" aria-hidden="true"></a>      prefix <span class="ot">=</span></span>
-<span id="cb147-44"><a href="#cb147-44" aria-hidden="true"></a>        <span class="kw">if</span> sameLine</span>
-<span id="cb147-45"><a href="#cb147-45" aria-hidden="true"></a>          <span class="kw">then</span> pstateLinePrefix <span class="op">++</span> preStr</span>
-<span id="cb147-46"><a href="#cb147-46" aria-hidden="true"></a>          <span class="kw">else</span> preStr</span>
-<span id="cb147-47"><a href="#cb147-47" aria-hidden="true"></a>      sameLine <span class="ot">=</span> sourceLine newSourcePos <span class="op">==</span> sourceLine pstateSourcePos</span>
-<span id="cb147-48"><a href="#cb147-48" aria-hidden="true"></a>      newSourcePos <span class="ot">=</span></span>
-<span id="cb147-49"><a href="#cb147-49" aria-hidden="true"></a>        <span class="kw">case</span> post <span class="kw">of</span></span>
-<span id="cb147-50"><a href="#cb147-50" aria-hidden="true"></a>          [] <span class="ot">-&gt;</span> pstateSourcePos</span>
-<span id="cb147-51"><a href="#cb147-51" aria-hidden="true"></a>          (x<span class="op">:</span>_) <span class="ot">-&gt;</span> startPos x</span>
-<span id="cb147-52"><a href="#cb147-52" aria-hidden="true"></a>      (pre, post) <span class="ot">=</span> <span class="fu">splitAt</span> (o <span class="op">-</span> pstateOffset) (unMyStream pstateInput)</span>
-<span id="cb147-53"><a href="#cb147-53" aria-hidden="true"></a>      (preStr, postStr) <span class="ot">=</span> <span class="fu">splitAt</span> tokensConsumed (myStreamInput pstateInput)</span>
-<span id="cb147-54"><a href="#cb147-54" aria-hidden="true"></a>      tokensConsumed <span class="ot">=</span></span>
-<span id="cb147-55"><a href="#cb147-55" aria-hidden="true"></a>        <span class="kw">case</span> NE.nonEmpty pre <span class="kw">of</span></span>
-<span id="cb147-56"><a href="#cb147-56" aria-hidden="true"></a>          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dv">0</span></span>
-<span id="cb147-57"><a href="#cb147-57" aria-hidden="true"></a>          <span class="dt">Just</span> nePre <span class="ot">-&gt;</span> tokensLength pxy nePre</span>
-<span id="cb147-58"><a href="#cb147-58" aria-hidden="true"></a>      restOfLine <span class="ot">=</span> <span class="fu">takeWhile</span> (<span class="op">/=</span> <span class="ch">'\n'</span>) postStr</span>
-<span id="cb147-59"><a href="#cb147-59" aria-hidden="true"></a></span>
-<span id="cb147-60"><a href="#cb147-60" aria-hidden="true"></a><span class="ot">pxy ::</span> <span class="dt">Proxy</span> <span class="dt">MyStream</span></span>
-<span id="cb147-61"><a href="#cb147-61" aria-hidden="true"></a>pxy <span class="ot">=</span> <span class="dt">Proxy</span></span>
-<span id="cb147-62"><a href="#cb147-62" aria-hidden="true"></a></span>
-<span id="cb147-63"><a href="#cb147-63" aria-hidden="true"></a><span class="ot">showMyToken ::</span> <span class="dt">MyToken</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
-<span id="cb147-64"><a href="#cb147-64" aria-hidden="true"></a>showMyToken <span class="ot">=</span> \<span class="kw">case</span></span>
-<span id="cb147-65"><a href="#cb147-65" aria-hidden="true"></a>  (<span class="dt">Int</span> n)    <span class="ot">-&gt;</span> <span class="fu">show</span> n</span>
-<span id="cb147-66"><a href="#cb147-66" aria-hidden="true"></a>  <span class="dt">Plus</span>       <span class="ot">-&gt;</span> <span class="st">&quot;+&quot;</span></span>
-<span id="cb147-67"><a href="#cb147-67" aria-hidden="true"></a>  <span class="dt">Mul</span>        <span class="ot">-&gt;</span> <span class="st">&quot;*&quot;</span></span>
-<span id="cb147-68"><a href="#cb147-68" aria-hidden="true"></a>  <span class="dt">Div</span>        <span class="ot">-&gt;</span> <span class="st">&quot;/&quot;</span></span>
-<span id="cb147-69"><a href="#cb147-69" aria-hidden="true"></a>  <span class="dt">OpenParen</span>  <span class="ot">-&gt;</span> <span class="st">&quot;(&quot;</span></span>
-<span id="cb147-70"><a href="#cb147-70" aria-hidden="true"></a>  <span class="dt">CloseParen</span> <span class="ot">-&gt;</span> <span class="st">&quot;)&quot;</span></span></code></pre></div>
-<p><code>Stream</code> 型クラスに関する詳しい参考資料 (そしてなぜこのようになっているのか)は <a href="https://markkarpov.com/post/megaparsec-more-speed-more-power.html">このブログ記事</a> に書いてあります。</p>
+<p><code>Stream</code>, <code>VisualStream</code>, <code>TraversableStream</code> は <code>Text.Megaparsec.Stream</code> モジュールに詳しいドキュメントがあります。 足りないメソッドを定義していきましょう。</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Stream</span> <span class="dt">MyStream</span> <span class="kw">where</span></span>
+<span id="cb147-2"><a href="#cb147-2" aria-hidden="true"></a>  <span class="kw">type</span> <span class="dt">Token</span>  <span class="dt">MyStream</span> <span class="ot">=</span> <span class="dt">WithPos</span> <span class="dt">MyToken</span></span>
+<span id="cb147-3"><a href="#cb147-3" aria-hidden="true"></a>  <span class="kw">type</span> <span class="dt">Tokens</span> <span class="dt">MyStream</span> <span class="ot">=</span> [<span class="dt">WithPos</span> <span class="dt">MyToken</span>]</span>
+<span id="cb147-4"><a href="#cb147-4" aria-hidden="true"></a></span>
+<span id="cb147-5"><a href="#cb147-5" aria-hidden="true"></a>  tokenToChunk <span class="dt">Proxy</span> x <span class="ot">=</span> [x]</span>
+<span id="cb147-6"><a href="#cb147-6" aria-hidden="true"></a>  tokensToChunk <span class="dt">Proxy</span> xs <span class="ot">=</span> xs</span>
+<span id="cb147-7"><a href="#cb147-7" aria-hidden="true"></a>  chunkToTokens <span class="dt">Proxy</span> <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb147-8"><a href="#cb147-8" aria-hidden="true"></a>  chunkLength <span class="dt">Proxy</span> <span class="ot">=</span> <span class="fu">length</span></span>
+<span id="cb147-9"><a href="#cb147-9" aria-hidden="true"></a>  chunkEmpty <span class="dt">Proxy</span> <span class="ot">=</span> <span class="fu">null</span></span>
+<span id="cb147-10"><a href="#cb147-10" aria-hidden="true"></a>  take1_ (<span class="dt">MyStream</span> _ []) <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb147-11"><a href="#cb147-11" aria-hidden="true"></a>  take1_ (<span class="dt">MyStream</span> str (t<span class="op">:</span>ts)) <span class="ot">=</span> <span class="dt">Just</span></span>
+<span id="cb147-12"><a href="#cb147-12" aria-hidden="true"></a>    ( t</span>
+<span id="cb147-13"><a href="#cb147-13" aria-hidden="true"></a>    , <span class="dt">MyStream</span> (<span class="fu">drop</span> (tokensLength pxy (t<span class="op">:|</span>[])) str) ts</span>
+<span id="cb147-14"><a href="#cb147-14" aria-hidden="true"></a>    )</span>
+<span id="cb147-15"><a href="#cb147-15" aria-hidden="true"></a>  takeN_ n (<span class="dt">MyStream</span> str s)</span>
+<span id="cb147-16"><a href="#cb147-16" aria-hidden="true"></a>    <span class="op">|</span> n <span class="op">&lt;=</span> <span class="dv">0</span>    <span class="ot">=</span> <span class="dt">Just</span> ([], <span class="dt">MyStream</span> str s)</span>
+<span id="cb147-17"><a href="#cb147-17" aria-hidden="true"></a>    <span class="op">|</span> <span class="fu">null</span> s    <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb147-18"><a href="#cb147-18" aria-hidden="true"></a>    <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span></span>
+<span id="cb147-19"><a href="#cb147-19" aria-hidden="true"></a>        <span class="kw">let</span> (x, s') <span class="ot">=</span> <span class="fu">splitAt</span> n s</span>
+<span id="cb147-20"><a href="#cb147-20" aria-hidden="true"></a>        <span class="kw">in</span> <span class="kw">case</span> NE.nonEmpty x <span class="kw">of</span></span>
+<span id="cb147-21"><a href="#cb147-21" aria-hidden="true"></a>          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> (x, <span class="dt">MyStream</span> str s')</span>
+<span id="cb147-22"><a href="#cb147-22" aria-hidden="true"></a>          <span class="dt">Just</span> nex <span class="ot">-&gt;</span> <span class="dt">Just</span> (x, <span class="dt">MyStream</span> (<span class="fu">drop</span> (tokensLength pxy nex) str) s')</span>
+<span id="cb147-23"><a href="#cb147-23" aria-hidden="true"></a>  takeWhile_ f (<span class="dt">MyStream</span> str s) <span class="ot">=</span></span>
+<span id="cb147-24"><a href="#cb147-24" aria-hidden="true"></a>    <span class="kw">let</span> (x, s') <span class="ot">=</span> DL.span f s</span>
+<span id="cb147-25"><a href="#cb147-25" aria-hidden="true"></a>    <span class="kw">in</span> <span class="kw">case</span> NE.nonEmpty x <span class="kw">of</span></span>
+<span id="cb147-26"><a href="#cb147-26" aria-hidden="true"></a>      <span class="dt">Nothing</span> <span class="ot">-&gt;</span> (x, <span class="dt">MyStream</span> str s')</span>
+<span id="cb147-27"><a href="#cb147-27" aria-hidden="true"></a>      <span class="dt">Just</span> nex <span class="ot">-&gt;</span> (x, <span class="dt">MyStream</span> (<span class="fu">drop</span> (tokensLength pxy nex) str) s')</span>
+<span id="cb147-28"><a href="#cb147-28" aria-hidden="true"></a></span>
+<span id="cb147-29"><a href="#cb147-29" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">VisualStream</span> <span class="dt">MyStream</span> <span class="kw">where</span></span>
+<span id="cb147-30"><a href="#cb147-30" aria-hidden="true"></a>  showTokens <span class="dt">Proxy</span> <span class="ot">=</span> DL.intercalate <span class="st">&quot; &quot;</span></span>
+<span id="cb147-31"><a href="#cb147-31" aria-hidden="true"></a>    <span class="op">.</span> NE.toList</span>
+<span id="cb147-32"><a href="#cb147-32" aria-hidden="true"></a>    <span class="op">.</span> <span class="fu">fmap</span> (showMyToken <span class="op">.</span> tokenVal)</span>
+<span id="cb147-33"><a href="#cb147-33" aria-hidden="true"></a>  tokensLength <span class="dt">Proxy</span> xs <span class="ot">=</span> <span class="fu">sum</span> (tokenLength <span class="op">&lt;$&gt;</span> xs)</span>
+<span id="cb147-34"><a href="#cb147-34" aria-hidden="true"></a></span>
+<span id="cb147-35"><a href="#cb147-35" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">TraversableStream</span> <span class="dt">MyStream</span> <span class="kw">where</span></span>
+<span id="cb147-36"><a href="#cb147-36" aria-hidden="true"></a>  reachOffset o <span class="dt">PosState</span> {<span class="op">..</span>} <span class="ot">=</span></span>
+<span id="cb147-37"><a href="#cb147-37" aria-hidden="true"></a>    ( prefix <span class="op">++</span> restOfLine</span>
+<span id="cb147-38"><a href="#cb147-38" aria-hidden="true"></a>    , <span class="dt">PosState</span></span>
+<span id="cb147-39"><a href="#cb147-39" aria-hidden="true"></a>        { pstateInput <span class="ot">=</span> <span class="dt">MyStream</span></span>
+<span id="cb147-40"><a href="#cb147-40" aria-hidden="true"></a>            { myStreamInput <span class="ot">=</span> postStr</span>
+<span id="cb147-41"><a href="#cb147-41" aria-hidden="true"></a>            , unMyStream <span class="ot">=</span> post</span>
+<span id="cb147-42"><a href="#cb147-42" aria-hidden="true"></a>            }</span>
+<span id="cb147-43"><a href="#cb147-43" aria-hidden="true"></a>        , pstateOffset <span class="ot">=</span> <span class="fu">max</span> pstateOffset o</span>
+<span id="cb147-44"><a href="#cb147-44" aria-hidden="true"></a>        , pstateSourcePos <span class="ot">=</span> newSourcePos</span>
+<span id="cb147-45"><a href="#cb147-45" aria-hidden="true"></a>        , pstateTabWidth <span class="ot">=</span> pstateTabWidth</span>
+<span id="cb147-46"><a href="#cb147-46" aria-hidden="true"></a>        , pstateLinePrefix <span class="ot">=</span> prefix</span>
+<span id="cb147-47"><a href="#cb147-47" aria-hidden="true"></a>        }</span>
+<span id="cb147-48"><a href="#cb147-48" aria-hidden="true"></a>    )</span>
+<span id="cb147-49"><a href="#cb147-49" aria-hidden="true"></a>    <span class="kw">where</span></span>
+<span id="cb147-50"><a href="#cb147-50" aria-hidden="true"></a>      prefix <span class="ot">=</span></span>
+<span id="cb147-51"><a href="#cb147-51" aria-hidden="true"></a>        <span class="kw">if</span> sameLine</span>
+<span id="cb147-52"><a href="#cb147-52" aria-hidden="true"></a>          <span class="kw">then</span> pstateLinePrefix <span class="op">++</span> preStr</span>
+<span id="cb147-53"><a href="#cb147-53" aria-hidden="true"></a>          <span class="kw">else</span> preStr</span>
+<span id="cb147-54"><a href="#cb147-54" aria-hidden="true"></a>      sameLine <span class="ot">=</span> sourceLine newSourcePos <span class="op">==</span> sourceLine pstateSourcePos</span>
+<span id="cb147-55"><a href="#cb147-55" aria-hidden="true"></a>      newSourcePos <span class="ot">=</span></span>
+<span id="cb147-56"><a href="#cb147-56" aria-hidden="true"></a>        <span class="kw">case</span> post <span class="kw">of</span></span>
+<span id="cb147-57"><a href="#cb147-57" aria-hidden="true"></a>          [] <span class="ot">-&gt;</span> pstateSourcePos</span>
+<span id="cb147-58"><a href="#cb147-58" aria-hidden="true"></a>          (x<span class="op">:</span>_) <span class="ot">-&gt;</span> startPos x</span>
+<span id="cb147-59"><a href="#cb147-59" aria-hidden="true"></a>      (pre, post) <span class="ot">=</span> <span class="fu">splitAt</span> (o <span class="op">-</span> pstateOffset) (unMyStream pstateInput)</span>
+<span id="cb147-60"><a href="#cb147-60" aria-hidden="true"></a>      (preStr, postStr) <span class="ot">=</span> <span class="fu">splitAt</span> tokensConsumed (myStreamInput pstateInput)</span>
+<span id="cb147-61"><a href="#cb147-61" aria-hidden="true"></a>      tokensConsumed <span class="ot">=</span></span>
+<span id="cb147-62"><a href="#cb147-62" aria-hidden="true"></a>        <span class="kw">case</span> NE.nonEmpty pre <span class="kw">of</span></span>
+<span id="cb147-63"><a href="#cb147-63" aria-hidden="true"></a>          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dv">0</span></span>
+<span id="cb147-64"><a href="#cb147-64" aria-hidden="true"></a>          <span class="dt">Just</span> nePre <span class="ot">-&gt;</span> tokensLength pxy nePre</span>
+<span id="cb147-65"><a href="#cb147-65" aria-hidden="true"></a>      restOfLine <span class="ot">=</span> <span class="fu">takeWhile</span> (<span class="op">/=</span> <span class="ch">'\n'</span>) postStr</span>
+<span id="cb147-66"><a href="#cb147-66" aria-hidden="true"></a></span>
+<span id="cb147-67"><a href="#cb147-67" aria-hidden="true"></a><span class="ot">pxy ::</span> <span class="dt">Proxy</span> <span class="dt">MyStream</span></span>
+<span id="cb147-68"><a href="#cb147-68" aria-hidden="true"></a>pxy <span class="ot">=</span> <span class="dt">Proxy</span></span>
+<span id="cb147-69"><a href="#cb147-69" aria-hidden="true"></a></span>
+<span id="cb147-70"><a href="#cb147-70" aria-hidden="true"></a><span class="ot">showMyToken ::</span> <span class="dt">MyToken</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb147-71"><a href="#cb147-71" aria-hidden="true"></a>showMyToken <span class="ot">=</span> \<span class="kw">case</span></span>
+<span id="cb147-72"><a href="#cb147-72" aria-hidden="true"></a>  (<span class="dt">Int</span> n)    <span class="ot">-&gt;</span> <span class="fu">show</span> n</span>
+<span id="cb147-73"><a href="#cb147-73" aria-hidden="true"></a>  <span class="dt">Plus</span>       <span class="ot">-&gt;</span> <span class="st">&quot;+&quot;</span></span>
+<span id="cb147-74"><a href="#cb147-74" aria-hidden="true"></a>  <span class="dt">Mul</span>        <span class="ot">-&gt;</span> <span class="st">&quot;*&quot;</span></span>
+<span id="cb147-75"><a href="#cb147-75" aria-hidden="true"></a>  <span class="dt">Div</span>        <span class="ot">-&gt;</span> <span class="st">&quot;/&quot;</span></span>
+<span id="cb147-76"><a href="#cb147-76" aria-hidden="true"></a>  <span class="dt">OpenParen</span>  <span class="ot">-&gt;</span> <span class="st">&quot;(&quot;</span></span>
+<span id="cb147-77"><a href="#cb147-77" aria-hidden="true"></a>  <span class="dt">CloseParen</span> <span class="ot">-&gt;</span> <span class="st">&quot;)&quot;</span></span></code></pre></div>
+<p><code>Stream</code> 型クラスに関する詳しい参考資料 (そしてなぜこのようになっているのか)は <a href="https://markkarpov.com/post/megaparsec-more-speed-more-power.html">このブログ記事</a> に書いてあります。 <code>megaparsec</code> のバージョン9では <code>Stream</code> の特定のメソッドがクラス <code>VisualStream</code>と<code>TraversableStream</code>に移動され、 特定のカスタム入力ストリームの <code>Stream</code> のインスタンスを簡単に定義できるようになっていることに注意してください。</p>
 <p>これで <code>Parser</code> 型が定義できます。</p>
 <div class="sourceCode" id="cb148"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Parser</span> <span class="ot">=</span> <span class="dt">Parsec</span> <span class="dt">Void</span> <span class="dt">MyStream</span></span></code></pre></div>
 <p>次のステップは、 <code>token</code> と (意味があるなら)<code>tokens</code> のプリミティブを使って、 基本的なパーサを定義することです。 そのまま使用できるストリームには、 <code>Text.Megaparsec.Byte</code> および <code>Text.Megaparsec.Char</code> モジュールが ありますが、カスタムトークンを使用する場合はカスタムヘルパーが必要です。</p>
