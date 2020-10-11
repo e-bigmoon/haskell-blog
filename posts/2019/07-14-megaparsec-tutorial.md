@@ -3,7 +3,7 @@ title: Megaparsec tutorial from IH book (翻訳)
 author: Mark Karpov
 translator: Wataru Yamada
 tags: megaparsec, package, 翻訳
-updated: 2020/03/07
+updated: 2020/10/11
 
 ---
 
@@ -61,7 +61,7 @@ Great original post: [Megaparsec tutorial from IH book](https://markkarpov.com/m
 
 - [megaparsec](https://hackage.haskell.org/package/megaparsec) は、ここ数年で積極的に開発されてきた `parsec` のフォークです。現在のバージョンは、速度、柔軟性、パースエラーの品質の間で素晴らしいバランスを取ろうとしました。 `parsec` の非公式の後継者として、`parsec` ライブラリを使用したことがあるか、チュートリアルを読んだことがあるユーザにとっては慣習的でなじみのあるものです。
 
-これらすべてのライブラリを網羅しようとするのは現実的ではないため、 `megaparsec` に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン8をカバーするつもりです。
+これらすべてのライブラリを網羅しようとするのは現実的ではないため、 `megaparsec` に焦点を当てます。より正確には、この本が出版される時までにはほとんどどこでも古いバージョンに取って代わるであろうバージョン9をカバーするつもりです。
 
 <a name="ParsecT"></a>
 
@@ -291,7 +291,7 @@ single :: MonadParsec e s m
 single t = token testToken expected
   where
     testToken x = if x == t then Just x else Nothing
-    expected    = E.singleton (Tokens (t:|[]))
+    expected    = Set.singleton (Tokens (t:|[]))
 ```
 
 `Tokens` 値コンストラクタは、前に説明した型関数 `Tokens` 
@@ -343,10 +343,10 @@ chunk :: MonadParsec e s m
 chunk = tokens (==)
 
 -- from "Text.Megaparsec.Char" and "Text.Megaparsec.Byte":
-string' :: (MonadParsec e s m, CI.FoldCase (Tokens s))
+string' :: (MonadParsec e s m, Data.CaseInsensitive.FoldCase (Tokens s))
   => Tokens s
   -> m (Tokens s)
-string' = tokens ((==) `on` CI.mk)
+string' = tokens ((==) `on` Data.CaseInsensitive.mk)
 ```
 
 それらは入力の一定のチャンクにマッチします。
@@ -843,6 +843,9 @@ pUri = do
 
 - (5) と (6) では、`RecordWildCards` 言語拡張を使用して `Authority` と `Uri` の値を作り上げます。
 
+`void :: Functor f => f a -> f ()` はGHCから未使用の値に関する警告を受け取ることなく、
+結果を明示的に破棄してパースするために使用されます。
+
 GHCiで `pUri` を試し、それが機能することを確認してください。
 
 ```bash
@@ -897,14 +900,17 @@ expecting end of input
 
 パースエラーを改善できそうです。何をすればいいでしょうか？
 何が起きているのかを知る最も簡単な方法は、
-組み込みのヘルパー `dbg` を使うことです。
+`Text.Megaparsec.Debug` モジュールの組み込みのヘルパー `dbg` を使うことです。
 
 ```haskell
-dbg :: (Stream s, ShowToken (Token s), ShowErrorComponent e, Show a)
+dbg :: (VisualStream s, ShowToken (Token s), ShowErrorComponent e, Show a)
   => String            -- ^ デバッグ用のラベル
   -> ParsecT e s m a   -- ^ デバッグするパーサ
   -> ParsecT e s m a   -- ^ デバッグメッセージを出力するパーサ
 ```
+
+`VisualStream`型クラスは読み取り可能な形式で画面に出力できる入力ストリーム用に定義されています。 
+ここでは詳しく説明しません。
 
 これを `pUri` で使ってみましょう。
 
@@ -1928,7 +1934,7 @@ Indentation-sensitive
 最も単純な`nonIndented` から始めましょう。
 
 ```haskell
-nonIndented :: MonadParsec e s m
+nonIndented :: (TraversableStream s, MonadParsec e s m)
   => m ()              -- ^ インデント (スペース) の消費方法
   -> m a               -- ^ 内側のパーサ
   -> m a
@@ -1953,7 +1959,7 @@ Indentation-sensitiveな文法を定義することです。
 `indentBlock`のシグネチャを見てみましょう。
 
 ```haskell
-indentBlock :: (MonadParsec e s m, Token s ~ Char)
+indentBlock :: (TraversableStream s, MonadParsec e s m, Token s ~ Char)
   => m ()              -- ^ インデント (スペース) の消費方法
   -> m (IndentOpt m a b) -- ^ 「参照」トークン の消費方法
   -> m a
@@ -2002,7 +2008,7 @@ data IndentOpt m a b
 
 module Main (main) where
 
-import Control.Applicative
+import Control.Applicative hiding (some)
 import Control.Monad (void)
 import Data.Text (Text)
 import Data.Void
@@ -2352,6 +2358,7 @@ data ErrorItem t
   | EndOfInput               -- ^ 入力の終わり
 ```
 
+`NonEmpty` は空でないリストの型で、`Data.List.NonEmpty` にあります。
 これが`ErrorFancy` です。
 
 ```haskell
@@ -2485,7 +2492,7 @@ incorrectIndent :: MonadParsec e s m
   -> Pos               -- ^ 参照インデントレベル
   -> Pos               -- ^ 実際のインデントレベル
   -> m a
-incorrectIndent ord ref actual = fancyFailure . E.singleton $
+incorrectIndent ord ref actual = fancyFailure . Set.singleton $
   ErrorIndentation ord ref actual
 ```
 
@@ -2552,7 +2559,8 @@ foo is not a keyword
 -- レンダリングされた 'String'は常に改行で終わります。
 
 errorBundlePretty
-  :: ( Stream s
+  :: ( VisualStream s
+     , TraversableStream s
      , ShowErrorComponent e
      )
   => ParseErrorBundle s e -- ^ 表示するパースエラーバンドル
@@ -2589,7 +2597,7 @@ observing :: MonadParsec e s m
 
 module Main (main) where
 
--- import Control.Applicative
+import Control.Applicative hiding (some)
 import Data.List (intercalate)
 import Data.Set (Set)
 import Data.Text (Text)
@@ -2899,7 +2907,7 @@ registerFancyFailure
 
 module Main (main) where
 
-import Control.Applicative
+import Control.Applicative hiding (some)
 import Data.Text (Text)
 import Data.Void
 import Test.Hspec
@@ -3078,12 +3086,15 @@ instance Stream MyStream where
   -- …
 ```
 
-`Stream` は `Text.Megaparsec.Stream` モジュールに
-詳しいドキュメントがあります。
+`Stream`, `VisualStream`, `TraversableStream` は 
+`Text.Megaparsec.Stream` モジュールに詳しいドキュメントがあります。
 足りないメソッドを定義していきましょう。
 
 ```haskell
-  -- …
+instance Stream MyStream where
+  type Token  MyStream = WithPos MyToken
+  type Tokens MyStream = [WithPos MyToken]
+
   tokenToChunk Proxy x = [x]
   tokensToChunk Proxy xs = xs
   chunkToTokens Proxy = id
@@ -3107,10 +3118,14 @@ instance Stream MyStream where
     in case NE.nonEmpty x of
       Nothing -> (x, MyStream str s')
       Just nex -> (x, MyStream (drop (tokensLength pxy nex) str) s')
+
+instance VisualStream MyStream where
   showTokens Proxy = DL.intercalate " "
     . NE.toList
     . fmap (showMyToken . tokenVal)
   tokensLength Proxy xs = sum (tokenLength <$> xs)
+
+instance TraversableStream MyStream where
   reachOffset o PosState {..} =
     ( prefix ++ restOfLine
     , PosState
@@ -3159,6 +3174,8 @@ showMyToken = \case
 (そしてなぜこのようになっているのか)は
 [このブログ記事](https://markkarpov.com/post/megaparsec-more-speed-more-power.html)
 に書いてあります。
+`megaparsec` のバージョン9では `Stream` の特定のメソッドがクラス `VisualStream`と` TraversableStream`に移動され、
+特定のカスタム入力ストリームの `Stream` のインスタンスを簡単に定義できるようになっていることに注意してください。
 
 これで `Parser` 型が定義できます。
 
