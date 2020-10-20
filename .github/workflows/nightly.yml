@@ -15,12 +15,11 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-haskell@v1
       with:
-        ghc-version: "8.10.1"
-        cabal-version: "3.2.0.0"
+        ghc-version: "8.10"
+        cabal-version: "3.2"
 
     - name: Install dependencies & build
       run: |
-        echo ::add-path::C:\msys64\usr\bin\
         cabal update --index-state=HEAD
         cabal build --project=cabal-nightly.project
 
@@ -34,14 +33,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-haskell@v1
       with:
-        ghc-version: "8.10.1"
-        stack-version: "2.3.3"
+        ghc-version: "8.10"
+        stack-version: "2.5.1"
         enable-stack: true
 
     - name: Install dependencies
-      run: |
-        echo ::add-path::C:\msys64\usr\bin\
-        stack test --resolver=nightly --only-dependencies
+      run: stack test --resolver=nightly --only-dependencies
       env:
         STACK_YAML: stack-nightly.yaml
 
