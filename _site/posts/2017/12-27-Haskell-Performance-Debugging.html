@@ -304,7 +304,7 @@
 <p>再帰は GHC のインライン化能力を完全に上回っており、パフォーマンスを台無しにしてしまいます。<code>map</code> や <code>foldr</code> などはクレバーな最適化を受けることができますが、単純な再帰関数には大抵、インライン化において問題が存在します。</p>
 <p>これらが実験を始める前の私の印象です。私のタプルメモリ割り当て仮説を検証するために、ヒープのプロファイリングを行いましょう。<code>-hd</code>フラグを使って確保されたデータコンストラクタを取得します:</p>
 <figure>
-<img src="http://www.parsonsmatt.org/treap-base-hd.png" alt /><figcaption>-hd フラグを使ったプロファイル</figcaption>
+<img src="http://www.parsonsmatt.org/treap-base-hd.png" alt="-hd フラグを使ったプロファイル" /><figcaption aria-hidden="true">-hd フラグを使ったプロファイル</figcaption>
 </figure>
 <p>いい感じですね! さて、このグラフは <code>Tree</code> コンストラクタの割り当て前に、大量のノード、タプル、<code>I#</code> (<code>Int</code> のコンストラクタ) を割り当てていることを示しています。対象の <code>main</code> 関数だと、この挙動は完全に非合理的というわけではありません。</p>
 <h2 id="実験1-データ構造を正格化する">実験1: データ構造を正格化する</h2>
@@ -352,7 +352,7 @@
 <p>20MB も使用しているメモリが減っています。これはいいですね。そして全体の使用時間も少なくなっています (2.4秒 vs 2.2秒)。これもいいことです! しかし GC が使っている時間は 55% です。前より悪くなってるじゃなイカ!</p>
 <p>以下はヒーププロファイリングの結果です:</p>
 <figure>
-<img src="http://www.parsonsmatt.org/treap-strict-nodes.png" alt /><figcaption>ヒーププロファイリングの結果</figcaption>
+<img src="http://www.parsonsmatt.org/treap-strict-nodes.png" alt="ヒーププロファイリングの結果" /><figcaption aria-hidden="true">ヒーププロファイリングの結果</figcaption>
 </figure>
 <p>大きな違いはありませんが、確かに少し良い結果です。時間と割り当てのプロファイリングは全く違う結果を証明していています。後々、プログラムの実行時間は 2.49秒から 0.97秒になります。</p>
 <p>この結果にかなり励まされつつ、木の spine も正格にしようと思います。</p>
@@ -397,7 +397,7 @@
 <p>これはかなり良い結果です。GC が 33% なのは良くないですが、それでも前よりもだいぶ良い結果です。2.4秒から 0.95秒になりました。これはかなりの改善です。</p>
 <p>今度はヒープの出力も見てみましょう:</p>
 <figure>
-<img src="http://www.parsonsmatt.org/treap-strict-spine.png" alt /><figcaption>ヒープの出力</figcaption>
+<img src="http://www.parsonsmatt.org/treap-strict-spine.png" alt="ヒープの出力" /><figcaption aria-hidden="true">ヒープの出力</figcaption>
 </figure>
 <p>もう少しですね! 大きなメモリの山が生成され、それが回収されています。何かが起きていることの兆候です。タプルコンストラクタに多くの割り当てをしてしまっています。つらいですね。</p>
 <h2 id="split-を正格化する">Split を正格化する</h2>
@@ -439,7 +439,7 @@
   Productivity  63.1% of total user, 62.0% of total elapsed</code></pre>
 <p>これはさっきの実行からほとんど変わっていません。ヒーププロファイルも変更されませんでした。これらのタプルがどこに割り当てられるのかを見るために、<code>-hc</code> をつけて実行してみます。<code>-hc</code> は実際にどの関数がデータを生成しているのかを記録してくれるので、どこに注目するべきかが分かります。</p>
 <figure>
-<img src="http://www.parsonsmatt.org/treap-strict-tuple-hc.png" alt /><figcaption>-hc を使ったプロファイル</figcaption>
+<img src="http://www.parsonsmatt.org/treap-strict-tuple-hc.png" alt="-hc を使ったプロファイル" /><figcaption aria-hidden="true">-hc を使ったプロファイル</figcaption>
 </figure>
 <p><strong>あぁナッツ!</strong> <code>splitTreap</code> がほんの少ししかメモリ割り当てがされなくなってるぞ。<code>buildNode</code>, <code>feedFold</code>, <code>insertMany</code> でほとんどの割り当てを行っているみたいです。これは、<code>splitTreap</code> に多くの時間と割り当てをしているという <code>-p</code> オプションの結果に反しているように見えます。</p>
 <p>今は <code>insertMany</code> に集中するべきでしょう。</p>
@@ -481,7 +481,7 @@
 <p>良いですね、トータルの使用メモリが 32MB になり、全体の時間は 10分の1 ぐらい減りました。しかも、GC にかかっている時間はたったの 22% です。我々の大勝利です。</p>
 <p>ヒープのプロファイル結果を見てみましょう:</p>
 <figure>
-<img src="http://www.parsonsmatt.org/treap-foldl.png" alt /><figcaption>ヒーププロファイルの結果</figcaption>
+<img src="http://www.parsonsmatt.org/treap-foldl.png" alt="ヒーププロファイルの結果" /><figcaption aria-hidden="true">ヒーププロファイルの結果</figcaption>
 </figure>
 <h2 id="何があっても-foldl-を使わず常に-foldl-を使うべし">何があっても foldl を使わず、常に foldl’ を使うべし</h2>
 <p>最初の状態で foldl を foldl’ に変更してみたらどうでしょう?</p>
@@ -511,7 +511,7 @@
   Productivity  41.3% of total user, 43.2% of total elapsed</code></pre>
 <p>よろしくはないですね。というか、初めよりもちょっと悪くなってます! ヒープのプロファイル結果はどうでしょう?</p>
 <figure>
-<img src="http://www.parsonsmatt.org/treap-just-foldl.png" alt /><figcaption>ヒーププロファイルの結果</figcaption>
+<img src="http://www.parsonsmatt.org/treap-just-foldl.png" alt="ヒーププロファイルの結果" /><figcaption aria-hidden="true">ヒーププロファイルの結果</figcaption>
 </figure>
 <p>これもほとんど同じですね! 割り当てはちょっとなめらかになっていますが、顕著な違いでもありません。というわけで、データ構造を正格にせずに、ただ <code>foldl'</code> に変更しても意味がありませんでした。</p>
 <h2 id="最終結果">最終結果</h2>
