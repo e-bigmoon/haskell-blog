@@ -1,7 +1,7 @@
 ---
 title: Basics
 published: 2018/03/18
-updated: 2018/09/15
+updated: 2020/11/20
 ---
 
 どんな新しい技術でも、まずはとりあえず動かしてみましょう。
@@ -233,7 +233,7 @@ JSON レスポンスに関しては `Accept` リクエストヘッダーによ�
 
 ## The scaffolded site
 
-Yesod をインストールすれば Yesod ライブラリと `yesod` の実行ファイルが得られます。この実行ファイルにはいくつかのコマンドが存在しますが、はじめに慣れておくべきコマンドは `yesod init` です。これは、いくつかの質問に答えることでデフォルトの設定で scaffolded site を生成するものです。そのフォルダの中で、追加の依存関係 (バックエンドデータベースなど) を構築するために `stack install --only-dependencies` を実行し、さらに `yesod devel` コマンドでサイトを動かすことができます。
+`stack` を使って Yesod ライブラリと `yesod` 補助実行ファイルをインストールし、`stack new` コマンドで scaffolded site を生成した場合、デフォルトの scaffolded site を含むフォルダが生成されていることでしょう。そのフォルダの中で、追加の依存関係 (バックエンドデータベースなど) を構築するために `stack install --only-dependencies` を実行し、さらに `yesod devel` コマンドでサイトを動かすことができます。
 
 <div class="yesod-book-notice">
 パッケージ環境のセットアップは [quick start guide](http://www.yesodweb.com/page/quickstart) を参照してください。

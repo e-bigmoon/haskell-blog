@@ -11,42 +11,39 @@ on:
       - '*'
 
 jobs:
-  format:
+  ormolu:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mrkkrp/ormolu-action@v1
+      with:
+        pattern: |
+          **/app/**/*.hs
+          !quiz
+          !sample-code
+        extra-args: '-o -XTypeApplications'
+
+  cabal-fmt:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        cache-version: ["2020-10-20"]
-        ormolu-version: ["0.1.3.0"]
+        cache-version: ["2020-11-20"]
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1
-      with:
-        ghc-version: "8.8"
-        cabal-version: "3.2"
-
     - uses: actions/cache@v2
       name: Cache ~/.cabal/store
       with:
         path: ~/.cabal/store
         key: ${{ runner.os }}-${{ matrix.cache-version }}-cabal
 
-    - name: Install cabal-fmt, ormolu
+    - name: Install cabal-fmt
       run: |
         cabal update
         cabal install cabal-fmt --overwrite-policy=always --install-method=copy -j2 -z
-        curl https://github.com/tweag/ormolu/releases/download/${{ matrix.ormolu-version }}/ormolu-Linux -L --output ormolu
-        chmod u+x ormolu
-        mv ormolu ~/.cabal/bin/
 
     - name: Apply cabal-fmt
       run: |
         export PATH=~/.cabal/bin/:$PATH
         cabal-fmt -i *.cabal
-        git --no-pager diff --exit-code
-
-    - name: Apply ormolu
-      run: |
-        export PATH=~/.cabal/bin/:$PATH
-        ormolu -o -XTypeApplications --mode inplace $(find app -type f -name "*.hs")
         git --no-pager diff --exit-code
