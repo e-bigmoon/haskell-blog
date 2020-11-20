@@ -17,11 +17,9 @@ jobs:
     - uses: actions/checkout@v2
     - uses: mrkkrp/ormolu-action@v1
       with:
-        # pattern: |
-        #   ./*.hs
+        pattern: |
+          $GITHUB_WORKSPACE/*.hs
         extra-args: '-o -XTypeApplications'
-    - name: pwd
-      run: pwd
 
   cabal-fmt:
     runs-on: ubuntu-18.04
@@ -39,6 +37,7 @@ jobs:
 
     - name: Install cabal-fmt
       run: |
+        pwd
         cabal update
         cabal install cabal-fmt --overwrite-policy=always --install-method=copy -j2 -z
 
