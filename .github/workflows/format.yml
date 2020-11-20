@@ -11,7 +11,16 @@ on:
       - '*'
 
 jobs:
-  format:
+  ormolu:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mrkkrp/ormolu-action@v1
+      with:
+        pattern: 'app/*.hs app/**/*.hs'
+        extra-args: '-o -XTypeApplications'
+
+  cabal-fmt:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
@@ -19,10 +28,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: mrkkrp/ormolu-action@v1
-      with:
-        extra-args: '-o -XTypeApplications'
-
     - uses: actions/cache@v2
       name: Cache ~/.cabal/store
       with:
@@ -39,9 +44,3 @@ jobs:
         export PATH=~/.cabal/bin/:$PATH
         cabal-fmt -i *.cabal
         git --no-pager diff --exit-code
-
-    # - name: Apply ormolu
-    #   run: |
-    #     export PATH=~/.cabal/bin/:$PATH
-    #     ormolu -o -XTypeApplications --mode inplace $(find app -type f -name "*.hs")
-    #     git --no-pager diff --exit-code
