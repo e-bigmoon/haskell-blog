@@ -13,10 +13,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-18.04, macos-10.15]
         ghc: ["8.8"]
         stack: ["2.5.1"]
-        cache-version: ["2020-11-20"]
+        cache-version: ["2020-11-22"]
 
     steps:
     - uses: actions/checkout@v2
@@ -25,6 +25,13 @@ jobs:
         ghc-version: ${{ matrix.ghc }}
         stack-version: ${{ matrix.stack }}
         enable-stack: true
+
+    # See: https://github.com/actions/cache/issues/445
+    - name: Install GNU tar
+      if: runner.os == 'macOS'
+      run: |
+        brew install gnu-tar
+        echo "/usr/local/opt/gnu-tar/libexec/gnubin" >> $GITHUB_PATH
 
     - name: Cache ~/.stack
       uses: actions/cache@v2
