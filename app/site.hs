@@ -110,7 +110,7 @@ main' siteConfig = hakyllWith hakyllConfig $ do
     route idRoute
     compile $ do
       let feedConfig = siteConfig ^. #feed
-          feedCtx = mapContext (Text.unpack . text . Text.pack) postCtx <> bodyField "description"
+          feedCtx = feedDateCtx <> mapContext (Text.unpack . text . Text.pack) postCtx <> bodyField "description"
       posts <-
         fmap (take 10) . recentFirst'
           =<< loadAllSnapshots "posts/**" "content"
@@ -209,6 +209,13 @@ main' siteConfig = hakyllWith hakyllConfig $ do
         Just filePath -> return (toUrl filePath)
         Nothing -> fail "no route"
 
+    feedDateCtx :: Context String
+    feedDateCtx =
+      mconcat
+        [ dateField' "published" "%Y-%m-%dT%H:%M:%S+09:00",
+          optDateField' "updated" "%Y-%m-%dT%H:%M:%S+09:00"
+        ]
+
 atomFeedConfiguration :: Feed -> FeedConfiguration
 atomFeedConfiguration fs =
   FeedConfiguration
@@ -251,6 +258,17 @@ optDateField :: String -> String -> Context a
 optDateField key fmt = field key $ \item ->
   lookupString key <$> getMetadata (itemIdentifier item) >>= \case
     Nothing -> return ""
+    Just val -> do
+      parseTime' <- parseTimeM @Compiler @ZonedTime True defaultTimeLocale "%Y/%m/%d" val
+      return $ formatTime defaultTimeLocale fmt parseTime'
+
+optDateField' :: String -> String -> Context a
+optDateField' key fmt = field key $ \item ->
+  lookupString key <$> getMetadata (itemIdentifier item) >>= \case
+    Nothing -> do
+      -- same `dateField' key fmt`
+      time <- getItemUTCWith toDate defaultTimeLocale $ itemIdentifier item
+      return $ formatTime defaultTimeLocale fmt time
     Just val -> do
       parseTime' <- parseTimeM @Compiler @ZonedTime True defaultTimeLocale "%Y/%m/%d" val
       return $ formatTime defaultTimeLocale fmt parseTime'

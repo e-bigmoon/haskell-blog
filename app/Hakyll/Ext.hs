@@ -4,6 +4,7 @@ module Hakyll.Ext
   ( dateFieldWith',
     recentFirstWith,
     sortChronologicalWith,
+    getItemUTCWith,
   )
 where
 
