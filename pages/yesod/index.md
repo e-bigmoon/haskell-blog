@@ -1,7 +1,7 @@
 ---
 title: Haskell Yesod
 published: 2018/03/18
-updated: 2020/11/20
+updated: 2020/12/21
 ---
 
 ## Yesod クイックスタートガイド
@@ -95,7 +95,7 @@ $ sudo apt-get install -y libpq-dev
 - [Cloning FluxBB](https://siskam.link/2018-04-14-cloning-fluxbb.html) (Yesod と Esqueleto を使ってフォーラムを作るというブログ記事です)
 - [Yesod tutorial](http://yannesposito.com/Scratch/en/blog/Yesod-tutorial-for-newbies/) (これは少し古くなっています。書籍ではより最新の内容に更新されています)
 
-## Yesod ブック (@453610acd5a87e77f39bef2dd585816c8d0f599a)
+## Yesod ブック (@3cc14a4503a7e0fd8f543a62346da8fa3cfe0267)
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)
@@ -257,27 +257,3 @@ $ sudo apt-get install -y libpq-dev
 [tips6]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips6.hs
 [tips7]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips7.hs
 [tips8]: https://github.com/e-bigmoon/haskell-blog/blob/master/sample-code/yesod/tips/Tips8.hs
-
-## Yesod で作られているアプリケーション
-
-- [fpco/stackage-server](https://github.com/fpco/stackage-server)
-- [ersocon](https://ersocon.net/)
-
-## 関連パッケージ
-
-- [yesod](https://hackage.haskell.org/package/yesod)
-- [yesod-auth](https://hackage.haskell.org/package/yesod-auth)
-- [yesod-auth-hashdb](https://hackage.haskell.org/package/yesod-auth-hashdb)
-- [yesod-auth-oauth2](https://hackage.haskell.org/package/yesod-auth-oauth2)
-- [yesod-core](https://hackage.haskell.org/package/yesod-core)
-- [yesod-form](https://hackage.haskell.org/package/yesod-form)
-- [yesod-markdown](https://hackage.haskell.org/package/yesod-markdown)
-- [yesod-paginator](https://hackage.haskell.org/package/yesod-paginator)
-- [yesod-sitemap](https://hackage.haskell.org/package/yesod-sitemap)
-- [yesod-static](https://hackage.haskell.org/package/yesod-static)
-- [persistent](https://hackage.haskell.org/package/persistent)
-- [persistent-mysql](https://hackage.haskell.org/package/persistent-mysql)
-- [persistent-sqlite](https://hackage.haskell.org/package/persistent-sqlite)
-- [persistent-template](https://hackage.haskell.org/package/persistent-template)
-- [shakespeare](https://hackage.haskell.org/package/shakespeare)
-- [e-bigmoon/vscode-language-yesod](https://github.com/e-bigmoon/vscode-language-yesod)
