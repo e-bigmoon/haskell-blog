@@ -2,7 +2,7 @@
 title: ormolu-action
 author: Shinya Yamaguchi
 tags: bigmoon
-# updated: 2020/01/22
+updated: 2021/01/04
 ---
 
 へいしゃでは、ソースコードのフォーマッターに [Ormolu][hkg-ormolu] を利用しています。
@@ -13,7 +13,7 @@ tags: bigmoon
 
 どちらも [hls][github-hls] から利用可能なので、興味がある人は試してみると良いと思います。
 
-また、**ormolu** のフォーマット結果で末尾カンマが気に入らない場合は [google/ormolu][google-ormolu] を使ってみると良いかもしれません。([フォーマット結果](https://github.com/google/ormolu/commit/5a36b8b6ef85b587bbf6e8cd5ecb7754fed7461d))
+また、**ormolu** のフォーマット結果で末尾カンマが気に入らない場合は [google/ormolu][google-ormolu] の **gfork** ブランチを使ってみると良いかもしれません。([フォーマット結果](https://github.com/google/ormolu/commit/5a36b8b6ef85b587bbf6e8cd5ecb7754fed7461d))
 
 今回はプロジェクトのコードがフォーマットされていることを CI (Github Action) でチェックする簡単な方法を紹介します。
 
