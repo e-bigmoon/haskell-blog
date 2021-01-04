@@ -13,7 +13,7 @@ updated: 2021/01/04
 
 どちらも [hls][github-hls] から利用可能なので、興味がある人は試してみると良いと思います。
 
-また、**ormolu** のフォーマット結果で末尾カンマが気に入らない場合は [google/ormolu][google-ormolu] の **gfork** ブランチを使ってみると良いかもしれません。([フォーマット結果](https://github.com/google/ormolu/commit/5a36b8b6ef85b587bbf6e8cd5ecb7754fed7461d))
+また、**ormolu** のフォーマット結果で末尾カンマが気に入らない場合は [google/ormolu][google-ormolu] の **gfork** ブランチを使ってみると良いかもしれません ([フォーマット結果](https://github.com/google/ormolu/commit/5a36b8b6ef85b587bbf6e8cd5ecb7754fed7461d))。**fourmolu** も [Add option for leading commas (and expand test suite) #17][fourmolu-pr-17] で設定できるようになってました。
 
 今回はプロジェクトのコードがフォーマットされていることを CI (Github Action) でチェックする簡単な方法を紹介します。
 
@@ -67,3 +67,4 @@ jobs:
 [github-hls]: https://github.com/haskell/haskell-language-server
 [google-ormolu]: https://github.com/google/ormolu
 [github-ormolu-actioin]: https://github.com/mrkkrp/ormolu-action
+[fourmolu-pr-17]: https://github.com/parsonsmatt/fourmolu/pull/17
