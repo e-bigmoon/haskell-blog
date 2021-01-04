@@ -11,14 +11,12 @@
 
   <!-- Metadata. -->
   <meta name="keywords" content="haskell,blog,bigmoon" />
-  <title>Haskell Language Server のインストール</title>
-  <meta name="description" content="HLS(Haskell Language Server) を 手動で インストールする方法を説明します。
-HLSを 自動で インストールする方法は以下のPRで開発中です。
-
-GitHub Action static binaries and runtime libdir
-Automatic installation o">
-  <link rel="canonical" href="../../posts/2020/07-12-haskell-language-server.html">
-  <link rel="alternate" type="application/atom+xml" title="Haskell Language Server のインストール" href="../../feed.xml" />
+  <title>ormolu-action</title>
+  <meta name="description" content="へいしゃでは、ソースコードのフォーマッターに Ormolu を利用しています。
+インデント時のスペース数すらカスタマイズ不可なので好き嫌いが別れるところですが、プロジェクト全体のコードを統一しておくとコードレビューの際にも有用なので入れています。
+ちなみにスペース幅を4にしたくてフォークされた fourmolu という">
+  <link rel="canonical" href="../../posts/2021/01-04-ormolu-action.html">
+  <link rel="alternate" type="application/atom+xml" title="ormolu-action" href="../../feed.xml" />
   <link rel="shortcut icon" href="../../images/favicon.ico" />
   <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
 
@@ -32,16 +30,14 @@ Automatic installation o">
   
 
   <!-- OGP -->
-  <meta property="og:title" content="Haskell Language Server のインストール" />
+  <meta property="og:title" content="ormolu-action" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="/posts/2020/07-12-haskell-language-server.html" />
+  <meta property="og:url" content="/posts/2021/01-04-ormolu-action.html" />
   <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
-  <meta property="og:site_name" content="Haskell Language Server のインストール" />
-  <meta property="og:description" content="HLS(Haskell Language Server) を 手動で インストールする方法を説明します。
-HLSを 自動で インストールする方法は以下のPRで開発中です。
-
-GitHub Action static binaries and runtime libdir
-Automatic installation o" />
+  <meta property="og:site_name" content="ormolu-action" />
+  <meta property="og:description" content="へいしゃでは、ソースコードのフォーマッターに Ormolu を利用しています。
+インデント時のスペース数すらカスタマイズ不可なので好き嫌いが別れるところですが、プロジェクト全体のコードを統一しておくとコードレビューの際にも有用なので入れています。
+ちなみにスペース幅を4にしたくてフォークされた fourmolu という" />
 
   <meta name="twitter:card" content="summary" />
   <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
@@ -177,16 +173,16 @@ Automatic installation o" />
 
       <p class="grey-text">
         <i class="mdi mdi-calendar"></i>&nbsp;
-        Posted on July 12, 2020
+        Posted on January  4, 2021
         
         
           &nbsp;&nbsp;<i class="mdi mdi-account-circle"></i>&nbsp;
-          authored by Wataru Yamada
+          authored by Shinya Yamaguchi
         
         
           <br>
           <i class="mdi mdi-calendar"></i>&nbsp;
-          Last Updated 
+          Last Updated January  4, 2021
         
         &nbsp;
         
@@ -197,7 +193,7 @@ Automatic installation o" />
       </p>
 
       <div class="post-header">
-        <h1 class="post-title">Haskell Language Server のインストール</h1>
+        <h1 class="post-title">ormolu-action</h1>
 
         <div class="row">
         
@@ -215,10 +211,10 @@ Automatic installation o" />
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Haskell Language Server のインストール&url=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=ormolu-action&url=https://haskell.e-bigmoon.com/posts/2021/01-04-ormolu-action.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-facebook white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2021/01-04-ormolu-action.html"><i class="mdi mdi-facebook white-text"></i></a>
     </li>
   </ul>
 </div>
@@ -228,93 +224,54 @@ Automatic installation o" />
       </div>
 
       <article class="post-content">
-        <p>HLS(Haskell Language Server) を <strong>手動で</strong> インストールする方法を説明します。</p>
-<p>HLSを <strong>自動で</strong> インストールする方法は以下のPRで開発中です。</p>
-<ul>
-<li><a href="https://github.com/haskell/haskell-language-server/pull/165">GitHub Action static binaries and runtime libdir</a></li>
-<li><a href="https://github.com/alanz/vscode-hie-server/pull/236">Automatic installation of haskell-language-server binaries</a></li>
-</ul>
+        <p>へいしゃでは、ソースコードのフォーマッターに <a href="https://hackage.haskell.org/package/ormolu">Ormolu</a> を利用しています。</p>
+<p>インデント時のスペース数すらカスタマイズ不可なので好き嫌いが別れるところですが、プロジェクト全体のコードを統一しておくとコードレビューの際にも有用なので入れています。</p>
+<p>ちなみにスペース幅を4にしたくてフォークされた <a href="https://github.com/parsonsmatt/fourmolu">fourmolu</a> というフォーマッターもあります。現在ではスペース数以外の設定もできるみたいです。</p>
+<p>どちらも <a href="https://github.com/haskell/haskell-language-server">hls</a> から利用可能なので、興味がある人は試してみると良いと思います。</p>
+<p>また、<strong>ormolu</strong> のフォーマット結果で末尾カンマが気に入らない場合は <a href="https://github.com/google/ormolu">google/ormolu</a> の <strong>gfork</strong> ブランチを使ってみると良いかもしれません。(<a href="https://github.com/google/ormolu/commit/5a36b8b6ef85b587bbf6e8cd5ecb7754fed7461d">フォーマット結果</a>)</p>
+<p>今回はプロジェクトのコードがフォーマットされていることを CI (Github Action) でチェックする簡単な方法を紹介します。</p>
 <!--more-->
-<h2 id="実行環境">実行環境</h2>
-<table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 66%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;">環境</th>
-<th style="text-align: left;">バージョン</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">OS</td>
-<td style="text-align: left;">Ubuntu 18.04</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">Stack</td>
-<td style="text-align: left;">2.3.1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">HLS</td>
-<td style="text-align: left;">ghcide version: 0.2.0.0 (GHC: 8.8.3) (PATH: ~/.local/bin/haskell-language-server) (GIT hash: 768fdcd588f5c37839086c0d787d1cb7438de37b)</td>
-</tr>
-</tbody>
-</table>
-<h2 id="導入手順">導入手順</h2>
-<h3 id="hls-のインストール">1. HLS のインストール</h3>
-<p>インストールには以下のものが必要です。</p>
+<h2 id="ormolu-action">ormolu-action</h2>
+<p>既に <a href="https://github.com/mrkkrp/ormolu-action">ormolu-action</a> というアクションが提供されているので、これを利用すると簡単です。</p>
+<p>オプションを指定しなければ以下の内容を <code>.github/workflows/format.yml</code> のような名前で保存すれば完了です。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> format</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">ormolu</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-18.04</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v2</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> mrkkrp/ormolu-action@v1</span></span></code></pre></div>
+<p>フォーマットされていない場合は CI のログにフォーマット前後の diff が表示されます。</p>
+<h2 id="実例">実例</h2>
+<p>このブログでも導入しており、オプションもいくつか利用しています。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> format</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">ormolu</span><span class="kw">:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-18.04</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v2</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> mrkkrp/ormolu-action@v1</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="at">      </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="fu">        pattern</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>          **/app/**/*.hs</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>          !quiz</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>          !sample-code</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a><span class="at">        </span><span class="fu">extra-args</span><span class="kw">:</span><span class="at"> </span><span class="st">'-o -XTypeApplications'</span></span></code></pre></div>
 <ul>
-<li><a href="https://docs.haskellstack.org/en/stable/README/">stack</a> (バージョン2.1.1以上)
-<ul>
-<li>または、<a href="https://www.haskell.org/cabal/users-guide/">cabal</a></li>
-</ul></li>
-<li><code>icu</code> のライブラリなど</li>
-</ul>
-<p>必要に応じてインストールしておきましょう。</p>
-<pre class="shell"><code>$ stack upgrade
-$ sudo apt update
-$ sudo apt install libicu-dev libncurses-dev libgmp-dev zlib1g-dev</code></pre>
-<p>準備ができたらHLSを<a href="https://github.com/haskell/haskell-language-server">リポジトリ</a>からクローンしてインストールしましょう。(以下の例では <strong>GHC-8.8.3</strong> を対象としています。)</p>
-<pre class="shell"><code>$ git clone https://github.com/haskell/haskell-language-server --recurse-submodules
-$ cd haskell-language-server
-$ stack ./install.hs hls</code></pre>
-<p>インストールができました。</p>
-<pre class="shell"><code>$ haskell-language-server --version
-ghcide version: 0.2.0.0 (GHC: 8.8.3) (PATH: /home/yamada/.local/bin/haskell-language-server) (GIT hash: 768fdcd588f5c37839086c0d787d1cb7438de37b)</code></pre>
-<h2 id="エディタの設定">エディタの設定</h2>
-<h3 id="vscode">VSCode</h3>
-<p>拡張機能 <a href="https://marketplace.visualstudio.com/items?itemName=alanz.vscode-hie-server">Haskell Language Server</a> をインストールし、 設定から <code>haskell-language-server</code> を指定します。</p>
-<figure>
-<img src="../../images/2020/07-12/hls-vscode.png" alt="VSCodeの設定" /><figcaption aria-hidden="true">VSCodeの設定</figcaption>
-</figure>
-<h3 id="emacs">Emacs</h3>
-<p><a href="../../hie/emacs.html">こちら</a>の記事を参考に、 <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a>, <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a>, <a href="https://github.com/emacs-lsp/lsp-haskell">lsp-haskell</a> をEmacsにインストールします。</p>
-<p>設定ファイルで以下のように <code>haskell-language-server-wrapper</code> を指定します。</p>
-<pre><code>(use-package lsp-haskell
- :ensure t
- :config
- (setq lsp-haskell-process-path-hie &quot;haskell-language-server-wrapper&quot;)
- ;; Comment/uncomment this line to see interactions between lsp client/server.
- ;;(setq lsp-log-io t)
-)</code></pre>
-<h3 id="参考">参考</h3>
-<ul>
-<li><a href="https://github.com/haskell/haskell-language-server">haskell-language-server</a></li>
-<li><a href="../../hie/emacs.html">Emacs で Haskell IDE Engine を使う</a></li>
+<li><code>pattern</code> を使うと <strong>含めたい/除外したい</strong> ディレクトリやファイルを指定できるため、より細かい制御が可能です</li>
+<li><code>extra-args</code> は <strong>ormolu</strong> にそのまま渡されるオプションになります</li>
 </ul>
       </article>
 
       <div class="row pager">
         <div class="col s6">
           
-            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2020/04-12-cabal-repl.html"><i class="material-icons left">navigate_before</i>cabal repl コマンドについて</a>
+            <a class="waves-effect waves-light btn white-text left prev" href="../../posts/2020/07-12-haskell-language-server.html"><i class="material-icons left">navigate_before</i>Haskell Language Server のインストール</a>
           
         </div>
         <div class="col s6">
-          
-            <a class="waves-effect waves-light btn white-text right next" href="../../posts/2021/01-04-ormolu-action.html">ormolu-action<i class="material-icons right">navigate_next</i></a>
           
         </div>
       </div>
@@ -327,10 +284,10 @@ ghcide version: 0.2.0.0 (GHC: 8.8.3) (PATH: /home/yamada/.local/bin/haskell-lang
   </a>
   <ul>
     <li>
-      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Haskell Language Server のインストール&url=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-twitter white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=ormolu-action&url=https://haskell.e-bigmoon.com/posts/2021/01-04-ormolu-action.html"><i class="mdi mdi-twitter white-text"></i></a>
     </li>
     <li>
-      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2020/07-12-haskell-language-server.html"><i class="mdi mdi-facebook white-text"></i></a>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/posts/2021/01-04-ormolu-action.html"><i class="mdi mdi-facebook white-text"></i></a>
     </li>
   </ul>
 </div>
