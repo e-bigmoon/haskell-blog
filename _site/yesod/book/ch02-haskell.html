@@ -172,7 +172,7 @@
           <span>記事公開日: 2018/09/11</span><br>
           
           
-          <span>最終更新日: 2018/09/17</span>
+          <span>最終更新日: 2021/02/13</span>
           
         </div>
         <h1 class="post-title">Haskell</h1>
@@ -190,6 +190,14 @@
 <h2 id="ことばについて">ことばについて</h2>
 <p>自分の手足のように Haskell を扱う人でさえも、Haskell の用語についてはたまに混乱してしまうことがあります。まずは、本書で扱う用語について確認していきましょう。</p>
 <h3 id="データ型">データ型</h3>
+<p>これはHaskellのような, 強く型付けされた言語における中心的な構成要素の1つである. <code>Int</code>のようなデータ型は, プリミティブな値として扱われ, 他の型はこれらに基づきより複雑な値を生成する. 例えば, personを次のように表現できる:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span> <span class="dt">Text</span> <span class="dt">Int</span></span></code></pre></div>
+<p>ここでは, <code>Text</code>はpersonの名前を表し, <code>Int</code>はpersonの年齢を与える. 簡便性により, この特別な型の例は本全体で用いられる. 本質的には新しいデータ型を作るための3つの方法がある:</p>
+<ul>
+<li><p><code>type GearCount = Int</code>のような<code>type</code>宣言は単に既存の型の同義語である. 型システムは<code>GearCount</code>を求められるところで<code>Int</code>を用いることを妨げはしない. これを用いることで, コードをより自己文書化できる.</p></li>
+<li><p><code>newtype Make = Make Text</code>のような<code>newtype</code>宣言. この場合, <code>Make</code>の場所で誤って<code>Text</code>を用いることはできない; コンパイラに止められてしまう. <code>newtype</code>ラッパはコンパイル時には常に消えてしまうので, オーバーヘッドはない.</p></li>
+<li><p>上の<code>Person</code>のような<code>data</code>宣言. <code>data Vehicle = Bicycle GearCount | Car Make Model</code>のような代数的データ型(ADTs)も作ることができる.</p></li>
+</ul>
 <h3 id="データコンストラクタ">データコンストラクタ</h3>
 <p>上記の例だと、<code>Person</code>、<code>Make</code>、<code>Bicycle</code>、<code>Car</code> などがデータコンストラクタです。</p>
 <h3 id="型コンストラクタ">型コンストラクタ</h3>
@@ -197,17 +205,123 @@
 <h3 id="型変数">型変数</h3>
 <p><code>data Maybe a = Just a | Nothing</code> で考えると、<code>a</code> が型変数です。</p>
 <div class="yesod-book-notice">
-<p><code>Person</code> と <code>Make</code> 型はデータコンストラクタと型コンストラクタで同じ名前を利用しています。これはデータコンストラクタが1つしかない場合の良くある慣習のようなものです。言語が強制するものではないので、データコンストラクタと型コンストラクタに異なる名前を付けることもできます。</p>
+<p><code>Person</code> と <code>Make</code>型はデータ型とデータコンストラクタで同じ名前を共有しています。これはデータコンストラクタが1つしかない場合の良くある慣習のようなものです。言語が強制するものではないので、データ型とデータコンストラクタに異なる名前を付けることもできます。</p>
 </div>
 <h2 id="ツール">ツール</h2>
-<h2 id="言語拡張">言語拡張</h2>
+<p>2015年7月から, Yesodのツール推奨は非常に単純になった: <a href="https://github.com/commercialhaskell/stack#readme">stack</a>を用いてください. stackはHaskellにおける完全なビルドツールであり, コンパイラ(Glasgow Haskell Compiler, 別名 GHC), ライブラリ(Yesodを含む), 追加的なビルドツール(alexやhappy), そしてより多くのものを扱っている. Hakellには他にも利用可能なビルドツールが存在し, 大部分はYesodを非常によくサポートしている. しかし最も容易にするためには, stackを堅持することを推奨する. yesodウェブサイトには最新の<a href="http://www.yesodweb.com/page/quickstart">クイックスタートガイド</a>があり, stackをインストールしたり新しいscaffoldサイトを開始するための説明がある.</p>
+<p>一度道具一式を正しくセットアップした後は, 多くのHaskellライブラリをインストールする必要がある. この本の大部分では, 次のコマンドにより必要なすべてのライブラリがインストールされる::</p>
+<pre><code>stack build classy-prelude-yesod persistent-sqlite</code></pre>
+<p>本書の例を実行するために, それを例えばyesod-example.hsのようなファイルに保存し, 次のように実行してください:</p>
+<pre><code>stack runghc yesod-example.hs</code></pre>
+<h2 id="言語プラグマ">言語プラグマ</h2>
+<p>GHCはデフォルトではHaskell98に非常に近いモードで実行される. それは多くの言語拡張も備え付けており, より強力な型クラス, 構文変更, そしてより多くのことを可能にしてくれる. GHCにこれらの拡張を有効にする方法は数多く存在する. この本における大部分のコードにおいては, 次のような言語プラグマを見るであろう:</p>
+<pre><code>{-# LANGUAGE MyLanguageExtension #-}</code></pre>
+<p>これらは常にソースファイルの先頭にあるべきである. さらに, 他にも2つの他の一般的な方法がある:</p>
+<ul>
+<li><p>GHCコマンドラインで, 追加的な引数<code>-XMyLanguageExtension</code>を渡す.</p></li>
+<li><p><code>cabal</code>ファイルにおいて, <code>default-extensions</code>ブロックを追加する.</p></li>
+</ul>
+<p>個人的にはGHCコマンドライン引数による方法は決して用いない. これは個人的は趣向だが, ファイルの中で設定を明示的に宣言したいためである. 一般的に拡張を<code>cabal</code>ファイルに書かないことが推奨される; しかし, この規則は大方パブリックに利用可能なライブラリに対し当てはまる. あなたとチームが作業するためのアプリケーションを書く際は, すべての言語拡張を1つの場所に定義しておくことはとても有益なことである. Yesodのscaffoldサイトは特にこの方法を用いて, 同じ言語プラグマをそれぞれのソースファイルで指定するというボイラープレートを回避している. この本ではかなり多くの言語拡張を用いることになる(scaffoldingを書く際には, 13個用いる). これらの全ての意味について触れるわけではない. 代わりに, <a href="https://downloads.haskell.org/ghc/latest/docs/html/users_guide/">GHC文書</a>を見てください.</p>
 <h3 id="overloaded-strings">Overloaded Strings</h3>
+<p>“hello”の型は何であろうか? 伝統的には, それは<code>String</code>であり, <code>type String = [Char]</code>として定義される. 残念なことに, これに関しては多くの限界がある:</p>
+<ul>
+<li><p>これは非常に非効率的なテキストデータの実装である. 各consセルのための余剰メモリに加えて, それぞれの文字自身が完全な機械言語になる.</p></li>
+<li><p>時に<code>ByteString</code>やHTMLのように, 実際にはテキストではないstringのようなデータが存在する.</p></li>
+</ul>
+<p>これらの制限を対処するために, GHCは<code>OverloadedStrings</code>という言語拡張を持つ. これを有効にすればリテラル文字列はもはや単層型<code>String</code>ではない; 代わりに, それは<code>IsString a =&gt; a</code>という型を持ち, <code>IsString</code>は次のように定義される:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">class</span> <span class="dt">IsString</span> a <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="ot">    fromString ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p><code>Text</code>(ずっと効率的にパックされた<code>String</code>型), <code>ByteString</code>, そして<code>Html</code>などのように, Haskellの多くの型で利用可能な<code>IsString</code>インスタンスがある. 事実上この本における全ての例では, この言語拡張が有効にされていると仮定する.</p>
+<p>残念なことに, この拡張に関しては1つの欠点が存在する: 時々GHCの型チェックを混乱させるのである. 次のように想定しましょう:</p>
+<pre><code>{-# LANGUAGE OverloadedStrings, TypeSynonymInstances, FlexibleInstances #-}
+import Data.Text (Text)
+
+class DoSomething a where
+    something :: a -&gt; IO ()
+
+instance DoSomething String where
+    something _ = putStrLn &quot;String&quot;
+
+instance DoSomething Text where
+    something _ = putStrLn &quot;Text&quot;
+
+myFunc :: IO ()
+myFunc = something &quot;hello&quot;</code></pre>
+<p>プログラムは<code>String</code>あるいは<code>Text</code>のどちらを出力するのでしょうか? それは明らかではない. したがって, 明示的な型注釈を与え, “<code>hello</code>”が<code>String</code>あるいは<code>Text</code>として扱われるのかを指定する必要がある.</p>
+<div class="yesod-book-notice">
+<p>ある場合にはこれらの問題は<code>ExtendedDefaultRules</code>言語拡張を用いることで克服される. しかしこの本においては代わりに明示的な方法を用い, デフォルトに頼らないことにする.</p>
+</div>
 <h3 id="type-families">Type Families</h3>
+<p>タイプファミリの基本的なアイデアとしては2つの異なる型に対する関連を述べることである. リストの最初の要素を安全に取るための関数を書くことしましょう. しかしリストだけに制限したくはない; <code>ByteString</code>も<code>Word8</code>のリストとして扱って欲しい. そうするために, 関連型を導入し, ある型のコンテンツが何であるかを指定したい.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies, OverloadedStrings #-}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Word</span> (<span class="dt">Word8</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">S</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Char8</span> () <span class="co">-- get an orphan IsString instance</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="kw">class</span> <span class="dt">SafeHead</span> a <span class="kw">where</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">Content</span> a</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="ot">    safeHead ::</span> a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">Content</span> a)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">SafeHead</span> [a] <span class="kw">where</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">Content</span> [a] <span class="ot">=</span> a</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a>    safeHead [] <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a>    safeHead (x<span class="op">:</span>_) <span class="ot">=</span> <span class="dt">Just</span> x</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">SafeHead</span> <span class="dt">S.ByteString</span> <span class="kw">where</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">Content</span> <span class="dt">S.ByteString</span> <span class="ot">=</span> <span class="dt">Word8</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true"></a>    safeHead bs</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true"></a>        <span class="op">|</span> S.null bs <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true"></a>        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> S.head bs</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true"></a>    <span class="fu">print</span> <span class="op">$</span> safeHead (<span class="st">&quot;&quot;</span><span class="ot"> ::</span> <span class="dt">String</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true"></a>    <span class="fu">print</span> <span class="op">$</span> safeHead (<span class="st">&quot;hello&quot;</span><span class="ot"> ::</span> <span class="dt">String</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true"></a>    <span class="fu">print</span> <span class="op">$</span> safeHead (<span class="st">&quot;&quot;</span><span class="ot"> ::</span> <span class="dt">S.ByteString</span>)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true"></a>    <span class="fu">print</span> <span class="op">$</span> safeHead (<span class="st">&quot;hello&quot;</span><span class="ot"> ::</span> <span class="dt">S.ByteString</span>)</span></code></pre></div>
+<p>新しい構文としては, <code>class</code>や<code>instance</code>の中に<code>type</code>を置くことができることです. 代わりに<code>deta</code>を用いることもでき, その場合は既存のものを参照する代わりに新しいデータを作ることができる.</p>
+<div class="yesod-book-notice">
+<p>型クラスの文脈の外で関連型を用いる方法も存在する. より詳細については, <a href="http://www.haskell.org/haskellwiki/GHC/Type_families">Haskell wiki page</a>を参照してください.</p>
+</div>
 <h3 id="template-haskell">Template Haskell</h3>
+<p>Template Haskell[TH]はコード生成のための方法である. Yesodにおいては多くの場所で用いられ, ボイラープレートを減らしたり, 生成されたコードが正確なことを保証してくれる. Template Haskellは本質的にはHaskell Abstract Syntax Tree(AST)を生成するためのHaskellである.</p>
+<div class="yesod-book-notice">
+<p>実際にはTHにはそれ以上に強力な力がある. なぜならばそれは実際にコードをイントロスペクトできるためである. しかしYesodにおいてこれらの機能は用いない.</p>
+</div>
+<p>THコードを書くことは技巧的であり, 残念なことにあまり型安全性は関係しない. コンパイルできないコードを生成するTHを書きがちである. これは単にYesod開発者の問題であり, ユーザの問題ではない. 開発中は, かなり多くの単体テストを用いて生成されたコードの正確性を確認する. ユーザとして必要なことは, これらのすでに存在する関数を呼び出すことである. 例えば, 外部に定義されたHamletテンプレートをインクルードするために, 次のように書ける:</p>
+<pre><code>$(hamletFile &quot;myfile.hamlet&quot;)</code></pre>
+<p>(HamletはShakespeareの章で議論される)ドルマークのすぐ後には括弧が続き, GHCに次に来るものがTemplate Haskell関数であることを伝える. コードの内側はコンパイラにより実行され, Haskell ASTを生成し, さらにコンパイルされる. そうです, <a href="http://www.yesodweb.com/blog/2010/09/yo-dawg-template-haskell">これに関しメタ</a>することも可能です.</p>
+<p>ここでのよいトリックとしては, THコードは任意の<code>IO</code>アクションが可能であり, したがって入力を外部ファイルに書き, それをコンパイル時にパーズすることができる. 1つの使い方の例としては, HTML, CSS, そしてJavascriptテンプレートのコンパイル時チェックを行うことである.</p>
+<p>もしTemplate Haskellコードが宣言を生成するために用いられ, ファイルのトップレベルに置かれていたとしたら, ドルマークと括弧を省略できる. つまり:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="co">-- Normal function declaration, nothing special</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>myFunction <span class="ot">=</span> <span class="op">...</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="co">-- Include some TH code</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="op">$</span>(myThCode)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="co">-- Or equivalently</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>myThCode</span></code></pre></div>
+<p>Template Haskellにおいてどんなコードが生成されているかを見ることは有益である. そのために, <code>-ddump-splices</code> GHCオプションを使ってください:</p>
+<div class="yesod-book-notice">
+<p>Template Haskellにはここでは扱われない多くの特性がある. 詳細については, <a href="http://www.haskell.org/haskellwiki/GHC/Type_families">Haskell wiki page</a>を参照してください.</p>
+</div>
+<p>Template Haskellはstage restrictionとよばれるものを導入している. これは本質的にはTemplate Haskell spliceの前に来るコードは, Template Haskllやその後のコードを参照できないことを意味する. これによりしばしばコードを少し再配備する必要がある. 同じ制約はQuasiQuoteにも当てはまる.</p>
+<p>独創的であるが, Yesodはコード生成を用いてボイラープレートを避けるのに本当に適している. YesodをTemplate Haskellを用いない方法で使うことも全く問題ない. それについては“Yesod for Haskeller”の章に詳細がある.</p>
 <h3 id="quasiquotes">QuasiQuotes</h3>
+<p>QuasiQuote(QQ)はTemplate Haskellのちょっとした拡張であり, Haskellソースファイル内の任意コンテンツを埋め込み可能にする. 例えば, 前に<code>hamletFile TH</code>関数について述べたが, それは外部ファイルからテンプレートコンテンツを読む込む. また, 準クォートで囲まれた<code>hamlet</code>はコンテンツをインラインで取る:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>[hamlet|<span class="kw">&lt;p&gt;</span>This is quasi-quoted Hamlet.|]</span></code></pre></div>
+<p>構文は鍵括弧とパイプで始める. 準クォートの名前は括弧と最初のパイプの間に入り, コンテンツはパイプ間に入る.</p>
+<p>この本を通し, しばしばTHによって外部出力される方法よりも, QQによる方法を用いる. なぜならばこの方がコードのコピー&amp;ペーストが楽だからである. しかし, 製品版においては, 短いコンテンツを除きほとんどの場合で外部ファイルが推奨される. なぜならば, それによりHaskellでない構文とHaskellコードがしっかり分離されるためである.</p>
 <h2 id="api-ドキュメント">API ドキュメント</h2>
+<p>標準的なAPIドキュメントプログラムはHaddockと呼ばれている. 標準Haddock検索ツールはHoogleである. 個人的には<a href="https://www.stackage.org/">StackageのHoogle検索</a>と付随するHaddockを検索やドキュメントの閲覧に推奨する. 理由としては, Stackage Hoogleデータベースは非常に多くのオープンソースHaskellパッケージを含み, 提供されるドキュメントは常に完璧に生成され, 他のHaddockへのリンクもあるためである.</p>
+<p>もしこの本を読んでいる際に分からない型や関数に出くわしたら, Hoogle検索をHoogleで行い, 詳細を調べてください.</p>
 <h2 id="まとめ">まとめ</h2>
-<p>Yesod を使うために Haskell のエキスパートになる必要はありません。基本的なことについて、ちょっとだけわかっていれば大丈夫です。この章の内容が本書をこれから楽しく読み進めるために役に立つことでしょう。</p>
+<p>Yesod を使うために Haskell のエキスパートになる必要はありません。基本的なことについて、ちょっとだけわかっていれば大丈夫です。この章の内容が本書をこれから楽しく読み進めるために役に立つことでしょう.</p>
       </article>
 
       <div class="pager">
