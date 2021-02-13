@@ -161,7 +161,7 @@ main = do
 新しい構文としては, `class`や`instance`の中に`type`を置くことができることです. 代わりに`deta`を用いることもでき, その場合は既存のものを参照する代わりに新しいデータを作ることができる. 
 
 <div class=yesod-book-notice>
-型クラスの文脈の外で関連型を用いる方法も存在する. より詳細については, [Haskell wiki page](http://www.haskell.org/haskellwiki/GHC/Type_families)を参照してください.
+型クラスの文脈の外で関連型を用いる方法も存在する. より詳細については, <a href=http://www.haskell.org/haskellwiki/GHC/Type_families>Haskell wiki page</a>を参照してください.
 </div>
 
 ### Template Haskell
