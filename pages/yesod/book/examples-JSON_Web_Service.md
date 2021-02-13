@@ -1,6 +1,6 @@
 ---
 title: JSON Web Service
-date: 2020/09/12
+published: 2021/02/13
 ---
 
 非常に単純なwebサービスを作りましょう: これは, JSONリクエストを取り, JSONレスポンスを返す. サーバーをWAI/Warpで書き, クライアントを`http-conduit`で書く. また, `aeson`をJSONのパージングとレンダリングに用いる. サーバーをYesod自身を用いて書くこともできるが, このような単純な例においては, Yesodの機能は余分であり不必要である.
