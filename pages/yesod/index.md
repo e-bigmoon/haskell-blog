@@ -167,7 +167,7 @@ $ sudo apt-get install -y libpq-dev
 [Creating a Subsite][en-ch17] | [Creating a Subsite][ja-ch17]
 [Understanding a Request][en-ch18] | [リクエストを理解する][ja-ch18]
 [SQL Joins][en-ch19] | [SQL Joins][ja-ch19]
-[Yesod for Haskellers][en-ch20] | Yesod for Haskellers
+[Yesod for Haskellers][en-ch20] | [Yesod for Haskellers][ja-ch20]
 
 [en-ch12]:https://www.yesodweb.com/book/restful-content
 [en-ch13]:https://www.yesodweb.com/book/yesods-monads
@@ -187,6 +187,7 @@ $ sudo apt-get install -y libpq-dev
 [ja-ch17]:book/ch17-creating-a-subsite.html
 [ja-ch18]:book/ch18-understanding-a-request.html
 [ja-ch19]:book/ch19-sql-joins.html
+[ja-ch20]:book/ch20-yesod-for-haskellers.html
 
 ### Examples
 
