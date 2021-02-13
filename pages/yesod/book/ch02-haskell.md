@@ -1,7 +1,7 @@
 ---
 title: Haskell
 published: 2018/09/11
-updated: 2018/09/17
+updated: 2021/02/13
 ---
 
 Haskell は強力で速く、型安全なプログラミング言語です。本書は、Haskell の基礎についてある程度理解している読者を対象としています。Haskell に馴染みが無い読者には、オンラインで読むことができる素晴らしい入門書が2冊あるので、そちらをご紹介します。
@@ -48,7 +48,7 @@ data Person = Person Text Int
 `data Maybe a = Just a | Nothing` で考えると、`a` が型変数です。
 
 <div class="yesod-book-notice">
-`Person` と `Make` 型はデータ型とデータコンストラクタで同じ名前を共有しています。これはデータコンストラクタが1つしかない場合の良くある慣習のようなものです。言語が強制するものではないので、データ型とデータコンストラクタに異なる名前を付けることもできます。
+<code>Person</code> と <code>Make</code>型はデータ型とデータコンストラクタで同じ名前を共有しています。これはデータコンストラクタが1つしかない場合の良くある慣習のようなものです。言語が強制するものではないので、データ型とデータコンストラクタに異なる名前を付けることもできます。
 </div>
 
 ## ツール
@@ -81,7 +81,7 @@ GHCはデフォルトではHaskell98に非常に近いモードで実行され�
 
 - `cabal`ファイルにおいて, `default-extensions`ブロックを追加する.
 
-個人的にはGHCコマンドライン引数による方法は決して用いない. これは個人的は趣向だが, ファイルの中で設定を明示的に宣言したいためである. 一般的に拡張を`cabal`ファイルに書かないことが推奨される; しかし, この規則は大方パブリックに利用可能なライブラリに対し当てはまる. あなたとチームが作業するためのアプリケーションを書く際は, すべての言語拡張を1つの場所に定義しておくことはとても有益なことである. Yesodのscaffoldサイトは特にこの方法を用いて, 同じ言語プラグマをそれぞれのソースファイルで指定するというボイラープレートを回避している. この本ではかなり多くの言語拡張を用いることになる(scaffoldingを書く際には, 13個用いる). これらの全ての意味について触れるわけではない. 代わりに, [GHC文書](http://www.haskell.org/ghc/docs/latest/html/users_guide/ghc-language-features.html)を見てください. 
+個人的にはGHCコマンドライン引数による方法は決して用いない. これは個人的は趣向だが, ファイルの中で設定を明示的に宣言したいためである. 一般的に拡張を`cabal`ファイルに書かないことが推奨される; しかし, この規則は大方パブリックに利用可能なライブラリに対し当てはまる. あなたとチームが作業するためのアプリケーションを書く際は, すべての言語拡張を1つの場所に定義しておくことはとても有益なことである. Yesodのscaffoldサイトは特にこの方法を用いて, 同じ言語プラグマをそれぞれのソースファイルで指定するというボイラープレートを回避している. この本ではかなり多くの言語拡張を用いることになる(scaffoldingを書く際には, 13個用いる). これらの全ての意味について触れるわけではない. 代わりに, [GHC文書](https://downloads.haskell.org/ghc/latest/docs/html/users_guide/)を見てください. 
 
 ### Overloaded Strings
 
@@ -200,7 +200,7 @@ myThCode
 Template Haskellにおいてどんなコードが生成されているかを見ることは有益である. そのために, `-ddump-splices` GHCオプションを使ってください:
 
 <div class=yesod-book-notice>
-Template Haskellにはここでは扱われない多くの特性がある. 詳細については, [Haskell wikiページ](http://www.haskell.org/haskellwiki/Template_Haskell)を参照してください. 
+Template Haskellにはここでは扱われない多くの特性がある. 詳細については, <a href=http://www.haskell.org/haskellwiki/GHC/Type_families>Haskell wiki page</a>を参照してください. 
 </div>
 
 Template Haskellはstage restrictionとよばれるものを導入している. これは本質的にはTemplate Haskell spliceの前に来るコードは, Template Haskllやその後のコードを参照できないことを意味する. これによりしばしばコードを少し再配備する必要がある. 同じ制約はQuasiQuoteにも当てはまる.
