@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Deploying your Webapp</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/book/ch12-Deploying_your_Webapp.html">
+  <link rel="alternate" type="application/atom+xml" title="Deploying your Webapp" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Deploying your Webapp" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/book/ch12-Deploying_your_Webapp.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Deploying your Webapp" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="white-text">
+        <i class="mdi mdi-book-open left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-book-open left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <div style="float: right;">
+          
+          <span>記事公開日: 2021/02/13</span><br>
+          
+          
+        </div>
+        <h1 class="post-title">Deploying your Webapp</h1>
+      </div>
+
+      <article class="page-content">
+        <p>他人のことは言えないが, 個人的にはシステム管理のためのプログラミングを好む. しかし実際のところは結局, アプリケーションは供給する必要があり, あなたもシステム管理者となりセットアップをする必要がある.</p>
+<p>Haskellウェブコミュニティにはデプロイメントを容易にする有望な構想がある. 将来, 1つのコマンドでアプリケーションをデプロイできるようなサービスでさえ可能かもしれない.</p>
+<p>しかし今のところはそこまでは至っていない. そしてそうであったとしても, そのような解決策は全ての人にとって上手くいくものではない. この章ではデプロイメントのための様々な方法を挙げ, 異なる状況下においてどのような方法を取るかについての一般的な推奨について説明する.</p>
+<p>YesodチームはYesod開発のための<a href="http://www.yesodweb.com/page/quickstart">quick startガイド</a>で述べられているように, <code>stack build</code>ツールを用いることを強く推奨する. まだの場合はquick startをチェックしてください.</p>
+<h2 id="keter">Keter</h2>
+<p>Yesod scaffoldingはKeter開発エンジンを組み込みでサポートしている. そして, それはHaskellで書かれており, WAIやhttp-clientのような多くの根本が同じ技術を用いている. Keterはアプリケーションに対し, リバースプロキシーとして機能し, 実行しているアプリケーションの立ち上げ, モニタリング, 再デプロイとしても機能する. Keterでデプロイしたい場合, 次のステップを実行してください.</p>
+<ol type="1">
+<li><p>scaffoldアプリケーションにおける<code>config/keter.yaml</code>を必要に応じ編集する.</p></li>
+<li><p>アプリケーションをホストするための, サーバを設定する. 個人的にはAmazon EC2をUbuntuで実行することを推奨する.</p></li>
+<li><p>Keterをそのマシンにインストールする. 最も最新であろう<a href="https://github.com/snoyberg/keter/">Keterウェブサイト</a>を見てください.</p></li>
+<li><p><code>yesod keter</code>を実行し, Keterバンドルを生成する, 例えば<code>myapp.keter</code>のように.</p></li>
+<li><p><code>myapp.keter</code>をサーバの<code>/opt/keter/incoming</code>ディレクトリにコピーする.</p></li>
+</ol>
+<p>もし正しく設定できていれば, 製品環境で実行されているウェブサイトを見れることでしょう! 将来アップグレードは<code>yesod keter</code>を実行し, <code>myapp.keter</code>バンドルをサーバに再コピーしさえすれば可能になるだろう. Keterは自動的に新しいファイルの存在を認知し, アプリケーションをリロードすることに留意してください.</p>
+<p>この章の残りでは様々なステップにおける詳細について説明し, scaffoldやKeterを使わない代理案について説明する.</p>
+<h2 id="コンパイル">コンパイル</h2>
+<p>与えることのできる最大のアドバイスとしては: サーバ上でコンパイルしないでください. そうしたい気持ちはわかる. ソースコードを移動したり, 混乱のもととなる依存関係の問題を避ける必要があるためである. しかし, YesodアプリケーションのコンパイルにはかなりのメモリとCPUを要する. これは次のことを意味する.</p>
+<ul>
+<li><p>アプリケーションを再コンパイルしている間, 既存アプリケーションはパフォーマンス上の影響を受ける.</p></li>
+<li><p>コンパイルをするためにずっと大きなマシーンが必要であり, その容量は大部分の時間は動いていない. なぜならば, YesodアプリケーションはGHC自身よりもずっと少ないCPUとメモリしか要しないためである.</p></li>
+</ul>
+<p>一度コンパイルする準備ができたら, 常に<code>stack clean</code>を新しい製品ビルドの前に行い, 古いファイルがないことを確実にすべきである. そして, <code>stack build</code>を実行することで実行ファイルを得, それは<code>dist/build/myapp/myapp</code>に配置される.</p>
+<h2 id="デプロイするファイル">デプロイするファイル</h2>
+<p>Yesod scaffoldアプリケーションでは, 本質的には3セットのファイルをデプロイする必要がある:</p>
+<ol type="1">
+<li><p>実行ファイル.</p></li>
+<li><p>configフォルダ.</p></li>
+<li><p>staticフォルダ.</p></li>
+</ol>
+<p>その他, Shakespeareテンプレートなどは, 実行ファイル自身にコンパイルされる.</p>
+<p>しかし, 1つ注意点がある: <code>config/client_session_key.aes</code>ファイルである. このファイルはサーバ側の暗号化を制御し, クライアント側のセッションクッキを安全なものとする. もし存在しない場合, Yesodは自動的にこれらのキーの新しいものを生成する. 実際的には, これは次のことを意味する. もしこのファイルをデプロイメントに含まない場合, 再デプロイした場合すべてのユーザが再ログインする必要がある. もし上のアドバイスに従い, <code>config</code>フォルダを含めば, この問題は部分的には解決される. 他の方法としては, セッションキーを環境変数に入れることである.</p>
+<p>残り半分の解決策としては, 一度<code>config/client_session_key.aes</code>ファイルを生成したら, ずっと将来の開発に渡りそれを持ち続けることである. これを確実にするための最も簡単な方法は, そのファイルをバージョンコントロールすることである. しかし, もしバージョンコントロールがオープンソースである場合, これは危険である: レポジトリへのアクセス可能な人なら誰でも認証情報を盗めてしまう!</p>
+<p>ここで述べられた問題は本質的にはシステム管理に関するもので, プログラミングに関するものではない. Yesodは安全にクライアントのセッションキーを保管するための組み込みの機能を有していない. もしオープンソースレポジトリがあり, そのソースコードレポジトリにアクセス権がある人全員を信頼しているのでなければ, クライアントセッションキーを安全に保管するための解決策を探ることは非常に重要である.</p>
+<h2 id="sslとstaticファイル">SSLとstaticファイル</h2>
+<p>Yesodの世界には2つの一般的に用いられる機能がある: HTTPS上でサイトを立ち上げること, staticファイルを別々のドメイン名で保存すること. これら両者はよい慣習であるが, もし組み合わされると不注意な場合, 問題を引き起こす. 特に, 多くのウェブブラウザはHTMLがHTTPSドメイン名から提供された場合, JavascriptファイルをHTTPSでないドメインからはロードしない. この場合, 次のうち1つを行う必要がある:</p>
+<ul>
+<li><p>staticファイルもHTTPS上で提供する.</p></li>
+<li><p>staticファイルをメインサイトと同じドメイン名から提供する.</p></li>
+</ul>
+<p>もし前者を選択した場合(よりよい方であるが), 2つの異なるSSL証明書, あるいはワイルドカード証明書を用いる.</p>
+<h2 id="warp">Warp</h2>
+<p>以前述べたように, Yesodはウェブアプリケーションインターフェース(WAI)上に作られ, どのWAIバックエンドでも実行可能である. これを書いている時点では, 次のバックエンドが利用可能である.</p>
+<ul>
+<li><p>Warp</p></li>
+<li><p>FastCGI</p></li>
+<li><p>SCGI</p></li>
+<li><p>CGI</p></li>
+<li><p>Webkit</p></li>
+<li><p>Development server</p></li>
+</ul>
+<p>最後の2つは製品デプロイメント向けではない. 残り4つに関し, 理論的には全て製品デプロイメントのために使用可能である. 特に, CGIバックエンドは非常に非効率的になりがちである. なぜならば, 新しいプロセスが各コネクションごとに生成される必要があるためである. そしてSCGIはWarp(リバースプロキシにより)やFastCGIほどにはフロントエンドウェブサーバによってサポートされていない.</p>
+<p>残り2つのうち, Warpは最も強く推奨される. なぜならば:</p>
+<ul>
+<li><p>かなり早い.</p></li>
+<li><p>FastCGIのように, リバースHTTPプロキシを用いてNginxのようなフロントエンドサーバの裏で実行可能である.</p></li>
+<li><p>さらに, それ自身完全に有能なサーバであり, したがってフロントエンドサーバがなくても使うことができる.</p></li>
+</ul>
+<p>すると1つの疑問が残る: Warpはそれ自身で実行すべきか, それともフロントエンドサーバの裏でリバースプロキシを通して実行されるべきか? 大部分の使用において, 後者を推奨する. なぜならば:</p>
+<ul>
+<li><p>アプリケーションの前にリバースプロキシを用いることで, 新しいバージョンをデプロイするのが容易になる.</p></li>
+<li><p>また, もしアプリケーションにバグがある場合, リバースプロキシによりユーザに多少わかりやすいエラーメッセージを与えられる.</p></li>
+<li><p>バーチャルホスティングを用いることで, 1つのホストから複数のアプリケーションをホストできる.</p></li>
+<li><p>リバースプロキシはロードバランサとSSLプロキシとしての両方の機能を持ち, アプリケーションを単純化できる.</p></li>
+</ul>
+<p>上で議論したように, Keterは取りかかりに非常に適している. もしNginxのような既存のウェブサーバがあれば, Yesodは代わりにその裏側でちゃんと機能する.</p>
+<h2 id="nginxの設定">Nginxの設定</h2>
+<p>Keterの設定は単純である. なぜならば, それはYesodアプリケーションと一緒に機能するように設計されているためである. しかしもし代わりにNginxを使いたい場合, どのようにセットアップすればよいであろうか?</p>
+<p>一般的に, Nginxはポート80を利用し, Yesod/Warpアプリは他の特別でないポート(例えば4321)を利用する. 次のようなnginx.confファイルを与える必要がある:</p>
+<pre><code>daemon off; # Don't run nginx in the background, good for monitoring apps
+events {
+    worker_connections 4096;
+}
+
+http {
+    server {
+        listen 80; # Incoming port for Nginx
+        server_name www.myserver.com;
+        location / {
+            proxy_pass http://127.0.0.1:4321; # Reverse proxy to your Yesod app
+        }
+    }
+}</code></pre>
+<p>好きなだけサーバのブロックを付け足してよい. 一般的に追加するものとしては, ユーザがドメイン名にwww接頭辞を用いてページにアクセスすることを保証することである. これにより正規化URLにおけるRESTful原則が確実になる. (容易に反対のことをしがちであり, 常にwwwを除いてしまう. 変更がnginxとサイトのapproot両方に反映されているか確認してください.) この場合, 次のようなブロックを追加する.</p>
+<pre><code>server {
+    listen 80;
+    server_name myserver.com;
+    rewrite ^/(.*) http://www.myserver.com/$1 permanent;
+}</code></pre>
+<p>非常に推奨される最適化としては, staticファイルを別々のドメイン名から提供することであり, したがって, クッキー転送オーバーヘッドを避けることができる. staticファイルがサイトフォルダの<code>static</code>フォルダにあり, サイトフォルダが<code>/home/michael/sites/mysite</code>にあると仮定すれば, 次のようになる:</p>
+<pre><code>server {
+    listen 80;
+    server_name static.myserver.com;
+    root /home/michael/sites/mysite/static;
+    # Since yesod-static appends a content hash in the query string,
+    # we are free to set expiration dates far in the future without
+    # concerns of stale content.
+    expires max;
+}</code></pre>
+<p>これが機能するために, サイトがこの代わりのドメイン名に合わせて, 正しくstatic URLを書き直す必要がある. scaffoldedサイトはこれを<code>Settings.staticRoot</code>関数と<code>urlRenderOverride</code>の定義を用いて, かなり簡単にできるようにしてある. しかし, もし別々のドメイン名を用いずにnginxの速いstatic file提供を生かしたいのならば, 代わりにもともとのサーバブロックを次のように変更できる:</p>
+<pre><code>server {
+    listen 80; # Incoming port for Nginx
+    server_name www.myserver.com;
+    location / {
+        proxy_pass http://127.0.0.1:4321; # Reverse proxy to your Yesod app
+    }
+    location /static {
+        root /home/michael/sites/mysite; # Notice that we do *not* include /static
+        expires max;
+    }
+}</code></pre>
+<h2 id="サーバのプロセス">サーバのプロセス</h2>
+<p>多くの人々はApache/mod_phpやLighttpd/FastCGiなどのセットアップに慣れ親しんでいる. それらにおいては, ウェブサーバが自動的にウェブアプリケーションを生成する. nginxでは, リバースプロキシであれFastCGIであれ, これは当てはまらない: 自分でプロセスを実行する必要がある. モニタリングユーティリティを用いて, クラッシュした際に自動的にアプリケーションを再スタートすることを強く推奨する. angelやdaemontoolのように多くの素晴らしい方法がある.</p>
+<p>具体例を挙げるために, ここにUpstart設定ファイルがある. ファイルは<code>etc/init/mysite.conf</code>に置く必要がある:</p>
+<pre><code>description &quot;My awesome Yesod application&quot;
+start on runlevel [2345];
+stop on runlevel [!2345];
+respawn
+chdir /home/michael/sites/mysite
+exec /home/michael/sites/mysite/dist/build/mysite/mysite</code></pre>
+<p>一度これを正しく置けば, アプリケーションを進めるのは<code>sudo start mysite</code>と同じくらい容易である. 同じようにシステム設定ファイルは<code>/etc/systemd/system/yesod-sample.service</code>に置かれる.</p>
+<pre><code>[Service]
+ExecStart=/home/sibi/.local/bin/my-yesod-executable
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=yesod-sample
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+<p>するとサービスを次のように進めることができる:</p>
+<pre><code>systemctl enable yesod-sample
+systemctl start yesod-sample</code></pre>
+<p><code>systemctl status yesod-sample</code>を用いて, プロセスのステータスを見ることができる.</p>
+<h2 id="nginx-fastcgi">Nginx + FastCGI</h2>
+<p>中にはFastCGIをデプロイメントに用いたい人もいるかもしれない. この場合, さらにツールを追加する必要がある. FastCGIは新しいコネクションをファイルディスクリプタから受け取ることで機能する. Cライブラリはこのファイルディスクリプタが0(標準入力)であることを想定する. よって, spawn-fcgiプログラムを用いて, アプリケーションの標準入力を正しいソケットにバインドする必要がある.</p>
+<p>このために, ポートにバインドする代わりに, Unix namedソケットを用いる方が便利である. 特に複数のアプリケーションを1つのホストでホスティングする場合はそうである. アプリをロードするスクリプトとしては次のようになる:</p>
+<pre><code>spawn-fcgi \
+    -d /home/michael/sites/mysite \
+    -s /tmp/mysite.socket \
+    -n \
+    -M 511 \
+    -u michael \
+    -- /home/michael/sites/mysite/dist/build/mysite-fastcgi/mysite-fastcgi</code></pre>
+<p>フロントエンドサーバを設定し, アプリにFastCGIを通して通信できるようにする必要がある. これはNginxでは比較的容易である:</p>
+<pre><code>server {
+    listen 80;
+    server_name www.myserver.com;
+    location / {
+        fastcgi_pass unix:/tmp/mysite.socket;
+    }
+}</code></pre>
+<p>それはとても馴染み深いものであろう. 唯一の最後のトリックとしては, Nginxでは手動で全てのFastCGI変数を指定する必要があるということである. これらを異なるファイル(例えば, fastcgi.conf)に保存し, <code>include fastcgi.conf;</code>をhttpブロックの最後に追加することが推奨される. WAIと連携するために, ファイルのコンテンツは次のようになる:</p>
+<pre><code>fastcgi_param  QUERY_STRING       $query_string;
+fastcgi_param  REQUEST_METHOD     $request_method;
+fastcgi_param  CONTENT_TYPE       $content_type;
+fastcgi_param  CONTENT_LENGTH     $content_length;
+fastcgi_param  PATH_INFO          $fastcgi_script_name;
+fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+fastcgi_param  REMOTE_ADDR        $remote_addr;
+fastcgi_param  SERVER_ADDR        $server_addr;
+fastcgi_param  SERVER_PORT        $server_port;
+fastcgi_param  SERVER_NAME        $server_name;</code></pre>
+<h2 id="desktop">Desktop</h2>
+<p>他のしゃれたバックエンドにはwai-handler-webkitがある. このバックエンドはWarpとQtWebkitを組み合わせ, 実行ファイルを作り, ユーザは単にダブルクリックするだけでよい. これはアプリケーションのオフライン版を与えるための便利な方法である.</p>
+<p>これにおいてYesodで最も便利な点としては, テンプレートは全て実行ファイルにコンパイルされ, アプリケーションで配布する必要がないことである. しかしながら, staticファイルもそれを行なっている.</p>
+<div class="yesod-book-notice">
+<p>実際にstaticファイルを直接実行ファイルに埋め込むためのサポートも存在する. 詳細については, yesod-static文書を見てください.</p>
+</div>
+<p>QtWebkitライブラリを必要としない同様の方法は, wai-handler-launchであり, これはWarpサーバを立ち上げ, そしてユーザのデフォルトウェブブラウザを起動する. ここでは多少のトリックがある: ユーザがまだサイトを用いていることを知るために, <code>wai-handler-launch</code>は“ping” Javascriptコードを与えられる全てのHTMLページに挿入する. もし<code>wai-handler-launch</code>がpingを2分間受け取らなかった場合, シャットダウンする.</p>
+<h2 id="apache上でのcgi">Apache上でのCGI</h2>
+<p>CGIとFastCGIはApache上でほとんど同じように機能する. よって, この設定になるように変換することは非常に単純である. 本質的には2つの目標を達成する必要はある.</p>
+<ol type="1">
+<li><p>サーバにファイルを(Fast)CGIとして与えさせる.</p></li>
+<li><p>サイトへの全てのリクエストをリライトし, (Fast)CGI実行ファイルを経由するようにする.</p></li>
+</ol>
+<p>ここではブログアプリケーションを与えるための設定ファイルを挙げる. 実行ファイルは“bloggy.cgi”という名前であり, ドキュメントルートの“blog”という名前のサブフォルダにある. この例は<code>/f5/snoyman/public/blog</code>のパスにあるアプリケーションから取られる.</p>
+<pre><code>Options +ExecCGI
+AddHandler cgi-script .cgi
+Options +FollowSymlinks
+
+RewriteEngine On
+RewriteRule ^/f5/snoyman/public/blog$ /blog/ [R=301,S=1]
+RewriteCond $1 !^bloggy.cgi
+RewriteCond $1 !^static/
+RewriteRule ^(.*) bloggy.cgi/$1 [L]</code></pre>
+<p>最初のRewriteRuleはサブフォルダを扱うためである. 特に, これは<code>/blog</code>へのリクエストを<code>/blog/</code>へリダイレクトする. 最初のRewriteCondは直接実行ファイルにリクエストするのを防ぎ, 2つ目はApacheがstaticファイルを与えるのを許可する. そして最後の行で実際のリライトを行う.</p>
+<h2 id="lighttpd上でのfastcgi">lighttpd上でのFastCGI</h2>
+<p>この例では, いくつかのmime-typeのような基本的なFastCGI設定は省略する. また, 製品版においてより複雑なファイルがあり, 存在しない場合“<span>www</span>.”を先頭に追加し異なるドメインからstaticファイルを与える. しかし, これは基本を知るのに役立つであろう.</p>
+<p>ここでは, “/home/michael/fastcgi”はfastcgiアプリケーションである. アイデアとしては“/app”で始まる全てのリクエストをリライトし, “/app”で始まる全てのページをFastCGI実行ファイルを経由して与えることである.</p>
+<pre><code>server.port = 3000
+server.document-root = &quot;/home/michael&quot;
+server.modules = (&quot;mod_fastcgi&quot;, &quot;mod_rewrite&quot;)
+
+url.rewrite-once = (
+  &quot;(.*)&quot; =&gt; &quot;/app/$1&quot;
+)
+
+fastcgi.server = (
+    &quot;/app&quot; =&gt; ((
+        &quot;socket&quot; =&gt; &quot;/tmp/test.fastcgi.socket&quot;,
+        &quot;check-local&quot; =&gt; &quot;disable&quot;,
+        &quot;bin-path&quot; =&gt; &quot;/home/michael/fastcgi&quot;, # full path to executable
+        &quot;min-procs&quot; =&gt; 1,
+        &quot;max-procs&quot; =&gt; 30,
+        &quot;idle-timeout&quot; =&gt; 30
+    ))
+)</code></pre>
+<h2 id="lighttpd上でのcgi">lighttpd上でのCGI</h2>
+<p>これは基本的にはFastCGI版と同じである. しかし, lighttpdに“.cgi”で終わるファイルをCGI実行ファイルとして実行するように指示する. この場合, ファイルは“/home/michael/myapp.cgi”にある.</p>
+<pre><code>server.port = 3000
+server.document-root = &quot;/home/michael&quot;
+server.modules = (&quot;mod_cgi&quot;, &quot;mod_rewrite&quot;)
+
+url.rewrite-once = (
+    &quot;(.*)&quot; =&gt; &quot;/myapp.cgi/$1&quot;
+)
+
+cgi.assign = (&quot;.cgi&quot; =&gt; &quot;&quot;)</code></pre>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Deploying your Webapp&url=https://haskell.e-bigmoon.com/yesod/book/ch12-Deploying_your_Webapp.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/ch12-Deploying_your_Webapp.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+  <div class="footer-copyright">
+    <div class="container">
+      © 2017-2020 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+  </div>
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
