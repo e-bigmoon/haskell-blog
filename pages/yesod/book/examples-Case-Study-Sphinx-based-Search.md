@@ -1,6 +1,6 @@
 ---
 title: 'Case Study: Sphinx-based Search'
-date: 2021/02/14
+published: 2021/02/14
 ---
 
 [Sphinx](http://sphinxsearch.com/)は検索エンジンであり, 多くのサイトにおいて検索面を強化している. YesodとSphinxを統合するために必要な実際のコードは比較的短いが, 多くの複雑なトピックが存在し, それ故Yesodにおいて水面化で起こっていることの扱い方を学ぶ上でよいケーススタディになる. 
