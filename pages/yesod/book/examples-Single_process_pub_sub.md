@@ -1,5 +1,5 @@
 ---
-title: Case Study: Single process pub-sub
+title: 'Case Study: Single process pub-sub'
 published: 2021/02/14
 ---
 
