@@ -1,5 +1,5 @@
 ---
-title: Case Study: Sphinx-based Search
+title: 'Case Study: Sphinx-based Search'
 date: 2021/02/14
 ---
 
