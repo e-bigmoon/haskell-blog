@@ -195,12 +195,12 @@ $ sudo apt-get install -y libpq-dev
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
 [Initializing data in the foundation datatype][en-ex01] | [ファウンデーション型の初期化][ja-ex01] | [スライド][slide-ex01]
-[Blog: i18n, authentication, authorization, and database][en-ex02] | [Blog: i18n, authentication, authorization, and database][ja-ex02]
-[Wiki: markdown, chat subsite, event source][en-ex03] | [Wiki: markdown, chat subsite, event source][ja-ex03]
+[Blog: i18n, authentication, authorization, and database][en-ex02] | Blog: i18n, authentication, authorization, and database
+[Wiki: markdown, chat subsite, event source][en-ex03] | [Wiki:マークダウン, チャット, サブサイト, エベントソース][ja-ex03]
 [JSON Web Service][en-ex04] | [JSON Web Service][ja-ex04]
-[Case Study: Sphinx-based Search][en-ex05] | [Case Study: Sphinx-based Search][ja-ex05]
+[Case Study: Sphinx-based Search][en-ex05] | [ケーススタディ: Sphinxでの検索][ja-ex05]
 [Visitor counter][en-ex06] | [訪問者数カウンタ][ja-ex06] | [スライド][slide-ex06]
-[Single process pub-sub][en-ex07] | [Single process pub-sub][ja-ex07]
+[Single process pub-sub][en-ex07] | [単一プロセスpub-sub][ja-ex07]
 [Environment variables for configuration][en-ex08] | [環境変数で設定しよう][ja-ex08]
 [Route attributes][en-ex09] | [ルート属性][ja-ex09]
 
@@ -215,7 +215,6 @@ $ sudo apt-get install -y libpq-dev
 [en-ex09]:https://www.yesodweb.com/book/route-attributes
 
 [ja-ex01]:book/examples-initializing-foundation-data.html
-[ja-ex02]:book/examples-blog-example-advanced
 [ja-ex03]:book/examples-wiki-chat-example
 [ja-ex04]:book/examples-json-web-service
 [ja-ex05]:book/examples-case-study-sphinx
