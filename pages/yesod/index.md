@@ -115,7 +115,7 @@ $ sudo apt-get install -y libpq-dev
 [Forms][en-ch8] | [Forms][ja-ch8] | [スライド][slide-ch8] | [練習問題][ex-ch8]
 [Sessions][en-ch9] | [Sessions][ja-ch9]
 [Persistent][en-ch10] | [Persistent][ja-ch10] | [ノート][note-ch10]
-[Deploying your Webapp][en-ch11] | Deploying your Webapp
+[Deploying your Webapp][en-ch11] | [Deploying your Webapp][ja-ch11]
 
 [en-ch1]:https://www.yesodweb.com/book/introduction
 [en-ch2]:https://www.yesodweb.com/book/haskell
@@ -215,7 +215,12 @@ $ sudo apt-get install -y libpq-dev
 [en-ex09]:https://www.yesodweb.com/book/route-attributes
 
 [ja-ex01]:book/examples-initializing-foundation-data.html
+[ja-ex02]:book/examples-blog-example-advanced
+[ja-ex03]:book/examples-wiki-chat-example
+[ja-ex04]:book/examples-json-web-service
+[ja-ex05]:book/examples-case-study-sphinx
 [ja-ex06]:book/examples-visitor-counter.html
+[ja-ex07]:book/examples-single-process-pubsub
 [ja-ex08]:book/examples-environment-variables.html
 [ja-ex09]:book/examples-route-attributes.html
 
