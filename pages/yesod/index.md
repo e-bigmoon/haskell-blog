@@ -139,6 +139,7 @@ $ sudo apt-get install -y libpq-dev
 [ja-ch8]:book/ch08-forms.html
 [ja-ch9]:book/ch09-sessions.html
 [ja-ch10]:book/ch10-persistent.html
+[ja-ch11]:book/ch11-deploying-your-Webapp.html
 
 [slide-ch3]:https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing
 [slide-ch4]:https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing
