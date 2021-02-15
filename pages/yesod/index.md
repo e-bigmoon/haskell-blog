@@ -115,7 +115,7 @@ $ sudo apt-get install -y libpq-dev
 [Forms][en-ch8] | [Forms][ja-ch8] | [スライド][slide-ch8] | [練習問題][ex-ch8]
 [Sessions][en-ch9] | [Sessions][ja-ch9]
 [Persistent][en-ch10] | [Persistent][ja-ch10] | [ノート][note-ch10]
-[Deploying your Webapp][en-ch11] | Deploying your Webapp
+[Deploying your Webapp][en-ch11] | [Deploying your Webapp][ja-ch11]
 
 [en-ch1]:https://www.yesodweb.com/book/introduction
 [en-ch2]:https://www.yesodweb.com/book/haskell
@@ -139,6 +139,7 @@ $ sudo apt-get install -y libpq-dev
 [ja-ch8]:book/ch08-forms.html
 [ja-ch9]:book/ch09-sessions.html
 [ja-ch10]:book/ch10-persistent.html
+[ja-ch11]:book/ch11-deploying-your-Webapp.html
 
 [slide-ch3]:https://docs.google.com/presentation/d/1UNbHbodN2rQgIkk620fbMu4XwLp4Vseaazv42vBkh1M/edit?usp=sharing
 [slide-ch4]:https://docs.google.com/presentation/d/1Lz1V5dL6Je27IPJnfswAlSHE9mfa_LY4S848mp27dSs/edit?usp=sharing
@@ -195,11 +196,11 @@ $ sudo apt-get install -y libpq-dev
 -----|----------|---------
 [Initializing data in the foundation datatype][en-ex01] | [ファウンデーション型の初期化][ja-ex01] | [スライド][slide-ex01]
 [Blog: i18n, authentication, authorization, and database][en-ex02] | Blog: i18n, authentication, authorization, and database
-[Wiki: markdown, chat subsite, event source][en-ex03] | Wiki: markdown, chat subsite, event source
-[JSON Web Service][en-ex04] | JSON Web Service
-[Case Study: Sphinx-based Search][en-ex05] | Case Study: Sphinx-based Search
+[Wiki: markdown, chat subsite, event source][en-ex03] | [Wiki:markdown, chat subsite, event source][ja-ex03]
+[JSON Web Service][en-ex04] | [JSON Web Service][ja-ex04]
+[Case Study: Sphinx-based Search][en-ex05] | [ケーススタディ: Sphinxでの検索][ja-ex05]
 [Visitor counter][en-ex06] | [訪問者数カウンタ][ja-ex06] | [スライド][slide-ex06]
-[Single process pub-sub][en-ex07] | Single process pub-sub
+[Single process pub-sub][en-ex07] | [単一プロセスpub-sub][ja-ex07]
 [Environment variables for configuration][en-ex08] | [環境変数で設定しよう][ja-ex08]
 [Route attributes][en-ex09] | [ルート属性][ja-ex09]
 
@@ -214,7 +215,11 @@ $ sudo apt-get install -y libpq-dev
 [en-ex09]:https://www.yesodweb.com/book/route-attributes
 
 [ja-ex01]:book/examples-initializing-foundation-data.html
+[ja-ex03]:book/examples-wiki-chat-example
+[ja-ex04]:book/examples-json-web-service
+[ja-ex05]:book/examples-case-study-sphinx
 [ja-ex06]:book/examples-visitor-counter.html
+[ja-ex07]:book/examples-single-process-pubsub
 [ja-ex08]:book/examples-environment-variables.html
 [ja-ex09]:book/examples-route-attributes.html
 
