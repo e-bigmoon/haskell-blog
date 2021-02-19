@@ -190,14 +190,14 @@
 </div>
 <h2 id="url-のパージングとレンダリング">URL のパージングとレンダリング</h2>
 <p>既に述べた通り、Yesod は型安全URL を通常の URL (HTML に挿入可能なテキスト形式) へ自動的にレンダリングできます。例えば、次のようなルートがあったとしましょう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>mkYesod <span class="st">&quot;MyApp&quot;</span> [parseRoutes|</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>/some/path SomePathR GET</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>]</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;MyApp&quot;</span> [parseRoutes|</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>/some/path SomePathR GET</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div>
 <p>hamlet テンプレートに <code>SomePathR</code> が出現するとき、 Yesod は <code>SomePathR</code> をどのようにレンダリングするのでしょうか？Yesod は常に絶対 (<strong><em>absolute</em></strong>) URL を構成しようとします。これは XML サイトマップや Atom フィードの生成、電子メールの送信などを考慮するためです。しかし、絶対 URL を作るためには、アプリケーションのドメイン名を知る必要があります。</p>
 <p>ドメイン名はユーザのリクエストから得られると思うかもしれませんが、それ以外にもポート番号についても知る必要もあります。そして、例えポート番号をリクエストから取得できたとしても、HTTP または HTTPS のどちらを利用すれば良いのでしょうか？さらにそれを知ったとしても、このような方法はユーザがどのようにリクエストを送信したかに応じて異なる URL が生成されることを意味します。例えば、ユーザが <code>"example.com"</code> と <code>"www.example.com"</code> にアクセスしたとき、両者で異なる URL が生成されてしまいます。サーチエンジン最適化の観点で考えると、ひとつの正規化された URL に統一したいでしょう。</p>
 <p>最後に Yesod はアプリケーションをどこにホストしているかについて何の仮定もありません。例えば、大部分は静的なサイト (<a href="http://static.example.com/">http://static.example.com/</a>) ですが、 /wiki/ に Yesod 製の Wiki を作りたいとしましょう。このとき、サブパスがどこからホストされているかについて、アプリケーションが決定するための信頼できる方法はありません。なので、様々な予測をするのではなく、Yesod にアプリケーションのルートを教えます。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">MyWiki</span> <span class="kw">where</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://static.example.com/wiki&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">MyWiki</span> <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://static.example.com/wiki&quot;</span></span></code></pre></div>
 <p>末尾のスラッシュがないことに注意してください。Yesod が <code>SomePathR</code> の URL を構成するときは、まず <code>SomePathR</code> が相対パス <code>/some/path</code> であるということを計算し、それを <code>approot</code> に付け加えます。その結果 <code>http://static.example.com/wiki/some/path</code> ができあがります。</p>
 <p><code>approot</code> のデフォルト値は <code>ApprootRelative</code> です。これは本質的には “何の接頭辞も加えない” ということを意味するため、生成される URL は <code>/some/path</code> になります。これは、アプリケーション内リンクの一般的なケースとドメインのルートにホストされたアプリケーションにおいては正しく機能します。しかし、 (電子メールを送る場合のような) 絶対 URL が必要となる場合は <code>ApprootStatic</code> を利用するべきでしょう。</p>
 <p><code>ApprootStatic</code> コンストラクタに加え <code>ApprootMaster</code> と <code>ApprootRequest</code> コンストラクタも利用可能です。<code>ApprootMaster</code> は <code>approot</code> をファウンデーション値から決定します。このコンストラクタを使えば、例えば、<code>approot</code> を設定ファイルから読み込むことができます。<code>ApprootRequest</code> は <code>approot</code> を決めるための追加的なリクエスト値を利用できるため、ユーザが最初にサイトに対してどんなリクエストをしたかによって、異なるドメイン名にすることができます。</p>
@@ -225,60 +225,60 @@
 <li>その他の場合 <code>cleanPath</code> からのレスポンス (<code>Right</code>) を使って、ディスパッチを試し、もしこれが上手くいけばレスポンスを返します。そうでなければ、404を返します。</li>
 </ol>
 <p>これらを組み合わせることで、マスターサイトの URL が変化したとしても、サブサイトは URL について完全な制御が可能です。例を使って、どのようにすれば Yesod が常に末尾のスラッシュを含むようになるか確認してみましょう。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Blaze.ByteString.Builder.Char.Utf8</span> (fromText)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Arrow</span>                      ((***))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Monoid</span>                        (mappend)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span>                          <span class="kw">as</span> <span class="dt">T</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Encoding</span>                 <span class="kw">as</span> <span class="dt">TE</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Network.HTTP.Types</span>                 (encodePath)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Slash</span> <span class="ot">=</span> <span class="dt">Slash</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>mkYesod <span class="st">&quot;Slash&quot;</span> [parseRoutes|</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>/ RootR GET</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a>/foo FooR GET</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>|]</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Slash</span> <span class="kw">where</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a>    joinPath _ ar pieces' qs' <span class="ot">=</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a>        fromText ar <span class="ot">`mappend`</span> encodePath pieces qs</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a>      <span class="kw">where</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true"></a>        qs <span class="ot">=</span> <span class="fu">map</span> (TE.encodeUtf8 <span class="op">***</span> go) qs'</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true"></a>        go <span class="st">&quot;&quot;</span> <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true"></a>        go x <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> TE.encodeUtf8 x</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true"></a>        pieces <span class="ot">=</span> pieces' <span class="op">++</span> [<span class="st">&quot;&quot;</span>]</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true"></a>    <span class="co">-- We want to keep canonical URLs. Therefore, if the URL is missing a</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true"></a>    <span class="co">-- trailing slash, redirect. But the empty set of pieces always stays the</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true"></a>    <span class="co">-- same.</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true"></a>    cleanPath _ [] <span class="ot">=</span> <span class="dt">Right</span> []</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true"></a>    cleanPath _ s</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true"></a>        <span class="op">|</span> <span class="fu">dropWhile</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s <span class="op">==</span> [<span class="st">&quot;&quot;</span>] <span class="ot">=</span> <span class="co">-- the only empty string is the last one</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true"></a>            <span class="dt">Right</span> <span class="op">$</span> <span class="fu">init</span> s</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true"></a>        <span class="co">-- Since joinPath will append the missing trailing slash, we simply</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true"></a>        <span class="co">-- remove empty pieces.</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true"></a>        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Left</span> <span class="op">$</span> <span class="fu">filter</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true"></a></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true"></a><span class="ot">getRootR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true"></a>getRootR <span class="ot">=</span> defaultLayout</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">RootR</span><span class="kw">}&gt;</span>RootR</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">FooR</span><span class="kw">}&gt;</span>FooR</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true"></a>    |]</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true"></a></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true"></a><span class="ot">getFooR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true"></a>getFooR <span class="ot">=</span> getRootR</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true"></a></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">Slash</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Blaze.ByteString.Builder.Char.Utf8</span> (fromText)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Arrow</span>                      ((***))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Monoid</span>                        (mappend)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span>                          <span class="kw">as</span> <span class="dt">T</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Encoding</span>                 <span class="kw">as</span> <span class="dt">TE</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Network.HTTP.Types</span>                 (encodePath)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Slash</span> <span class="ot">=</span> <span class="dt">Slash</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;Slash&quot;</span> [parseRoutes|</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>/ RootR GET</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>/foo FooR GET</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Slash</span> <span class="kw">where</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    joinPath _ ar pieces' qs' <span class="ot">=</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        fromText ar <span class="ot">`mappend`</span> encodePath pieces qs</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        qs <span class="ot">=</span> <span class="fu">map</span> (TE.encodeUtf8 <span class="op">***</span> go) qs'</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        go <span class="st">&quot;&quot;</span> <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        go x <span class="ot">=</span> <span class="dt">Just</span> <span class="op">$</span> TE.encodeUtf8 x</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        pieces <span class="ot">=</span> pieces' <span class="op">++</span> [<span class="st">&quot;&quot;</span>]</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- We want to keep canonical URLs. Therefore, if the URL is missing a</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- trailing slash, redirect. But the empty set of pieces always stays the</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- same.</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    cleanPath _ [] <span class="ot">=</span> <span class="dt">Right</span> []</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    cleanPath _ s</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">dropWhile</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s <span class="op">==</span> [<span class="st">&quot;&quot;</span>] <span class="ot">=</span> <span class="co">-- the only empty string is the last one</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Right</span> <span class="op">$</span> <span class="fu">init</span> s</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- Since joinPath will append the missing trailing slash, we simply</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- remove empty pieces.</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="dt">Left</span> <span class="op">$</span> <span class="fu">filter</span> (<span class="fu">not</span> <span class="op">.</span> T.null) s</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="ot">getRootR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>getRootR <span class="ot">=</span> defaultLayout</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">RootR</span><span class="kw">}&gt;</span>RootR</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">FooR</span><span class="kw">}&gt;</span>FooR</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="ot">getFooR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>getFooR <span class="ot">=</span> getRootR</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">Slash</span></span></code></pre></div>
 <p>まず <code>joinPath</code> の実装を見てください。これは1つを除いて Yesod 型クラスのデフォルト実装からほとんど一語一句そのままにコピーされたものです。異なる部分は、末尾に空文字列を余分に追加した点です。パス断片を扱う場合、空文字列はさらにスラッシュを追加するため、余分な空文字列を追加することで、末尾のスラッシュを強制できるのです。</p>
 <p><code>cleanPath</code> は少しだけトリッキーです。まず、前のように空パスをチェックし、もし空パスならそのまま受け渡し、リダイレクトが不要なことを示すために <code>Right</code> を返します。また、実際には、以下の問題についてチェックする必要があります。</p>
 <ul>
@@ -293,90 +293,90 @@
 <h3 id="getmessage">getMessage</h3>
 <p>まだセッションについては何も説明していませんが、ここで <code>getMessage</code> について言及したいと思います。Web 開発の共通パターンとして、ひとつのハンドラでメッセージをセットし、別のハンドラで表示するというものがあります。例えば、ユーザがフォームを <code>POST</code> したら、 “フォーム提出は完了しました” のメッセージとともにリダイレクトさせたいといった場合です。これは一般的に <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get">Post/Redirect/Get</a> として知られています。</p>
 <p>これを実現するために Yesod は次の関数のペアを組み込みで用意しています。<code>setMessage</code> はメッセージをユーザセッションにセットし <code>getMessage</code> はメッセージを回収します (再び出現しないように削除します)。そのため <code>getMessage</code> の結果を <code>defaultLayout</code> で表示することが推奨されています。以下の例で確認してみましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Time</span> (getCurrentTime)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>|]</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>    defaultLayout contents <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>        <span class="dt">PageContent</span> title headTags bodyTags <span class="ot">&lt;-</span> widgetToPageContent contents</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>        mmsg <span class="ot">&lt;-</span> getMessage</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>        withUrlRenderer [hamlet|</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>            <span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>            <span class="kw">&lt;html&gt;</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a>                <span class="kw">&lt;head&gt;</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a>                    <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a>                    <span class="kw">^{</span>headTags<span class="kw">}</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a>                <span class="kw">&lt;body&gt;</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a>                    <span class="kw">$maybe</span> msg <span class="ot">&lt;-</span> mmsg</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a>                        <span class="kw">&lt;div </span><span class="er">#message</span><span class="kw">&gt;#{</span>msg<span class="kw">}</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a>                    <span class="kw">^{</span>bodyTags<span class="kw">}</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a>        |]</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true"></a>    now <span class="ot">&lt;-</span> liftIO getCurrentTime</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true"></a>    setMessage <span class="op">$</span> toHtml <span class="op">$</span> <span class="st">&quot;You previously visited at: &quot;</span> <span class="op">++</span> <span class="fu">show</span> now</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true"></a>    defaultLayout [whamlet|<span class="kw">&lt;p&gt;</span>Try refreshing|]</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true"></a></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Time</span> (getCurrentTime)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    defaultLayout contents <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="dt">PageContent</span> title headTags bodyTags <span class="ot">&lt;-</span> widgetToPageContent contents</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        mmsg <span class="ot">&lt;-</span> getMessage</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        withUrlRenderer [hamlet|</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;html&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;head&gt;</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;title&gt;#{</span>title<span class="kw">}</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>headTags<span class="kw">}</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;body&gt;</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">$maybe</span> msg <span class="ot">&lt;-</span> mmsg</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;div </span><span class="er">#message</span><span class="kw">&gt;#{</span>msg<span class="kw">}</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>bodyTags<span class="kw">}</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    now <span class="ot">&lt;-</span> liftIO getCurrentTime</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    setMessage <span class="op">$</span> toHtml <span class="op">$</span> <span class="st">&quot;You previously visited at: &quot;</span> <span class="op">++</span> <span class="fu">show</span> now</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    defaultLayout [whamlet|<span class="kw">&lt;p&gt;</span>Try refreshing|]</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p><code>getMessage</code> と　<code>setMessage</code> については、セッションの章で詳細に触れます。</p>
 <h2 id="カスタムエラーページ">カスタムエラーページ</h2>
 <p>プロフェッショナルな Web サイトの証の1つとして、適切に設計されたエラーページが挙げられます。Yesod はエラーページを表示するために、自動的に <code>defaultLayout</code> を利用しますが、もっと別の方法もあります。それが <code>errorHandler</code> メソッドを上書きする方法です。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>/error ErrorR GET</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>/not-found NotFoundR GET</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>|]</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a>    errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> <span class="fu">fmap</span> toTypedContent <span class="op">$</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>        setTitle <span class="st">&quot;Request page not located&quot;</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a>        toWidget [hamlet|</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true"></a><span class="kw">&lt;h1&gt;</span>Not Found</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>We apologize for the inconvenience, but the requested page could not be located.</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true"></a>|]</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true"></a>    errorHandler other <span class="ot">=</span> defaultErrorHandler other</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true"></a></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">ErrorR</span><span class="kw">}&gt;</span>Internal server error</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">NotFoundR</span><span class="kw">}&gt;</span>Not found</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true"></a>    |]</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true"></a><span class="ot">getErrorR ::</span> <span class="dt">Handler</span> ()</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true"></a>getErrorR <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;This is an error&quot;</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true"></a></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true"></a><span class="ot">getNotFoundR ::</span> <span class="dt">Handler</span> ()</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true"></a>getNotFoundR <span class="ot">=</span> notFound</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true"></a></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span> haskell</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>/error ErrorR GET</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>/not-found NotFoundR GET</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> <span class="fu">fmap</span> toTypedContent <span class="op">$</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        setTitle <span class="st">&quot;Request page not located&quot;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        toWidget [hamlet|</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;h1&gt;</span>Not Found</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;p&gt;</span>We apologize for the inconvenience, but the requested page could not be located.</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    errorHandler other <span class="ot">=</span> defaultErrorHandler other</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">ErrorR</span><span class="kw">}&gt;</span>Internal server error</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">NotFoundR</span><span class="kw">}&gt;</span>Not found</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="ot">getErrorR ::</span> <span class="dt">Handler</span> ()</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>getErrorR <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;This is an error&quot;</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="ot">getNotFoundR ::</span> <span class="dt">Handler</span> ()</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>getNotFoundR <span class="ot">=</span> notFound</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span> haskell</span></code></pre></div>
 <p>ここでは、カスタマイズした404エラーページを指定します。それぞれのエラー型に対して、カスタマイズしたハンドラを書きたくない場合は <code>defaultErrorHandler</code> を利用しましょう。型の制約により <code>fmap toTypeContent</code> でメソッドで始める必要がありますが、典型的なハンドラ関数を書くことができます (<code>TypedContent</code> については、次の章で詳しく説明します)。</p>
 <p>実際に、リダイレクトのような特別なレスポンスさえも利用可能です。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> redirect <span class="dt">HomeR</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>errorHandler other <span class="ot">=</span> defaultErrorHandler other</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>errorHandler <span class="dt">NotFound</span> <span class="ot">=</span> redirect <span class="dt">HomeR</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>errorHandler other <span class="ot">=</span> defaultErrorHandler other</span></code></pre></div>
 <div class="yesod-book-notice">
 <p>上記のように行うことはできますが、実際にはこのような使い方は推奨しません。なぜなら、404は404そのものであるべきだからです。</p>
 </div>
@@ -406,13 +406,13 @@
 <h2 id="静的ファイルの最適化">静的ファイルの最適化</h2>
 <p>グーグルは<a href="https://developers.google.com/speed/docs/insights/EnableCompression">静的ファイルを異なるドメインから受信せよ</a>という重要な最適化を推奨しています。この方法による利点は、メインのドメインにセットしたクッキーが静的ファイルを取り出す際に送信されないので、帯域幅の節約になります。</p>
 <p>これを可能にするために <code>urlParamRenderOverride</code> メソッドがあります。このメソッドは、通常のURLレンダリング処理に割り込み、何らかのルートに特別な値をセットします。例えば scaffolding はこのメソッドを次のように定義しています。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ot">urlParamRenderOverride ::</span> site</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>                       <span class="ot">-&gt;</span> <span class="dt">Route</span> site</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>                       <span class="ot">-&gt;</span> [(<span class="dt">T.Text</span>, <span class="dt">T.Text</span>)] <span class="co">-- ^ クエリ文字列</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>                       <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Builder</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>urlParamRenderOverride y (<span class="dt">StaticR</span> s) _ <span class="ot">=</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>  <span class="dt">Just</span> <span class="op">$</span> <span class="fu">uncurry</span> (joinPath y (Settings.staticRoot <span class="op">$</span> settings y)) <span class="op">$</span> renderRoute s</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>urlParamRenderOverride _ _ _ <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">urlParamRenderOverride ::</span> site</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                       <span class="ot">-&gt;</span> <span class="dt">Route</span> site</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                       <span class="ot">-&gt;</span> [(<span class="dt">T.Text</span>, <span class="dt">T.Text</span>)] <span class="co">-- ^ クエリ文字列</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                       <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Builder</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>urlParamRenderOverride y (<span class="dt">StaticR</span> s) _ <span class="ot">=</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Just</span> <span class="op">$</span> <span class="fu">uncurry</span> (joinPath y (Settings.staticRoot <span class="op">$</span> settings y)) <span class="op">$</span> renderRoute s</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>urlParamRenderOverride _ _ _ <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
 <p>これは、静的ルートが特別な静的ルートから受信されることを意味し、そのルートは異なるドメインになるよう設定可能です。これは、型安全URL の強力さと柔軟性の重要な例でもあり、たった1行のコードで、全てのハンドラを通して、静的ルートのレンダリングを変更することができてしまうのです。</p>
 <h2 id="認証-認可">認証 / 認可</h2>
 <p>単純なアプリケーションでは、各ハンドラ関数の中でパーミッションを確認するとういう方法が簡単で便利です。しかし、それはうまくスケーリングしません。結果的には、より宣言的な方法をとりたいと思うようになるでしょう。よくあるシステムでは ACL、特別な設定ファイル、そして多くの意味のわからない呪文を定義するでしょう。Yesod では、それらはただの Haskell です。3つのメソッドが関連します。</p>

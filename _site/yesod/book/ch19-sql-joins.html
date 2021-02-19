@@ -180,91 +180,91 @@
         <p>Persistent の特徴はデータベースに依存しないインターフェースです。それでは、どのようにして本来バックエンド特有の処理を行うのでしょうか？この問題は Yesod で2つのテーブルを結合する場合などで発生します。完全にバックエンドに依存しない純粋な Haskell による解決方法もありますが、それよりも使いやすい効率的な方法があります。この章では、まずはこれらの良くある問題と解決方法について紹介し、その後、より高度な解決策について学びます。</p>
 <h2 id="複数の著者によるブログ">複数の著者によるブログ</h2>
 <p>ブログはよく理解された問題領域のため、説明のための題材として利用します。データベースに複数の著者を登録することができるブログエンジンを考えましょう。ただし、それぞれのブログ記事には1人の著者がいるということにします。Persistent では次のようにモデル化します。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="dt">Author</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>    name <span class="dt">Text</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="dt">Blog</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    author <span class="dt">AuthorId</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>    title <span class="dt">Text</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>    content <span class="dt">Html</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Author</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    name <span class="dt">Text</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Blog</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    author <span class="dt">AuthorId</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    title <span class="dt">Text</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    content <span class="dt">Html</span></span></code></pre></div>
 <p>ブログタイトルと著者を紐付けるブログ記事インデックスを表示するための Yesod アプリケーション (第1バージョン) をセットアップしましょう。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE EmptyDataDecls             #-}</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="ot">{-# LANGUAGE ViewPatterns               #-}</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>               (<span class="dt">Text</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>Author</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>    name Text</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>Blog</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>    author AuthorId</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>    title Text</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>    content Html</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>|]</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a>    {<span class="ot"> persistConfig ::</span> <span class="dt">SqliteConf</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>    ,<span class="ot"> connPool      ::</span> <span class="dt">ConnectionPool</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a>    }</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a>    runDB <span class="ot">=</span> defaultRunDB persistConfig connPool</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true"></a>/blog/#BlogId BlogR GET</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true"></a>|]</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true"></a>    blogs <span class="ot">&lt;-</span> runDB <span class="op">$</span> selectList [] []</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true"></a></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true"></a>            <span class="kw">&lt;ul&gt;</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true"></a>                <span class="kw">$forall</span> <span class="dt">Entity</span> blogid blog <span class="ot">&lt;-</span> blogs</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true"></a>                    <span class="kw">&lt;li&gt;</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;</span></span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true"></a>                            <span class="kw">#{</span>blogTitle blog<span class="kw">}</span> by <span class="kw">#{</span><span class="fu">show</span> <span class="op">$</span> blogAuthor blog<span class="kw">}</span></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true"></a>        |]</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true"></a></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true"></a><span class="ot">getBlogR ::</span> <span class="dt">BlogId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true"></a>getBlogR _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Implementation left as exercise to reader&quot;</span></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true"></a></span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true"></a>    <span class="co">-- Use an in-memory database with 1 connection. Terrible for production,</span></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true"></a>    <span class="co">-- but useful for testing.</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true"></a>    <span class="kw">let</span> conf <span class="ot">=</span> <span class="dt">SqliteConf</span> <span class="st">&quot;:memory:&quot;</span> <span class="dv">1</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true"></a>    pool <span class="ot">&lt;-</span> createPoolConfig conf</span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true"></a>    <span class="fu">flip</span> runSqlPersistMPool pool <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true"></a>        runMigration migrateAll</span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true"></a></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true"></a>        <span class="co">-- Fill in some testing data</span></span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true"></a>        alice <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Alice&quot;</span></span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true"></a>        bob   <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Bob&quot;</span></span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true"></a></span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's first post&quot;</span> <span class="st">&quot;Hello World!&quot;</span></span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> bob <span class="st">&quot;Bob's first post&quot;</span> <span class="st">&quot;Hello World!!!&quot;</span></span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's second post&quot;</span> <span class="st">&quot;Goodbye World!&quot;</span></span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true"></a></span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true"></a>        { persistConfig <span class="ot">=</span> conf</span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true"></a>        , connPool      <span class="ot">=</span> pool</span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true"></a>        }</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE EmptyDataDecls             #-}</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE ViewPatterns               #-}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>               (<span class="dt">Text</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Author</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    name Text</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>Blog</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    author AuthorId</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    title Text</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    content Html</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> persistConfig ::</span> <span class="dt">SqliteConf</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> connPool      ::</span> <span class="dt">ConnectionPool</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    runDB <span class="ot">=</span> defaultRunDB persistConfig connPool</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>/blog/#BlogId BlogR GET</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    blogs <span class="ot">&lt;-</span> runDB <span class="op">$</span> selectList [] []</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;ul&gt;</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>                <span class="kw">$forall</span> <span class="dt">Entity</span> blogid blog <span class="ot">&lt;-</span> blogs</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;li&gt;</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>                            <span class="kw">#{</span>blogTitle blog<span class="kw">}</span> by <span class="kw">#{</span><span class="fu">show</span> <span class="op">$</span> blogAuthor blog<span class="kw">}</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="ot">getBlogR ::</span> <span class="dt">BlogId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>getBlogR _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Implementation left as exercise to reader&quot;</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Use an in-memory database with 1 connection. Terrible for production,</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- but useful for testing.</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> conf <span class="ot">=</span> <span class="dt">SqliteConf</span> <span class="st">&quot;:memory:&quot;</span> <span class="dv">1</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    pool <span class="ot">&lt;-</span> createPoolConfig conf</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    <span class="fu">flip</span> runSqlPersistMPool pool <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        runMigration migrateAll</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- Fill in some testing data</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>        alice <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Alice&quot;</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>        bob   <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Bob&quot;</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's first post&quot;</span> <span class="st">&quot;Hello World!&quot;</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> bob <span class="st">&quot;Bob's first post&quot;</span> <span class="st">&quot;Hello World!!!&quot;</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's second post&quot;</span> <span class="st">&quot;Goodbye World!&quot;</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>        { persistConfig <span class="ot">=</span> conf</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        , connPool      <span class="ot">=</span> pool</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        }</span></code></pre></div>
 <p>とりあえず、この内容で出力を確認してみましょう。</p>
 <figure>
 <img src="https://www.yesodweb.com/book/image/blog-bad-author" alt="著者を数字の識別子として表示" /><figcaption aria-hidden="true">著者を数字の識別子として表示</figcaption>
@@ -272,57 +272,57 @@
 <p>ここでは、著者名の代わりに各著者の数字の識別子を表示しているだけです。これを修正するためには <code>Author</code> テーブルから追加の情報を引き出す必要があります。それを行ってみましょう。</p>
 <h2 id="ウィジェット内のデータベースクエリ">ウィジェット内のデータベースクエリ</h2>
 <p>これについてはおそらく多くのユーザを驚かせてしまうので、すぐに説明することにします。この問題は Hamlet テンプレートで解決できると思うかもしれません。例えば以下のようにです。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&lt;</span>ul<span class="op">&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>    <span class="op">$</span>forall <span class="dt">Entity</span> blogid blog <span class="ot">&lt;-</span> blogs</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>        <span class="op">$</span>with author <span class="ot">&lt;-</span> runDB <span class="op">$</span> get404 <span class="op">$</span> blogAuthor</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>            <span class="op">&lt;</span>li<span class="op">&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>                <span class="op">&lt;</span>a href<span class="op">=@</span>{<span class="dt">BlogR</span> blogid}<span class="op">&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>                    <span class="op">#</span>{blogTitle blog} by <span class="op">#</span>{authorName author}</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>ul<span class="op">&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">$</span>forall <span class="dt">Entity</span> blogid blog <span class="ot">&lt;-</span> blogs</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">$</span>with author <span class="ot">&lt;-</span> runDB <span class="op">$</span> get404 <span class="op">$</span> blogAuthor</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="op">&lt;</span>li<span class="op">&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;</span>a href<span class="op">=@</span>{<span class="dt">BlogR</span> blogid}<span class="op">&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                    <span class="op">#</span>{blogTitle blog} by <span class="op">#</span>{authorName author}</span></code></pre></div>
 <p>上記のコードは Hamlet の中でデータベースアクションを実行することができないため、コンパイルできません。Shakespeare テンプレートのゴールの1つは純粋コードと非純粋コードを分離することです。そうすることで、すべての副作用を持つコードを Hasekll に留めておけます。</p>
 <p>ただ、コードを少しいじれば Yesod で動かせます。アイデアとしては各ブログエントリのコードを <code>Widget</code> 関数に分離し、Haskell の場所でデータベースアクションを実行します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>    blogs <span class="ot">&lt;-</span> runDB <span class="op">$</span> selectList [] []</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>            <span class="kw">&lt;ul&gt;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>                <span class="kw">$forall</span> blogEntity <span class="ot">&lt;-</span> blogs</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>                    <span class="kw">^{</span>showBlogLink blogEntity<span class="kw">}</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>        |]</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="ot">showBlogLink ::</span> <span class="dt">Entity</span> <span class="dt">Blog</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>showBlogLink (<span class="dt">Entity</span> blogid blog) <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>    author <span class="ot">&lt;-</span> handlerToWidget <span class="op">$</span> runDB <span class="op">$</span> get404 <span class="op">$</span> blogAuthor blog</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>        <span class="kw">&lt;li&gt;</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>                <span class="kw">#{</span>blogTitle blog<span class="kw">}</span> by <span class="kw">#{</span>authorName author<span class="kw">}</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>    |]</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    blogs <span class="ot">&lt;-</span> runDB <span class="op">$</span> selectList [] []</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;ul&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                <span class="kw">$forall</span> blogEntity <span class="ot">&lt;-</span> blogs</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>showBlogLink blogEntity<span class="kw">}</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="ot">showBlogLink ::</span> <span class="dt">Entity</span> <span class="dt">Blog</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>showBlogLink (<span class="dt">Entity</span> blogid blog) <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    author <span class="ot">&lt;-</span> handlerToWidget <span class="op">$</span> runDB <span class="op">$</span> get404 <span class="op">$</span> blogAuthor blog</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;li&gt;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                <span class="kw">#{</span>blogTitle blog<span class="kw">}</span> by <span class="kw">#{</span>authorName author<span class="kw">}</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    |]</span></code></pre></div>
 <p><code>Handler</code> アクションを <code>Widget</code> アクションに変換するために <code>handlerToWidget</code> を使う必要がありますが、コードは簡単です。これで期待通りの結果が得られます。</p>
 <figure>
 <img src="https://www.yesodweb.com/book/image/blog-good-author" alt="著者を名前で表示" /><figcaption aria-hidden="true">著者を名前で表示</figcaption>
 </figure>
 <h2 id="joins">Joins</h2>
 <p>ここまでで、求めていた結果が得られたはずなのに、なぜこの章はまだ続いているのでしょうか？問題はこの技術が非常に非効率的だという点です。データベースクエリを1つ実行するだけで、全てブログ記事が読み込まれ、それぞれのブログ記事ごとに著者名を取得するための別のクエリが実行されます。これは単純に SQL join を使う場合と比べて、かなり非効率的です。ここでの疑問は Persistent で join を行うためにはどうすれば良いか？ということです。まずは適当な raw SQL を書くことから始めましょう。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    blogs <span class="ot">&lt;-</span> runDB <span class="op">$</span> rawSql</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>        <span class="st">&quot;SELECT ??, ?? \</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="st">        \FROM blog INNER JOIN author \</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="st">        \ON blog.author=author.id&quot;</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>        []</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>            <span class="kw">&lt;ul&gt;</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>                <span class="kw">$forall</span> (<span class="dt">Entity</span> blogid blog, <span class="dt">Entity</span> _ author) <span class="ot">&lt;-</span> blogs</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>                    <span class="kw">&lt;li&gt;</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a>                            <span class="kw">#{</span>blogTitle blog<span class="kw">}</span> by <span class="kw">#{</span>authorName author<span class="kw">}</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>        |]</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    blogs <span class="ot">&lt;-</span> runDB <span class="op">$</span> rawSql</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;SELECT ??, ?? \</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">        \FROM blog INNER JOIN author \</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">        \ON blog.author=author.id&quot;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        []</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;ul&gt;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                <span class="kw">$forall</span> (<span class="dt">Entity</span> blogid blog, <span class="dt">Entity</span> _ author) <span class="ot">&lt;-</span> blogs</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;li&gt;</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                            <span class="kw">#{</span>blogTitle blog<span class="kw">}</span> by <span class="kw">#{</span>authorName author<span class="kw">}</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        |]</span></code></pre></div>
 <p><code>rawSql</code> 関数には、SQL クエリとクエリ内のプレースホルダを置換する追加のパラメータのリストを引数として渡します。ここではプレースホルダを利用していないため、このリストは空です。しかし、<code>SELECT</code> 文で <code>??</code> を使っている点に注目してください。これは型検査の形式です。<code>rawSql</code> は要求されているエンティティの型を見つけ、自動的にクエリを作るために必要なフィールドを埋めます。</p>
 <p><code>rawSql</code> は確かに強力ですが、安全ではありません。SQLクエリ文字列の構文チェックを行わないため、実行時エラーが発生するかもしれません。また、簡単に誤った型のクエリを作成できるため、それによってかなり混乱する実行時エラーメッセージが表示されることもあります。</p>
 <h2 id="esqueleto">Esqueleto</h2>
@@ -330,29 +330,29 @@
 <p>現在、最新の LTS Haskell には Esqueleto は含まれていません。そのため Eqsueleto を利用するためには少し作業が必要となるかもしれませんが、本書ではカバーしません。</p>
 </div>
 <p>Persistent の仲間に Esqueleto と呼ばれるライブラリがあります。このライブラリは SQL クエリを記述するための表現力豊かな型安全DSLを提供します。Esqueleto は Persistent の型の強みを利用して有効な SQL クエリの生成を保証し、プログラムによって要求された結果を生成します。Esqueleto を使うためにいくつかインポートを追加しましょう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Database.Esqueleto</span>      <span class="kw">as</span> <span class="dt">E</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Esqueleto</span>      ((^.))</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Database.Esqueleto</span>      <span class="kw">as</span> <span class="dt">E</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Esqueleto</span>      ((^.))</span></code></pre></div>
 <p>次に Esqueleto を使ってクエリを書きます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>    blogs <span class="ot">&lt;-</span> runDB</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>           <span class="op">$</span> E.select</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>           <span class="op">$</span> E.from <span class="op">$</span> \(blog <span class="ot">`E.InnerJoin`</span> author) <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>                E.on <span class="op">$</span> blog <span class="op">^.</span> <span class="dt">BlogAuthor</span> <span class="op">E.==.</span> author <span class="op">^.</span> <span class="dt">AuthorId</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>                <span class="fu">return</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>                    ( blog   <span class="op">^.</span> <span class="dt">BlogId</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>                    , blog   <span class="op">^.</span> <span class="dt">BlogTitle</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>                    , author <span class="op">^.</span> <span class="dt">AuthorName</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>                    )</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a>            <span class="kw">&lt;ul&gt;</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true"></a>                <span class="kw">$forall</span> (<span class="dt">E.Value</span> blogid, <span class="dt">E.Value</span> title, <span class="dt">E.Value</span> name) <span class="ot">&lt;-</span> blogs</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true"></a>                    <span class="kw">&lt;li&gt;</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;#{</span>title<span class="kw">}</span> by <span class="kw">#{</span>name<span class="kw">}</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true"></a>        |]</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    blogs <span class="ot">&lt;-</span> runDB</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>           <span class="op">$</span> E.select</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>           <span class="op">$</span> E.from <span class="op">$</span> \(blog <span class="ot">`E.InnerJoin`</span> author) <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                E.on <span class="op">$</span> blog <span class="op">^.</span> <span class="dt">BlogAuthor</span> <span class="op">E.==.</span> author <span class="op">^.</span> <span class="dt">AuthorId</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">return</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                    ( blog   <span class="op">^.</span> <span class="dt">BlogId</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                    , blog   <span class="op">^.</span> <span class="dt">BlogTitle</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                    , author <span class="op">^.</span> <span class="dt">AuthorName</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        setTitle <span class="st">&quot;Blog posts&quot;</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;ul&gt;</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                <span class="kw">$forall</span> (<span class="dt">E.Value</span> blogid, <span class="dt">E.Value</span> title, <span class="dt">E.Value</span> name) <span class="ot">&lt;-</span> blogs</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;li&gt;</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;#{</span>title<span class="kw">}</span> by <span class="kw">#{</span>name<span class="kw">}</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        |]</span></code></pre></div>
 <p>このクエリは私たちが先ほど書いた SQL にとても類似しているという点に着目してください。特に興味深いのは <code>^.</code> 演算子です。これは射影 (<em>projection</em>) と呼ばれます。例えば <code>blog ^. BlogAuthor</code> は “<code>blog</code> テーブルの <code>author</code> カラムを取得する” ことを意味します。さらに、Esqueleto の型安全性のおかげで <code>blog</code> から <code>AuthorName</code> を射影してしまうようなアクシデントは絶対に発生しません。型システムがこれを拒みます！</p>
 <p>Esqueleto は安全性の他にも性能の点で優れています。<code>return</code> されるタプルを見てください。ここでは、箇条書きを生成するために必要な3つのカラムを明示的に並べています。これがパフォーマンス上の非常に大きな利点となります。これまでの全ての例と違って、箇条書きを生成するためにブログ記事の (おそらく非常に大きな) <code>content</code> カラムを転送する必要はありません。</p>
 <div class="yesod-book-notice">
@@ -373,29 +373,29 @@
 </ul>
 <p>巨大になってしまうかもしれない一覧表を生成したいユーザに対する標準的な推奨方法としては、ページネーションを利用することです。ページネーションはサーバ側の作業を減らし、シンプルなコードを書き、Yesod が提供する正確性を保証し、ユーザの待機時間を減らすことができます。しかしながら、本当にストリーミングレスポンスを行いたい時もあるので、ここで説明することにしましょう。</p>
 <p>Esqueleto をストリーミングレスポンスに切り替えることは簡単です。<code>select</code> を <code>selectSource</code> で置き換えるだけです。Esqueleto のクエリ自身を変更する必要はありません。そして <code>respondSourceDB</code> 関数を使ってストリーミングデータベースレスポンスを生成し、一覧表を仕上げるために手動で HTML を書きます。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>    <span class="kw">let</span> blogsSrc <span class="ot">=</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>             E.selectSource</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>           <span class="op">$</span> E.from <span class="op">$</span> \(blog <span class="ot">`E.InnerJoin`</span> author) <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>                E.on <span class="op">$</span> blog <span class="op">^.</span> <span class="dt">BlogAuthor</span> <span class="op">E.==.</span> author <span class="op">^.</span> <span class="dt">AuthorId</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>                <span class="fu">return</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>                    ( blog   <span class="op">^.</span> <span class="dt">BlogId</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>                    , blog   <span class="op">^.</span> <span class="dt">BlogTitle</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>                    , author <span class="op">^.</span> <span class="dt">AuthorName</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>                    )</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>    render <span class="ot">&lt;-</span> getUrlRenderParams</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>    respondSourceDB typeHtml <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>        sendChunkText <span class="st">&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Blog posts&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;ul&gt;&quot;</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>        blogsSrc <span class="op">$=</span> CL.map (\(<span class="dt">E.Value</span> blogid, <span class="dt">E.Value</span> title, <span class="dt">E.Value</span> name) <span class="ot">-&gt;</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a>            toFlushBuilder <span class="op">$</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>            [hamlet|</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a>                <span class="kw">&lt;li&gt;</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;#{</span>title<span class="kw">}</span> by <span class="kw">#{</span>name<span class="kw">}</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a>            |] render</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true"></a>            )</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true"></a>        sendChunkText <span class="st">&quot;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> blogsSrc <span class="ot">=</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>             E.selectSource</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>           <span class="op">$</span> E.from <span class="op">$</span> \(blog <span class="ot">`E.InnerJoin`</span> author) <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                E.on <span class="op">$</span> blog <span class="op">^.</span> <span class="dt">BlogAuthor</span> <span class="op">E.==.</span> author <span class="op">^.</span> <span class="dt">AuthorId</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">return</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                    ( blog   <span class="op">^.</span> <span class="dt">BlogId</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                    , blog   <span class="op">^.</span> <span class="dt">BlogTitle</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                    , author <span class="op">^.</span> <span class="dt">AuthorName</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    render <span class="ot">&lt;-</span> getUrlRenderParams</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    respondSourceDB typeHtml <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        sendChunkText <span class="st">&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Blog posts&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;ul&gt;&quot;</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        blogsSrc <span class="op">$=</span> CL.map (\(<span class="dt">E.Value</span> blogid, <span class="dt">E.Value</span> title, <span class="dt">E.Value</span> name) <span class="ot">-&gt;</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>            toFlushBuilder <span class="op">$</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            [hamlet|</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;li&gt;</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;#{</span>title<span class="kw">}</span> by <span class="kw">#{</span>name<span class="kw">}</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>            |] render</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        sendChunkText <span class="st">&quot;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span></span></code></pre></div>
 <p><code>sendChunkText</code> の使い方に注目してください。ここでネットワーク上に生の <code>Text</code> 値を送っています。その後、各ブログタプルを取り、conduit の <code>map</code> 関数を使ってストリーミング値を作ります。私たちは <code>hamlet</code> でテンプレートを取得した後、型安全URLをテキスト形式のURLに変換するために <code>render</code> 関数を渡します。最後に <code>toFlushBuilder</code> は <code>Html</code> の値を Yesod のストリーミングフレームワークが必要とする <code>Flush Builder</code> の値に変換します。</p>
 <p>残念なことに、これらの変更によって Hamlet を利用したページ全体のレイアウト生成ができなくなりました。なぜなら、開始タグと終了タグを別々に明示的に生成する必要があるためです。もし偶然、間違ってアンバランスなタグを作ってしまった場合、これにより別のバグが発生する可能性があります。また、 <code>defaultLayout</code> を利用する能力も同じ理由によって失われてしまいます。</p>
 <p>ストリーミングHTMLレスポンスは強力なツールなので時々必要になりますが、一般的には安全なオプションを推奨します。</p>
@@ -408,99 +408,99 @@
 <li>必要に応じて Esqueleto からストリーミングレスポンスを生成することもできます。</li>
 </ul>
 <p>完全性のため、ここに最後の完全なストリーミングレスポンスの例を示します。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE EmptyDataDecls             #-}</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a><span class="ot">{-# LANGUAGE ViewPatterns               #-}</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>               (<span class="dt">Text</span>)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Database.Esqueleto</span>      <span class="kw">as</span> <span class="dt">E</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Esqueleto</span>      ((^.))</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Conduit.List</span> <span class="kw">as</span> <span class="dt">CL</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Conduit</span> (($=))</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a>Author</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true"></a>    name Text</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true"></a>Blog</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true"></a>    author AuthorId</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true"></a>    title Text</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true"></a>    content Html</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true"></a>|]</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true"></a></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true"></a>    {<span class="ot"> persistConfig ::</span> <span class="dt">SqliteConf</span></span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true"></a>    ,<span class="ot"> connPool      ::</span> <span class="dt">ConnectionPool</span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true"></a>    }</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true"></a>    runDB <span class="ot">=</span> defaultRunDB persistConfig connPool</span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true"></a></span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true"></a>/blog/#BlogId BlogR GET</span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true"></a>|]</span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true"></a></span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true"></a>    <span class="kw">let</span> blogsSrc <span class="ot">=</span></span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true"></a>             E.selectSource</span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true"></a>           <span class="op">$</span> E.from <span class="op">$</span> \(blog <span class="ot">`E.InnerJoin`</span> author) <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true"></a>                E.on <span class="op">$</span> blog <span class="op">^.</span> <span class="dt">BlogAuthor</span> <span class="op">E.==.</span> author <span class="op">^.</span> <span class="dt">AuthorId</span></span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true"></a>                <span class="fu">return</span></span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true"></a>                    ( blog   <span class="op">^.</span> <span class="dt">BlogId</span></span>
-<span id="cb9-53"><a href="#cb9-53" aria-hidden="true"></a>                    , blog   <span class="op">^.</span> <span class="dt">BlogTitle</span></span>
-<span id="cb9-54"><a href="#cb9-54" aria-hidden="true"></a>                    , author <span class="op">^.</span> <span class="dt">AuthorName</span></span>
-<span id="cb9-55"><a href="#cb9-55" aria-hidden="true"></a>                    )</span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true"></a></span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true"></a>    render <span class="ot">&lt;-</span> getUrlRenderParams</span>
-<span id="cb9-58"><a href="#cb9-58" aria-hidden="true"></a>    respondSourceDB typeHtml <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb9-59"><a href="#cb9-59" aria-hidden="true"></a>        sendChunkText <span class="st">&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Blog posts&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;ul&gt;&quot;</span></span>
-<span id="cb9-60"><a href="#cb9-60" aria-hidden="true"></a>        blogsSrc <span class="op">$=</span> CL.map (\(<span class="dt">E.Value</span> blogid, <span class="dt">E.Value</span> title, <span class="dt">E.Value</span> name) <span class="ot">-&gt;</span></span>
-<span id="cb9-61"><a href="#cb9-61" aria-hidden="true"></a>            toFlushBuilder <span class="op">$</span></span>
-<span id="cb9-62"><a href="#cb9-62" aria-hidden="true"></a>            [hamlet|</span>
-<span id="cb9-63"><a href="#cb9-63" aria-hidden="true"></a>                <span class="kw">&lt;li&gt;</span></span>
-<span id="cb9-64"><a href="#cb9-64" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;#{</span>title<span class="kw">}</span> by <span class="kw">#{</span>name<span class="kw">}</span></span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true"></a>            |] render</span>
-<span id="cb9-66"><a href="#cb9-66" aria-hidden="true"></a>            )</span>
-<span id="cb9-67"><a href="#cb9-67" aria-hidden="true"></a>        sendChunkText <span class="st">&quot;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span></span>
-<span id="cb9-68"><a href="#cb9-68" aria-hidden="true"></a></span>
-<span id="cb9-69"><a href="#cb9-69" aria-hidden="true"></a><span class="ot">getBlogR ::</span> <span class="dt">BlogId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb9-70"><a href="#cb9-70" aria-hidden="true"></a>getBlogR _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Implementation left as exercise to reader&quot;</span></span>
-<span id="cb9-71"><a href="#cb9-71" aria-hidden="true"></a></span>
-<span id="cb9-72"><a href="#cb9-72" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb9-73"><a href="#cb9-73" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb9-74"><a href="#cb9-74" aria-hidden="true"></a>    <span class="co">-- Use an in-memory database with 1 connection. Terrible for production,</span></span>
-<span id="cb9-75"><a href="#cb9-75" aria-hidden="true"></a>    <span class="co">-- but useful for testing.</span></span>
-<span id="cb9-76"><a href="#cb9-76" aria-hidden="true"></a>    <span class="kw">let</span> conf <span class="ot">=</span> <span class="dt">SqliteConf</span> <span class="st">&quot;:memory:&quot;</span> <span class="dv">1</span></span>
-<span id="cb9-77"><a href="#cb9-77" aria-hidden="true"></a>    pool <span class="ot">&lt;-</span> createPoolConfig conf</span>
-<span id="cb9-78"><a href="#cb9-78" aria-hidden="true"></a>    <span class="fu">flip</span> runSqlPersistMPool pool <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb9-79"><a href="#cb9-79" aria-hidden="true"></a>        runMigration migrateAll</span>
-<span id="cb9-80"><a href="#cb9-80" aria-hidden="true"></a></span>
-<span id="cb9-81"><a href="#cb9-81" aria-hidden="true"></a>        <span class="co">-- Fill in some testing data</span></span>
-<span id="cb9-82"><a href="#cb9-82" aria-hidden="true"></a>        alice <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Alice&quot;</span></span>
-<span id="cb9-83"><a href="#cb9-83" aria-hidden="true"></a>        bob   <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Bob&quot;</span></span>
-<span id="cb9-84"><a href="#cb9-84" aria-hidden="true"></a></span>
-<span id="cb9-85"><a href="#cb9-85" aria-hidden="true"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's first post&quot;</span> <span class="st">&quot;Hello World!&quot;</span></span>
-<span id="cb9-86"><a href="#cb9-86" aria-hidden="true"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> bob <span class="st">&quot;Bob's first post&quot;</span> <span class="st">&quot;Hello World!!!&quot;</span></span>
-<span id="cb9-87"><a href="#cb9-87" aria-hidden="true"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's second post&quot;</span> <span class="st">&quot;Goodbye World!&quot;</span></span>
-<span id="cb9-88"><a href="#cb9-88" aria-hidden="true"></a></span>
-<span id="cb9-89"><a href="#cb9-89" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
-<span id="cb9-90"><a href="#cb9-90" aria-hidden="true"></a>        { persistConfig <span class="ot">=</span> conf</span>
-<span id="cb9-91"><a href="#cb9-91" aria-hidden="true"></a>        , connPool      <span class="ot">=</span> pool</span>
-<span id="cb9-92"><a href="#cb9-92" aria-hidden="true"></a>        }</span>
-<span id="cb9-93"><a href="#cb9-93" aria-hidden="true"></a>        </span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE EmptyDataDecls             #-}</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE ViewPatterns               #-}</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>               (<span class="dt">Text</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Database.Esqueleto</span>      <span class="kw">as</span> <span class="dt">E</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Esqueleto</span>      ((^.))</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Conduit.List</span> <span class="kw">as</span> <span class="dt">CL</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Conduit</span> (($=))</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>Author</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    name Text</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>Blog</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    author AuthorId</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    title Text</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    content Html</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> persistConfig ::</span> <span class="dt">SqliteConf</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> connPool      ::</span> <span class="dt">ConnectionPool</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    runDB <span class="ot">=</span> defaultRunDB persistConfig connPool</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>/blog/#BlogId BlogR GET</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> blogsSrc <span class="ot">=</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>             E.selectSource</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>           <span class="op">$</span> E.from <span class="op">$</span> \(blog <span class="ot">`E.InnerJoin`</span> author) <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>                E.on <span class="op">$</span> blog <span class="op">^.</span> <span class="dt">BlogAuthor</span> <span class="op">E.==.</span> author <span class="op">^.</span> <span class="dt">AuthorId</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>                <span class="fu">return</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>                    ( blog   <span class="op">^.</span> <span class="dt">BlogId</span></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>                    , blog   <span class="op">^.</span> <span class="dt">BlogTitle</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>                    , author <span class="op">^.</span> <span class="dt">AuthorName</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    render <span class="ot">&lt;-</span> getUrlRenderParams</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>    respondSourceDB typeHtml <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>        sendChunkText <span class="st">&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;Blog posts&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;ul&gt;&quot;</span></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>        blogsSrc <span class="op">$=</span> CL.map (\(<span class="dt">E.Value</span> blogid, <span class="dt">E.Value</span> title, <span class="dt">E.Value</span> name) <span class="ot">-&gt;</span></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>            toFlushBuilder <span class="op">$</span></span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>            [hamlet|</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;li&gt;</span></span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span> blogid<span class="kw">}&gt;#{</span>title<span class="kw">}</span> by <span class="kw">#{</span>name<span class="kw">}</span></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>            |] render</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>        sendChunkText <span class="st">&quot;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span></span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a><span class="ot">getBlogR ::</span> <span class="dt">BlogId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>getBlogR _ <span class="ot">=</span> <span class="fu">error</span> <span class="st">&quot;Implementation left as exercise to reader&quot;</span></span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Use an in-memory database with 1 connection. Terrible for production,</span></span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- but useful for testing.</span></span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> conf <span class="ot">=</span> <span class="dt">SqliteConf</span> <span class="st">&quot;:memory:&quot;</span> <span class="dv">1</span></span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>    pool <span class="ot">&lt;-</span> createPoolConfig conf</span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a>    <span class="fu">flip</span> runSqlPersistMPool pool <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>        runMigration migrateAll</span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- Fill in some testing data</span></span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a>        alice <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Alice&quot;</span></span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>        bob   <span class="ot">&lt;-</span> insert <span class="op">$</span> <span class="dt">Author</span> <span class="st">&quot;Bob&quot;</span></span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's first post&quot;</span> <span class="st">&quot;Hello World!&quot;</span></span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> bob <span class="st">&quot;Bob's first post&quot;</span> <span class="st">&quot;Hello World!!!&quot;</span></span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a>        insert_ <span class="op">$</span> <span class="dt">Blog</span> alice <span class="st">&quot;Alice's second post&quot;</span> <span class="st">&quot;Goodbye World!&quot;</span></span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a>        { persistConfig <span class="ot">=</span> conf</span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a>        , connPool      <span class="ot">=</span> pool</span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a>        </span></code></pre></div>
 <h2 id="本書のコード">本書のコード</h2>
 <ul>
 <li><a href="https://github.com/e-bigmoon/haskell-blog/tree/master/sample-code/yesod/ch19/Example1.hs">Example01.hs</a></li>

@@ -213,136 +213,136 @@ searchd
 <p>検索インデックスをビルドするために, <code>indexer searcher</code>を実行する. 明らかにこれはwebアプリケーションを実行するまでは動かない. 製品サイトにおいては, cron jobによりこのコマンドを実行し, インデックスを常に更新しておくのは重要である.</p>
 <h2 id="基本的なyesodの設定">基本的なYesodの設定</h2>
 <p>基本的なYesodの設定を始めよう. データベースには単一のテーブルを持ち, その中にドキュメントを保存することにする. ドキュメントはタイトルとコンテンツから構成される. これをSQLiteデータベースに格納し, 検索や, ドキュメントの追加, ドキュメントの閲覧, xmlpipeファイルをSphinxに与えるためのルートを与える.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>Doc</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>    title Text</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>    content Textarea</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>|]</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">Searcher</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>    {<span class="ot"> connPool ::</span> <span class="dt">ConnectionPool</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    }</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>mkYesod <span class="st">&quot;Searcher&quot;</span> [parseRoutes|</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>/doc/#DocId DocR GET</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>/add-doc AddDocR POST</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>/search SearchR GET</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>/search/xmlpipe XmlpipeR GET</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>|]</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Searcher</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">Searcher</span> <span class="kw">where</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a>    runDB action <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a>        <span class="dt">Searcher</span> pool <span class="ot">&lt;-</span> getYesod</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a>        runSqlPool action pool</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">Searcher</span> <span class="kw">where</span> <span class="co">-- see below</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">Searcher</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Doc</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    title Text</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    content Textarea</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">Searcher</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> connPool ::</span> <span class="dt">ConnectionPool</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;Searcher&quot;</span> [parseRoutes|</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>/doc/#DocId DocR GET</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>/add-doc AddDocR POST</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>/search SearchR GET</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>/search/xmlpipe XmlpipeR GET</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Searcher</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">Searcher</span> <span class="kw">where</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    runDB action <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Searcher</span> pool <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        runSqlPool action pool</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">Searcher</span> <span class="kw">where</span> <span class="co">-- see below</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">Searcher</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span></code></pre></div>
 <p>幸いなことに今やこれら全てはとても見慣れたもに見える. ここで定義された1つの新しいものは, <code>YesodPersistRunner</code>のインスタンスである. これはストリーミングデータベースレスポンスを作るために必要な型クラスである. デフォルトの実装(<code>defaultGetDBRunner</code>)は大体の場合適切である.</p>
 <p>次にいくつかのフォームを定義する: 1つはドキュメントを作成するためで, もう1つは検索のためである;</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">addDocForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Doc</span>, <span class="dt">Widget</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>addDocForm <span class="ot">=</span> renderTable <span class="op">$</span> <span class="dt">Doc</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    <span class="op">&lt;$&gt;</span> areq textField <span class="st">&quot;Title&quot;</span> <span class="dt">Nothing</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    <span class="op">&lt;*&gt;</span> areq textareaField <span class="st">&quot;Contents&quot;</span> <span class="dt">Nothing</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="ot">searchForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Text</span>, <span class="dt">Widget</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>searchForm <span class="ot">=</span> renderDivs <span class="op">$</span> areq (searchField <span class="dt">True</span>) <span class="st">&quot;Query&quot;</span> <span class="dt">Nothing</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">addDocForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Doc</span>, <span class="dt">Widget</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>addDocForm <span class="ot">=</span> renderTable <span class="op">$</span> <span class="dt">Doc</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;$&gt;</span> areq textField <span class="st">&quot;Title&quot;</span> <span class="dt">Nothing</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> areq textareaField <span class="st">&quot;Contents&quot;</span> <span class="dt">Nothing</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ot">searchForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Text</span>, <span class="dt">Widget</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>searchForm <span class="ot">=</span> renderDivs <span class="op">$</span> areq (searchField <span class="dt">True</span>) <span class="st">&quot;Query&quot;</span> <span class="dt">Nothing</span></span></code></pre></div>
 <p><code>searchField</code>の<code>True</code>パラメータは, フィールドをページのロードと同時に自動フォーカスにする. 最後に, ホームページ(ドキュメント追加フォームや検索フォームを示す), ドキュメント展開, ドキュメント追加のための標準的なハンドラを追加する.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>    docCount <span class="ot">&lt;-</span> runDB <span class="op">$</span> count ([]<span class="ot"> ::</span> [<span class="dt">Filter</span> <span class="dt">Doc</span>])</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    ((_, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    ((_, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    <span class="kw">let</span> docs <span class="ot">=</span> <span class="kw">if</span> docCount <span class="op">==</span> <span class="dv">1</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>                <span class="kw">then</span> <span class="st">&quot;There is currently 1 document.&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>                <span class="kw">else</span> <span class="st">&quot;There are currently &quot;</span> <span class="op">++</span> <span class="fu">show</span> docCount <span class="op">++</span> <span class="st">&quot; documents.&quot;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Welcome to the search application. <span class="kw">#{</span>docs<span class="kw">}</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>                <span class="kw">&lt;table&gt;</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>                    <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>                    <span class="kw">&lt;tr&gt;</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>                        <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>                            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>        |]</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a><span class="ot">postAddDocR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a>postAddDocR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a>    ((res, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a>        <span class="dt">FormSuccess</span> doc <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a>            docid <span class="ot">&lt;-</span> runDB <span class="op">$</span> insert doc</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a>            setMessage <span class="st">&quot;Document added&quot;</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a>            redirect <span class="op">$</span> <span class="dt">DocR</span> docid</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a>        _ <span class="ot">-&gt;</span> defaultLayout</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a>            [whamlet|</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true"></a>                <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true"></a>                    <span class="kw">&lt;table&gt;</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true"></a>                        <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true"></a>                        <span class="kw">&lt;tr&gt;</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true"></a>                            <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true"></a>                                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true"></a>            |]</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true"></a></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true"></a><span class="ot">getDocR ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true"></a>getDocR docid <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true"></a>    doc <span class="ot">&lt;-</span> runDB <span class="op">$</span> get404 docid</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true"></a>            <span class="kw">&lt;h1&gt;#{</span>docTitle doc<span class="kw">}</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true"></a>            <span class="kw">&lt;div </span><span class="st">.content</span><span class="kw">&gt;#{</span>docContent doc<span class="kw">}</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true"></a>        |]</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    docCount <span class="ot">&lt;-</span> runDB <span class="op">$</span> count ([]<span class="ot"> ::</span> [<span class="dt">Filter</span> <span class="dt">Doc</span>])</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    ((_, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    ((_, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> docs <span class="ot">=</span> <span class="kw">if</span> docCount <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                <span class="kw">then</span> <span class="st">&quot;There is currently 1 document.&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                <span class="kw">else</span> <span class="st">&quot;There are currently &quot;</span> <span class="op">++</span> <span class="fu">show</span> docCount <span class="op">++</span> <span class="st">&quot; documents.&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Welcome to the search application. <span class="kw">#{</span>docs<span class="kw">}</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;table&gt;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;tr&gt;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="ot">postAddDocR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>postAddDocR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    ((res, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        <span class="dt">FormSuccess</span> doc <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>            docid <span class="ot">&lt;-</span> runDB <span class="op">$</span> insert doc</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>            setMessage <span class="st">&quot;Document added&quot;</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>            redirect <span class="op">$</span> <span class="dt">DocR</span> docid</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        _ <span class="ot">-&gt;</span> defaultLayout</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>            [whamlet|</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;table&gt;</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;tr&gt;</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>                            <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>                                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>            |]</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="ot">getDocR ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>getDocR docid <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    doc <span class="ot">&lt;-</span> runDB <span class="op">$</span> get404 docid</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;h1&gt;#{</span>docTitle doc<span class="kw">}</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;div </span><span class="st">.content</span><span class="kw">&gt;#{</span>docContent doc<span class="kw">}</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>        |]</span></code></pre></div>
 <h2 id="検索">検索</h2>
 <p>今や退屈な部分が終わったので, 実際の検索部分に進もう. 結果を展開するために, 3つの情報が必要になる: ドキュメントに紐づくID, ドキュメントのタイトル, 抜粋部分. 抜粋部分は検索語を含むハイライトされた部分のことである.</p>
 <figure>
 <img src="https://www.yesodweb.com/book-1.6/image/search-results" title="Search Result" alt="Search Result" /><figcaption aria-hidden="true">Search Result</figcaption>
 </figure>
 <p>結果のデータ型を作ることから始めよう.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Result</span> <span class="ot">=</span> <span class="dt">Result</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>    {<span class="ot"> resultId      ::</span> <span class="dt">DocId</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    ,<span class="ot"> resultTitle   ::</span> <span class="dt">Text</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>    ,<span class="ot"> resultExcerpt ::</span> <span class="dt">Html</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>    }</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Result</span> <span class="ot">=</span> <span class="dt">Result</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> resultId      ::</span> <span class="dt">DocId</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> resultTitle   ::</span> <span class="dt">Text</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> resultExcerpt ::</span> <span class="dt">Html</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div>
 <p>次に検索ハンドラを見る:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="ot">getSearchR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>getSearchR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>    ((formRes, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>    searchResults <span class="ot">&lt;-</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>        <span class="kw">case</span> formRes <span class="kw">of</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>            <span class="dt">FormSuccess</span> qstring <span class="ot">-&gt;</span> getResults qstring</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>            _ <span class="ot">-&gt;</span> <span class="fu">return</span> []</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>        toWidget</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>            [lucius|</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>                .excerpt {</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>                    color: green; font-style: italic</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a>                }</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>                .match {</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>                    background-color: yellow;</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a>                }</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a>            |]</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true"></a>            <span class="kw">$if</span> <span class="fu">not</span> <span class="op">$</span> <span class="fu">null</span> searchResults</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true"></a>                <span class="kw">&lt;h1&gt;</span>Results</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true"></a>                <span class="kw">$forall</span> result <span class="ot">&lt;-</span> searchResults</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true"></a>                    <span class="kw">&lt;div </span><span class="st">.result</span><span class="kw">&gt;</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">DocR</span> <span class="op">$</span> resultId result<span class="kw">}&gt;#{</span>resultTitle result<span class="kw">}</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true"></a>                        <span class="kw">&lt;div </span><span class="st">.excerpt</span><span class="kw">&gt;#{</span>resultExcerpt result<span class="kw">}</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true"></a>        |]</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getSearchR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>getSearchR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    ((formRes, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    searchResults <span class="ot">&lt;-</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> formRes <span class="kw">of</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">FormSuccess</span> qstring <span class="ot">-&gt;</span> getResults qstring</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            _ <span class="ot">-&gt;</span> <span class="fu">return</span> []</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        toWidget</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            [lucius|</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                .excerpt {</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                    color: green; font-style: italic</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                .match {</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                    background-color: yellow;</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            |]</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$if</span> <span class="fu">not</span> <span class="op">$</span> <span class="fu">null</span> searchResults</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;h1&gt;</span>Results</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>                <span class="kw">$forall</span> result <span class="ot">&lt;-</span> searchResults</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;div </span><span class="st">.result</span><span class="kw">&gt;</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">DocR</span> <span class="op">$</span> resultId result<span class="kw">}&gt;#{</span>resultTitle result<span class="kw">}</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;div </span><span class="st">.excerpt</span><span class="kw">&gt;#{</span>resultExcerpt result<span class="kw">}</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        |]</span></code></pre></div>
 <p>ここでは何も特別なことはない. 単に上で定義された<code>searchForm</code>と<code>getResults</code>を用いているだけである. ただ, <code>getResults</code>関数はまだ定義されていない. この関数は検索文字列を取り, 結果のリストを返す. これはSphinx APIと最初に相互作用する部分である. 2つの関数が用いられる; <code>query</code>は一致したリストを返す. <code>buildExcerpts</code>はハイライトされた抜粋部分を返す. まず<code>getResult</code>を見てみよう.</p>
 <pre><code>getResults :: Text -&gt; Handler [Result]
 getResults qstring = do
@@ -367,33 +367,33 @@ getResults qstring = do
 </div>
 <p>そして, 結果として得られたIDをループし, <code>[Maybe Result]</code>値を得て, <code>catMaybes</code>を用いてそれを<code>[Result]</code>に変換する. whereの部分では, ローカル設定を定義し, デフォルトのポートを上書きし, どんな単語でもドキュメントに一致した部分があれば機能するように検索を設定する.</p>
 <p>最後に<code>getResult</code>関数を見てみよう.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ot">getResult ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Doc</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Result</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>getResult docid doc qstring <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>    excerpt' <span class="ot">&lt;-</span> S.buildExcerpts</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>        excerptConfig</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>        [escape <span class="op">$</span> docContent doc]</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>        <span class="st">&quot;searcher&quot;</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>        qstring</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>    <span class="kw">let</span> excerpt <span class="ot">=</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>            <span class="kw">case</span> excerpt' <span class="kw">of</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>                <span class="dt">ST.Ok</span> texts <span class="ot">-&gt;</span> preEscapedToHtml <span class="op">$</span> <span class="fu">mconcat</span> texts</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>                _ <span class="ot">-&gt;</span> <span class="st">&quot;&quot;</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>    <span class="fu">return</span> <span class="dt">Result</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>        { resultId <span class="ot">=</span> docid</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>        , resultTitle <span class="ot">=</span> docTitle doc</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>        , resultExcerpt <span class="ot">=</span> excerpt</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>        }</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>    excerptConfig <span class="ot">=</span> E.altConfig { E.port <span class="ot">=</span> <span class="dv">9312</span> }</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a><span class="ot">escape ::</span> <span class="dt">Textarea</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a>escape <span class="ot">=</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true"></a>    T.concatMap escapeChar <span class="op">.</span> unTextarea</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true"></a>    escapeChar <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;lt;&quot;</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true"></a>    escapeChar <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;gt;&quot;</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true"></a>    escapeChar <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;amp;&quot;</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true"></a>    escapeChar c   <span class="ot">=</span> T.singleton c</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getResult ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Doc</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Result</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>getResult docid doc qstring <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    excerpt' <span class="ot">&lt;-</span> S.buildExcerpts</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        excerptConfig</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        [escape <span class="op">$</span> docContent doc]</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;searcher&quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        qstring</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> excerpt <span class="ot">=</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="kw">case</span> excerpt' <span class="kw">of</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                <span class="dt">ST.Ok</span> texts <span class="ot">-&gt;</span> preEscapedToHtml <span class="op">$</span> <span class="fu">mconcat</span> texts</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                _ <span class="ot">-&gt;</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="dt">Result</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        { resultId <span class="ot">=</span> docid</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        , resultTitle <span class="ot">=</span> docTitle doc</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        , resultExcerpt <span class="ot">=</span> excerpt</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    excerptConfig <span class="ot">=</span> E.altConfig { E.port <span class="ot">=</span> <span class="dv">9312</span> }</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="ot">escape ::</span> <span class="dt">Textarea</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>escape <span class="ot">=</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    T.concatMap escapeChar <span class="op">.</span> unTextarea</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    escapeChar <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;lt;&quot;</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    escapeChar <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;gt;&quot;</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    escapeChar <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;amp;&quot;</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    escapeChar c   <span class="ot">=</span> T.singleton c</span></code></pre></div>
 <p><code>buildExcerpts</code>は4つのパラメータを取る: 設定オプション, ドキュメントのテキストコンテンツ, 検索インデックスと検索単語である. 興味深い点は, テキストコンテンツをエンティティエスケープしている点である. Sphinxはこれらを自動的に行わないため, 自分たちで明示的に行う必要がある.</p>
 <p>同様にSphinxからの結果は<code>Text</code>のリストである. しかしもちろん, 実際にはHtmlとして持ちたい. そこで, そのリストを結合して単一の<code>Text</code>にして<code>preEscapedToHtml</code>を用い, マッチのために挿入したタグがエスケープされないようにする. このHTMLの例は以下のようになる.</p>
 <pre><code>&amp;#8230; Departments.  The President shall have &lt;span class='match'&gt;Power&lt;/span&gt; to fill up all Vacancies
@@ -409,7 +409,7 @@ getResults qstring = do
 <p>しかし, xmlpipe出力を生成することは代替案の良い例である. おそらく莫大な量のドキュメントがあり, 容易に数百キロバイトになる. もしストリーミングを用いない方法を用いるならば, これはかなりのメモリー浪費となり, レスポンス時間が遅延する.</p>
 <p>どのようにすれば正確にストリーミングレスポンスを作れるのであろうか? Yesodはこの場合のヘルパ関数を提供する: <code>respondSourceDB</code>. この関数は, 2つの引数を取る: コンテンツタイプと, blaze-builderの<code>Builder</code>のストリームを与えるconduitの<code>Source</code>である. そしてYesodは, コネクションプールからデータベースコネクションを取ってきたり, トランズアクションを始めたり, レスポンスをユーザにストリーミングするようなあらゆる問題に対処する.</p>
 <p>今やXMLコンテンツから<code>Builder</code>のストリームを作りたいことを知っている. 幸いなことに, xml-conduitパッケージはこのインターフェースを直接提供している. <code>xml-conduit</code>は高レベルのインターフェースを与え, ドキュメントを全体として扱う. しかし今回の場合, 低レベルの<code>Event</code>インターフェースを用い, メモリに最小限の影響しか与えないようにする. すると, 目的の関数としては以下のようになる:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">renderBuilder ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">RenderSettings</span> <span class="ot">-&gt;</span> <span class="dt">Conduit</span> <span class="dt">Event</span> m <span class="dt">Builder</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">renderBuilder ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">RenderSettings</span> <span class="ot">-&gt;</span> <span class="dt">Conduit</span> <span class="dt">Event</span> m <span class="dt">Builder</span></span></code></pre></div>
 <p>簡単に説明すると, これは<code>renderBuilder</code>はある設定(今回はデフォルトを用いる)を取り, <code>Event</code>のストリームを<code>Builder</code>のストリームに変換する. これはとても素晴らしく, 必要なものは<code>Event</code>のストリームということになる.</p>
 <p>そういえば, XMLドキュメントはどのようであるべきであろうか? これはとても単純であり, <code>sphinx:docset</code>ルートエレメントと, 単一の<code>sphinx:field</code>(これはコンテンツフィールドを定義する)を含む<code>sphinx:schema</code>エレメント, そして<code>sphinx:document</code>が, データベースの各ドキュメントに存在する. 最後のエレメントは<code>id</code>属性と子<code>content</code>エレメントを持つ. 下にこのようなドキュメントの例を示す;</p>
 <pre><code>&lt;sphinx:docset xmlns:sphinx=&quot;http://sphinxsearch.com/&quot;&gt;
@@ -427,308 +427,308 @@ getResults qstring = do
 <p>もしXMLの名前空間に不慣れであれば, <code>xmlns:</code>構文と, <code>sphinx:</code>プレフィックスはかなり奇妙に見えるであろう. この章でXMLのチュートリアルに踏み込みたくはないので, その説明は省略する. もし興味があるならば, XML名前空間仕様について調べてください.</p>
 </div>
 <p>全てのドキュメントは同じイベントから始まり(docsetを始めたり, schemaを始めたり), 同じイベントで終了する(docsetを終了する). これらを定義するところから始めよう.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="ot">toName ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">X.Name</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>toName x <span class="ot">=</span> <span class="dt">X.Name</span> x (<span class="dt">Just</span> <span class="st">&quot;http://sphinxsearch.com/&quot;</span>) (<span class="dt">Just</span> <span class="st">&quot;sphinx&quot;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>docset, schema, field, document,<span class="ot"> content ::</span> <span class="dt">X.Name</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>docset <span class="ot">=</span> toName <span class="st">&quot;docset&quot;</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>schema <span class="ot">=</span> toName <span class="st">&quot;schema&quot;</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>field <span class="ot">=</span> toName <span class="st">&quot;field&quot;</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>document <span class="ot">=</span> toName <span class="st">&quot;document&quot;</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a>content <span class="ot">=</span> <span class="st">&quot;content&quot;</span> <span class="co">-- no prefix</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a>startEvents,<span class="ot"> endEvents ::</span> [<span class="dt">X.Event</span>]</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a>startEvents <span class="ot">=</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a>    [ <span class="dt">X.EventBeginDocument</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> docset []</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> schema []</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> field [(<span class="st">&quot;name&quot;</span>, [<span class="dt">X.ContentText</span> <span class="st">&quot;content&quot;</span>])]</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> field</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> schema</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true"></a>    ]</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true"></a></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true"></a>endEvents <span class="ot">=</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true"></a>    [ <span class="dt">X.EventEndElement</span> docset</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true"></a>    ]</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">toName ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">X.Name</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>toName x <span class="ot">=</span> <span class="dt">X.Name</span> x (<span class="dt">Just</span> <span class="st">&quot;http://sphinxsearch.com/&quot;</span>) (<span class="dt">Just</span> <span class="st">&quot;sphinx&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>docset, schema, field, document,<span class="ot"> content ::</span> <span class="dt">X.Name</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>docset <span class="ot">=</span> toName <span class="st">&quot;docset&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>schema <span class="ot">=</span> toName <span class="st">&quot;schema&quot;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>field <span class="ot">=</span> toName <span class="st">&quot;field&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>document <span class="ot">=</span> toName <span class="st">&quot;document&quot;</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>content <span class="ot">=</span> <span class="st">&quot;content&quot;</span> <span class="co">-- no prefix</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>startEvents,<span class="ot"> endEvents ::</span> [<span class="dt">X.Event</span>]</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>startEvents <span class="ot">=</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    [ <span class="dt">X.EventBeginDocument</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> docset []</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> schema []</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> field [(<span class="st">&quot;name&quot;</span>, [<span class="dt">X.ContentText</span> <span class="st">&quot;content&quot;</span>])]</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> field</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> schema</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>endEvents <span class="ot">=</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    [ <span class="dt">X.EventEndElement</span> docset</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div>
 <p>今やドキュメントのシェルを手に入れたので, 各ドキュメントの<code>Event</code>を取得する必要がある. これは実際にかなり単純な関数である:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="ot">entityToEvents ::</span> <span class="dt">Entity</span> <span class="dt">Doc</span> <span class="ot">-&gt;</span> [<span class="dt">X.Event</span>]</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>entityToEvents (<span class="dt">Entity</span> docid doc) <span class="ot">=</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a>    [ <span class="dt">X.EventBeginElement</span> document [(<span class="st">&quot;id&quot;</span>, [<span class="dt">X.ContentText</span> <span class="op">$</span> toPathPiece docid])]</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> content []</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a>    , <span class="dt">X.EventContent</span> <span class="op">$</span> <span class="dt">X.ContentText</span> <span class="op">$</span> unTextarea <span class="op">$</span> docContent doc</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> content</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> document</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a>    ]</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ot">entityToEvents ::</span> <span class="dt">Entity</span> <span class="dt">Doc</span> <span class="ot">-&gt;</span> [<span class="dt">X.Event</span>]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>entityToEvents (<span class="dt">Entity</span> docid doc) <span class="ot">=</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    [ <span class="dt">X.EventBeginElement</span> document [(<span class="st">&quot;id&quot;</span>, [<span class="dt">X.ContentText</span> <span class="op">$</span> toPathPiece docid])]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> content []</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventContent</span> <span class="op">$</span> <span class="dt">X.ContentText</span> <span class="op">$</span> unTextarea <span class="op">$</span> docContent doc</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> content</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> document</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div>
 <p>ドキュメントエレメントは<code>id</code>属性から始まり, コンテンツを開始し, コンテンツを挿入する. そして両者のエレメントを閉じる. <code>toPathPiece</code>を用いて<code>DocId</code>を<code>Text</code>値に変換している. 次に, これらのエンティティのストリームをイベントのストリームに変換する必要がある. このために, <code>Data.conduit.List</code>に組み込みの<code>concatMap</code>関数を用いる: <code>CL.concatMap entityToEvents</code>.</p>
 <p>しかし本当に望むものはこれらのイベントを直接データベースからストリームすることである. この本の大部分では, <code>selectList</code>関数を用いている. しかしPersistentは(より強力な)<code>selectSource</code>関数を提供する. よって次のような関数が作れる:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="ot">docSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a>docSource <span class="ot">=</span> selectSource [] [] <span class="op">$=</span> CL.concatMap entityToEvents</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">docSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>docSource <span class="ot">=</span> selectSource [] [] <span class="op">$=</span> CL.concatMap entityToEvents</span></code></pre></div>
 <p><code>$=</code>演算子はsourceとconduitを結合し, 新しいsourceを作る. 今や<code>Event</code>ソースがあるので, それをドキュメントの開始と終了イベントで囲みさえすればよい. <code>Source</code>はモナドのインスタンスなので, もう簡単である:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="ot">fullDocSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>fullDocSource <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a>    <span class="fu">mapM_</span> yield startEvents</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a>    docSource</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a>    <span class="fu">mapM_</span> yield endEvents</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">fullDocSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>fullDocSource <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mapM_</span> yield startEvents</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    docSource</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mapM_</span> yield endEvents</span></code></pre></div>
 <p>今やそれを<code>getXmlpipeR</code>で結びつけさえすればよい. そうするために, 最初の方で言及した<code>respondSourceDB</code>関数を用いる. 必要な最後のトリックは, <code>Event</code>のストリームを<code>Chunk Builder</code>のストリームに変換することである. <code>Builder</code>のストリームへの変換は<code>renderbuilder</code>により達成され, 最後に各<code>Builder</code>を<code>Chunk</code>にラップしさえすればよい:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="ot">getXmlpipeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>getXmlpipeR <span class="ot">=</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>    respondSourceDB <span class="st">&quot;text/xml&quot;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a> <span class="op">$</span>  fullDocSource</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a> <span class="op">$=</span> renderBuilder def</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a> <span class="op">$=</span> CL.map <span class="dt">Chunk</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getXmlpipeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>getXmlpipeR <span class="ot">=</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    respondSourceDB <span class="st">&quot;text/xml&quot;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a> <span class="op">$</span>  fullDocSource</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a> <span class="op">$=</span> renderBuilder def</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a> <span class="op">$=</span> CL.map <span class="dt">Chunk</span></span></code></pre></div>
 <h2 id="完全なコード">完全なコード</h2>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true"></a><span class="ot">{-# LANGUAGE ViewPatterns               #-}</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Applicative</span>                     ((&lt;$&gt;), (&lt;*&gt;))</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad</span>                           (forM)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span>                    (runStdoutLoggingT)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Conduit</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Conduit.List</span>                       <span class="kw">as</span> <span class="dt">CL</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Maybe</span>                              (catMaybes)</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Monoid</span>                             (mconcat)</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>                               (<span class="dt">Text</span>)</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span>                               <span class="kw">as</span> <span class="dt">T</span></span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text.Lazy.Encoding</span>                 (decodeUtf8)</span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.XML.Types</span>                          <span class="kw">as</span> <span class="dt">X</span></span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Text.Blaze.Html</span>                         (preEscapedToHtml)</span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Search.Sphinx</span>                      <span class="kw">as</span> <span class="dt">S</span></span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Search.Sphinx.ExcerptConfiguration</span> <span class="kw">as</span> <span class="dt">E</span></span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Search.Sphinx.Types</span>                <span class="kw">as</span> <span class="dt">ST</span></span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Text.XML.Stream.Render</span>                  (def, renderBuilder)</span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true"></a></span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true"></a>Doc</span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true"></a>    title Text</span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true"></a>    content Textarea</span>
-<span id="cb17-33"><a href="#cb17-33" aria-hidden="true"></a>|]</span>
-<span id="cb17-34"><a href="#cb17-34" aria-hidden="true"></a></span>
-<span id="cb17-35"><a href="#cb17-35" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">Searcher</span></span>
-<span id="cb17-36"><a href="#cb17-36" aria-hidden="true"></a>    {<span class="ot"> connPool ::</span> <span class="dt">ConnectionPool</span></span>
-<span id="cb17-37"><a href="#cb17-37" aria-hidden="true"></a>    }</span>
-<span id="cb17-38"><a href="#cb17-38" aria-hidden="true"></a></span>
-<span id="cb17-39"><a href="#cb17-39" aria-hidden="true"></a>mkYesod <span class="st">&quot;Searcher&quot;</span> [parseRoutes|</span>
-<span id="cb17-40"><a href="#cb17-40" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb17-41"><a href="#cb17-41" aria-hidden="true"></a>/doc/#DocId DocR GET</span>
-<span id="cb17-42"><a href="#cb17-42" aria-hidden="true"></a>/add-doc AddDocR POST</span>
-<span id="cb17-43"><a href="#cb17-43" aria-hidden="true"></a>/search SearchR GET</span>
-<span id="cb17-44"><a href="#cb17-44" aria-hidden="true"></a>/search/xmlpipe XmlpipeR GET</span>
-<span id="cb17-45"><a href="#cb17-45" aria-hidden="true"></a>|]</span>
-<span id="cb17-46"><a href="#cb17-46" aria-hidden="true"></a></span>
-<span id="cb17-47"><a href="#cb17-47" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Searcher</span></span>
-<span id="cb17-48"><a href="#cb17-48" aria-hidden="true"></a></span>
-<span id="cb17-49"><a href="#cb17-49" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">Searcher</span> <span class="kw">where</span></span>
-<span id="cb17-50"><a href="#cb17-50" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
-<span id="cb17-51"><a href="#cb17-51" aria-hidden="true"></a></span>
-<span id="cb17-52"><a href="#cb17-52" aria-hidden="true"></a>    runDB action <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-53"><a href="#cb17-53" aria-hidden="true"></a>        <span class="dt">Searcher</span> pool <span class="ot">&lt;-</span> getYesod</span>
-<span id="cb17-54"><a href="#cb17-54" aria-hidden="true"></a>        runSqlPool action pool</span>
-<span id="cb17-55"><a href="#cb17-55" aria-hidden="true"></a></span>
-<span id="cb17-56"><a href="#cb17-56" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">Searcher</span> <span class="kw">where</span></span>
-<span id="cb17-57"><a href="#cb17-57" aria-hidden="true"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
-<span id="cb17-58"><a href="#cb17-58" aria-hidden="true"></a></span>
-<span id="cb17-59"><a href="#cb17-59" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">Searcher</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb17-60"><a href="#cb17-60" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
-<span id="cb17-61"><a href="#cb17-61" aria-hidden="true"></a></span>
-<span id="cb17-62"><a href="#cb17-62" aria-hidden="true"></a><span class="ot">addDocForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Doc</span>, <span class="dt">Widget</span>)</span>
-<span id="cb17-63"><a href="#cb17-63" aria-hidden="true"></a>addDocForm <span class="ot">=</span> renderTable <span class="op">$</span> <span class="dt">Doc</span></span>
-<span id="cb17-64"><a href="#cb17-64" aria-hidden="true"></a>    <span class="op">&lt;$&gt;</span> areq textField <span class="st">&quot;Title&quot;</span> <span class="dt">Nothing</span></span>
-<span id="cb17-65"><a href="#cb17-65" aria-hidden="true"></a>    <span class="op">&lt;*&gt;</span> areq textareaField <span class="st">&quot;Contents&quot;</span> <span class="dt">Nothing</span></span>
-<span id="cb17-66"><a href="#cb17-66" aria-hidden="true"></a></span>
-<span id="cb17-67"><a href="#cb17-67" aria-hidden="true"></a><span class="ot">searchForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Text</span>, <span class="dt">Widget</span>)</span>
-<span id="cb17-68"><a href="#cb17-68" aria-hidden="true"></a>searchForm <span class="ot">=</span> renderDivs <span class="op">$</span> areq (searchField <span class="dt">True</span>) <span class="st">&quot;Query&quot;</span> <span class="dt">Nothing</span></span>
-<span id="cb17-69"><a href="#cb17-69" aria-hidden="true"></a></span>
-<span id="cb17-70"><a href="#cb17-70" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb17-71"><a href="#cb17-71" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-72"><a href="#cb17-72" aria-hidden="true"></a>    docCount <span class="ot">&lt;-</span> runDB <span class="op">$</span> count ([]<span class="ot"> ::</span> [<span class="dt">Filter</span> <span class="dt">Doc</span>])</span>
-<span id="cb17-73"><a href="#cb17-73" aria-hidden="true"></a>    ((_, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
-<span id="cb17-74"><a href="#cb17-74" aria-hidden="true"></a>    ((_, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
-<span id="cb17-75"><a href="#cb17-75" aria-hidden="true"></a>    <span class="kw">let</span> docs <span class="ot">=</span> <span class="kw">if</span> docCount <span class="op">==</span> <span class="dv">1</span></span>
-<span id="cb17-76"><a href="#cb17-76" aria-hidden="true"></a>                <span class="kw">then</span> <span class="st">&quot;There is currently 1 document.&quot;</span></span>
-<span id="cb17-77"><a href="#cb17-77" aria-hidden="true"></a>                <span class="kw">else</span> <span class="st">&quot;There are currently &quot;</span> <span class="op">++</span> <span class="fu">show</span> docCount <span class="op">++</span> <span class="st">&quot; documents.&quot;</span></span>
-<span id="cb17-78"><a href="#cb17-78" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb17-79"><a href="#cb17-79" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb17-80"><a href="#cb17-80" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Welcome to the search application. <span class="kw">#{</span>docs<span class="kw">}</span></span>
-<span id="cb17-81"><a href="#cb17-81" aria-hidden="true"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
-<span id="cb17-82"><a href="#cb17-82" aria-hidden="true"></a>                <span class="kw">&lt;table&gt;</span></span>
-<span id="cb17-83"><a href="#cb17-83" aria-hidden="true"></a>                    <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
-<span id="cb17-84"><a href="#cb17-84" aria-hidden="true"></a>                    <span class="kw">&lt;tr&gt;</span></span>
-<span id="cb17-85"><a href="#cb17-85" aria-hidden="true"></a>                        <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
-<span id="cb17-86"><a href="#cb17-86" aria-hidden="true"></a>                            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb17-87"><a href="#cb17-87" aria-hidden="true"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
-<span id="cb17-88"><a href="#cb17-88" aria-hidden="true"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
-<span id="cb17-89"><a href="#cb17-89" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
-<span id="cb17-90"><a href="#cb17-90" aria-hidden="true"></a>        |]</span>
-<span id="cb17-91"><a href="#cb17-91" aria-hidden="true"></a></span>
-<span id="cb17-92"><a href="#cb17-92" aria-hidden="true"></a><span class="ot">postAddDocR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb17-93"><a href="#cb17-93" aria-hidden="true"></a>postAddDocR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-94"><a href="#cb17-94" aria-hidden="true"></a>    ((res, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
-<span id="cb17-95"><a href="#cb17-95" aria-hidden="true"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
-<span id="cb17-96"><a href="#cb17-96" aria-hidden="true"></a>        <span class="dt">FormSuccess</span> doc <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb17-97"><a href="#cb17-97" aria-hidden="true"></a>            docid <span class="ot">&lt;-</span> runDB <span class="op">$</span> insert doc</span>
-<span id="cb17-98"><a href="#cb17-98" aria-hidden="true"></a>            setMessage <span class="st">&quot;Document added&quot;</span></span>
-<span id="cb17-99"><a href="#cb17-99" aria-hidden="true"></a>            redirect <span class="op">$</span> <span class="dt">DocR</span> docid</span>
-<span id="cb17-100"><a href="#cb17-100" aria-hidden="true"></a>        _ <span class="ot">-&gt;</span> defaultLayout</span>
-<span id="cb17-101"><a href="#cb17-101" aria-hidden="true"></a>            [whamlet|</span>
-<span id="cb17-102"><a href="#cb17-102" aria-hidden="true"></a>                <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
-<span id="cb17-103"><a href="#cb17-103" aria-hidden="true"></a>                    <span class="kw">&lt;table&gt;</span></span>
-<span id="cb17-104"><a href="#cb17-104" aria-hidden="true"></a>                        <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
-<span id="cb17-105"><a href="#cb17-105" aria-hidden="true"></a>                        <span class="kw">&lt;tr&gt;</span></span>
-<span id="cb17-106"><a href="#cb17-106" aria-hidden="true"></a>                            <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
-<span id="cb17-107"><a href="#cb17-107" aria-hidden="true"></a>                                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb17-108"><a href="#cb17-108" aria-hidden="true"></a>            |]</span>
-<span id="cb17-109"><a href="#cb17-109" aria-hidden="true"></a></span>
-<span id="cb17-110"><a href="#cb17-110" aria-hidden="true"></a><span class="ot">getDocR ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb17-111"><a href="#cb17-111" aria-hidden="true"></a>getDocR docid <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-112"><a href="#cb17-112" aria-hidden="true"></a>    doc <span class="ot">&lt;-</span> runDB <span class="op">$</span> get404 docid</span>
-<span id="cb17-113"><a href="#cb17-113" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb17-114"><a href="#cb17-114" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb17-115"><a href="#cb17-115" aria-hidden="true"></a>            <span class="kw">&lt;h1&gt;#{</span>docTitle doc<span class="kw">}</span></span>
-<span id="cb17-116"><a href="#cb17-116" aria-hidden="true"></a>            <span class="kw">&lt;div </span><span class="st">.content</span><span class="kw">&gt;#{</span>docContent doc<span class="kw">}</span></span>
-<span id="cb17-117"><a href="#cb17-117" aria-hidden="true"></a>        |]</span>
-<span id="cb17-118"><a href="#cb17-118" aria-hidden="true"></a></span>
-<span id="cb17-119"><a href="#cb17-119" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Result</span> <span class="ot">=</span> <span class="dt">Result</span></span>
-<span id="cb17-120"><a href="#cb17-120" aria-hidden="true"></a>    {<span class="ot"> resultId      ::</span> <span class="dt">DocId</span></span>
-<span id="cb17-121"><a href="#cb17-121" aria-hidden="true"></a>    ,<span class="ot"> resultTitle   ::</span> <span class="dt">Text</span></span>
-<span id="cb17-122"><a href="#cb17-122" aria-hidden="true"></a>    ,<span class="ot"> resultExcerpt ::</span> <span class="dt">Html</span></span>
-<span id="cb17-123"><a href="#cb17-123" aria-hidden="true"></a>    }</span>
-<span id="cb17-124"><a href="#cb17-124" aria-hidden="true"></a></span>
-<span id="cb17-125"><a href="#cb17-125" aria-hidden="true"></a><span class="ot">getResult ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Doc</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Result</span></span>
-<span id="cb17-126"><a href="#cb17-126" aria-hidden="true"></a>getResult docid doc qstring <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-127"><a href="#cb17-127" aria-hidden="true"></a>    excerpt' <span class="ot">&lt;-</span> S.buildExcerpts</span>
-<span id="cb17-128"><a href="#cb17-128" aria-hidden="true"></a>        excerptConfig</span>
-<span id="cb17-129"><a href="#cb17-129" aria-hidden="true"></a>        [escape <span class="op">$</span> docContent doc]</span>
-<span id="cb17-130"><a href="#cb17-130" aria-hidden="true"></a>        <span class="st">&quot;searcher&quot;</span></span>
-<span id="cb17-131"><a href="#cb17-131" aria-hidden="true"></a>        qstring</span>
-<span id="cb17-132"><a href="#cb17-132" aria-hidden="true"></a>    <span class="kw">let</span> excerpt <span class="ot">=</span></span>
-<span id="cb17-133"><a href="#cb17-133" aria-hidden="true"></a>            <span class="kw">case</span> excerpt' <span class="kw">of</span></span>
-<span id="cb17-134"><a href="#cb17-134" aria-hidden="true"></a>                <span class="dt">ST.Ok</span> texts <span class="ot">-&gt;</span> preEscapedToHtml <span class="op">$</span> <span class="fu">mconcat</span> texts</span>
-<span id="cb17-135"><a href="#cb17-135" aria-hidden="true"></a>                _ <span class="ot">-&gt;</span> <span class="st">&quot;&quot;</span></span>
-<span id="cb17-136"><a href="#cb17-136" aria-hidden="true"></a>    <span class="fu">return</span> <span class="dt">Result</span></span>
-<span id="cb17-137"><a href="#cb17-137" aria-hidden="true"></a>        { resultId <span class="ot">=</span> docid</span>
-<span id="cb17-138"><a href="#cb17-138" aria-hidden="true"></a>        , resultTitle <span class="ot">=</span> docTitle doc</span>
-<span id="cb17-139"><a href="#cb17-139" aria-hidden="true"></a>        , resultExcerpt <span class="ot">=</span> excerpt</span>
-<span id="cb17-140"><a href="#cb17-140" aria-hidden="true"></a>        }</span>
-<span id="cb17-141"><a href="#cb17-141" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb17-142"><a href="#cb17-142" aria-hidden="true"></a>    excerptConfig <span class="ot">=</span> E.altConfig { E.port <span class="ot">=</span> <span class="dv">9312</span> }</span>
-<span id="cb17-143"><a href="#cb17-143" aria-hidden="true"></a></span>
-<span id="cb17-144"><a href="#cb17-144" aria-hidden="true"></a><span class="ot">escape ::</span> <span class="dt">Textarea</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb17-145"><a href="#cb17-145" aria-hidden="true"></a>escape <span class="ot">=</span></span>
-<span id="cb17-146"><a href="#cb17-146" aria-hidden="true"></a>    T.concatMap escapeChar <span class="op">.</span> unTextarea</span>
-<span id="cb17-147"><a href="#cb17-147" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb17-148"><a href="#cb17-148" aria-hidden="true"></a>    escapeChar <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;lt;&quot;</span></span>
-<span id="cb17-149"><a href="#cb17-149" aria-hidden="true"></a>    escapeChar <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;gt;&quot;</span></span>
-<span id="cb17-150"><a href="#cb17-150" aria-hidden="true"></a>    escapeChar <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;amp;&quot;</span></span>
-<span id="cb17-151"><a href="#cb17-151" aria-hidden="true"></a>    escapeChar c   <span class="ot">=</span> T.singleton c</span>
-<span id="cb17-152"><a href="#cb17-152" aria-hidden="true"></a></span>
-<span id="cb17-153"><a href="#cb17-153" aria-hidden="true"></a><span class="ot">getResults ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> [<span class="dt">Result</span>]</span>
-<span id="cb17-154"><a href="#cb17-154" aria-hidden="true"></a>getResults qstring <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-155"><a href="#cb17-155" aria-hidden="true"></a>    sphinxRes' <span class="ot">&lt;-</span> liftIO <span class="op">$</span> S.query config <span class="st">&quot;searcher&quot;</span> qstring</span>
-<span id="cb17-156"><a href="#cb17-156" aria-hidden="true"></a>    <span class="kw">case</span> sphinxRes' <span class="kw">of</span></span>
-<span id="cb17-157"><a href="#cb17-157" aria-hidden="true"></a>        <span class="dt">ST.Ok</span> sphinxRes <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb17-158"><a href="#cb17-158" aria-hidden="true"></a>            <span class="kw">let</span> docids <span class="ot">=</span> <span class="fu">map</span> (toSqlKey <span class="op">.</span> ST.documentId) <span class="op">$</span> ST.matches sphinxRes</span>
-<span id="cb17-159"><a href="#cb17-159" aria-hidden="true"></a>            <span class="fu">fmap</span> catMaybes <span class="op">$</span> runDB <span class="op">$</span> forM docids <span class="op">$</span> \docid <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb17-160"><a href="#cb17-160" aria-hidden="true"></a>                mdoc <span class="ot">&lt;-</span> get docid</span>
-<span id="cb17-161"><a href="#cb17-161" aria-hidden="true"></a>                <span class="kw">case</span> mdoc <span class="kw">of</span></span>
-<span id="cb17-162"><a href="#cb17-162" aria-hidden="true"></a>                    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></span>
-<span id="cb17-163"><a href="#cb17-163" aria-hidden="true"></a>                    <span class="dt">Just</span> doc <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="dt">Just</span> <span class="op">&lt;$&gt;</span> getResult docid doc qstring</span>
-<span id="cb17-164"><a href="#cb17-164" aria-hidden="true"></a>        _ <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="fu">show</span> sphinxRes'</span>
-<span id="cb17-165"><a href="#cb17-165" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb17-166"><a href="#cb17-166" aria-hidden="true"></a>    config <span class="ot">=</span> S.defaultConfig</span>
-<span id="cb17-167"><a href="#cb17-167" aria-hidden="true"></a>        { S.port <span class="ot">=</span> <span class="dv">9312</span></span>
-<span id="cb17-168"><a href="#cb17-168" aria-hidden="true"></a>        , S.mode <span class="ot">=</span> <span class="dt">ST.Any</span></span>
-<span id="cb17-169"><a href="#cb17-169" aria-hidden="true"></a>        }</span>
-<span id="cb17-170"><a href="#cb17-170" aria-hidden="true"></a></span>
-<span id="cb17-171"><a href="#cb17-171" aria-hidden="true"></a><span class="ot">getSearchR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb17-172"><a href="#cb17-172" aria-hidden="true"></a>getSearchR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-173"><a href="#cb17-173" aria-hidden="true"></a>    ((formRes, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
-<span id="cb17-174"><a href="#cb17-174" aria-hidden="true"></a>    searchResults <span class="ot">&lt;-</span></span>
-<span id="cb17-175"><a href="#cb17-175" aria-hidden="true"></a>        <span class="kw">case</span> formRes <span class="kw">of</span></span>
-<span id="cb17-176"><a href="#cb17-176" aria-hidden="true"></a>            <span class="dt">FormSuccess</span> qstring <span class="ot">-&gt;</span> getResults qstring</span>
-<span id="cb17-177"><a href="#cb17-177" aria-hidden="true"></a>            _ <span class="ot">-&gt;</span> <span class="fu">return</span> []</span>
-<span id="cb17-178"><a href="#cb17-178" aria-hidden="true"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb17-179"><a href="#cb17-179" aria-hidden="true"></a>        toWidget</span>
-<span id="cb17-180"><a href="#cb17-180" aria-hidden="true"></a>            [lucius|</span>
-<span id="cb17-181"><a href="#cb17-181" aria-hidden="true"></a>                .excerpt {</span>
-<span id="cb17-182"><a href="#cb17-182" aria-hidden="true"></a>                    color: green; font-style: italic</span>
-<span id="cb17-183"><a href="#cb17-183" aria-hidden="true"></a>                }</span>
-<span id="cb17-184"><a href="#cb17-184" aria-hidden="true"></a>                .match {</span>
-<span id="cb17-185"><a href="#cb17-185" aria-hidden="true"></a>                    background-color: yellow;</span>
-<span id="cb17-186"><a href="#cb17-186" aria-hidden="true"></a>                }</span>
-<span id="cb17-187"><a href="#cb17-187" aria-hidden="true"></a>            |]</span>
-<span id="cb17-188"><a href="#cb17-188" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb17-189"><a href="#cb17-189" aria-hidden="true"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
-<span id="cb17-190"><a href="#cb17-190" aria-hidden="true"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
-<span id="cb17-191"><a href="#cb17-191" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
-<span id="cb17-192"><a href="#cb17-192" aria-hidden="true"></a>            <span class="kw">$if</span> <span class="fu">not</span> <span class="op">$</span> <span class="fu">null</span> searchResults</span>
-<span id="cb17-193"><a href="#cb17-193" aria-hidden="true"></a>                <span class="kw">&lt;h1&gt;</span>Results</span>
-<span id="cb17-194"><a href="#cb17-194" aria-hidden="true"></a>                <span class="kw">$forall</span> result <span class="ot">&lt;-</span> searchResults</span>
-<span id="cb17-195"><a href="#cb17-195" aria-hidden="true"></a>                    <span class="kw">&lt;div </span><span class="st">.result</span><span class="kw">&gt;</span></span>
-<span id="cb17-196"><a href="#cb17-196" aria-hidden="true"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">DocR</span> <span class="op">$</span> resultId result<span class="kw">}&gt;#{</span>resultTitle result<span class="kw">}</span></span>
-<span id="cb17-197"><a href="#cb17-197" aria-hidden="true"></a>                        <span class="kw">&lt;div </span><span class="st">.excerpt</span><span class="kw">&gt;#{</span>resultExcerpt result<span class="kw">}</span></span>
-<span id="cb17-198"><a href="#cb17-198" aria-hidden="true"></a>        |]</span>
-<span id="cb17-199"><a href="#cb17-199" aria-hidden="true"></a></span>
-<span id="cb17-200"><a href="#cb17-200" aria-hidden="true"></a><span class="ot">getXmlpipeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
-<span id="cb17-201"><a href="#cb17-201" aria-hidden="true"></a>getXmlpipeR <span class="ot">=</span></span>
-<span id="cb17-202"><a href="#cb17-202" aria-hidden="true"></a>    respondSourceDB <span class="st">&quot;text/xml&quot;</span></span>
-<span id="cb17-203"><a href="#cb17-203" aria-hidden="true"></a> <span class="op">$</span>  fullDocSource</span>
-<span id="cb17-204"><a href="#cb17-204" aria-hidden="true"></a> <span class="op">$=</span> renderBuilder def</span>
-<span id="cb17-205"><a href="#cb17-205" aria-hidden="true"></a> <span class="op">$=</span> CL.map <span class="dt">Chunk</span></span>
-<span id="cb17-206"><a href="#cb17-206" aria-hidden="true"></a></span>
-<span id="cb17-207"><a href="#cb17-207" aria-hidden="true"></a><span class="ot">entityToEvents ::</span> (<span class="dt">Entity</span> <span class="dt">Doc</span>) <span class="ot">-&gt;</span> [<span class="dt">X.Event</span>]</span>
-<span id="cb17-208"><a href="#cb17-208" aria-hidden="true"></a>entityToEvents (<span class="dt">Entity</span> docid doc) <span class="ot">=</span></span>
-<span id="cb17-209"><a href="#cb17-209" aria-hidden="true"></a>    [ <span class="dt">X.EventBeginElement</span> document [(<span class="st">&quot;id&quot;</span>, [<span class="dt">X.ContentText</span> <span class="op">$</span> toPathPiece docid])]</span>
-<span id="cb17-210"><a href="#cb17-210" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> content []</span>
-<span id="cb17-211"><a href="#cb17-211" aria-hidden="true"></a>    , <span class="dt">X.EventContent</span> <span class="op">$</span> <span class="dt">X.ContentText</span> <span class="op">$</span> unTextarea <span class="op">$</span> docContent doc</span>
-<span id="cb17-212"><a href="#cb17-212" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> content</span>
-<span id="cb17-213"><a href="#cb17-213" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> document</span>
-<span id="cb17-214"><a href="#cb17-214" aria-hidden="true"></a>    ]</span>
-<span id="cb17-215"><a href="#cb17-215" aria-hidden="true"></a></span>
-<span id="cb17-216"><a href="#cb17-216" aria-hidden="true"></a><span class="ot">fullDocSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
-<span id="cb17-217"><a href="#cb17-217" aria-hidden="true"></a>fullDocSource <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb17-218"><a href="#cb17-218" aria-hidden="true"></a>    <span class="fu">mapM_</span> yield startEvents</span>
-<span id="cb17-219"><a href="#cb17-219" aria-hidden="true"></a>    docSource</span>
-<span id="cb17-220"><a href="#cb17-220" aria-hidden="true"></a>    <span class="fu">mapM_</span> yield endEvents</span>
-<span id="cb17-221"><a href="#cb17-221" aria-hidden="true"></a></span>
-<span id="cb17-222"><a href="#cb17-222" aria-hidden="true"></a><span class="ot">docSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
-<span id="cb17-223"><a href="#cb17-223" aria-hidden="true"></a>docSource <span class="ot">=</span> selectSource [] [] <span class="op">$=</span> CL.concatMap entityToEvents</span>
-<span id="cb17-224"><a href="#cb17-224" aria-hidden="true"></a></span>
-<span id="cb17-225"><a href="#cb17-225" aria-hidden="true"></a><span class="ot">toName ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">X.Name</span></span>
-<span id="cb17-226"><a href="#cb17-226" aria-hidden="true"></a>toName x <span class="ot">=</span> <span class="dt">X.Name</span> x (<span class="dt">Just</span> <span class="st">&quot;http://sphinxsearch.com/&quot;</span>) (<span class="dt">Just</span> <span class="st">&quot;sphinx&quot;</span>)</span>
-<span id="cb17-227"><a href="#cb17-227" aria-hidden="true"></a></span>
-<span id="cb17-228"><a href="#cb17-228" aria-hidden="true"></a>docset, schema, field, document,<span class="ot"> content ::</span> <span class="dt">X.Name</span></span>
-<span id="cb17-229"><a href="#cb17-229" aria-hidden="true"></a>docset <span class="ot">=</span> toName <span class="st">&quot;docset&quot;</span></span>
-<span id="cb17-230"><a href="#cb17-230" aria-hidden="true"></a>schema <span class="ot">=</span> toName <span class="st">&quot;schema&quot;</span></span>
-<span id="cb17-231"><a href="#cb17-231" aria-hidden="true"></a>field <span class="ot">=</span> toName <span class="st">&quot;field&quot;</span></span>
-<span id="cb17-232"><a href="#cb17-232" aria-hidden="true"></a>document <span class="ot">=</span> toName <span class="st">&quot;document&quot;</span></span>
-<span id="cb17-233"><a href="#cb17-233" aria-hidden="true"></a>content <span class="ot">=</span> <span class="st">&quot;content&quot;</span> <span class="co">-- no prefix</span></span>
-<span id="cb17-234"><a href="#cb17-234" aria-hidden="true"></a></span>
-<span id="cb17-235"><a href="#cb17-235" aria-hidden="true"></a>startEvents,<span class="ot"> endEvents ::</span> [<span class="dt">X.Event</span>]</span>
-<span id="cb17-236"><a href="#cb17-236" aria-hidden="true"></a>startEvents <span class="ot">=</span></span>
-<span id="cb17-237"><a href="#cb17-237" aria-hidden="true"></a>    [ <span class="dt">X.EventBeginDocument</span></span>
-<span id="cb17-238"><a href="#cb17-238" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> docset []</span>
-<span id="cb17-239"><a href="#cb17-239" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> schema []</span>
-<span id="cb17-240"><a href="#cb17-240" aria-hidden="true"></a>    , <span class="dt">X.EventBeginElement</span> field [(<span class="st">&quot;name&quot;</span>, [<span class="dt">X.ContentText</span> <span class="st">&quot;content&quot;</span>])]</span>
-<span id="cb17-241"><a href="#cb17-241" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> field</span>
-<span id="cb17-242"><a href="#cb17-242" aria-hidden="true"></a>    , <span class="dt">X.EventEndElement</span> schema</span>
-<span id="cb17-243"><a href="#cb17-243" aria-hidden="true"></a>    ]</span>
-<span id="cb17-244"><a href="#cb17-244" aria-hidden="true"></a></span>
-<span id="cb17-245"><a href="#cb17-245" aria-hidden="true"></a>endEvents <span class="ot">=</span></span>
-<span id="cb17-246"><a href="#cb17-246" aria-hidden="true"></a>    [ <span class="dt">X.EventEndElement</span> docset</span>
-<span id="cb17-247"><a href="#cb17-247" aria-hidden="true"></a>    ]</span>
-<span id="cb17-248"><a href="#cb17-248" aria-hidden="true"></a></span>
-<span id="cb17-249"><a href="#cb17-249" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb17-250"><a href="#cb17-250" aria-hidden="true"></a>main <span class="ot">=</span> runStdoutLoggingT <span class="op">$</span> withSqlitePool <span class="st">&quot;searcher.db3&quot;</span> <span class="dv">10</span> <span class="op">$</span> \pool <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb17-251"><a href="#cb17-251" aria-hidden="true"></a>    runSqlPool (runMigration migrateAll) pool</span>
-<span id="cb17-252"><a href="#cb17-252" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">Searcher</span> pool</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE ViewPatterns               #-}</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Applicative</span>                     ((&lt;$&gt;), (&lt;*&gt;))</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad</span>                           (forM)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span>                    (runStdoutLoggingT)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Conduit</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Conduit.List</span>                       <span class="kw">as</span> <span class="dt">CL</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Maybe</span>                              (catMaybes)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Monoid</span>                             (mconcat)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>                               (<span class="dt">Text</span>)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text</span>                               <span class="kw">as</span> <span class="dt">T</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text.Lazy.Encoding</span>                 (decodeUtf8)</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.XML.Types</span>                          <span class="kw">as</span> <span class="dt">X</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Blaze.Html</span>                         (preEscapedToHtml)</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Search.Sphinx</span>                      <span class="kw">as</span> <span class="dt">S</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Search.Sphinx.ExcerptConfiguration</span> <span class="kw">as</span> <span class="dt">E</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Search.Sphinx.Types</span>                <span class="kw">as</span> <span class="dt">ST</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.XML.Stream.Render</span>                  (def, renderBuilder)</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>Doc</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    title Text</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    content Textarea</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">Searcher</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> connPool ::</span> <span class="dt">ConnectionPool</span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;Searcher&quot;</span> [parseRoutes|</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>/doc/#DocId DocR GET</span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>/add-doc AddDocR POST</span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>/search SearchR GET</span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>/search/xmlpipe XmlpipeR GET</span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Searcher</span></span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">Searcher</span> <span class="kw">where</span></span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">Searcher</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>    runDB action <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Searcher</span> pool <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a>        runSqlPool action pool</span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersistRunner</span> <span class="dt">Searcher</span> <span class="kw">where</span></span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a>    getDBRunner <span class="ot">=</span> defaultGetDBRunner connPool</span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">Searcher</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-62"><a href="#cb17-62" aria-hidden="true" tabindex="-1"></a><span class="ot">addDocForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Doc</span>, <span class="dt">Widget</span>)</span>
+<span id="cb17-63"><a href="#cb17-63" aria-hidden="true" tabindex="-1"></a>addDocForm <span class="ot">=</span> renderTable <span class="op">$</span> <span class="dt">Doc</span></span>
+<span id="cb17-64"><a href="#cb17-64" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;$&gt;</span> areq textField <span class="st">&quot;Title&quot;</span> <span class="dt">Nothing</span></span>
+<span id="cb17-65"><a href="#cb17-65" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> areq textareaField <span class="st">&quot;Contents&quot;</span> <span class="dt">Nothing</span></span>
+<span id="cb17-66"><a href="#cb17-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-67"><a href="#cb17-67" aria-hidden="true" tabindex="-1"></a><span class="ot">searchForm ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> <span class="dt">Text</span>, <span class="dt">Widget</span>)</span>
+<span id="cb17-68"><a href="#cb17-68" aria-hidden="true" tabindex="-1"></a>searchForm <span class="ot">=</span> renderDivs <span class="op">$</span> areq (searchField <span class="dt">True</span>) <span class="st">&quot;Query&quot;</span> <span class="dt">Nothing</span></span>
+<span id="cb17-69"><a href="#cb17-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-70"><a href="#cb17-70" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb17-71"><a href="#cb17-71" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-72"><a href="#cb17-72" aria-hidden="true" tabindex="-1"></a>    docCount <span class="ot">&lt;-</span> runDB <span class="op">$</span> count ([]<span class="ot"> ::</span> [<span class="dt">Filter</span> <span class="dt">Doc</span>])</span>
+<span id="cb17-73"><a href="#cb17-73" aria-hidden="true" tabindex="-1"></a>    ((_, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
+<span id="cb17-74"><a href="#cb17-74" aria-hidden="true" tabindex="-1"></a>    ((_, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
+<span id="cb17-75"><a href="#cb17-75" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> docs <span class="ot">=</span> <span class="kw">if</span> docCount <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb17-76"><a href="#cb17-76" aria-hidden="true" tabindex="-1"></a>                <span class="kw">then</span> <span class="st">&quot;There is currently 1 document.&quot;</span></span>
+<span id="cb17-77"><a href="#cb17-77" aria-hidden="true" tabindex="-1"></a>                <span class="kw">else</span> <span class="st">&quot;There are currently &quot;</span> <span class="op">++</span> <span class="fu">show</span> docCount <span class="op">++</span> <span class="st">&quot; documents.&quot;</span></span>
+<span id="cb17-78"><a href="#cb17-78" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb17-79"><a href="#cb17-79" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb17-80"><a href="#cb17-80" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Welcome to the search application. <span class="kw">#{</span>docs<span class="kw">}</span></span>
+<span id="cb17-81"><a href="#cb17-81" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
+<span id="cb17-82"><a href="#cb17-82" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;table&gt;</span></span>
+<span id="cb17-83"><a href="#cb17-83" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
+<span id="cb17-84"><a href="#cb17-84" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;tr&gt;</span></span>
+<span id="cb17-85"><a href="#cb17-85" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
+<span id="cb17-86"><a href="#cb17-86" aria-hidden="true" tabindex="-1"></a>                            <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb17-87"><a href="#cb17-87" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
+<span id="cb17-88"><a href="#cb17-88" aria-hidden="true" tabindex="-1"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
+<span id="cb17-89"><a href="#cb17-89" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
+<span id="cb17-90"><a href="#cb17-90" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb17-91"><a href="#cb17-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-92"><a href="#cb17-92" aria-hidden="true" tabindex="-1"></a><span class="ot">postAddDocR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb17-93"><a href="#cb17-93" aria-hidden="true" tabindex="-1"></a>postAddDocR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-94"><a href="#cb17-94" aria-hidden="true" tabindex="-1"></a>    ((res, docWidget), _) <span class="ot">&lt;-</span> runFormPost addDocForm</span>
+<span id="cb17-95"><a href="#cb17-95" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
+<span id="cb17-96"><a href="#cb17-96" aria-hidden="true" tabindex="-1"></a>        <span class="dt">FormSuccess</span> doc <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb17-97"><a href="#cb17-97" aria-hidden="true" tabindex="-1"></a>            docid <span class="ot">&lt;-</span> runDB <span class="op">$</span> insert doc</span>
+<span id="cb17-98"><a href="#cb17-98" aria-hidden="true" tabindex="-1"></a>            setMessage <span class="st">&quot;Document added&quot;</span></span>
+<span id="cb17-99"><a href="#cb17-99" aria-hidden="true" tabindex="-1"></a>            redirect <span class="op">$</span> <span class="dt">DocR</span> docid</span>
+<span id="cb17-100"><a href="#cb17-100" aria-hidden="true" tabindex="-1"></a>        _ <span class="ot">-&gt;</span> defaultLayout</span>
+<span id="cb17-101"><a href="#cb17-101" aria-hidden="true" tabindex="-1"></a>            [whamlet|</span>
+<span id="cb17-102"><a href="#cb17-102" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddDocR</span><span class="kw">}&gt;</span></span>
+<span id="cb17-103"><a href="#cb17-103" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;table&gt;</span></span>
+<span id="cb17-104"><a href="#cb17-104" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">^{</span>docWidget<span class="kw">}</span></span>
+<span id="cb17-105"><a href="#cb17-105" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;tr&gt;</span></span>
+<span id="cb17-106"><a href="#cb17-106" aria-hidden="true" tabindex="-1"></a>                            <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">3</span><span class="kw">&gt;</span></span>
+<span id="cb17-107"><a href="#cb17-107" aria-hidden="true" tabindex="-1"></a>                                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add document&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb17-108"><a href="#cb17-108" aria-hidden="true" tabindex="-1"></a>            |]</span>
+<span id="cb17-109"><a href="#cb17-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-110"><a href="#cb17-110" aria-hidden="true" tabindex="-1"></a><span class="ot">getDocR ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb17-111"><a href="#cb17-111" aria-hidden="true" tabindex="-1"></a>getDocR docid <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-112"><a href="#cb17-112" aria-hidden="true" tabindex="-1"></a>    doc <span class="ot">&lt;-</span> runDB <span class="op">$</span> get404 docid</span>
+<span id="cb17-113"><a href="#cb17-113" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb17-114"><a href="#cb17-114" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb17-115"><a href="#cb17-115" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;h1&gt;#{</span>docTitle doc<span class="kw">}</span></span>
+<span id="cb17-116"><a href="#cb17-116" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;div </span><span class="st">.content</span><span class="kw">&gt;#{</span>docContent doc<span class="kw">}</span></span>
+<span id="cb17-117"><a href="#cb17-117" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb17-118"><a href="#cb17-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-119"><a href="#cb17-119" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Result</span> <span class="ot">=</span> <span class="dt">Result</span></span>
+<span id="cb17-120"><a href="#cb17-120" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> resultId      ::</span> <span class="dt">DocId</span></span>
+<span id="cb17-121"><a href="#cb17-121" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> resultTitle   ::</span> <span class="dt">Text</span></span>
+<span id="cb17-122"><a href="#cb17-122" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> resultExcerpt ::</span> <span class="dt">Html</span></span>
+<span id="cb17-123"><a href="#cb17-123" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb17-124"><a href="#cb17-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-125"><a href="#cb17-125" aria-hidden="true" tabindex="-1"></a><span class="ot">getResult ::</span> <span class="dt">DocId</span> <span class="ot">-&gt;</span> <span class="dt">Doc</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Result</span></span>
+<span id="cb17-126"><a href="#cb17-126" aria-hidden="true" tabindex="-1"></a>getResult docid doc qstring <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-127"><a href="#cb17-127" aria-hidden="true" tabindex="-1"></a>    excerpt' <span class="ot">&lt;-</span> S.buildExcerpts</span>
+<span id="cb17-128"><a href="#cb17-128" aria-hidden="true" tabindex="-1"></a>        excerptConfig</span>
+<span id="cb17-129"><a href="#cb17-129" aria-hidden="true" tabindex="-1"></a>        [escape <span class="op">$</span> docContent doc]</span>
+<span id="cb17-130"><a href="#cb17-130" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;searcher&quot;</span></span>
+<span id="cb17-131"><a href="#cb17-131" aria-hidden="true" tabindex="-1"></a>        qstring</span>
+<span id="cb17-132"><a href="#cb17-132" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> excerpt <span class="ot">=</span></span>
+<span id="cb17-133"><a href="#cb17-133" aria-hidden="true" tabindex="-1"></a>            <span class="kw">case</span> excerpt' <span class="kw">of</span></span>
+<span id="cb17-134"><a href="#cb17-134" aria-hidden="true" tabindex="-1"></a>                <span class="dt">ST.Ok</span> texts <span class="ot">-&gt;</span> preEscapedToHtml <span class="op">$</span> <span class="fu">mconcat</span> texts</span>
+<span id="cb17-135"><a href="#cb17-135" aria-hidden="true" tabindex="-1"></a>                _ <span class="ot">-&gt;</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb17-136"><a href="#cb17-136" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="dt">Result</span></span>
+<span id="cb17-137"><a href="#cb17-137" aria-hidden="true" tabindex="-1"></a>        { resultId <span class="ot">=</span> docid</span>
+<span id="cb17-138"><a href="#cb17-138" aria-hidden="true" tabindex="-1"></a>        , resultTitle <span class="ot">=</span> docTitle doc</span>
+<span id="cb17-139"><a href="#cb17-139" aria-hidden="true" tabindex="-1"></a>        , resultExcerpt <span class="ot">=</span> excerpt</span>
+<span id="cb17-140"><a href="#cb17-140" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb17-141"><a href="#cb17-141" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb17-142"><a href="#cb17-142" aria-hidden="true" tabindex="-1"></a>    excerptConfig <span class="ot">=</span> E.altConfig { E.port <span class="ot">=</span> <span class="dv">9312</span> }</span>
+<span id="cb17-143"><a href="#cb17-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-144"><a href="#cb17-144" aria-hidden="true" tabindex="-1"></a><span class="ot">escape ::</span> <span class="dt">Textarea</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb17-145"><a href="#cb17-145" aria-hidden="true" tabindex="-1"></a>escape <span class="ot">=</span></span>
+<span id="cb17-146"><a href="#cb17-146" aria-hidden="true" tabindex="-1"></a>    T.concatMap escapeChar <span class="op">.</span> unTextarea</span>
+<span id="cb17-147"><a href="#cb17-147" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb17-148"><a href="#cb17-148" aria-hidden="true" tabindex="-1"></a>    escapeChar <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;lt;&quot;</span></span>
+<span id="cb17-149"><a href="#cb17-149" aria-hidden="true" tabindex="-1"></a>    escapeChar <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;gt;&quot;</span></span>
+<span id="cb17-150"><a href="#cb17-150" aria-hidden="true" tabindex="-1"></a>    escapeChar <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;&amp;amp;&quot;</span></span>
+<span id="cb17-151"><a href="#cb17-151" aria-hidden="true" tabindex="-1"></a>    escapeChar c   <span class="ot">=</span> T.singleton c</span>
+<span id="cb17-152"><a href="#cb17-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-153"><a href="#cb17-153" aria-hidden="true" tabindex="-1"></a><span class="ot">getResults ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> [<span class="dt">Result</span>]</span>
+<span id="cb17-154"><a href="#cb17-154" aria-hidden="true" tabindex="-1"></a>getResults qstring <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-155"><a href="#cb17-155" aria-hidden="true" tabindex="-1"></a>    sphinxRes' <span class="ot">&lt;-</span> liftIO <span class="op">$</span> S.query config <span class="st">&quot;searcher&quot;</span> qstring</span>
+<span id="cb17-156"><a href="#cb17-156" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> sphinxRes' <span class="kw">of</span></span>
+<span id="cb17-157"><a href="#cb17-157" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ST.Ok</span> sphinxRes <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb17-158"><a href="#cb17-158" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> docids <span class="ot">=</span> <span class="fu">map</span> (toSqlKey <span class="op">.</span> ST.documentId) <span class="op">$</span> ST.matches sphinxRes</span>
+<span id="cb17-159"><a href="#cb17-159" aria-hidden="true" tabindex="-1"></a>            <span class="fu">fmap</span> catMaybes <span class="op">$</span> runDB <span class="op">$</span> forM docids <span class="op">$</span> \docid <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb17-160"><a href="#cb17-160" aria-hidden="true" tabindex="-1"></a>                mdoc <span class="ot">&lt;-</span> get docid</span>
+<span id="cb17-161"><a href="#cb17-161" aria-hidden="true" tabindex="-1"></a>                <span class="kw">case</span> mdoc <span class="kw">of</span></span>
+<span id="cb17-162"><a href="#cb17-162" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></span>
+<span id="cb17-163"><a href="#cb17-163" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">Just</span> doc <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="dt">Just</span> <span class="op">&lt;$&gt;</span> getResult docid doc qstring</span>
+<span id="cb17-164"><a href="#cb17-164" aria-hidden="true" tabindex="-1"></a>        _ <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="fu">show</span> sphinxRes'</span>
+<span id="cb17-165"><a href="#cb17-165" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb17-166"><a href="#cb17-166" aria-hidden="true" tabindex="-1"></a>    config <span class="ot">=</span> S.defaultConfig</span>
+<span id="cb17-167"><a href="#cb17-167" aria-hidden="true" tabindex="-1"></a>        { S.port <span class="ot">=</span> <span class="dv">9312</span></span>
+<span id="cb17-168"><a href="#cb17-168" aria-hidden="true" tabindex="-1"></a>        , S.mode <span class="ot">=</span> <span class="dt">ST.Any</span></span>
+<span id="cb17-169"><a href="#cb17-169" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb17-170"><a href="#cb17-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-171"><a href="#cb17-171" aria-hidden="true" tabindex="-1"></a><span class="ot">getSearchR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb17-172"><a href="#cb17-172" aria-hidden="true" tabindex="-1"></a>getSearchR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-173"><a href="#cb17-173" aria-hidden="true" tabindex="-1"></a>    ((formRes, searchWidget), _) <span class="ot">&lt;-</span> runFormGet searchForm</span>
+<span id="cb17-174"><a href="#cb17-174" aria-hidden="true" tabindex="-1"></a>    searchResults <span class="ot">&lt;-</span></span>
+<span id="cb17-175"><a href="#cb17-175" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> formRes <span class="kw">of</span></span>
+<span id="cb17-176"><a href="#cb17-176" aria-hidden="true" tabindex="-1"></a>            <span class="dt">FormSuccess</span> qstring <span class="ot">-&gt;</span> getResults qstring</span>
+<span id="cb17-177"><a href="#cb17-177" aria-hidden="true" tabindex="-1"></a>            _ <span class="ot">-&gt;</span> <span class="fu">return</span> []</span>
+<span id="cb17-178"><a href="#cb17-178" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb17-179"><a href="#cb17-179" aria-hidden="true" tabindex="-1"></a>        toWidget</span>
+<span id="cb17-180"><a href="#cb17-180" aria-hidden="true" tabindex="-1"></a>            [lucius|</span>
+<span id="cb17-181"><a href="#cb17-181" aria-hidden="true" tabindex="-1"></a>                .excerpt {</span>
+<span id="cb17-182"><a href="#cb17-182" aria-hidden="true" tabindex="-1"></a>                    color: green; font-style: italic</span>
+<span id="cb17-183"><a href="#cb17-183" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb17-184"><a href="#cb17-184" aria-hidden="true" tabindex="-1"></a>                .match {</span>
+<span id="cb17-185"><a href="#cb17-185" aria-hidden="true" tabindex="-1"></a>                    background-color: yellow;</span>
+<span id="cb17-186"><a href="#cb17-186" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb17-187"><a href="#cb17-187" aria-hidden="true" tabindex="-1"></a>            |]</span>
+<span id="cb17-188"><a href="#cb17-188" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb17-189"><a href="#cb17-189" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">get</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">SearchR</span><span class="kw">}&gt;</span></span>
+<span id="cb17-190"><a href="#cb17-190" aria-hidden="true" tabindex="-1"></a>                <span class="kw">^{</span>searchWidget<span class="kw">}</span></span>
+<span id="cb17-191"><a href="#cb17-191" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">Search</span><span class="kw">&gt;</span></span>
+<span id="cb17-192"><a href="#cb17-192" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$if</span> <span class="fu">not</span> <span class="op">$</span> <span class="fu">null</span> searchResults</span>
+<span id="cb17-193"><a href="#cb17-193" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;h1&gt;</span>Results</span>
+<span id="cb17-194"><a href="#cb17-194" aria-hidden="true" tabindex="-1"></a>                <span class="kw">$forall</span> result <span class="ot">&lt;-</span> searchResults</span>
+<span id="cb17-195"><a href="#cb17-195" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;div </span><span class="st">.result</span><span class="kw">&gt;</span></span>
+<span id="cb17-196"><a href="#cb17-196" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">DocR</span> <span class="op">$</span> resultId result<span class="kw">}&gt;#{</span>resultTitle result<span class="kw">}</span></span>
+<span id="cb17-197"><a href="#cb17-197" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;div </span><span class="st">.excerpt</span><span class="kw">&gt;#{</span>resultExcerpt result<span class="kw">}</span></span>
+<span id="cb17-198"><a href="#cb17-198" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb17-199"><a href="#cb17-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-200"><a href="#cb17-200" aria-hidden="true" tabindex="-1"></a><span class="ot">getXmlpipeR ::</span> <span class="dt">Handler</span> <span class="dt">TypedContent</span></span>
+<span id="cb17-201"><a href="#cb17-201" aria-hidden="true" tabindex="-1"></a>getXmlpipeR <span class="ot">=</span></span>
+<span id="cb17-202"><a href="#cb17-202" aria-hidden="true" tabindex="-1"></a>    respondSourceDB <span class="st">&quot;text/xml&quot;</span></span>
+<span id="cb17-203"><a href="#cb17-203" aria-hidden="true" tabindex="-1"></a> <span class="op">$</span>  fullDocSource</span>
+<span id="cb17-204"><a href="#cb17-204" aria-hidden="true" tabindex="-1"></a> <span class="op">$=</span> renderBuilder def</span>
+<span id="cb17-205"><a href="#cb17-205" aria-hidden="true" tabindex="-1"></a> <span class="op">$=</span> CL.map <span class="dt">Chunk</span></span>
+<span id="cb17-206"><a href="#cb17-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-207"><a href="#cb17-207" aria-hidden="true" tabindex="-1"></a><span class="ot">entityToEvents ::</span> (<span class="dt">Entity</span> <span class="dt">Doc</span>) <span class="ot">-&gt;</span> [<span class="dt">X.Event</span>]</span>
+<span id="cb17-208"><a href="#cb17-208" aria-hidden="true" tabindex="-1"></a>entityToEvents (<span class="dt">Entity</span> docid doc) <span class="ot">=</span></span>
+<span id="cb17-209"><a href="#cb17-209" aria-hidden="true" tabindex="-1"></a>    [ <span class="dt">X.EventBeginElement</span> document [(<span class="st">&quot;id&quot;</span>, [<span class="dt">X.ContentText</span> <span class="op">$</span> toPathPiece docid])]</span>
+<span id="cb17-210"><a href="#cb17-210" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> content []</span>
+<span id="cb17-211"><a href="#cb17-211" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventContent</span> <span class="op">$</span> <span class="dt">X.ContentText</span> <span class="op">$</span> unTextarea <span class="op">$</span> docContent doc</span>
+<span id="cb17-212"><a href="#cb17-212" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> content</span>
+<span id="cb17-213"><a href="#cb17-213" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> document</span>
+<span id="cb17-214"><a href="#cb17-214" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb17-215"><a href="#cb17-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-216"><a href="#cb17-216" aria-hidden="true" tabindex="-1"></a><span class="ot">fullDocSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
+<span id="cb17-217"><a href="#cb17-217" aria-hidden="true" tabindex="-1"></a>fullDocSource <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb17-218"><a href="#cb17-218" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mapM_</span> yield startEvents</span>
+<span id="cb17-219"><a href="#cb17-219" aria-hidden="true" tabindex="-1"></a>    docSource</span>
+<span id="cb17-220"><a href="#cb17-220" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mapM_</span> yield endEvents</span>
+<span id="cb17-221"><a href="#cb17-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-222"><a href="#cb17-222" aria-hidden="true" tabindex="-1"></a><span class="ot">docSource ::</span> <span class="dt">Source</span> (<span class="dt">YesodDB</span> <span class="dt">Searcher</span>) <span class="dt">X.Event</span></span>
+<span id="cb17-223"><a href="#cb17-223" aria-hidden="true" tabindex="-1"></a>docSource <span class="ot">=</span> selectSource [] [] <span class="op">$=</span> CL.concatMap entityToEvents</span>
+<span id="cb17-224"><a href="#cb17-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-225"><a href="#cb17-225" aria-hidden="true" tabindex="-1"></a><span class="ot">toName ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">X.Name</span></span>
+<span id="cb17-226"><a href="#cb17-226" aria-hidden="true" tabindex="-1"></a>toName x <span class="ot">=</span> <span class="dt">X.Name</span> x (<span class="dt">Just</span> <span class="st">&quot;http://sphinxsearch.com/&quot;</span>) (<span class="dt">Just</span> <span class="st">&quot;sphinx&quot;</span>)</span>
+<span id="cb17-227"><a href="#cb17-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-228"><a href="#cb17-228" aria-hidden="true" tabindex="-1"></a>docset, schema, field, document,<span class="ot"> content ::</span> <span class="dt">X.Name</span></span>
+<span id="cb17-229"><a href="#cb17-229" aria-hidden="true" tabindex="-1"></a>docset <span class="ot">=</span> toName <span class="st">&quot;docset&quot;</span></span>
+<span id="cb17-230"><a href="#cb17-230" aria-hidden="true" tabindex="-1"></a>schema <span class="ot">=</span> toName <span class="st">&quot;schema&quot;</span></span>
+<span id="cb17-231"><a href="#cb17-231" aria-hidden="true" tabindex="-1"></a>field <span class="ot">=</span> toName <span class="st">&quot;field&quot;</span></span>
+<span id="cb17-232"><a href="#cb17-232" aria-hidden="true" tabindex="-1"></a>document <span class="ot">=</span> toName <span class="st">&quot;document&quot;</span></span>
+<span id="cb17-233"><a href="#cb17-233" aria-hidden="true" tabindex="-1"></a>content <span class="ot">=</span> <span class="st">&quot;content&quot;</span> <span class="co">-- no prefix</span></span>
+<span id="cb17-234"><a href="#cb17-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-235"><a href="#cb17-235" aria-hidden="true" tabindex="-1"></a>startEvents,<span class="ot"> endEvents ::</span> [<span class="dt">X.Event</span>]</span>
+<span id="cb17-236"><a href="#cb17-236" aria-hidden="true" tabindex="-1"></a>startEvents <span class="ot">=</span></span>
+<span id="cb17-237"><a href="#cb17-237" aria-hidden="true" tabindex="-1"></a>    [ <span class="dt">X.EventBeginDocument</span></span>
+<span id="cb17-238"><a href="#cb17-238" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> docset []</span>
+<span id="cb17-239"><a href="#cb17-239" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> schema []</span>
+<span id="cb17-240"><a href="#cb17-240" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventBeginElement</span> field [(<span class="st">&quot;name&quot;</span>, [<span class="dt">X.ContentText</span> <span class="st">&quot;content&quot;</span>])]</span>
+<span id="cb17-241"><a href="#cb17-241" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> field</span>
+<span id="cb17-242"><a href="#cb17-242" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">X.EventEndElement</span> schema</span>
+<span id="cb17-243"><a href="#cb17-243" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb17-244"><a href="#cb17-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-245"><a href="#cb17-245" aria-hidden="true" tabindex="-1"></a>endEvents <span class="ot">=</span></span>
+<span id="cb17-246"><a href="#cb17-246" aria-hidden="true" tabindex="-1"></a>    [ <span class="dt">X.EventEndElement</span> docset</span>
+<span id="cb17-247"><a href="#cb17-247" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb17-248"><a href="#cb17-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-249"><a href="#cb17-249" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb17-250"><a href="#cb17-250" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> runStdoutLoggingT <span class="op">$</span> withSqlitePool <span class="st">&quot;searcher.db3&quot;</span> <span class="dv">10</span> <span class="op">$</span> \pool <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb17-251"><a href="#cb17-251" aria-hidden="true" tabindex="-1"></a>    runSqlPool (runMigration migrateAll) pool</span>
+<span id="cb17-252"><a href="#cb17-252" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">Searcher</span> pool</span></code></pre></div>
       </article>
 
       <div class="pager">

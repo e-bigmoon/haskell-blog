@@ -200,78 +200,78 @@
 <li><code>Google+ API</code> と <code>Contacts API</code> を有効にしましょう。</li>
 <li>取得した <code>clientId</code> と <code>secretID</code> の値を、以下のコードの <code>clientId</code> と <code>clientSecret</code> にセットしましょう。</li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Default</span>                (def)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>                   (<span class="dt">Text</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Network.HTTP.Client.Conduit</span> (<span class="dt">Manager</span>, newManager)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.BrowserId</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.GoogleEmail2</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="co">-- Replace with Google client ID.</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="ot">clientId ::</span> <span class="dt">Text</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>clientId <span class="ot">=</span> <span class="st">&quot;&quot;</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="co">-- Replace with Google secret ID.</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="ot">clientSecret ::</span> <span class="dt">Text</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>clientSecret <span class="ot">=</span> <span class="st">&quot;&quot;</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>    {<span class="ot"> httpManager ::</span> <span class="dt">Manager</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a>    }</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>/auth AuthR Auth getAuth</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>|]</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a>    <span class="co">-- Note: In order to log in with BrowserID, you must correctly</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a>    <span class="co">-- set your hostname here.</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a>    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://localhost:3000&quot;</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Text</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a>    authenticate <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Authenticated</span> <span class="op">.</span> credsIdent</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true"></a>    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true"></a>    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true"></a></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true"></a>    authPlugins _ <span class="ot">=</span> [ authGoogleEmail clientId clientSecret ]</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true"></a></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true"></a>    <span class="co">-- The default maybeAuthId assumes a Persistent database. We're going for a</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true"></a>    <span class="co">-- simpler AuthId, so we'll just do a direct lookup in the session.</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true"></a>    maybeAuthId <span class="ot">=</span> lookupSession <span class="st">&quot;_ID&quot;</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true"></a></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true"></a>    maid <span class="ot">&lt;-</span> maybeAuthId</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true"></a>                <span class="kw">&lt;p&gt;</span></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true"></a>            <span class="kw">$nothing</span></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true"></a>                <span class="kw">&lt;p&gt;</span></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;</span>Go to the login page</span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true"></a>        |]</span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true"></a></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true"></a>    man <span class="ot">&lt;-</span> newManager</span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> man</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Default</span>                (def)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>                   (<span class="dt">Text</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Network.HTTP.Client.Conduit</span> (<span class="dt">Manager</span>, newManager)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.BrowserId</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.GoogleEmail2</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">-- Replace with Google client ID.</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ot">clientId ::</span> <span class="dt">Text</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>clientId <span class="ot">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">-- Replace with Google secret ID.</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ot">clientSecret ::</span> <span class="dt">Text</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>clientSecret <span class="ot">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> httpManager ::</span> <span class="dt">Manager</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>/auth AuthR Auth getAuth</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Note: In order to log in with BrowserID, you must correctly</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- set your hostname here.</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://localhost:3000&quot;</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Text</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    authenticate <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Authenticated</span> <span class="op">.</span> credsIdent</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    authPlugins _ <span class="ot">=</span> [ authGoogleEmail clientId clientSecret ]</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- The default maybeAuthId assumes a Persistent database. We're going for a</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- simpler AuthId, so we'll just do a direct lookup in the session.</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    maybeAuthId <span class="ot">=</span> lookupSession <span class="st">&quot;_ID&quot;</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    maid <span class="ot">&lt;-</span> maybeAuthId</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$nothing</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;</span>Go to the login page</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>    man <span class="ot">&lt;-</span> newManager</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> man</span></code></pre></div>
 <p>ルートの宣言から確認していきましょう。まずは、標準的な <code>HomeR</code> ルートを宣言します。次に、認証サブサイトを設定します。サブサイト宣言には、サブサイトへのパス、ルート名、サブサイト名、サブサイト値を取得するための関数という、4つのパラメータが必要でした。つまり、以下のようになります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="op">/</span>auth <span class="dt">AuthR</span> <span class="dt">Auth</span> getAuth</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">/</span>auth <span class="dt">AuthR</span> <span class="dt">Auth</span> getAuth</span></code></pre></div>
 <p>ここで <code>getAuth :: MyAuthSite → Auth</code> を用意する必要がありますが、自分でこの関数を書かなくても yesod-auth が自動的に用意してくれます。他のサブサイト (静的ファイルなど) では、サブサイト値に構築設定を記述するため、取得用の関数を用意する必要があります。auth サブサイトでは、これらの設定は別の <code>YesodAuth</code> 型クラスで行います。</p>
 <div class="yesod-book-notice">
 <p>なぜ、サブサイト値を使わないのでしょうか？auth サブサイトに対して与えたい設定はいくつもありますが、レコード型から設定するのは不便でしょう。また、<code>AuthId</code> 関連型を持ちたいので、型クラスの方が自然です。では、なぜ全てのサブサイトで型クラスを用いないのでしょうか？その答えは、型クラスを利用するということは各サイトにつきインスタンスを1つしか定義できないことになります。つまり、異なる静的ファイルを異なるルートから取得できなくなってしまいます。また、サブサイト値はアプリケーションの初期化時にデータを読み込みたいという時に、よりうまく機能します。</p>
@@ -301,263 +301,263 @@
 <div class="yesod-book-notice">
 <p>メールサーバが無い場合でも、デバック目的のために認証用リンクがコンソールに表示されます。</p>
 </div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE DeriveDataTypeable         #-}</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad</span>            (join)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span>     (runNoLoggingT)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Maybe</span>               (isJust)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>                (<span class="dt">Text</span>, unpack)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.Encoding</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Typeable</span>            (<span class="dt">Typeable</span>)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Persist.TH</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Network.Mail.Mime</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Text.Blaze.Html.Renderer.Utf8</span> (renderHtml)</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Text.Hamlet</span>                   (shamlet)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Text.Shakespeare.Text</span>         (stext)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.Email</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true"></a>share [mkPersist sqlSettings { mpsGeneric <span class="ot">=</span> <span class="dt">False</span> }, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true"></a>User</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true"></a>    email Text</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true"></a>    password Text Maybe -- Password may not be set yet</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true"></a>    verkey Text Maybe -- Used for resetting passwords</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true"></a>    verified Bool</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true"></a>    UniqueUser email</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true"></a>    deriving Typeable</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true"></a>|]</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span> <span class="dt">SqlBackend</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true"></a>/auth AuthR Auth getAuth</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true"></a>|]</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true"></a></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true"></a>    <span class="co">-- Emails will include links, so be sure to include an approot so that</span></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true"></a>    <span class="co">-- the links are valid!</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true"></a>    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://localhost:3000&quot;</span></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true"></a>    yesodMiddleware <span class="ot">=</span> defaultCsrfMiddleware <span class="op">.</span> defaultYesodMiddleware</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true"></a></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true"></a><span class="co">-- Set up Persistent</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true"></a>    runDB f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true"></a>        <span class="dt">App</span> conn <span class="ot">&lt;-</span> getYesod</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true"></a>        runSqlConn f conn</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true"></a></span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">UserId</span></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true"></a>    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true"></a>    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true"></a>    authPlugins _ <span class="ot">=</span> [authEmail]</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true"></a></span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true"></a>    <span class="co">-- Need to find the UserId for the given email address.</span></span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true"></a>    authenticate creds <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true"></a>        x <span class="ot">&lt;-</span> insertBy <span class="op">$</span> <span class="dt">User</span> (credsIdent creds) <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">False</span></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true"></a>        <span class="fu">return</span> <span class="op">$</span> <span class="dt">Authenticated</span> <span class="op">$</span>liftHandler <span class="op">$</span> </span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true"></a>            <span class="kw">case</span> x <span class="kw">of</span></span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true"></a>                <span class="dt">Left</span> (<span class="dt">Entity</span> userid _) <span class="ot">-&gt;</span> userid <span class="co">-- existing user</span></span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true"></a>                <span class="dt">Right</span> userid <span class="ot">-&gt;</span> userid <span class="co">-- newly added user</span></span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true"></a></span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodAuthPersist</span> <span class="dt">App</span></span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true"></a></span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true"></a><span class="co">-- Here's all of the email-specific code</span></span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodAuthEmail</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">AuthEmailId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">UserId</span></span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true"></a>    afterPasswordRoute _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true"></a></span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true"></a>    addUnverified email verkey <span class="ot">=</span></span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true"></a>        liftHandler <span class="op">$</span> runDB <span class="op">$</span> insert <span class="op">$</span> <span class="dt">User</span> email <span class="dt">Nothing</span> (<span class="dt">Just</span> verkey) <span class="dt">False</span></span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true"></a></span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true"></a>    sendVerifyEmail email _ verurl <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true"></a>        <span class="co">-- Print out to the console the verification email, for easier</span></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true"></a>        <span class="co">-- debugging.</span></span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true"></a>        liftIO <span class="op">$</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Copy/ Paste this URL in your browser:&quot;</span> <span class="op">++</span> unpack verurl</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true"></a></span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true"></a>        <span class="co">-- Send email.</span></span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true"></a>        liftIO <span class="op">$</span> renderSendMail (emptyMail <span class="op">$</span> <span class="dt">Address</span> <span class="dt">Nothing</span> <span class="st">&quot;noreply&quot;</span>)</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true"></a>            { mailTo <span class="ot">=</span> [<span class="dt">Address</span> <span class="dt">Nothing</span> email]</span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true"></a>            , mailHeaders <span class="ot">=</span></span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true"></a>                [ (<span class="st">&quot;Subject&quot;</span>, <span class="st">&quot;Verify your email address&quot;</span>)</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true"></a>                ]</span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true"></a>            , mailParts <span class="ot">=</span> [[textPart, htmlPart]]</span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true"></a>            }</span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true"></a>      <span class="kw">where</span></span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true"></a>        textPart <span class="ot">=</span> <span class="dt">Part</span></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true"></a>            { partType <span class="ot">=</span> <span class="st">&quot;text/plain; charset=utf-8&quot;</span></span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true"></a>            , partEncoding <span class="ot">=</span> <span class="dt">None</span></span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true"></a>            , partDisposition <span class="ot">=</span> <span class="dt">DefaultDisposition</span></span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true"></a>            , partContent <span class="ot">=</span> <span class="dt">PartContent</span> <span class="op">$</span> Data.Text.Lazy.Encoding.encodeUtf8</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true"></a>                [stext|</span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true"></a>                    Please confirm your email address by clicking on the link below.</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true"></a></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true"></a>                    #{verurl}</span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true"></a></span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true"></a>                    Thank you</span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true"></a>                |]</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true"></a>            , partHeaders <span class="ot">=</span> []</span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true"></a>            }</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true"></a>        htmlPart <span class="ot">=</span> <span class="dt">Part</span></span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true"></a>            { partType <span class="ot">=</span> <span class="st">&quot;text/html; charset=utf-8&quot;</span></span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true"></a>            , partEncoding <span class="ot">=</span> <span class="dt">None</span></span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true"></a>            , partDisposition <span class="ot">=</span> <span class="dt">DefaultDisposition</span></span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true"></a>            , partContent <span class="ot">=</span> <span class="dt">PartContent</span> <span class="op">$</span> renderHtml</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true"></a>                [shamlet|</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true"></a>                    <span class="kw">&lt;p&gt;</span>Please confirm your email address by clicking on the link below.</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true"></a>                    <span class="kw">&lt;p&gt;</span></span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">#{</span>verurl<span class="kw">}&gt;#{</span>verurl<span class="kw">}</span></span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true"></a>                    <span class="kw">&lt;p&gt;</span>Thank you</span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true"></a>                |]</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true"></a>            , partHeaders <span class="ot">=</span> []</span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true"></a>            }</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true"></a>    getVerifyKey <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> userVerkey) <span class="op">.</span> get</span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true"></a>    setVerifyKey uid key <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> update uid [<span class="dt">UserVerkey</span> <span class="op">=.</span> <span class="dt">Just</span> key]</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true"></a>    verifyAccount uid <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true"></a>        mu <span class="ot">&lt;-</span> get uid</span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true"></a>        <span class="kw">case</span> mu <span class="kw">of</span></span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true"></a>            <span class="dt">Just</span> u <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true"></a>                update uid [<span class="dt">UserVerified</span> <span class="op">=.</span> <span class="dt">True</span>, <span class="dt">UserVerkey</span> <span class="op">=.</span> <span class="dt">Nothing</span>]</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true"></a>                <span class="fu">return</span> <span class="op">$</span> <span class="dt">Just</span> uid</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true"></a>    getPassword <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> userPassword) <span class="op">.</span> get</span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true"></a>    setPassword uid pass <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">$</span> update uid [<span class="dt">UserPassword</span> <span class="op">=.</span> <span class="dt">Just</span> pass]</span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true"></a>    getEmailCreds email <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true"></a>        mu <span class="ot">&lt;-</span> getBy <span class="op">$</span> <span class="dt">UniqueUser</span> email</span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true"></a>        <span class="kw">case</span> mu <span class="kw">of</span></span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true"></a>            <span class="dt">Just</span> (<span class="dt">Entity</span> uid u) <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="dt">Just</span> <span class="dt">EmailCreds</span></span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true"></a>                { emailCredsId <span class="ot">=</span> uid</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true"></a>                , emailCredsAuthId <span class="ot">=</span> <span class="dt">Just</span> uid</span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true"></a>                , emailCredsStatus <span class="ot">=</span> isJust <span class="op">$</span> userPassword u</span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true"></a>                , emailCredsVerkey <span class="ot">=</span> userVerkey u</span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true"></a>                , emailCredsEmail <span class="ot">=</span> email</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true"></a>                }</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true"></a>    getEmail <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> userEmail) <span class="op">.</span> get</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true"></a></span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true"></a>    maid <span class="ot">&lt;-</span> maybeAuthId</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true"></a>                <span class="kw">&lt;p&gt;</span></span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true"></a>            <span class="kw">$nothing</span></span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true"></a>                <span class="kw">&lt;p&gt;</span></span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;</span>Go to the login page</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true"></a>        |]</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true"></a></span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true"></a>main <span class="ot">=</span> runNoLoggingT <span class="op">$</span> withSqliteConn <span class="st">&quot;email.db3&quot;</span> <span class="op">$</span> \conn <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true"></a>    runSqlConn (runMigration migrateAll) conn</span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> conn</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE DeriveDataTypeable         #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad</span>            (join)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span>     (runNoLoggingT)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Maybe</span>               (isJust)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>                (<span class="dt">Text</span>, unpack)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Text.Lazy.Encoding</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Typeable</span>            (<span class="dt">Typeable</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Persist.TH</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Network.Mail.Mime</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Blaze.Html.Renderer.Utf8</span> (renderHtml)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Hamlet</span>                   (shamlet)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Shakespeare.Text</span>         (stext)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.Email</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>share [mkPersist sqlSettings { mpsGeneric <span class="ot">=</span> <span class="dt">False</span> }, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>User</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    email Text</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    password Text Maybe -- Password may not be set yet</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    verkey Text Maybe -- Used for resetting passwords</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    verified Bool</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    UniqueUser email</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    deriving Typeable</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span> <span class="dt">SqlBackend</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>/auth AuthR Auth getAuth</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Emails will include links, so be sure to include an approot so that</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- the links are valid!</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://localhost:3000&quot;</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    yesodMiddleware <span class="ot">=</span> defaultCsrfMiddleware <span class="op">.</span> defaultYesodMiddleware</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="co">-- Set up Persistent</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    runDB f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>        <span class="dt">App</span> conn <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>        runSqlConn f conn</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">UserId</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>    authPlugins _ <span class="ot">=</span> [authEmail]</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Need to find the UserId for the given email address.</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    authenticate creds <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>        x <span class="ot">&lt;-</span> insertBy <span class="op">$</span> <span class="dt">User</span> (credsIdent creds) <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">False</span></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> <span class="op">$</span> <span class="dt">Authenticated</span> <span class="op">$</span>liftHandler <span class="op">$</span> </span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>            <span class="kw">case</span> x <span class="kw">of</span></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Left</span> (<span class="dt">Entity</span> userid _) <span class="ot">-&gt;</span> userid <span class="co">-- existing user</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Right</span> userid <span class="ot">-&gt;</span> userid <span class="co">-- newly added user</span></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodAuthPersist</span> <span class="dt">App</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="co">-- Here's all of the email-specific code</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodAuthEmail</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">AuthEmailId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">UserId</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>    afterPasswordRoute _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>    addUnverified email verkey <span class="ot">=</span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>        liftHandler <span class="op">$</span> runDB <span class="op">$</span> insert <span class="op">$</span> <span class="dt">User</span> email <span class="dt">Nothing</span> (<span class="dt">Just</span> verkey) <span class="dt">False</span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>    sendVerifyEmail email _ verurl <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- Print out to the console the verification email, for easier</span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- debugging.</span></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>        liftIO <span class="op">$</span> <span class="fu">putStrLn</span> <span class="op">$</span> <span class="st">&quot;Copy/ Paste this URL in your browser:&quot;</span> <span class="op">++</span> unpack verurl</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>        <span class="co">-- Send email.</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>        liftIO <span class="op">$</span> renderSendMail (emptyMail <span class="op">$</span> <span class="dt">Address</span> <span class="dt">Nothing</span> <span class="st">&quot;noreply&quot;</span>)</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>            { mailTo <span class="ot">=</span> [<span class="dt">Address</span> <span class="dt">Nothing</span> email]</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>            , mailHeaders <span class="ot">=</span></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>                [ (<span class="st">&quot;Subject&quot;</span>, <span class="st">&quot;Verify your email address&quot;</span>)</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>                ]</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>            , mailParts <span class="ot">=</span> [[textPart, htmlPart]]</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>        textPart <span class="ot">=</span> <span class="dt">Part</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>            { partType <span class="ot">=</span> <span class="st">&quot;text/plain; charset=utf-8&quot;</span></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>            , partEncoding <span class="ot">=</span> <span class="dt">None</span></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>            , partDisposition <span class="ot">=</span> <span class="dt">DefaultDisposition</span></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>            , partContent <span class="ot">=</span> <span class="dt">PartContent</span> <span class="op">$</span> Data.Text.Lazy.Encoding.encodeUtf8</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>                [stext|</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>                    Please confirm your email address by clicking on the link below.</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>                    #{verurl}</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>                    Thank you</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>                |]</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>            , partHeaders <span class="ot">=</span> []</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>        htmlPart <span class="ot">=</span> <span class="dt">Part</span></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>            { partType <span class="ot">=</span> <span class="st">&quot;text/html; charset=utf-8&quot;</span></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>            , partEncoding <span class="ot">=</span> <span class="dt">None</span></span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>            , partDisposition <span class="ot">=</span> <span class="dt">DefaultDisposition</span></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>            , partContent <span class="ot">=</span> <span class="dt">PartContent</span> <span class="op">$</span> renderHtml</span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>                [shamlet|</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;p&gt;</span>Please confirm your email address by clicking on the link below.</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;p&gt;</span></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">#{</span>verurl<span class="kw">}&gt;#{</span>verurl<span class="kw">}</span></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;p&gt;</span>Thank you</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>                |]</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>            , partHeaders <span class="ot">=</span> []</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>    getVerifyKey <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> userVerkey) <span class="op">.</span> get</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>    setVerifyKey uid key <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> update uid [<span class="dt">UserVerkey</span> <span class="op">=.</span> <span class="dt">Just</span> key]</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>    verifyAccount uid <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>        mu <span class="ot">&lt;-</span> get uid</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> mu <span class="kw">of</span></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Just</span> u <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>                update uid [<span class="dt">UserVerified</span> <span class="op">=.</span> <span class="dt">True</span>, <span class="dt">UserVerkey</span> <span class="op">=.</span> <span class="dt">Nothing</span>]</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>                <span class="fu">return</span> <span class="op">$</span> <span class="dt">Just</span> uid</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>    getPassword <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">.</span> <span class="fu">fmap</span> (join <span class="op">.</span> <span class="fu">fmap</span> userPassword) <span class="op">.</span> get</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>    setPassword uid pass <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">$</span> update uid [<span class="dt">UserPassword</span> <span class="op">=.</span> <span class="dt">Just</span> pass]</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>    getEmailCreds email <span class="ot">=</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>        mu <span class="ot">&lt;-</span> getBy <span class="op">$</span> <span class="dt">UniqueUser</span> email</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> mu <span class="kw">of</span></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Just</span> (<span class="dt">Entity</span> uid u) <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="op">$</span> <span class="dt">Just</span> <span class="dt">EmailCreds</span></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>                { emailCredsId <span class="ot">=</span> uid</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>                , emailCredsAuthId <span class="ot">=</span> <span class="dt">Just</span> uid</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>                , emailCredsStatus <span class="ot">=</span> isJust <span class="op">$</span> userPassword u</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>                , emailCredsVerkey <span class="ot">=</span> userVerkey u</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>                , emailCredsEmail <span class="ot">=</span> email</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>    getEmail <span class="ot">=</span> liftHandler <span class="op">.</span> runDB <span class="op">.</span> <span class="fu">fmap</span> (<span class="fu">fmap</span> userEmail) <span class="op">.</span> get</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>    maid <span class="ot">&lt;-</span> maybeAuthId</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$nothing</span></span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;</span>Go to the login page</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> runNoLoggingT <span class="op">$</span> withSqliteConn <span class="st">&quot;email.db3&quot;</span> <span class="op">$</span> \conn <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>    runSqlConn (runMigration migrateAll) conn</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> conn</span></code></pre></div>
 <h2 id="認可">認可</h2>
 <p>一旦ユーザを認証してしまえば、その認証情報を使ってリクエストを認可できます。Yesod における認可は単純かつ宣言的です。多くの場合、<code>authRoute</code> と <code>isAuthorized</code> メソッドを Yesod 型クラスのインスタンスに追加するだけです。例を見てみましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Default</span>         (def)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>            (<span class="dt">Text</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Network.HTTP.Conduit</span> (<span class="dt">Manager</span>, newManager, tlsManagerSettings)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.Dummy</span> <span class="co">-- just for testing, don't use in real life!!!</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>    {<span class="ot"> httpManager ::</span> <span class="dt">Manager</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>    }</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>/      HomeR  GET POST</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>/admin AdminR GET</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>/auth  AuthR  Auth getAuth</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>|]</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a>    authenticate <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Authenticated</span> <span class="op">.</span> credsIdent</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a>    <span class="co">-- route name, then a boolean indicating if it's a write request</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a>    isAuthorized <span class="dt">HomeR</span> <span class="dt">True</span> <span class="ot">=</span> isAdmin</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a>    isAuthorized <span class="dt">AdminR</span> _ <span class="ot">=</span> isAdmin</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a>    <span class="co">-- anyone can access other pages</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a>    isAuthorized _ _ <span class="ot">=</span> <span class="fu">return</span> <span class="dt">Authorized</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true"></a>isAdmin <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true"></a>    mu <span class="ot">&lt;-</span> maybeAuthId</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="kw">case</span> mu <span class="kw">of</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true"></a>        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dt">AuthenticationRequired</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true"></a>        <span class="dt">Just</span> <span class="st">&quot;admin&quot;</span> <span class="ot">-&gt;</span> <span class="dt">Authorized</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true"></a>        <span class="dt">Just</span> _ <span class="ot">-&gt;</span> <span class="dt">Unauthorized</span> <span class="st">&quot;You must be an admin&quot;</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true"></a></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Text</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true"></a>    authenticate <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Authenticated</span> <span class="op">.</span> credsIdent</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true"></a></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true"></a>    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true"></a>    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true"></a></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true"></a>    authPlugins _ <span class="ot">=</span> [authDummy]</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true"></a></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true"></a>    maybeAuthId <span class="ot">=</span> lookupSession <span class="st">&quot;_ID&quot;</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true"></a></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true"></a></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true"></a>    maid <span class="ot">&lt;-</span> maybeAuthId</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Note: Log in as &quot;admin&quot; to be an administrator.</span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true"></a>                <span class="kw">&lt;p&gt;</span></span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span></span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true"></a>                <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AdminR</span><span class="kw">}&gt;</span>Go to admin page</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="kw">&gt;</span></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true"></a>                Make a change (admins only)</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true"></a>                \ #</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="kw">&gt;</span></span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true"></a>        |]</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true"></a></span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true"></a><span class="ot">postHomeR ::</span> <span class="dt">Handler</span> ()</span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true"></a>postHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true"></a>    setMessage <span class="st">&quot;You made some change to the page&quot;</span></span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true"></a>    redirect <span class="dt">HomeR</span></span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true"></a></span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true"></a><span class="ot">getAdminR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true"></a>getAdminR <span class="ot">=</span> defaultLayout</span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span>I guess you're an admin!</span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span></span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}&gt;</span>Return to homepage</span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true"></a>    |]</span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true"></a></span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true"></a>    manager <span class="ot">&lt;-</span> newManager tlsManagerSettings</span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> manager</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Default</span>         (def)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>            (<span class="dt">Text</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Network.HTTP.Conduit</span> (<span class="dt">Manager</span>, newManager, tlsManagerSettings)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod.Auth.Dummy</span> <span class="co">-- just for testing, don't use in real life!!!</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> httpManager ::</span> <span class="dt">Manager</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>/      HomeR  GET POST</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>/admin AdminR GET</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>/auth  AuthR  Auth getAuth</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    authenticate <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Authenticated</span> <span class="op">.</span> credsIdent</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- route name, then a boolean indicating if it's a write request</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    isAuthorized <span class="dt">HomeR</span> <span class="dt">True</span> <span class="ot">=</span> isAdmin</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    isAuthorized <span class="dt">AdminR</span> _ <span class="ot">=</span> isAdmin</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- anyone can access other pages</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    isAuthorized _ _ <span class="ot">=</span> <span class="fu">return</span> <span class="dt">Authorized</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>isAdmin <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> maybeAuthId</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> <span class="kw">case</span> mu <span class="kw">of</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="dt">AuthenticationRequired</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Just</span> <span class="st">&quot;admin&quot;</span> <span class="ot">-&gt;</span> <span class="dt">Authorized</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Just</span> _ <span class="ot">-&gt;</span> <span class="dt">Unauthorized</span> <span class="st">&quot;You must be an admin&quot;</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Text</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    authenticate <span class="ot">=</span> <span class="fu">return</span> <span class="op">.</span> <span class="dt">Authenticated</span> <span class="op">.</span> credsIdent</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    authPlugins _ <span class="ot">=</span> [authDummy]</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    maybeAuthId <span class="ot">=</span> lookupSession <span class="st">&quot;_ID&quot;</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    maid <span class="ot">&lt;-</span> maybeAuthId</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Note: Log in as &quot;admin&quot; to be an administrator.</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Your current auth ID: <span class="kw">#{</span><span class="fu">show</span> maid<span class="kw">}</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> maid</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LogoutR</span><span class="kw">}&gt;</span>Logout</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AdminR</span><span class="kw">}&gt;</span>Go to admin page</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="kw">&gt;</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>                Make a change (admins only)</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>                \ #</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="kw">&gt;</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="ot">postHomeR ::</span> <span class="dt">Handler</span> ()</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>postHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>    setMessage <span class="st">&quot;You made some change to the page&quot;</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>    redirect <span class="dt">HomeR</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="ot">getAdminR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>getAdminR <span class="ot">=</span> defaultLayout</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span>I guess you're an admin!</span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">HomeR</span><span class="kw">}&gt;</span>Return to homepage</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>    manager <span class="ot">&lt;-</span> newManager tlsManagerSettings</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> manager</span></code></pre></div>
 <p><code>authRoute</code> はログインページにしてください。ほとんどいつも <code>AuthR LoginR</code> となります。<code>isAuthorized</code> 関数はリクエストされたルートと、リクエストが “write” なリクエストであるかどうかという、2つのパラメータを引数に取ります。また、 <code>isWriteRequest</code> を使えば write リクエストの定義を変更できますが、初期値は RESTful 原則に従い <code>GET</code>、<code>HEAD</code>、<code>OPTIONS</code>、<code>TRACE</code> リクエスト以外は全て write リクエストとなります。</p>
 <p><code>isAuthorized</code> 関数が便利なのは、<code>Handler</code> コードを何でも実行できる点にあります。これは以下のようなことを可能にします。</p>
 <ul>

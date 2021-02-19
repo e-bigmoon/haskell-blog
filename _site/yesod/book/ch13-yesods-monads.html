@@ -187,10 +187,10 @@
 <p>Yesod のモナドに進む前にモナドトランスフォーマーを少し勉強しましょう。(もし、モナドトランスフォーマーについて詳しければ、この節は読み飛ばしても良いでしょう)。異なるモナドには異なる機能があります。例えば、<code>Reader</code> モナドは計算時にデータに対する読み取り専用アクセスを提供し、<code>Error</code> モナドは計算の短絡機能を提供します。</p>
 <p>これらのいくつかの機能を組み合わせたいと思うことは良くあることでしょう。例えば、任意のタイミングでエラーが発生するかもしれない計算に、読み取り専用の設定変数を加えても良いはずですよね？これを実現する1つの方法は <code>ReaderError</code> のような新しいモナドを定義することですが、これは指数関数的に複雑になるという明からな欠点があります。つまり、1つの可能な組み合わせ毎に新しいモナドを書く必要が出てきてしまいます。</p>
 <p>この問題を解決する方法としてモナドトランスフォーマーがあります。<code>Reader</code> に加えて、他の任意のモナドに Reader モナドの機能を付与する <code>ReaderT</code> があります。これを使えば、<code>ReaderError</code> は (概念的には) 次のように表せます。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">ReaderError</span> <span class="ot">=</span> <span class="dt">ReaderT</span> <span class="dt">Error</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ReaderError</span> <span class="ot">=</span> <span class="dt">ReaderT</span> <span class="dt">Error</span></span></code></pre></div>
 <p>設定変数にアクセスするために <code>ask</code> 関数を利用します。しかし、計算を短絡させるにはどうすれば良いでしょうか？つまり、<code>throwError</code> を利用したいのですが、これだけでは上手くいきません。代わりに、呼び出しを <code>lift</code> し、次のモナドに持ち上げるのです。つまり、以下のようになります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">throwError ::</span> errValue <span class="ot">-&gt;</span> <span class="dt">Error</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>lift <span class="op">.</span><span class="ot"> throwError ::</span> errValue <span class="ot">-&gt;</span> <span class="dt">ReaderT</span> <span class="dt">Error</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">throwError ::</span> errValue <span class="ot">-&gt;</span> <span class="dt">Error</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lift <span class="op">.</span><span class="ot"> throwError ::</span> errValue <span class="ot">-&gt;</span> <span class="dt">ReaderT</span> <span class="dt">Error</span></span></code></pre></div>
 <p>ここでの要点は以下の3点です。</p>
 <ul>
 <li>トランスフォーマーは、既存のモナドに機能を追加するために使われます。</li>
@@ -205,156 +205,156 @@
 <p>今までの章で、<code>Handler</code> と <code>Widget</code> の2つのトランスフォーマーについて議論しました。これらは、アプリケーション固有のエイリアスとして、より一般的な <code>HandlerT</code> や <code>WidgetT</code> によって定義されていました。このトランスフォーマーは2つの型パラメータを取ります。1つはファウンデーションデータ型で、もう一つはベースモナドです。多くの場合、ベースモナドには <code>IO</code> が使われます。</p>
 <p>persistent では <code>PersistStore</code> と呼ばれる型クラスがあります。この型クラスは <code>get</code> のような、データベースに対して実行可能な全てのプリミティブな操作を定義しています。この型クラスには persistent でサポートしているバックエンドのデータベース毎にインスタンスが定義されています。例えば、SQL データベースには <code>SqlBackend</code> と呼ばれるデータ型があります。そして、全ての操作で <code>SqlBackend</code> の値が使えるようにするために、標準的な <code>ReaderT</code> トランスフォーマーを利用します。これは、<code>MonadIO</code> のインスタンスであれば任意のベースモナドで、SQL データベースを実行できることを意味します。ここで大切なのは、Persistent トランスフォーマーの層を <code>Handler</code> や <code>Widget</code> の上に載せることができるという点です。</p>
 <p>Persistent トランスフォーマーへの参照をシンプルにするため、yesod-persistent パッケージは <code>YesodPersistentBackend</code> 関連型を定義しています。例えば、<code>MyApp</code> というサイトで SQL を利用する場合は <code>type instance YesodPersistentBackend MyApp = SqlBackend</code> のように定義されるでしょう。そして利便性のために <code>YesodDB</code> という型シノニムが以下のように定義されます。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">YesodDB</span> site <span class="ot">=</span> <span class="dt">ReaderT</span> (<span class="dt">YesodPersistBackend</span> site) (<span class="dt">HandlerT</span> site <span class="dt">IO</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">YesodDB</span> site <span class="ot">=</span> <span class="dt">ReaderT</span> (<span class="dt">YesodPersistBackend</span> site) (<span class="dt">HandlerT</span> site <span class="dt">IO</span>)</span></code></pre></div>
 <p>このエイリアスを使えば、データベースのアクションは <code>YesodDB MyApp SomeResult</code> ような型で表すことができます。これらを実行するために、標準的な Persistent のアンラップ関数 (<code>runSqlPool</code> のようなもの) を使ってアクションを実行し、通常の <code>Handler</code> を取得します。この作業を自動化するために <code>runDB</code> 関数があります。これらを全てまとめると、ハンドラ内でデータベース操作を実行できるようになります。</p>
 <p>Yesod コードの大部分、特に本書のこれまでの内容では、ウィジェットはアクションのないコンテナであり、単に HTML、CSS、Javascript を組み合わせるものとして扱ってきました。しかし、実際には <code>Widget</code> は <code>Handler</code> ができることは <code>handlerToWidget</code> 関数を使って何でも実行できます。例えば、<code>Widget</code> 内部でも <code>handlerToWidget . runDB</code> のようにすれば、データベースクエリを実行できます。</p>
 <h2 id="例-データベース駆動のナビゲーションバー">例: データベース駆動のナビゲーションバー</h2>
 <p>この新しい知識を使って何かしてみましょう。ここでは データベースのコンテンツに基づいた出力を生成するような <code>Widget</code> を作ってみましょう。前回のアプローチは、ハンドラでデータを読み込み、ウィジェットに渡していました。今回は <code>Widget</code> でデータの読み込みを行います。データベースのコンテンツをハンドラから受け取る処理を <code>Widget</code> に任せることで、このウィジェットを任意の <code>Handler</code> で使えるようになり、モジュラリティが高まります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span>    (runNoLoggingT)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>               (<span class="dt">Text</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Time</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>Link</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>    title Text</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>    url Text</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>    added UTCTime</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>|]</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span> <span class="dt">ConnectionPool</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a>/         HomeR    GET</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a>/add-link AddLinkR POST</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a>|]</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true"></a>    runDB db <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true"></a>        <span class="dt">App</span> pool <span class="ot">&lt;-</span> getYesod</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true"></a>        runSqlPool db pool</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true"></a></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true"></a>        <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddLinkR</span><span class="kw">}&gt;</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true"></a>                Add a new link to</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">url</span><span class="ot"> name=</span><span class="st">url</span><span class="ot"> value=</span><span class="st">http://</span><span class="kw">&gt;</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true"></a>                titled</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">text</span><span class="ot"> name=</span><span class="st">title</span><span class="kw">&gt;</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add link&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true"></a>        <span class="kw">&lt;h2&gt;</span>Existing links</span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true"></a>        <span class="kw">^{</span>existingLinks<span class="kw">}</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true"></a>    |]</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true"></a></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true"></a><span class="ot">existingLinks ::</span> <span class="dt">Widget</span></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true"></a>existingLinks <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true"></a>    links <span class="ot">&lt;-</span> handlerToWidget <span class="op">$</span> runDB <span class="op">$</span> selectList [] [<span class="dt">LimitTo</span> <span class="dv">5</span>, <span class="dt">Desc</span> <span class="dt">LinkAdded</span>]</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true"></a>        <span class="kw">&lt;ul&gt;</span></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true"></a>            <span class="kw">$forall</span> <span class="dt">Entity</span> _ link <span class="ot">&lt;-</span> links</span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true"></a>                <span class="kw">&lt;li&gt;</span></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">#{</span>linkUrl link<span class="kw">}&gt;#{</span>linkTitle link<span class="kw">}</span></span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true"></a>    |]</span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true"></a></span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true"></a><span class="ot">postAddLinkR ::</span> <span class="dt">Handler</span> ()</span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true"></a>postAddLinkR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true"></a>    url <span class="ot">&lt;-</span> runInputPost <span class="op">$</span> ireq urlField <span class="st">&quot;url&quot;</span></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true"></a>    title <span class="ot">&lt;-</span> runInputPost <span class="op">$</span> ireq textField <span class="st">&quot;title&quot;</span></span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true"></a>    now <span class="ot">&lt;-</span> liftIO getCurrentTime</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true"></a>    runDB <span class="op">$</span> insert <span class="op">$</span> <span class="dt">Link</span> title url now</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true"></a>    setMessage <span class="st">&quot;Link added&quot;</span></span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true"></a>    redirect <span class="dt">HomeR</span></span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true"></a></span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true"></a>main <span class="ot">=</span> runNoLoggingT <span class="op">$</span> withSqlitePool <span class="st">&quot;links.db3&quot;</span> <span class="dv">10</span> <span class="op">$</span> \pool <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true"></a>    runSqlPersistMPool (runMigration migrateAll) pool</span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> pool</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE FlexibleContexts           #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GADTs                      #-}</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses      #-}</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings          #-}</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes                #-}</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell            #-}</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies               #-}</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Logger</span>    (runNoLoggingT)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>               (<span class="dt">Text</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Time</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Database.Persist.Sqlite</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>Link</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    title Text</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    url Text</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    added UTCTime</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span> <span class="dt">ConnectionPool</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>/         HomeR    GET</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>/add-link AddLinkR POST</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    runDB db <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        <span class="dt">App</span> pool <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        runSqlPool db pool</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> action=</span><span class="kw">@{</span><span class="dt">AddLinkR</span><span class="kw">}&gt;</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>                Add a new link to</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">url</span><span class="ot"> name=</span><span class="st">url</span><span class="ot"> value=</span><span class="st">http://</span><span class="kw">&gt;</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>                titled</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">text</span><span class="ot"> name=</span><span class="st">title</span><span class="kw">&gt;</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">&quot;Add link&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;h2&gt;</span>Existing links</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>        <span class="kw">^{</span>existingLinks<span class="kw">}</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="ot">existingLinks ::</span> <span class="dt">Widget</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>existingLinks <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    links <span class="ot">&lt;-</span> handlerToWidget <span class="op">$</span> runDB <span class="op">$</span> selectList [] [<span class="dt">LimitTo</span> <span class="dv">5</span>, <span class="dt">Desc</span> <span class="dt">LinkAdded</span>]</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;ul&gt;</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$forall</span> <span class="dt">Entity</span> _ link <span class="ot">&lt;-</span> links</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;li&gt;</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">#{</span>linkUrl link<span class="kw">}&gt;#{</span>linkTitle link<span class="kw">}</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="ot">postAddLinkR ::</span> <span class="dt">Handler</span> ()</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>postAddLinkR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>    url <span class="ot">&lt;-</span> runInputPost <span class="op">$</span> ireq urlField <span class="st">&quot;url&quot;</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>    title <span class="ot">&lt;-</span> runInputPost <span class="op">$</span> ireq textField <span class="st">&quot;title&quot;</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    now <span class="ot">&lt;-</span> liftIO getCurrentTime</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    runDB <span class="op">$</span> insert <span class="op">$</span> <span class="dt">Link</span> title url now</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>    setMessage <span class="st">&quot;Link added&quot;</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>    redirect <span class="dt">HomeR</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> runNoLoggingT <span class="op">$</span> withSqlitePool <span class="st">&quot;links.db3&quot;</span> <span class="dv">10</span> <span class="op">$</span> \pool <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>    runSqlPersistMPool (runMigration migrateAll) pool</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">App</span> pool</span></code></pre></div>
 <p>上記のコードの中でも特に <code>existingLink</code> 関数をしっかりと確認してください。ここで、必要なのは <code>handlerToWidget . runDB</code> を通常のデータベースアクションに適用することです。そして、<code>existingLinks</code> は通常の <code>Widget</code> と同じように扱うことができるため、<code>getHomeR</code> から呼び出す際に、特別な引数は何も必要ありません。このアプリの結果については、以下の画像を見てください。</p>
 <figure>
 <img src="https://www.yesodweb.com/book/image/navbar" title="navbar" alt="navbar" /><figcaption aria-hidden="true">navbar</figcaption>
 </figure>
 <h2 id="例-リクエスト情報">例: リクエスト情報</h2>
 <p>同じ要領で <code>Widget</code> 内でリクエスト情報を取得することもできます。以下は GET パラメータに応じてリストのソート順を決定する例です。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.List</span> (sortOn)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>    {<span class="ot"> personName ::</span> <span class="dt">Text</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>    ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>    }</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a><span class="ot">people ::</span> [<span class="dt">Person</span>]</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a>people <span class="ot">=</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>    [ <span class="dt">Person</span> <span class="st">&quot;Miriam&quot;</span> <span class="dv">25</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a>    , <span class="dt">Person</span> <span class="st">&quot;Eliezer&quot;</span> <span class="dv">3</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true"></a>    , <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="dv">26</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true"></a>    , <span class="dt">Person</span> <span class="st">&quot;Gavriella&quot;</span> <span class="dv">1</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true"></a>    ]</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true"></a></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true"></a>|]</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true"></a></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true"></a></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true"></a></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true"></a></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?sort=name&quot;</span><span class="kw">&gt;</span>Sort by name</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true"></a>            |</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?sort=age&quot;</span><span class="kw">&gt;</span>Sort by age</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true"></a>            |</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?&quot;</span><span class="kw">&gt;</span>No sort</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true"></a>        <span class="kw">^{</span>showPeople<span class="kw">}</span></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true"></a>    |]</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true"></a></span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true"></a><span class="ot">showPeople ::</span> <span class="dt">Widget</span></span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true"></a>showPeople <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true"></a>    msort <span class="ot">&lt;-</span> runInputGet <span class="op">$</span> iopt textField <span class="st">&quot;sort&quot;</span></span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true"></a>    <span class="kw">let</span> people' <span class="ot">=</span></span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true"></a>            <span class="kw">case</span> msort <span class="kw">of</span></span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true"></a>                <span class="dt">Just</span> <span class="st">&quot;name&quot;</span> <span class="ot">-&gt;</span> sortOn personName people</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true"></a>                <span class="dt">Just</span> <span class="st">&quot;age&quot;</span>  <span class="ot">-&gt;</span> sortOn personAge  people</span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true"></a>                _           <span class="ot">-&gt;</span> people</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true"></a>        <span class="kw">&lt;dl&gt;</span></span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true"></a>            <span class="kw">$forall</span> person <span class="ot">&lt;-</span> people'</span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true"></a>                <span class="kw">&lt;dt&gt;#{</span>personName person<span class="kw">}</span></span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true"></a>                <span class="kw">&lt;dd&gt;#{</span><span class="fu">show</span> <span class="op">$</span> personAge person<span class="kw">}</span></span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true"></a>    |]</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true"></a></span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.List</span> (sortOn)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> personName ::</span> <span class="dt">Text</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ot">people ::</span> [<span class="dt">Person</span>]</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>people <span class="ot">=</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    [ <span class="dt">Person</span> <span class="st">&quot;Miriam&quot;</span> <span class="dv">25</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">Person</span> <span class="st">&quot;Eliezer&quot;</span> <span class="dv">3</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">Person</span> <span class="st">&quot;Michael&quot;</span> <span class="dv">26</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    , <span class="dt">Person</span> <span class="st">&quot;Gavriella&quot;</span> <span class="dv">1</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">App</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?sort=name&quot;</span><span class="kw">&gt;</span>Sort by name</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>            |</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?sort=age&quot;</span><span class="kw">&gt;</span>Sort by age</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>            |</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;?&quot;</span><span class="kw">&gt;</span>No sort</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        <span class="kw">^{</span>showPeople<span class="kw">}</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="ot">showPeople ::</span> <span class="dt">Widget</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>showPeople <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>    msort <span class="ot">&lt;-</span> runInputGet <span class="op">$</span> iopt textField <span class="st">&quot;sort&quot;</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> people' <span class="ot">=</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>            <span class="kw">case</span> msort <span class="kw">of</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Just</span> <span class="st">&quot;name&quot;</span> <span class="ot">-&gt;</span> sortOn personName people</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Just</span> <span class="st">&quot;age&quot;</span>  <span class="ot">-&gt;</span> sortOn personAge  people</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>                _           <span class="ot">-&gt;</span> people</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;dl&gt;</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$forall</span> person <span class="ot">&lt;-</span> people'</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;dt&gt;#{</span>personName person<span class="kw">}</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;dd&gt;#{</span><span class="fu">show</span> <span class="op">$</span> personAge person<span class="kw">}</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p>今回の例では <code>handlerToWidget</code> すら呼び出す必要がないことに注意してください。その理由は、Yesod に含まれる多くの関数が <code>MonadHandler</code> 型クラスによって <code>Handler</code> と <code>Widget</code> の両方で自動的に動作するためです。実際に、<code>MonadHandler</code> は多くの共通のモナドトランスフォーマーを経由して、これらの関数を “自動的に持ち上げる” ことができます。</p>
 <p>しかし、やりたいのであれば <code>runInputGet</code> の呼び出しを <code>handlerToWidget</code> でラップすることもできます。その場合、動作は全く同じです。</p>
 <h2 id="パフォーマンスとエラーメッセージ">パフォーマンスとエラーメッセージ</h2>
@@ -363,8 +363,8 @@
 </div>
 <p>ここで、もしかすると少し混乱するかもしれません。既にお話したとおり、<code>Widget</code> シノニムはベースモナドに <code>Handler</code> ではなく <code>IO</code> を利用しています。そうなると、どうやって <code>Widget</code> は <code>Handler</code> のアクションを実行するのでしょうか？また、どうして <code>Widget</code> を <code>Handler</code> の上のトランスフォーマーとして構築し、<code>handlerToWidget</code> 関数の代わりに <code>lift</code> 関数を使うようにしないのでしょうか？さらには、<code>Widget</code> と <code>Handler</code> はどちらも <code>MonadResource</code> のインスタンスだと説明しました。<code>MonadResource</code> を使ったことがある人であれば、なぜ <code>ResourceT</code> がモナドトランスフォーマースタックに現れないのか不思議に思うかも知しれません。</p>
 <p>この問題の真相としては、これらすべてのモナドトランスフォーマーに対応するためのずっと簡単な (実装面において) 方法があるということです。<code>Handler</code> は単なる <code>IO</code> ではなく <code>ResourceT IO</code> の上に構築されるトランスフォーマーということにしましょう。その方が少しだけ正確になりますからね。そして、<code>Widget</code> を <code>Handler</code> の上に構築されるモナドトランスフォーマーとしましょう。最終的には以下のようなコードになりますね。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Handler</span> <span class="ot">=</span> <span class="dt">HandlerT</span> <span class="dt">App</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Widget</span>  <span class="ot">=</span> <span class="dt">WidgetT</span>  <span class="dt">App</span> (<span class="dt">HandlerT</span> <span class="dt">App</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Handler</span> <span class="ot">=</span> <span class="dt">HandlerT</span> <span class="dt">App</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Widget</span>  <span class="ot">=</span> <span class="dt">WidgetT</span>  <span class="dt">App</span> (<span class="dt">HandlerT</span> <span class="dt">App</span> (<span class="dt">ResourceT</span> <span class="dt">IO</span>))</span></code></pre></div>
 <p>この定義はそんなに悪く無さそうです。なぜなら、トランスフォーマー型を直接使わなくても、多くの部分で型シノニムを利用できるからです。問題点は、下地のトランスフォーマーがリークするするたびに、巨大な型シノニムは信じられないほどの混乱を招くということです。リークが最も起こりやすい場面はエラーメッセージです。おそらく、めちゃめちゃ混乱するでしょう！(他には、サブサイトで作業をする場合も同様に混乱するでしょう)</p>
 <p>もう1つ心配なのは、モナドトランスフォーマーの層を追加するとパフォーマンスが悪化するということです。動作しているI/Oと比較すれば無視できるほどではありますが、オーバーヘッドはあります。</p>
 <p>そこで、正しく層となっているトランスフォーマーの代わりに、<code>HandlerT</code> と <code>WidgetT</code> をそれぞれ1つのレベルのトランスフォーマーに平坦化します。このアプローチを抽象的な視点で見れば</p>
@@ -377,54 +377,54 @@
 <p>この部分をもっと理解したい場合は <code>Yesod.Core.Type</code> の <code>HandlerT</code> と <code>WidgetT</code> の定義を参照すると良いでしょう。</p>
 <h2 id="新しいモナドトランスフォーマーを追加する">新しいモナドトランスフォーマーを追加する</h2>
 <p>自分のアプリケーションの一部に独自のモナドトランスフォーマーを追加したい時があるかもしれません。そういった時のために、例として Hackage にアップロードされている <a href="https://www.stackage.org/package/monadcryptorandom">monadcryptorandom</a> パッケージを考えてみましょう。このパッケージはモナドに対して、暗号論的に安全な乱数を生成する <code>MonadCRandom</code> 型クラスと、その型クラスの具体的なインスタンスとして <code>CRandT</code> を定義しています。以下の例は、ランダムなバイト列を生成するコードです。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Monad.CryptoRandom</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Base16</span> (encode)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>    randomBS <span class="ot">&lt;-</span> getBytes <span class="dv">128</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="op">$</span> encode randomBS<span class="kw">}</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>        |]</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad.CryptoRandom</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Base16</span> (encode)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    randomBS <span class="ot">&lt;-</span> getBytes <span class="dv">128</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="op">$</span> encode randomBS<span class="kw">}</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        |]</span></code></pre></div>
 <p>しかし、結果は次のようなエラーメッセージが表示されます。</p>
 <pre class="shell"><code>    No instance for (MonadCRandom e0 (HandlerT App IO))
       arising from a use of ‘getBytes’
     In a stmt of a 'do' block: randomBS &lt;- getBytes 128</code></pre>
 <p>エラーメッセージに表示されるようなインスタンスをどのように取得すれば良いのでしょうか？ひとつの方法として <code>getBytes</code> を呼ぶ際に単純に <code>CRandT</code> モナドトランスフォーマーを使う方法があります。以下は完全な例です。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Yesod</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Crypto.Random</span> (<span class="dt">SystemRandom</span>, newGenIO)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Control.Monad.CryptoRandom</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Base16</span> (encode)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>|]</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a>    gen <span class="ot">&lt;-</span> liftIO newGenIO</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true"></a>    eres <span class="ot">&lt;-</span> evalCRandT (getBytes <span class="dv">16</span>) (<span class="ot">gen ::</span> <span class="dt">SystemRandom</span>)</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true"></a>    randomBS <span class="ot">&lt;-</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true"></a>        <span class="kw">case</span> eres <span class="kw">of</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true"></a>            <span class="dt">Left</span> e <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="fu">show</span> (<span class="ot">e ::</span> <span class="dt">GenError</span>)</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true"></a>            <span class="dt">Right</span> gen <span class="ot">-&gt;</span> <span class="fu">return</span> gen</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="op">$</span> encode randomBS<span class="kw">}</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true"></a>        |]</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true"></a></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Yesod</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Crypto.Random</span> (<span class="dt">SystemRandom</span>, newGenIO)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad.CryptoRandom</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Base16</span> (encode)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text.Encoding</span> (decodeUtf8)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    gen <span class="ot">&lt;-</span> liftIO newGenIO</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    eres <span class="ot">&lt;-</span> evalCRandT (getBytes <span class="dv">16</span>) (<span class="ot">gen ::</span> <span class="dt">SystemRandom</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    randomBS <span class="ot">&lt;-</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> eres <span class="kw">of</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Left</span> e <span class="ot">-&gt;</span> <span class="fu">error</span> <span class="op">$</span> <span class="fu">show</span> (<span class="ot">e ::</span> <span class="dt">GenError</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Right</span> gen <span class="ot">-&gt;</span> <span class="fu">return</span> gen</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="op">$</span> encode randomBS<span class="kw">}</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p>この例で行っていることは <code>CRandT</code> トランスフォーマーを <code>HandlerT</code> トランスフォーマーの上に重ねています。他の方法では機能しません。Yesod 自身は、最終的に <code>CRandT</code> トランスフォーマーをアンラップする必要がありますが、そのための情報が欠如しているためです。このやり方は Persistent の時と同じように <code>HandlerT</code> の上に構築されるトランスフォーマーになります。</p>
 <p>しかし、この方法には2つの短所があります。</p>
 <ol type="1">
@@ -432,75 +432,75 @@
 <li>このやり方は非効率的です。他のモナドに入るたびに、新しいランダムシードを生成する必要があります。</li>
 </ol>
 <p>2つ目の点については、ランダムなシードを <code>IORef</code> のような可変参照でファウンデーションデータ型に保存し、<code>CRandT</code> トランスフォーマーに入るたびに、アトミックにサンプリングすることで回避できます。しかし、さらにワンステップ深入りし <code>Handler</code> モナド自身を <code>MonadCRandom</code> のインスタンスにしてみましょう！コードは以下の通りです。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE FlexibleInstances     #-}</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeSynonymInstances  #-}</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad</span>              (join)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Catch</span>        (throwM)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.CryptoRandom</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Error.Class</span>  (<span class="dt">MonadError</span> (..))</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Crypto.Random</span>              (<span class="dt">SystemRandom</span>, newGenIO)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.ByteString.Base16</span>     (encode)</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>         (decodeUtf8)</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">UnliftIO.Exception</span>         (catch)</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true"></a>    {<span class="ot"> randGen ::</span> <span class="dt">IORef</span> <span class="dt">SystemRandom</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true"></a>    }</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true"></a></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true"></a>|]</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true"></a></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true"></a></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true"></a>    randomBS <span class="ot">&lt;-</span> getBytes <span class="dv">16</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="op">$</span> encode randomBS<span class="kw">}</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true"></a>        |]</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true"></a></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">MonadError</span> <span class="dt">GenError</span> <span class="dt">Handler</span> <span class="kw">where</span></span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true"></a>    throwError <span class="ot">=</span> throwM</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true"></a>    catchError <span class="ot">=</span> <span class="fu">catch</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">MonadCRandom</span> <span class="dt">GenError</span> <span class="dt">Handler</span> <span class="kw">where</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true"></a>    getCRandom <span class="ot">=</span> wrap crandom</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true"></a>    <span class="ot">{-# INLINE getCRandom #-}</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true"></a>    getBytes i <span class="ot">=</span> wrap (genBytes i)</span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true"></a>    <span class="ot">{-# INLINE getBytes #-}</span></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true"></a>    getBytesWithEntropy i e <span class="ot">=</span> wrap (genBytesWithEntropy i e)</span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true"></a>    <span class="ot">{-# INLINE getBytesWithEntropy #-}</span></span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true"></a>    doReseed bs <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true"></a>        genRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> randGen getYesod</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true"></a>        join <span class="op">$</span> liftIO <span class="op">$</span> atomicModifyIORef genRef <span class="op">$</span> \gen <span class="ot">-&gt;</span></span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true"></a>            <span class="kw">case</span> reseed bs gen <span class="kw">of</span></span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true"></a>                <span class="dt">Left</span> e <span class="ot">-&gt;</span> (gen, throwM e)</span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true"></a>                <span class="dt">Right</span> gen' <span class="ot">-&gt;</span> (gen', <span class="fu">return</span> ())</span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true"></a>    <span class="ot">{-# INLINE doReseed #-}</span></span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true"></a></span>
-<span id="cb10-55"><a href="#cb10-55" aria-hidden="true"></a><span class="ot">wrap ::</span> (<span class="dt">SystemRandom</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">GenError</span> (a, <span class="dt">SystemRandom</span>)) <span class="ot">-&gt;</span> <span class="dt">Handler</span> a</span>
-<span id="cb10-56"><a href="#cb10-56" aria-hidden="true"></a>wrap f <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-57"><a href="#cb10-57" aria-hidden="true"></a>    genRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> randGen getYesod</span>
-<span id="cb10-58"><a href="#cb10-58" aria-hidden="true"></a>    join <span class="op">$</span> liftIO <span class="op">$</span> atomicModifyIORef genRef <span class="op">$</span> \gen <span class="ot">-&gt;</span></span>
-<span id="cb10-59"><a href="#cb10-59" aria-hidden="true"></a>        <span class="kw">case</span> f gen <span class="kw">of</span></span>
-<span id="cb10-60"><a href="#cb10-60" aria-hidden="true"></a>            <span class="dt">Left</span> e <span class="ot">-&gt;</span> (gen, throwM e)</span>
-<span id="cb10-61"><a href="#cb10-61" aria-hidden="true"></a>            <span class="dt">Right</span> (x, gen') <span class="ot">-&gt;</span> (gen', <span class="fu">return</span> x)</span>
-<span id="cb10-62"><a href="#cb10-62" aria-hidden="true"></a></span>
-<span id="cb10-63"><a href="#cb10-63" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb10-64"><a href="#cb10-64" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-65"><a href="#cb10-65" aria-hidden="true"></a>    gen <span class="ot">&lt;-</span> newGenIO</span>
-<span id="cb10-66"><a href="#cb10-66" aria-hidden="true"></a>    genRef <span class="ot">&lt;-</span> newIORef gen</span>
-<span id="cb10-67"><a href="#cb10-67" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
-<span id="cb10-68"><a href="#cb10-68" aria-hidden="true"></a>        { randGen <span class="ot">=</span> genRef</span>
-<span id="cb10-69"><a href="#cb10-69" aria-hidden="true"></a>        }</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE FlexibleInstances     #-}</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeSynonymInstances  #-}</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad</span>              (join)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Catch</span>        (throwM)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.CryptoRandom</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Error.Class</span>  (<span class="dt">MonadError</span> (..))</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Crypto.Random</span>              (<span class="dt">SystemRandom</span>, newGenIO)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.ByteString.Base16</span>     (encode)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text.Encoding</span>         (decodeUtf8)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">UnliftIO.Exception</span>         (catch)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> randGen ::</span> <span class="dt">IORef</span> <span class="dt">SystemRandom</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    randomBS <span class="ot">&lt;-</span> getBytes <span class="dv">16</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Here's some random data: <span class="kw">#{</span>decodeUtf8 <span class="op">$</span> encode randomBS<span class="kw">}</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">MonadError</span> <span class="dt">GenError</span> <span class="dt">Handler</span> <span class="kw">where</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    throwError <span class="ot">=</span> throwM</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    catchError <span class="ot">=</span> <span class="fu">catch</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">MonadCRandom</span> <span class="dt">GenError</span> <span class="dt">Handler</span> <span class="kw">where</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    getCRandom <span class="ot">=</span> wrap crandom</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    <span class="ot">{-# INLINE getCRandom #-}</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>    getBytes i <span class="ot">=</span> wrap (genBytes i)</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    <span class="ot">{-# INLINE getBytes #-}</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    getBytesWithEntropy i e <span class="ot">=</span> wrap (genBytesWithEntropy i e)</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>    <span class="ot">{-# INLINE getBytesWithEntropy #-}</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>    doReseed bs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>        genRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> randGen getYesod</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>        join <span class="op">$</span> liftIO <span class="op">$</span> atomicModifyIORef genRef <span class="op">$</span> \gen <span class="ot">-&gt;</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>            <span class="kw">case</span> reseed bs gen <span class="kw">of</span></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Left</span> e <span class="ot">-&gt;</span> (gen, throwM e)</span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Right</span> gen' <span class="ot">-&gt;</span> (gen', <span class="fu">return</span> ())</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>    <span class="ot">{-# INLINE doReseed #-}</span></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a><span class="ot">wrap ::</span> (<span class="dt">SystemRandom</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">GenError</span> (a, <span class="dt">SystemRandom</span>)) <span class="ot">-&gt;</span> <span class="dt">Handler</span> a</span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>wrap f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>    genRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> randGen getYesod</span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    join <span class="op">$</span> liftIO <span class="op">$</span> atomicModifyIORef genRef <span class="op">$</span> \gen <span class="ot">-&gt;</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> f gen <span class="kw">of</span></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Left</span> e <span class="ot">-&gt;</span> (gen, throwM e)</span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Right</span> (x, gen') <span class="ot">-&gt;</span> (gen', <span class="fu">return</span> x)</span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>    gen <span class="ot">&lt;-</span> newGenIO</span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>    genRef <span class="ot">&lt;-</span> newIORef gen</span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>        { randGen <span class="ot">=</span> genRef</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>        }</span></code></pre></div>
 <p>この例でもっとも大切な概念はこれらです。</p>
 <ol type="1">
 <li><code>App</code> データ型が <code>IORef SystemRandom</code> のフィールドを持つように変更します。</li>

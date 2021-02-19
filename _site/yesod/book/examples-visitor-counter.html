@@ -183,40 +183,40 @@
 <p>さて、訪問者数を適切にカウントするためには、カウント数を水平にスケールする Web サーバ間で共有し、アプリケーションの再起動時に情報が残るようしなければなりません。そのため、データベースのような何らかの永続的なストレージレイヤに情報を保存する必要があります。</p>
 <p>しかし、ここではそこまで複雑な問題は考えません (だって、もしそういうことなら訪問者カウンタを題材に選びませんよね？)。その代わり、今回の例では複数のハンドラ間で何らかの状態を共有する方法について解説しようと思います。実際のアプリケーションでは、リクエストをまたいで情報をキャッシュする時などに利用できます。ここで紹介するテクニックを使う場合は、複数のアプリケーションサーバやアプリケーションの再起動について、各自で適切な処理を追加で考慮する必要があります。</p>
 <p>やり方としては、まずはファウンデーション型にミュータブルにデータを参照する新しいフィールドを作ります。そして、それぞれのハンドラでそのフィールドにアクセスします。このテクニックは簡単なのでコードを見てみましょう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>    {<span class="ot"> visitors ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>    }</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>|]</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>    visitorsRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> visitors getYesod</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>    visitors <span class="ot">&lt;-</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>        liftIO <span class="op">$</span> atomicModifyIORef visitorsRef <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a>        (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>    defaultLayout</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a>        [whamlet|</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>Welcome, you are visitor number <span class="kw">#{</span>visitors<span class="kw">}</span>.</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>        |]</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a>    visitorsRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a>        { visitors <span class="ot">=</span> visitorsRef</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a>        }</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> visitors ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    visitorsRef <span class="ot">&lt;-</span> <span class="fu">fmap</span> visitors getYesod</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    visitors <span class="ot">&lt;-</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        liftIO <span class="op">$</span> atomicModifyIORef visitorsRef <span class="op">$</span> \i <span class="ot">-&gt;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        (i <span class="op">+</span> <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    defaultLayout</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>Welcome, you are visitor number <span class="kw">#{</span>visitors<span class="kw">}</span>.</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    visitorsRef <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="dt">App</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        { visitors <span class="ot">=</span> visitorsRef</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        }</span></code></pre></div>
 <p>上記のコードでは <code>IORef</code> を使っていますが、必要であれば <code>MVar</code> や <code>TVar</code> なども自由に利用可能です。実際に、このプログラムを <code>IORef</code> から <code>TVar</code> に変更することは、読者への良い練習問題になるでしょう。</p>
 <h2 id="本書のコード">本書のコード</h2>
 <ul>

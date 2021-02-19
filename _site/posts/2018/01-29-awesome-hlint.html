@@ -294,14 +294,14 @@ $ cd test-proj
 $ hlint .
 No hints</code></pre>
 <p>ここで、ファイルを少し修正して <code>HLint</code> に働いてもらいましょう！</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="co">-- src/Lib.hs</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
 <p>上記のコードは以下のようなヒントを2つ提案してくれます。</p>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:7:12: Warning: Use concatMap
@@ -318,15 +318,15 @@ Why not:
 
 2 hints</code></pre>
 <p>これは、このような意味になります。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="co"># 1つ目のヒント</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒントレベル</span><span class="kw">:</span><span class="at"> 警告</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒント</span><span class="kw">:</span><span class="at"> Use concatMap</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">出力の意味</span><span class="kw">:</span><span class="at"> concat (map toUpper ['a' .. 'z']) を見つけたけど、どうして concatMap toUpper ['a' .. 'z'] と書かないんだい？</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a><span class="co"># 2つ目のヒント</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒントレベル</span><span class="kw">:</span><span class="at"> 警告</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒント</span><span class="kw">:</span><span class="at"> Use fromMaybe</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">出力の意味</span><span class="kw">:</span><span class="at"> maybe &quot;&quot; id は Data.Maybe モジュールにある fromMaybe 関数を使えば fromMaybe &quot;&quot; と同じですよ</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1つ目のヒント</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒントレベル</span><span class="kw">:</span><span class="at"> 警告</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒント</span><span class="kw">:</span><span class="at"> Use concatMap</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">出力の意味</span><span class="kw">:</span><span class="at"> concat (map toUpper ['a' .. 'z']) を見つけたけど、どうして concatMap toUpper ['a' .. 'z'] と書かないんだい？</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2つ目のヒント</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒントレベル</span><span class="kw">:</span><span class="at"> 警告</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ヒント</span><span class="kw">:</span><span class="at"> Use fromMaybe</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">出力の意味</span><span class="kw">:</span><span class="at"> maybe &quot;&quot; id は Data.Maybe モジュールにある fromMaybe 関数を使えば fromMaybe &quot;&quot; と同じですよ</span></span></code></pre></div>
 <p>素晴らしいですね。とてもわかりやすいです。また、<code>--report</code> オプションを利用することで結果を <code>HTML</code> として出力することも可能です。</p>
 <pre class="shell"><code>$ hlint . --report</code></pre>
 <p>とても素晴らしいのですが、<code>HLint</code> の提案するヒントに賛成できない時はどうしましょう? もし <code>HLint</code> の言うとおりにしかできないのであれば、とても使いづらいツールになってしまいます。</p>
@@ -337,85 +337,85 @@ Why not:
 <p>まずは、カスタムヒントファイルの雛形を生成するために、プロジェクトのルートで以下のコマンドを実行しましょう。</p>
 <pre class="shell"><code>$ hlint --default &gt; .hlint.yaml</code></pre>
 <p>中身はこんな感じで、ヒントの書き方について具体例が載っています。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="co"># HLint configuration file</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="co"># https://github.com/ndmitchell/hlint</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="co">##########################</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a><span class="co"># This file contains a template configuration file, which is typically</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="co"># placed as .hlint.yaml in the root of your project</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a><span class="co"># Specify additional command line arguments</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a><span class="co"># - arguments: [--color, --cpp-simple, -XQuasiQuotes]</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a><span class="co"># Control which extensions/flags/modules/functions can be used</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a><span class="co"># - extensions:</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true"></a><span class="co">#   - default: false # all extension are banned by default</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true"></a><span class="co">#   - name: [PatternGuards, ViewPatterns] # only these listed extensions can be used</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true"></a><span class="co">#   - {name: CPP, within: CrossPlatform} # CPP can only be used in a given module</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true"></a><span class="co"># - flags:</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true"></a><span class="co">#   - {name: -w, within: []} # -w is allowed nowhere</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true"></a><span class="co"># - modules:</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true"></a><span class="co">#   - {name: [Data.Set, Data.HashSet], as: Set} # if you import Data.Set qualified, it must be as 'Set'</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true"></a><span class="co">#   - {name: Control.Arrow, within: []} # Certain modules are banned entirely</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true"></a><span class="co"># - functions:</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true"></a><span class="co">#   - {name: unsafePerformIO, within: []} # unsafePerformIO can only appear in no modules</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true"></a></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true"></a></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true"></a><span class="co"># Add custom hints for this project</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true"></a><span class="co"># Will suggest replacing &quot;wibbleMany [myvar]&quot; with &quot;wibbleOne myvar&quot;</span></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true"></a><span class="co"># - error: {lhs: &quot;wibbleMany [x]&quot;, rhs: wibbleOne x}</span></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true"></a></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true"></a></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true"></a><span class="co"># Turn on hints that are off by default</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true"></a><span class="co"># Ban &quot;module X(module X) where&quot;, to require a real export list</span></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true"></a><span class="co"># - warn: {name: Use explicit module export list}</span></span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true"></a><span class="co"># Replace a $ b $ c with a . b $ c</span></span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true"></a><span class="co"># - group: {name: dollar, enabled: true}</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true"></a><span class="co">#</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true"></a><span class="co"># Generalise map to fmap, ++ to &lt;&gt;</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true"></a><span class="co"># - group: {name: generalise, enabled: true}</span></span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true"></a></span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true"></a></span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true"></a><span class="co"># Ignore some builtin hints</span></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true"></a><span class="co"># - ignore: {name: Use let}</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true"></a><span class="co"># - ignore: {name: Use const, within: SpecialModule} # Only within certain modules</span></span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true"></a></span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true"></a></span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true"></a><span class="co"># Define some custom infix operators</span></span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true"></a><span class="co"># - fixity: infixr 3 ~^#^~</span></span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true"></a></span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true"></a></span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true"></a><span class="co"># To generate a suitable file for HLint do:</span></span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true"></a><span class="co"># $ hlint --default &gt; .hlint.yaml</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># HLint configuration file</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://github.com/ndmitchell/hlint</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">##########################</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This file contains a template configuration file, which is typically</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># placed as .hlint.yaml in the root of your project</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify additional command line arguments</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># - arguments: [--color, --cpp-simple, -XQuasiQuotes]</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Control which extensions/flags/modules/functions can be used</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co"># - extensions:</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   - default: false # all extension are banned by default</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#   - name: [PatternGuards, ViewPatterns] # only these listed extensions can be used</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co">#   - {name: CPP, within: CrossPlatform} # CPP can only be used in a given module</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># - flags:</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="co">#   - {name: -w, within: []} # -w is allowed nowhere</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co"># - modules:</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="co">#   - {name: [Data.Set, Data.HashSet], as: Set} # if you import Data.Set qualified, it must be as 'Set'</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="co">#   - {name: Control.Arrow, within: []} # Certain modules are banned entirely</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="co"># - functions:</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="co">#   - {name: unsafePerformIO, within: []} # unsafePerformIO can only appear in no modules</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Add custom hints for this project</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Will suggest replacing &quot;wibbleMany [myvar]&quot; with &quot;wibbleOne myvar&quot;</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="co"># - error: {lhs: &quot;wibbleMany [x]&quot;, rhs: wibbleOne x}</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Turn on hints that are off by default</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Ban &quot;module X(module X) where&quot;, to require a real export list</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="co"># - warn: {name: Use explicit module export list}</span></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace a $ b $ c with a . b $ c</span></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="co"># - group: {name: dollar, enabled: true}</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Generalise map to fmap, ++ to &lt;&gt;</span></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="co"># - group: {name: generalise, enabled: true}</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Ignore some builtin hints</span></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="co"># - ignore: {name: Use let}</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="co"># - ignore: {name: Use const, within: SpecialModule} # Only within certain modules</span></span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Define some custom infix operators</span></span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="co"># - fixity: infixr 3 ~^#^~</span></span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="co"># To generate a suitable file for HLint do:</span></span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a><span class="co"># $ hlint --default &gt; .hlint.yaml</span></span></code></pre></div>
 <p><code>HLint</code> はデフォルトヒントが記述されている <code>hlint.yaml</code> と、カスタムヒントが記述されている <code>.hlint.yaml</code> の両方のヒント使って検査を行うため、プロジェクト固有のヒントについては、<code>.hlint.yaml</code> に記述していくことになります。</p>
 <h3 id="カスタムヒントの追加">カスタムヒントの追加</h3>
 <p>ここでは説明のため以下のような <code>tshow</code> という関数があるとしましょう。この関数は <code>show :: Show a =&gt; a -&gt; String</code> の <code>Text</code> バージョンです。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a>tshow <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ot">tshow ::</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>tshow <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></span></code></pre></div>
 <p>目的としてはプロジェクトのコード中で <code>pack . show</code> となっている部分を <code>tshow</code> に直すようにヒントを出させることです。まだヒントを追加していないため、当然ながら現時点では <code>pack . show</code> というコードが使われていたとしても何も起こりません。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="co">-- src/Lib.hs</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a>intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></span></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>それでは <code>.hlint.yaml</code> に <code>tshow = pack . show</code> を検出するためのヒントを追記しましょう。以下の1行を追記するだけです。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">error</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs</span><span class="kw">:</span><span class="at"> pack (show x)</span><span class="kw">,</span><span class="at"> </span><span class="fu">rhs</span><span class="kw">:</span><span class="at"> tshow x</span><span class="kw">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">error</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs</span><span class="kw">:</span><span class="at"> pack (show x)</span><span class="kw">,</span><span class="at"> </span><span class="fu">rhs</span><span class="kw">:</span><span class="at"> tshow x</span><span class="kw">}</span></span></code></pre></div>
 <p><code>lhs</code>, <code>rhs</code> はそれぞれ <code>Left Hand Side (左辺)</code>, <code>Right Hand Side (右辺)</code> の略です。またヒントのレベルは <code>error</code> 以外にも <code>warm</code>, <code>suggest (hint キーワードはただのエイリアスです)</code> も指定できるため、好きなレベルを指定しましょう。(ヒントレベルの使い分けについては <a href="https://github.com/ndmitchell/hlint#what-is-the-difference-between-errorwarningsuggestion">What is the difference between error/warning/suggestion?</a> をご参照ください)</p>
 <p>では、実行してみましょう。</p>
 <pre class="shell"><code>$ hlint .
@@ -428,24 +428,24 @@ Why not:
 1 hint</code></pre>
 <p>無事に <code>Error</code> として <code>tshow</code> のためのヒントが表示されました！</p>
 <p>ヒントの修正方法は、先程定義した <code>intToText</code> 関数の実装をヒント通りに書き換えるだけです。</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>intToText <span class="ot">=</span> tshow</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>intToText <span class="ot">=</span> tshow</span></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <h3 id="ヒントの定義方法について">ヒントの定義方法について</h3>
 <p>さきほど定義したヒントはこのようにポイントフリー形式で書くこともできます。</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">error</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs</span><span class="kw">:</span><span class="at"> pack . show</span><span class="kw">,</span><span class="at"> </span><span class="fu">rhs</span><span class="kw">:</span><span class="at"> tshow</span><span class="kw">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">error</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">lhs</span><span class="kw">:</span><span class="at"> pack . show</span><span class="kw">,</span><span class="at"> </span><span class="fu">rhs</span><span class="kw">:</span><span class="at"> tshow</span><span class="kw">}</span></span></code></pre></div>
 <p>上記のヒント形式で次の内容を解析してみましょう。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="co">-- src/Lib.hs</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a>intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a><span class="ot">intToText2  ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a>intToText2 x <span class="ot">=</span> <span class="fu">pack</span> <span class="op">$</span> <span class="fu">show</span> x</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (pack)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="ot">intToText ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>intToText <span class="ot">=</span> <span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="ot">intToText2  ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>intToText2 x <span class="ot">=</span> <span class="fu">pack</span> <span class="op">$</span> <span class="fu">show</span> x</span></code></pre></div>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:6:13: Error: Use tshow
 Found:
@@ -462,16 +462,16 @@ Why not:
 <p><code>HLint</code> を使えば、そのような関数を検出することが可能です。実際には <code>関数</code> だけでなく <code>言語拡張</code>, <code>フラグ</code>, <code>モジュール</code> も指定することができます。</p>
 <h3 id="関数を指定する方法">関数を指定する方法</h3>
 <p><code>.hlint.yaml</code> に以下の内容を追記します。今回は <code>undefined</code> を検出してみたいと思います。</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="co"># .hlint.yaml</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">functions</span><span class="kw">:</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> undefined</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[]}</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .hlint.yaml</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">functions</span><span class="kw">:</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> undefined</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[]}</span></span></code></pre></div>
 <p>現状はどこにも使われていないためヒントは表示されません。</p>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>では、以下の関数を追加してみましょう。このように型レベルで設計して、実装を <code>undefined</code> にしておくことは良くあります。</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="co">-- src/Lib.hs</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true"></a><span class="ot">doubleToText ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true"></a>doubleToText <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="ot">doubleToText ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>doubleToText <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
 <p>忘れずに実装してしまえば問題無いのですが、たまには忘れることもあります。しかし、<code>HLint</code> があれば安心です。</p>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:18:16: Warning: Avoid restricted function
@@ -481,9 +481,9 @@ Note: may break the code
 
 1 hint</code></pre>
 <p><code>Lib</code> モジュールのみを検査対象とする場合は <code>within</code> キーワードを次のようにします。</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="co"># .hlint.yaml</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">functions</span><span class="kw">:</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> undefined</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .hlint.yaml</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">functions</span><span class="kw">:</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> undefined</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span></code></pre></div>
 <h2 id="hlint-のヒントを無視する方法">HLint のヒントを無視する方法</h2>
 <p><code>HLint</code> のヒントを無視する方法には以下の2種類があります。</p>
 <ul>
@@ -493,14 +493,14 @@ Note: may break the code
 <p>書式がちょっとわかりづらいので、実際に色々試してみましょう。</p>
 <h3 id="関数単位で全てのヒントを無視する">関数単位で全てのヒントを無視する</h3>
 <p>最初に定義した <code>someFunc</code> 関数はヒントを2つ提案してくれていました。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="co">-- src/Lib.hs</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
 <pre class="shell"><code>$ hlint .
 ./src/Lib.hs:6:12: Warning: Use concatMap
 Found:
@@ -522,15 +522,15 @@ Why not:
 </ul>
 <p>とりあえず <code>someFunc</code> のヒントを全て無視するようにしてしまいましょう。</p>
 <p>こんな感じで <code>{-# ANN someFunc "HLint: ignore" #-}</code> というアノテーションをつけます。</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a><span class="co">-- src/Lib.hs</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- src/Lib.hs</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Lib</span> <span class="kw">where</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="ot">someFunc ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>someFunc <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> x1 <span class="ot">=</span> <span class="fu">concat</span> (<span class="fu">map</span> <span class="fu">toUpper</span> [<span class="ch">'a'</span> <span class="op">..</span> <span class="ch">'z'</span>])</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>      x2 <span class="ot">=</span> <span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> <span class="st">&quot;abc&quot;</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;someFunc&quot;</span></span></code></pre></div>
 <pre class="shell"><code>$ hlint .
 No hints</code></pre>
 <p>これで <code>src/Lib.hs</code> に記述されている <code>someFunc</code> 関数のみ <code>HLint</code> のヒントを無視できるようになりました。</p>
@@ -538,30 +538,30 @@ No hints</code></pre>
 <p>ヒントレベルは <code>ignore</code> 以外にも <code>suggest</code>, <code>warn</code>, <code>error</code> が利用可能です。これらの値を利用した場合は出力時のヒントレベルが強制的にそのレベルに上書きされます。つまり、ヒントファイルに <code>warn</code> で定義されていたとしても <code>error</code> や <code>ignore</code> として処理されることになります。</p>
 <h4 id="関数単位で全てのヒントを無視する方法">関数単位で全てのヒントを無視する方法</h4>
 <p><code>ANN</code> のあとに対象の関数名を書きます。</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore&quot; #-}</span></span></code></pre></div>
 <h4 id="関数単位で特定のヒントのみを無視する方法">関数単位で特定のヒントのみを無視する方法</h4>
 <p><code>HLint: ignore</code> の後にヒント名を書きます。</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use fromMaybe&quot; #-}</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use concatMap&quot; #-}</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use fromMaybe&quot; #-}</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN someFunc &quot;HLint: ignore Use concatMap&quot; #-}</span></span></code></pre></div>
 <h4 id="モジュール単位で無視する方法">モジュール単位で無視する方法</h4>
 <p><code>module</code> キーワードを使う場合はアノテーションを <code>import</code> 文の後に設置しないと上手く動かないので、その点のみ注意が必要です。</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a><span class="ot">{-# ANN module &quot;HLint: ignore&quot; #-}</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a><span class="ot">{-# ANN module &quot;HLint: ignore Use fromMaybe&quot; #-}</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true"></a><span class="ot">{-# ANN module &quot;HLint: ignore Use concatMap&quot; #-}</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN module &quot;HLint: ignore&quot; #-}</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN module &quot;HLint: ignore Use fromMaybe&quot; #-}</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN module &quot;HLint: ignore Use concatMap&quot; #-}</span></span></code></pre></div>
 <h3 id="overloadedstrings-言語拡張">OverloadedStrings 言語拡張</h3>
 <p>言語拡張の <code>OverloadedStrings</code> を有効化している場合は上手く動かないため、明示的に <code>String</code> の型注釈を指定する必要があります。</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a><span class="ot">{-# ANN someFunc (&quot;HLint: ignore&quot; :: String) #-}</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# ANN someFunc (&quot;HLint: ignore&quot; :: String) #-}</span></span></code></pre></div>
 <h3 id="ヒントファイルを使って無視する方法">ヒントファイルを使って無視する方法</h3>
 <p>プロジェクト全体で無視したいヒントについては <code>.hint.yaml</code> に追記します。</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a><span class="co"># .hint.yaml</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use fromMaybe</span><span class="kw">}</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use concatMap</span><span class="kw">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .hint.yaml</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use fromMaybe</span><span class="kw">}</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use concatMap</span><span class="kw">}</span></span></code></pre></div>
 <p><code>within</code> キーワードでヒントを適用するモジュールを指定できます。</p>
 <p>例として <code>Lib</code> モジュールのみを対象とする場合は次のようになります。(この場合は <code>ignore</code> が指定されているので <code>Lib</code> モジュールのみヒントを無視します)</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="co"># .hlint.yaml</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use fromMaybe</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use concatMap</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .hlint.yaml</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use fromMaybe</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">ignore</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">name</span><span class="kw">:</span><span class="at"> Use concatMap</span><span class="kw">,</span><span class="at"> </span><span class="fu">within</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Lib</span><span class="kw">]}</span></span></code></pre></div>
 <h2 id="ci-を回す">CI を回す！</h2>
 <p><code>Haskell</code> のプロジェクトでよく見る <code>CI</code> ツールといえば以下の2つでしょう。</p>
 <ul>
@@ -576,33 +576,33 @@ No hints</code></pre>
 <p>ここでは <code>HLint</code> の内容にしか言及しませんが、機会があれば <code>CI</code> については別途記事にしたいと思います。</p>
 <h3 id="travis-ci">Travis CI</h3>
 <p><code>.travis.yml</code> に以下の内容を記述するだけです。</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a><span class="co"># .travis.yml</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a><span class="fu">sudo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true"></a><span class="fu">language</span><span class="kw">:</span><span class="at"> generic</span></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true"></a><span class="at">  </span><span class="fu">include</span><span class="kw">:</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">stage</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true"></a><span class="at">      </span><span class="fu">script</span><span class="kw">:</span><span class="at"> curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .travis.yml</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">language</span><span class="kw">:</span><span class="at"> generic</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">include</span><span class="kw">:</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">stage</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">script</span><span class="kw">:</span><span class="at"> curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span></span></code></pre></div>
 <h3 id="circleci-2.0">CircleCI 2.0</h3>
 <p><code>.circleci/config.yml</code> に以下の内容を記述するだけです。</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> ubuntu:16.04</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true"></a>            apt update</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true"></a>            apt install -y curl</span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true"></a><span class="fu">workflows</span><span class="kw">:</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true"></a><span class="at">    </span><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> hlint</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> ubuntu:16.04</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run hlint</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>            apt update</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>            apt install -y curl</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="fu">workflows</span><span class="kw">:</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">hlint</span><span class="kw">:</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> hlint</span></span></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <p>今回は紹介していませんが <code>HLint</code> のヒントを自動的に適用してくれる <a href="https://github.com/mpickering/apply-refact">apply-refact</a> というツールもあります。使い方については各種ドキュメントをご確認ください。</p>
 <ul>

@@ -237,20 +237,20 @@ sink :: Monad m =&gt; Co" />
         <h2 id="haskell-quiz-no.5">Haskell Quiz No.5</h2>
 <p>難易度: λλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="co">-- stack script --resolver lts-11.0</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>sink <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="op">.|</span> mapC <span class="fu">show</span> <span class="op">.|</span> foldC</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  y <span class="ot">&lt;-</span> sumC</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>  <span class="fu">return</span> (x, y)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>  <span class="kw">let</span> res <span class="ot">=</span> runConduitPure <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> sink</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>  <span class="fu">print</span> res</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- stack script --resolver lts-11.0</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ot">sink ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> o m (<span class="dt">String</span>, <span class="dt">Int</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>sink <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> takeC <span class="dv">5</span> <span class="op">.|</span> mapC <span class="fu">show</span> <span class="op">.|</span> foldC</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> sumC</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (x, y)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> res <span class="ot">=</span> runConduitPure <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> sink</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span> res</span></code></pre></div>
 <p>答えは<a href="04-06-quiz-6.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
@@ -259,34 +259,34 @@ sink :: Monad m =&gt; Co" />
 <p>難易度: λ</p>
 <p>今回は、与えられた値がリストのリストに含まれているかどうかを判定する問題です。</p>
 <p>幅優先で探索する関数 <code>bfs</code> と深さ優先で探索する関数 <code>dfs</code> をそれぞれ定義してみましょう。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">bfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>bfs <span class="ot">=</span> <span class="fu">undefined</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="ot">dfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>dfs <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">bfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>bfs <span class="ot">=</span> <span class="fu">undefined</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">dfs ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>dfs <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
 <p>実行結果はだいたいこんな感じです。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>$ <span class="ex">stack</span> repl -- Quiz4.hs</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> xs = [[10..],[4,5,6],[7,8,9]]</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> bfs 9 xs</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="ex">True</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="ex">.....</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack repl <span class="at">--</span> Quiz4.hs</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> xs = [[10..],[4,5,6],[7,8,9]]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> bfs 9 xs</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">True</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">.....</span></span></code></pre></div>
 <h3 id="こたえ">こたえ</h3>
 <p>素晴らしい回答が <strong>Haskeller</strong> から届きました。(一部修正)</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>dfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>bfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span> <span class="op">.</span> transpose</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span> <span class="op">.</span> transpose</span></code></pre></div>
 <p>まさに <code>Haskell</code> ！！！って感じのコードですよね。</p>
 <h2 id="haskell-quiz-no.4-の解説">Haskell Quiz No.4 の解説</h2>
 <p>完全なコードはこちら</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Quiz4</span> <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.List</span> (transpose)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="ot">dfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>dfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>bfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span> <span class="op">.</span> transpose</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Quiz4</span> <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.List</span> (transpose)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ot">dfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>dfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>bfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span> <span class="op">.</span> transpose</span></code></pre></div>
 <ul>
 <li><strong>dfs</strong> は <code>depth farst search</code> なので、<strong>深さ優先探索</strong>を行うように実装しています。</li>
 <li><strong>bfs</strong> は <code>breadth first search</code> なので、<strong>幅優先探索</strong>を行うように実装しています。</li>
@@ -304,71 +304,71 @@ sink :: Monad m =&gt; Co" />
 <h3 id="transpose">transpose</h3>
 <p><a href="http://hackage.haskell.org/package/base-4.11.0.0/docs/Data-List.html#v:transpose">transpose</a> は <code>base</code> パッケージの <code>Data.List</code> で定義されています。<code>Prelude</code> には含まれていないため、明示的に <code>import</code> する必要があります。</p>
 <p><code>haddock</code> の説明通り、リストを転置させる関数です。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> transpose [[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>],[<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]]</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>[[<span class="dv">1</span>,<span class="dv">4</span>],[<span class="dv">2</span>,<span class="dv">5</span>],[<span class="dv">3</span>,<span class="dv">6</span>]]</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> transpose [[<span class="dv">10</span>,<span class="dv">11</span>],[<span class="dv">20</span>],[],[<span class="dv">30</span>,<span class="dv">31</span>,<span class="dv">32</span>]]</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>[[<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>],[<span class="dv">11</span>,<span class="dv">31</span>],[<span class="dv">32</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> transpose [[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>],[<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>[[<span class="dv">1</span>,<span class="dv">4</span>],[<span class="dv">2</span>,<span class="dv">5</span>],[<span class="dv">3</span>,<span class="dv">6</span>]]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> transpose [[<span class="dv">10</span>,<span class="dv">11</span>],[<span class="dv">20</span>],[],[<span class="dv">30</span>,<span class="dv">31</span>,<span class="dv">32</span>]]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>[[<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>],[<span class="dv">11</span>,<span class="dv">31</span>],[<span class="dv">32</span>]]</span></code></pre></div>
 <p>その際、空リストは取り除かれるようですね。</p>
 <p><code>transpose</code> 関数の実装は <a href="http://hackage.haskell.org/package/base-4.11.0.0/docs/src/Data.OldList.html#transpose">Data.OldList</a> で以下のように定義されています。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ot">transpose ::</span> [[a]] <span class="ot">-&gt;</span> [[a]]</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>transpose []           <span class="ot">=</span> []</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>transpose ([]<span class="op">:</span>xss)     <span class="ot">=</span> transpose xss</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>transpose ((x<span class="op">:</span>xs)<span class="op">:</span>xss) <span class="ot">=</span> (x <span class="op">:</span> [h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss]) <span class="op">:</span> transpose (xs <span class="op">:</span> [ t <span class="op">|</span> (_<span class="op">:</span>t) <span class="ot">&lt;-</span> xss])</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">transpose ::</span> [[a]] <span class="ot">-&gt;</span> [[a]]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>transpose []           <span class="ot">=</span> []</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>transpose ([]<span class="op">:</span>xss)     <span class="ot">=</span> transpose xss</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>transpose ((x<span class="op">:</span>xs)<span class="op">:</span>xss) <span class="ot">=</span> (x <span class="op">:</span> [h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss]) <span class="op">:</span> transpose (xs <span class="op">:</span> [ t <span class="op">|</span> (_<span class="op">:</span>t) <span class="ot">&lt;-</span> xss])</span></code></pre></div>
 <p>たしかに2つ目の等式で空白が除去されていることがわかりますね。</p>
 <p>3つ目の等式は少し複雑ですが、面白いので見てみましょう。</p>
 <p>それぞれのリストの <code>head</code> を取りたいので <code>map head xss</code> がすぐに思いつきそうですが <code>[h | (h:_) &lt;- xss]</code> となっています。うまいやりかたですね。</p>
 <p>普通に <code>head</code> をかけてしまうと空リストで実行時エラーとなってしまいます。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> xss <span class="ot">=</span> [[<span class="dv">1</span>,<span class="dv">2</span>],[],[<span class="dv">3</span>,<span class="dv">4</span>]]</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> <span class="fu">map</span> <span class="fu">head</span> xss</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>[<span class="dv">1</span>,<span class="op">***</span> <span class="dt">Exception</span><span class="op">:</span> Prelude.head<span class="op">:</span> empty list</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> xss <span class="ot">=</span> [[<span class="dv">1</span>,<span class="dv">2</span>],[],[<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> <span class="fu">map</span> <span class="fu">head</span> xss</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="op">***</span> <span class="dt">Exception</span><span class="op">:</span> Prelude.head<span class="op">:</span> empty list</span></code></pre></div>
 <p>しかし <code>[h | (h:_) &lt;- xss]</code> ではどうでしょうか？</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> xss <span class="ot">=</span> [[<span class="dv">1</span>,<span class="dv">2</span>],[],[<span class="dv">3</span>,<span class="dv">4</span>]]</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> [h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss]</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>[<span class="dv">1</span>,<span class="dv">3</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> xss <span class="ot">=</span> [[<span class="dv">1</span>,<span class="dv">2</span>],[],[<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> [h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">3</span>]</span></code></pre></div>
 <p>はい。空リストを含んでいたとしてもエラーにならずに、良い感じに先頭の要素から成るリストが生成できました。</p>
 <p>では、なぜこのような動作になるのでしょうか？</p>
 <p>それを理解するためには <strong>Haskell 2010 Language Report</strong> の <a href="https://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-420003.11">3.11 List Comprehensions</a> を参照する必要があります。</p>
 <p>ここにリスト内包表記がどのように変換されるか、変換規則が載っています。(ここでは一部のみ掲載)</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="co">-- ルール1</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>[ e <span class="op">|</span> <span class="dt">True</span> ] <span class="ot">=</span> [e]</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="co">-- ルール2</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>[ e <span class="op">|</span> q ] <span class="ot">=</span> [ e <span class="op">|</span> q, <span class="dt">True</span> ]</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a><span class="co">-- ルール3</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>[ e <span class="op">|</span> p <span class="ot">&lt;-</span> l, <span class="dt">Q</span> ] <span class="ot">=</span> <span class="kw">let</span> ok p <span class="ot">=</span> [ e <span class="op">|</span> <span class="dt">Q</span> ]</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a>                        ok _ <span class="ot">=</span> []</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>                    <span class="kw">in</span> <span class="fu">concatMap</span> ok l</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- ルール1</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>[ e <span class="op">|</span> <span class="dt">True</span> ] <span class="ot">=</span> [e]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- ルール2</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>[ e <span class="op">|</span> q ] <span class="ot">=</span> [ e <span class="op">|</span> q, <span class="dt">True</span> ]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- ルール3</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>[ e <span class="op">|</span> p <span class="ot">&lt;-</span> l, <span class="dt">Q</span> ] <span class="ot">=</span> <span class="kw">let</span> ok p <span class="ot">=</span> [ e <span class="op">|</span> <span class="dt">Q</span> ]</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                        ok _ <span class="ot">=</span> []</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">in</span> <span class="fu">concatMap</span> ok l</span></code></pre></div>
 <p>上記の規則により、先程の <code>[h | (h:_) &lt;- xss]</code> は以下のように変換できます。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>[ h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss ]</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a>  <span class="ot">=</span> { ルール2 より }</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a>[ h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss, <span class="dt">True</span> ]</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a>  <span class="ot">=</span> { ルール3 より }</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a><span class="kw">let</span> ok (h<span class="op">:</span>_) <span class="ot">=</span> [ h <span class="op">|</span> <span class="dt">True</span> ]</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a>    ok _ <span class="ot">=</span> []</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a><span class="kw">in</span> <span class="fu">concatMap</span> ok xss</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>  <span class="ot">=</span> { ルール1 より }</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a><span class="kw">let</span> ok (h<span class="op">:</span>_) <span class="ot">=</span> [h]</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true"></a>    ok _ <span class="ot">=</span> []</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true"></a><span class="kw">in</span> <span class="fu">concatMap</span> ok xss</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>[ h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss ]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> { ルール2 より }</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>[ h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss, <span class="dt">True</span> ]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> { ルール3 より }</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> ok (h<span class="op">:</span>_) <span class="ot">=</span> [ h <span class="op">|</span> <span class="dt">True</span> ]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    ok _ <span class="ot">=</span> []</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">in</span> <span class="fu">concatMap</span> ok xss</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> { ルール1 より }</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> ok (h<span class="op">:</span>_) <span class="ot">=</span> [h]</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    ok _ <span class="ot">=</span> []</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="kw">in</span> <span class="fu">concatMap</span> ok xss</span></code></pre></div>
 <p>最終的には <code>f = [h | (h:_) &lt;- xss]</code> とすると</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>f <span class="ot">=</span> <span class="fu">concatMap</span> ok xss</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>    ok (h<span class="op">:</span>_) <span class="ot">=</span> [h]</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>    ok _     <span class="ot">=</span> []</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="fu">concatMap</span> ok xss</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    ok (h<span class="op">:</span>_) <span class="ot">=</span> [h]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    ok _     <span class="ot">=</span> []</span></code></pre></div>
 <p>になります。</p>
 <p>パターンマッチに失敗した場合は <code>ok _ = []</code> ということで自動的に空リストになるという部分が実行時エラーにならない秘密のようですね。</p>
 <p>最終的に <code>concatMap</code> によって、空リストが自然に除去されていることがわかります。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> <span class="fu">concatMap</span> ok [[<span class="dv">1</span>,<span class="dv">2</span>], [], [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">*</span><span class="dt">Quiz4</span><span class="op">&gt;</span> <span class="fu">concatMap</span> ok [[<span class="dv">1</span>,<span class="dv">2</span>], [], [<span class="dv">3</span>,<span class="dv">4</span>]]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span></code></pre></div>
 <p>ということで、もとの式に戻ると <code>transpose</code> 関数の主張はこういうことです。</p>
 <figure>
 <img src="../../images/2018/03-31/transpose.png" alt="transpose 関数の処理" /><figcaption aria-hidden="true">transpose 関数の処理</figcaption>
 </figure>
-<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>transpose []           <span class="ot">=</span> []</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a>transpose ([]<span class="op">:</span>xss)     <span class="ot">=</span> transpose xss</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a>transpose ((x<span class="op">:</span>xs)<span class="op">:</span>xss) <span class="ot">=</span> (x <span class="op">:</span> [h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss]) <span class="op">:</span> transpose (xs <span class="op">:</span> [ t <span class="op">|</span> (_<span class="op">:</span>t) <span class="ot">&lt;-</span> xss])</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>transpose []           <span class="ot">=</span> []</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>transpose ([]<span class="op">:</span>xss)     <span class="ot">=</span> transpose xss</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>transpose ((x<span class="op">:</span>xs)<span class="op">:</span>xss) <span class="ot">=</span> (x <span class="op">:</span> [h <span class="op">|</span> (h<span class="op">:</span>_) <span class="ot">&lt;-</span> xss]) <span class="op">:</span> transpose (xs <span class="op">:</span> [ t <span class="op">|</span> (_<span class="op">:</span>t) <span class="ot">&lt;-</span> xss])</span></code></pre></div>
 <h3 id="幅優先探索と深さ優先探索">幅優先探索と深さ優先探索</h3>
 <p>アルゴリズムの本などを読むと、必ずこの <strong>幅優先探索</strong> と <strong>深さ優先探索</strong> というキーワードを目にすると思います。(また、同時に説明に利用されるのは木構造のデータでしょう)</p>
 <p>幅優先探索と深さ優先探索の概念を理解するために木構造に触れる必要は無く、リストだけで十分です。</p>
@@ -377,22 +377,22 @@ sink :: Monad m =&gt; Co" />
 <img src="../../images/2018/03-31/search.png" alt="リストを使った幅優先探索と深さ優先探索" /><figcaption aria-hidden="true">リストを使った幅優先探索と深さ優先探索</figcaption>
 </figure>
 <p>そのため <code>[10..]</code> のような無限リストが与えられた場合に <strong>深さ優先探索</strong> では結果を返すことができないのです。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a>$ <span class="ex">stack</span> repl -- Quiz4.hs</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> xs = [[10..],[4,5,6],[7,8,9]]</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> bfs 9 xs</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a><span class="ex">True</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a><span class="ex">.....</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack repl <span class="at">--</span> Quiz4.hs</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> xs = [[10..],[4,5,6],[7,8,9]]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> bfs 9 xs</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="ex">True</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">*Quiz4</span><span class="op">&gt;</span> dfs 9 xs</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="ex">.....</span></span></code></pre></div>
 <h3 id="コードの解説">コードの解説</h3>
 <p><code>dfs</code> は <code>concat</code> によってリストのリストを直列につないだ結果に対して <code>elem x</code> で要素を検索すれば良いということになります。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="ot">dfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>dfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">dfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>dfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span></span></code></pre></div>
 <p>それに対して <code>bfs</code> は各リストの先頭要素だけを先に処理していく必要があります。自分でその辺りの処理を書いても良いのですが <code>transpose</code> で一発です。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a>bfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span> <span class="op">.</span> transpose</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>bfs x <span class="ot">=</span> <span class="fu">elem</span> x <span class="op">.</span> <span class="fu">concat</span> <span class="op">.</span> transpose</span></code></pre></div>
 <p><code>bfs</code> はこのように書くこともできます。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a>bfs x <span class="ot">=</span> dfs x <span class="op">.</span> transpose</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ot">bfs ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [[a]] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>bfs x <span class="ot">=</span> dfs x <span class="op">.</span> transpose</span></code></pre></div>
 <p>つまり、リストのリストのようなデータ構造に対して幅優先探索を行うということは、リストを転置した結果に対して深さ優先探索を行うことと等しいということです。</p>
 <figure>
 <img src="../../images/2018/03-31/bfs.png" alt="bfs と dfs の関係" /><figcaption aria-hidden="true">bfs と dfs の関係</figcaption>

@@ -181,9 +181,9 @@
       <article class="page-content">
         <h2 id="変数展開記法">変数展開記法</h2>
 <p><code>hamlet</code> では <code>#{...}</code> という形式で変数展開を行うことができます。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>[hamlet|</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="kw">#{</span>var<span class="kw">}</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>|]</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>[hamlet|</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">#{</span>var<span class="kw">}</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
 <p>HTML のエスケープなどもこの段階で行われます。</p>
 <p>今回はこの処理の流れを追ってみようと思います。</p>
 <h2 id="text---html-型への変換部分">Text -&gt; Html 型への変換部分</h2>
@@ -191,48 +191,48 @@
 <h3 id="ステップ1-tohtml-in-yesod-core">【ステップ1】 toHtml (in yesod-core)</h3>
 <p><code>#{var}</code> は実際のところ <strong>yesod-core</strong> パッケージが再エクスポートしている <code>blaze-html</code> の <a href="https://hackage.haskell.org/package/blaze-html-0.9.1.2/docs/Text-Blaze-Html.html#v:toHtml">toHtml</a> 関数を適用するだけです。</p>
 <p>つまり、以下の式と同じです。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>toHtml var</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>toHtml var</span></code></pre></div>
 <h3 id="ステップ2-tohtml-in-blaze-html">【ステップ2】 toHtml (in blaze-html)</h3>
 <p><strong>toHtml</strong> の実装は以下のようになっています。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">toHtml ::</span> <span class="dt">ToMarkup</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Html</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>toHtml <span class="ot">=</span> toMarkup</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">toHtml ::</span> <span class="dt">ToMarkup</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Html</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>toHtml <span class="ot">=</span> toMarkup</span></code></pre></div>
 <p><a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze.html#v:toMarkup">toMarkup</a> メソッドは <strong>blaze-markup</strong> パッケージで定義されています。</p>
 <h3 id="ステップ3-tomarkup-in-blaze-markup">【ステップ3】 toMarkup (in blaze-markup)</h3>
 <p><strong>toMarkup</strong> メソッドは <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze.html#t:ToMarkup">ToMarkup</a> 型クラスのメソッドなので、実装は型によって異なります。</p>
 <p>今回は <code>Text</code> 型に着目しているため、<code>Text</code> 型のインスタンス定義を確認しましょう。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">ToMarkup</span> <span class="dt">Text</span> <span class="kw">where</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  toMarkup <span class="ot">=</span> text</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  preEscapedToMarkup <span class="ot">=</span> preEscapedText</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">ToMarkup</span> <span class="dt">Text</span> <span class="kw">where</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  toMarkup <span class="ot">=</span> text</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  preEscapedToMarkup <span class="ot">=</span> preEscapedText</span></code></pre></div>
 <p><strong>text</strong> 関数は <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Internal.html#v:text">Text.Blaze.Internal</a> モジュールで定義されています。</p>
 <h3 id="ステップ4-text-in-blaze-markup">【ステップ4】 text (in blaze-markup)</h3>
 <p><code>text</code> 関数の実装は以下の通りです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">text ::</span> <span class="dt">Text</span>    <span class="co">-- ^ Text to render.</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>     <span class="ot">-&gt;</span> <span class="dt">Markup</span>  <span class="co">-- ^ Resulting HTML fragment.</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>text <span class="ot">=</span> content <span class="op">.</span> <span class="dt">Text</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">text ::</span> <span class="dt">Text</span>    <span class="co">-- ^ Text to render.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="ot">-&gt;</span> <span class="dt">Markup</span>  <span class="co">-- ^ Resulting HTML fragment.</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>text <span class="ot">=</span> content <span class="op">.</span> <span class="dt">Text</span></span></code></pre></div>
 <p>ここで出現する <code>Text</code> データコンストラクタは <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Internal.html#t:ChoiceString">ChoiceString</a> 型の値です。</p>
 <p><strong>content</strong> 関数もまた <code>Text.Blaze.Internal</code> モジュールで定義されています。(export はされていません)</p>
 <h3 id="ステップ5-content-in-blaze-markup">【ステップ5】 content (in blaze-markup)</h3>
 <p><code>content</code> 関数の実装は以下の通りです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="ot">content ::</span> <span class="dt">ChoiceString</span> <span class="ot">-&gt;</span> <span class="dt">Markup</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>content cs <span class="ot">=</span> <span class="dt">Content</span> cs ()</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">content ::</span> <span class="dt">ChoiceString</span> <span class="ot">-&gt;</span> <span class="dt">Markup</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>content cs <span class="ot">=</span> <span class="dt">Content</span> cs ()</span></code></pre></div>
 <p>ここで出現する <code>Content</code> は <a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Internal.html#t:MarkupM">MarkupM</a> 型の値です。</p>
 <p>つまりここまでの流れとまとめると、以下のようになります。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="pp">#{var}</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="ot">=</span> toHtml var</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="ot">=</span> toMarkup var</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="ot">=</span> text var</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="ot">=</span> content <span class="op">$</span> <span class="dt">Text</span> var</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="ot">=</span> <span class="dt">Content</span> (<span class="dt">Text</span> var) ()</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#{var}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> toHtml var</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> toMarkup var</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> text var</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> content <span class="op">$</span> <span class="dt">Text</span> var</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ot">=</span> <span class="dt">Content</span> (<span class="dt">Text</span> var) ()</span></code></pre></div>
 <p>次は、ディスパッチの処理を追っていきましょう。</p>
 <h2 id="ディスパッチ処理">ディスパッチ処理</h2>
 <p>典型的なハンドラは以下のような定義とすることが多いでしょう。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>  [whamlet|</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>  |]</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  [whamlet|</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  |]</span></code></pre></div>
 <p>ここで注意する点は <code>getHomeR</code> の型は <code>Handler Text</code> ではなく <code>Handler Html</code> とした点です。</p>
 <p>つまり <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:defaultLayout">defaultLayout</a> を適用した結果はまだエスケープ処理に移る前段階ということです。</p>
 <p>ではどこでエスケープ処理が行われているのでしょう？確認するためにはハンドラが実際に呼び出される場所を特定すれば良いでしょう。</p>
@@ -240,193 +240,193 @@
 <h3 id="ステップ1yesoddispatch-型クラス">【ステップ1】YesodDispatch 型クラス</h3>
 <p>ここで少し問題となるのが、<code>YesodDispatch</code> のインスタンスは <code>TH</code> によって自動生成されるという点です。</p>
 <p><a href="./08-TH.html">TH で生成されるコードの確認方法</a> を参考に生成されるコードを確認してみましょう。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>/check1 Check1R GET</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>|]</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="ot">getCheck1R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>getCheck1R <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a>  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>  [whamlet|</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>  |]</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>/check1 Check1R GET</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ot">getCheck1R ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>getCheck1R <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  mParam <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;p&quot;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  [whamlet|</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">#{</span><span class="fu">maybe</span> <span class="st">&quot;&quot;</span> <span class="fu">id</span> mParam<span class="kw">}</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  |]</span></code></pre></div>
 <p>生成されるコードは次のようになります。(読みやすいように、少々整形しています)</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> <span class="op">$</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>  [ <span class="dt">ResourceLeaf</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>      <span class="dt">Resource</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>        { resourceName <span class="ot">=</span> <span class="st">&quot;Check1R&quot;</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>        , resourcePieces <span class="ot">=</span> [<span class="dt">Static</span> <span class="st">&quot;check1&quot;</span>]</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>        , resourceDispatch <span class="ot">=</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>            <span class="dt">Methods</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>              { methodsMulti <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a>              , methodsMethods <span class="ot">=</span> [<span class="st">&quot;GET&quot;</span>]</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>              }</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>        , resourceAttrs <span class="ot">=</span> []</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>        , resourceCheck <span class="ot">=</span> <span class="dt">True</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>        }</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>  ]</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a><span class="op">======&gt;</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">ParseRoute</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a>  parseRoute ([<span class="st">&quot;check1&quot;</span>], _) <span class="ot">=</span> <span class="dt">Just</span> <span class="dt">Check1R</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a>  parseRoute (_, _) <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true"></a></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RenderRoute</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true"></a>  <span class="kw">data</span> <span class="dt">Route</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Check1R</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true"></a>  renderRoute <span class="dt">Check1R</span> <span class="ot">=</span> ([<span class="fu">pack</span> <span class="st">&quot;check1&quot;</span>)], [])</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true"></a></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">RouteAttrs</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true"></a>  routeAttrs <span class="dt">Check1R</span> {} <span class="ot">=</span> fromList []</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true"></a></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true"></a><span class="ot">resourcesApp ::</span> [<span class="dt">ResourceTree</span> <span class="dt">String</span>]</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true"></a>resourcesApp <span class="ot">=</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true"></a>  [ <span class="dt">ResourceLeaf</span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true"></a>      <span class="dt">Resource</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true"></a>        { resourceName <span class="ot">=</span> <span class="st">&quot;Check1R&quot;</span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true"></a>        , resourcePieces <span class="ot">=</span> [<span class="dt">Static</span> <span class="st">&quot;check1&quot;</span>]</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true"></a>        , resourceDispatch <span class="ot">=</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true"></a>            <span class="dt">Methods</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true"></a>              { methodsMulti <span class="ot">=</span> <span class="dt">Nothing</span></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true"></a>              , methodsMethods <span class="ot">=</span> [<span class="st">&quot;GET&quot;</span>]</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true"></a>              }</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true"></a>        , resourceAttrs <span class="ot">=</span> []</span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true"></a>        , resourceCheck <span class="ot">=</span> <span class="dt">True</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true"></a>        }</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true"></a>  ]</span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true"></a></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Handler</span> <span class="ot">=</span> <span class="dt">HandlerFor</span> <span class="dt">App</span></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Widget</span> <span class="ot">=</span> <span class="dt">WidgetFor</span> <span class="dt">App</span> ()</span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true"></a></span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">YesodDispatch</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true"></a>  yesodDispatch env req <span class="ot">=</span> helper (pathInfo req)</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true"></a>    <span class="kw">where</span></span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true"></a>      helper [<span class="st">&quot;check1&quot;</span>] <span class="ot">=</span></span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true"></a>        <span class="kw">case</span> requestMethod req <span class="kw">of</span></span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true"></a>          <span class="st">&quot;GET&quot;</span> <span class="ot">-&gt;</span> yesodRunner getCheck1R env (<span class="dt">Just</span> <span class="dt">Check1R</span>) req</span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true"></a>          _     <span class="ot">-&gt;</span> yesodRunner (void badMethod) env (<span class="dt">Just</span> <span class="dt">Check1R</span>) req</span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true"></a>      helper _ <span class="ot">=</span> yesodRunner (void notFound) env <span class="dt">Nothing</span> req</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> <span class="op">$</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  [ <span class="dt">ResourceLeaf</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>      <span class="dt">Resource</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        { resourceName <span class="ot">=</span> <span class="st">&quot;Check1R&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        , resourcePieces <span class="ot">=</span> [<span class="dt">Static</span> <span class="st">&quot;check1&quot;</span>]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        , resourceDispatch <span class="ot">=</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Methods</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>              { methodsMulti <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>              , methodsMethods <span class="ot">=</span> [<span class="st">&quot;GET&quot;</span>]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>              }</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        , resourceAttrs <span class="ot">=</span> []</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        , resourceCheck <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="op">======&gt;</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">ParseRoute</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  parseRoute ([<span class="st">&quot;check1&quot;</span>], _) <span class="ot">=</span> <span class="dt">Just</span> <span class="dt">Check1R</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  parseRoute (_, _) <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderRoute</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">data</span> <span class="dt">Route</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">Check1R</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>, <span class="dt">Read</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  renderRoute <span class="dt">Check1R</span> <span class="ot">=</span> ([<span class="fu">pack</span> <span class="st">&quot;check1&quot;</span>)], [])</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RouteAttrs</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  routeAttrs <span class="dt">Check1R</span> {} <span class="ot">=</span> fromList []</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="ot">resourcesApp ::</span> [<span class="dt">ResourceTree</span> <span class="dt">String</span>]</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>resourcesApp <span class="ot">=</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  [ <span class="dt">ResourceLeaf</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>      <span class="dt">Resource</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        { resourceName <span class="ot">=</span> <span class="st">&quot;Check1R&quot;</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        , resourcePieces <span class="ot">=</span> [<span class="dt">Static</span> <span class="st">&quot;check1&quot;</span>]</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        , resourceDispatch <span class="ot">=</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Methods</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>              { methodsMulti <span class="ot">=</span> <span class="dt">Nothing</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>              , methodsMethods <span class="ot">=</span> [<span class="st">&quot;GET&quot;</span>]</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>              }</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>        , resourceAttrs <span class="ot">=</span> []</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>        , resourceCheck <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Handler</span> <span class="ot">=</span> <span class="dt">HandlerFor</span> <span class="dt">App</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Widget</span> <span class="ot">=</span> <span class="dt">WidgetFor</span> <span class="dt">App</span> ()</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodDispatch</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>  yesodDispatch env req <span class="ot">=</span> helper (pathInfo req)</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>      helper [<span class="st">&quot;check1&quot;</span>] <span class="ot">=</span></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> requestMethod req <span class="kw">of</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;GET&quot;</span> <span class="ot">-&gt;</span> yesodRunner getCheck1R env (<span class="dt">Just</span> <span class="dt">Check1R</span>) req</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>          _     <span class="ot">-&gt;</span> yesodRunner (void badMethod) env (<span class="dt">Just</span> <span class="dt">Check1R</span>) req</span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>      helper _ <span class="ot">=</span> yesodRunner (void notFound) env <span class="dt">Nothing</span> req</span></code></pre></div>
 <p>色々と生成されているが、ここで着目するのは <code>yesodDispatch</code> メソッドです。</p>
 <p>その中で <code>yesodRunner getCheck1R env (Just Check1R) req</code> という形で <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:yesodRunner">yesodRunner</a> が呼ばれていることがわかります。</p>
 <h3 id="ステップ2yesodrunner-in-yesod-core">【ステップ2】yesodRunner (in yesod-core)</h3>
 <p>yesodRunner の実装は以下の通りです。(長いので必要な部分のみ抜き出しています)</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>yesodRunner handler' <span class="dt">YesodRunnerEnv</span> {<span class="op">..</span>} route req sendResponse</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="op">...</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a>        yar <span class="ot">&lt;-</span> runInternalState (runHandler rhe handler yreq') is</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="op">...</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>    handler <span class="ot">=</span> yesodMiddleware handler'</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>yesodRunner handler' <span class="dt">YesodRunnerEnv</span> {<span class="op">..</span>} route req sendResponse</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        yar <span class="ot">&lt;-</span> runInternalState (runHandler rhe handler yreq') is</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    handler <span class="ot">=</span> yesodMiddleware handler'</span></code></pre></div>
 <p>まずは <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core.html#v:yesodMiddleware">yesodMiddleware</a> に適用されますが、型が変化しないためここではエスケープ処理が行われていないことがわかります。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="ot">yesodMiddleware ::</span> <span class="dt">ToTypedContent</span> res <span class="ot">=&gt;</span> <span class="dt">HandlerFor</span> site res <span class="ot">-&gt;</span> <span class="dt">HandlerFor</span> site res</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">yesodMiddleware ::</span> <span class="dt">ToTypedContent</span> res <span class="ot">=&gt;</span> <span class="dt">HandlerFor</span> site res <span class="ot">-&gt;</span> <span class="dt">HandlerFor</span> site res</span></code></pre></div>
 <p>次に <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/src/Yesod.Core.Internal.Run.html">Yesod.Core.Internal.Run</a> モジュールで定義されている <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/src/Yesod.Core.Internal.Run.html#runHandler">runHandler</a> 関数に制御がうつります。</p>
 <h3 id="ステップ3runhandler">【ステップ3】runHandler</h3>
 <p><code>runHandler</code> の実装は以下の通りです。(ここでも必要な部分のみを掲載しています)</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>runHandler rhe<span class="op">@</span><span class="dt">RunHandlerEnv</span> {<span class="op">..</span>} handler yreq <span class="ot">=</span> withInternalState <span class="op">$</span> \resState <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>    (state, contents0) <span class="ot">&lt;-</span> basicRunHandler rhe handler yreq resState</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="op">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>runHandler rhe<span class="op">@</span><span class="dt">RunHandlerEnv</span> {<span class="op">..</span>} handler yreq <span class="ot">=</span> withInternalState <span class="op">$</span> \resState <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (state, contents0) <span class="ot">&lt;-</span> basicRunHandler rhe handler yreq resState</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
 <p>次は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/src/Yesod.Core.Internal.Run.html#basicRunHandler">basicRunHandler</a> が呼ばれます。</p>
 <h3 id="ステップ4basicrunhandler">【ステップ4】basicRunHandler</h3>
 <p><code>basicRunHandler</code> の実装は以下の通りです。(ここでも必要な部分のみを掲載しています)</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>basicRunHandler rhe handler yreq resState <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="op">...</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a>            res <span class="ot">&lt;-</span> unHandlerFor handler (hd istate)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a>            tc <span class="ot">&lt;-</span> evaluate (toTypedContent res)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true"></a><span class="op">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>basicRunHandler rhe handler yreq resState <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>            res <span class="ot">&lt;-</span> unHandlerFor handler (hd istate)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>            tc <span class="ot">&lt;-</span> evaluate (toTypedContent res)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
 <p>次に <code>unHandlerFor</code> が呼ばれます。</p>
 <h3 id="ステップ5unhandlerfor">【ステップ5】unHandlerFor</h3>
 <p><a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Types.html#v:unHandlerFor">unHandlerFor</a> は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Types.html#t:HandlerFor">HandlerFor</a> 型を剥がすための関数で、実装は以下のようになっています。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="kw">newtype</span> <span class="dt">HandlerFor</span> site a <span class="ot">=</span> <span class="dt">HandlerFor</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>    {<span class="ot"> unHandlerFor ::</span> <span class="dt">HandlerData</span> site site <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a>    }</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a>    <span class="kw">deriving</span> <span class="dt">Functor</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">HandlerFor</span> site a <span class="ot">=</span> <span class="dt">HandlerFor</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> unHandlerFor ::</span> <span class="dt">HandlerData</span> site site <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">deriving</span> <span class="dt">Functor</span></span></code></pre></div>
 <p>ここで <code>HandlerFor site a</code> が <code>IO a</code> に変化します。</p>
 <p>つまり先程の <code>res</code> の型が <code>Html</code> だということがわかります。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a>res <span class="ot">&lt;-</span> unHandlerFor handler (hd istate)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>tc <span class="ot">&lt;-</span> evaluate (toTypedContent res)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> unHandlerFor handler (hd istate)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tc <span class="ot">&lt;-</span> evaluate (toTypedContent res)</span></code></pre></div>
 <p>そのため、次は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Content.html#v:toTypedContent">toTypedContent</a> を見ていく必要があります。</p>
 <h3 id="ステップ6totypedcontent">【ステップ6】toTypedContent</h3>
 <p><code>toTypedContent</code> は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Content.html#t:ToTypedContent">ToTypedContent</a> 型クラスのメソッドです。</p>
 <p><code>Html</code> 型のインスタンス定義は次のようになっています。</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">ToTypedContent</span> <span class="dt">Html</span> <span class="kw">where</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a>  toTypedContent h <span class="ot">=</span> <span class="dt">TypedContent</span> typeHtml (toContent h)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">ToTypedContent</span> <span class="dt">Html</span> <span class="kw">where</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  toTypedContent h <span class="ot">=</span> <span class="dt">TypedContent</span> typeHtml (toContent h)</span></code></pre></div>
 <p><code>toContent</code> を見てみましょう。</p>
 <h3 id="ステップ7tocontent">【ステップ7】toContent</h3>
 <p><code>toContent</code> は <a href="https://hackage.haskell.org/package/yesod-core-1.6.17.3/docs/Yesod-Core-Content.html#t:ToContent">ToContent</a> 型クラスのメソッドであり <code>Html</code> 型のインスタンス定義は以下のようになっています。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">ToContent</span> <span class="dt">Html</span> <span class="kw">where</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a>  toContent bs <span class="ot">=</span> <span class="dt">ContentBuilder</span> (renderHtmlBuilder bs) <span class="dt">Nothing</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">ToContent</span> <span class="dt">Html</span> <span class="kw">where</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  toContent bs <span class="ot">=</span> <span class="dt">ContentBuilder</span> (renderHtmlBuilder bs) <span class="dt">Nothing</span></span></code></pre></div>
 <p>ここでやっとレンダリング関数の <a href="https://hackage.haskell.org/package/blaze-html-0.9.1.2/docs/Text-Blaze-Html-Renderer-Utf8.html#v:renderHtmlBuilder">renderHtmlBuilder</a> が出現しました。</p>
 <h2 id="レンダリング処理">レンダリング処理</h2>
 <h3 id="ステップ1renderhtmlbuilder">【ステップ1】renderHtmlBuilder</h3>
 <p><a href="https://hackage.haskell.org/package/blaze-html-0.9.1.2/docs/Text-Blaze-Html-Renderer-Utf8.html#v:renderHtmlBuilder">renderHtmlBuilder</a> の実装は以下の通りです。</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Blaze.Renderer.Utf8</span> <span class="kw">as</span> <span class="dt">R</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true"></a><span class="ot">renderHtmlBuilder ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true"></a>renderHtmlBuilder <span class="ot">=</span> R.renderMarkupBuilder</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Text.Blaze.Renderer.Utf8</span> <span class="kw">as</span> <span class="dt">R</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ot">renderHtmlBuilder ::</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>renderHtmlBuilder <span class="ot">=</span> R.renderMarkupBuilder</span></code></pre></div>
 <h3 id="ステップ1rendermarkupbuilder">【ステップ1】renderMarkupBuilder</h3>
 <p><a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/Text-Blaze-Renderer-Utf8.html#v:renderMarkupBuilder">renderMarkupBuilder</a> の実装は以下のようになっています。</p>
 <p>ここで、この関数に渡される値は <code>Content (Text var) ()</code> のような形になっていたことを思い出そう。該当するパターンマッチのみを掲載します。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="ot">renderMarkupBuilder ::</span> <span class="dt">Markup</span>     <span class="co">-- ^ Markup to render</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a>                  <span class="ot">-&gt;</span> <span class="dt">Builder</span>  <span class="co">-- ^ Resulting builder</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a>renderMarkupBuilder <span class="ot">=</span> go <span class="fu">mempty</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true"></a><span class="ot">    go ::</span> <span class="dt">Builder</span> <span class="ot">-&gt;</span> <span class="dt">MarkupM</span> b <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true"></a>    <span class="op">...</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true"></a>    go _ (<span class="dt">Content</span> content _) <span class="ot">=</span> fromChoiceString content</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ot">renderMarkupBuilder ::</span> <span class="dt">Markup</span>     <span class="co">-- ^ Markup to render</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                  <span class="ot">-&gt;</span> <span class="dt">Builder</span>  <span class="co">-- ^ Resulting builder</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>renderMarkupBuilder <span class="ot">=</span> go <span class="fu">mempty</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    go ::</span> <span class="dt">Builder</span> <span class="ot">-&gt;</span> <span class="dt">MarkupM</span> b <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    go _ (<span class="dt">Content</span> content _) <span class="ot">=</span> fromChoiceString content</span></code></pre></div>
 <p>単純に <code>fromChoiceString</code> を適用するだけのようです。</p>
 <h3 id="ステップ2fromchoicestring">【ステップ2】fromChoiceString</h3>
 <p><a href="https://hackage.haskell.org/package/blaze-markup-0.8.2.3/docs/src/Text.Blaze.Renderer.Utf8.html#fromChoiceString">fromChoiceString</a> の実装は以下のようになっています。</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Blaze.ByteString.Builder</span>           <span class="kw">as</span> <span class="dt">B</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Blaze.ByteString.Builder.Html.Utf8</span> <span class="kw">as</span> <span class="dt">B</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a><span class="op">...</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true"></a><span class="ot">fromChoiceString ::</span> <span class="dt">ChoiceString</span>  <span class="co">-- ^ String to render</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true"></a>                 <span class="ot">-&gt;</span> <span class="dt">Builder</span>       <span class="co">-- ^ Resulting builder</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true"></a>fromChoiceString (<span class="dt">Static</span> s)     <span class="ot">=</span> B.copyByteString <span class="op">$</span> getUtf8ByteString s</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true"></a>fromChoiceString (<span class="dt">String</span> s)     <span class="ot">=</span> B.fromHtmlEscapedString s</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true"></a>fromChoiceString (<span class="dt">Text</span> s)       <span class="ot">=</span> B.fromHtmlEscapedText s</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true"></a>fromChoiceString (<span class="dt">ByteString</span> s) <span class="ot">=</span> B.fromByteString s</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true"></a>fromChoiceString (<span class="dt">PreEscaped</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true"></a>    <span class="dt">String</span> s <span class="ot">-&gt;</span> B.fromString s</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true"></a>    <span class="dt">Text</span>   s <span class="ot">-&gt;</span> B.fromText s</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true"></a>    s        <span class="ot">-&gt;</span> fromChoiceString s</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true"></a>fromChoiceString (<span class="dt">External</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true"></a>    <span class="co">-- Check that the sequence &quot;&lt;/&quot; is *not* in the external data.</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true"></a>    <span class="dt">String</span> s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromString s</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true"></a>    <span class="dt">Text</span>   s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`T.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromText s</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true"></a>    <span class="dt">ByteString</span> s <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`S.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromByteString s</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true"></a>    s            <span class="ot">-&gt;</span> fromChoiceString s</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true"></a>fromChoiceString (<span class="dt">AppendChoiceString</span> x y) <span class="ot">=</span></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true"></a>    fromChoiceString x <span class="ot">`mappend`</span> fromChoiceString y</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true"></a>fromChoiceString <span class="dt">EmptyChoiceString</span> <span class="ot">=</span> <span class="fu">mempty</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Blaze.ByteString.Builder</span>           <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Blaze.ByteString.Builder.Html.Utf8</span> <span class="kw">as</span> <span class="dt">B</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="ot">fromChoiceString ::</span> <span class="dt">ChoiceString</span>  <span class="co">-- ^ String to render</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                 <span class="ot">-&gt;</span> <span class="dt">Builder</span>       <span class="co">-- ^ Resulting builder</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>fromChoiceString (<span class="dt">Static</span> s)     <span class="ot">=</span> B.copyByteString <span class="op">$</span> getUtf8ByteString s</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>fromChoiceString (<span class="dt">String</span> s)     <span class="ot">=</span> B.fromHtmlEscapedString s</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>fromChoiceString (<span class="dt">Text</span> s)       <span class="ot">=</span> B.fromHtmlEscapedText s</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>fromChoiceString (<span class="dt">ByteString</span> s) <span class="ot">=</span> B.fromByteString s</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>fromChoiceString (<span class="dt">PreEscaped</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">String</span> s <span class="ot">-&gt;</span> B.fromString s</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Text</span>   s <span class="ot">-&gt;</span> B.fromText s</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    s        <span class="ot">-&gt;</span> fromChoiceString s</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>fromChoiceString (<span class="dt">External</span> x) <span class="ot">=</span> <span class="kw">case</span> x <span class="kw">of</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Check that the sequence &quot;&lt;/&quot; is *not* in the external data.</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">String</span> s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromString s</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Text</span>   s     <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`T.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromText s</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ByteString</span> s <span class="ot">-&gt;</span> <span class="kw">if</span> <span class="st">&quot;&lt;/&quot;</span> <span class="ot">`S.isInfixOf`</span> s <span class="kw">then</span> <span class="fu">mempty</span> <span class="kw">else</span> B.fromByteString s</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    s            <span class="ot">-&gt;</span> fromChoiceString s</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>fromChoiceString (<span class="dt">AppendChoiceString</span> x y) <span class="ot">=</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    fromChoiceString x <span class="ot">`mappend`</span> fromChoiceString y</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>fromChoiceString <span class="dt">EmptyChoiceString</span> <span class="ot">=</span> <span class="fu">mempty</span></span></code></pre></div>
 <p>今回関係するのは <code>fromChoiceString (String s) = B.fromHtmlEscapedText s</code> なので <code>fromHtmlEscapedText</code> を確認しましょう。</p>
 <h3 id="ステップ3fromhtmlescapedtext">【ステップ3】fromHtmlEscapedText</h3>
 <p><a href="https://hackage.haskell.org/package/blaze-builder-0.4.1.0/docs/Blaze-ByteString-Builder-Html-Utf8.html#v:fromHtmlEscapedString">fromHtmlEscapedString</a> 関数の実装は以下の通りです。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="ot">charUtf8HtmlEscaped ::</span> <span class="dt">P.BoundedPrim</span> <span class="dt">Char</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a>charUtf8HtmlEscaped <span class="ot">=</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>    condB (<span class="op">&gt;</span>  <span class="ch">'&gt;'</span> ) (condB (<span class="op">==</span> <span class="ch">'\DEL'</span>) P.emptyB P.charUtf8) <span class="op">$</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a>    condB (<span class="op">==</span> <span class="ch">'&lt;'</span> ) (fixed4 (<span class="ch">'&amp;'</span>,(<span class="ch">'l'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))) <span class="op">$</span>        <span class="co">-- &amp;lt;</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a>    condB (<span class="op">==</span> <span class="ch">'&gt;'</span> ) (fixed4 (<span class="ch">'&amp;'</span>,(<span class="ch">'g'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))) <span class="op">$</span>        <span class="co">-- &amp;gt;</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a>    condB (<span class="op">==</span> <span class="ch">'&amp;'</span> ) (fixed5 (<span class="ch">'&amp;'</span>,(<span class="ch">'a'</span>,(<span class="ch">'m'</span>,(<span class="ch">'p'</span>,<span class="ch">';'</span>))))) <span class="op">$</span>  <span class="co">-- &amp;amp;</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a>    condB (<span class="op">==</span> <span class="ch">'&quot;'</span> ) (fixed6 (<span class="ch">'&amp;'</span>,(<span class="ch">'q'</span>,(<span class="ch">'u'</span>,(<span class="ch">'o'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))))) <span class="op">$</span>  <span class="co">-- &amp;#quot;</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a>    condB (<span class="op">==</span> <span class="ch">'\''</span>) (fixed5 (<span class="ch">'&amp;'</span>,(<span class="ch">'#'</span>,(<span class="ch">'3'</span>,(<span class="ch">'9'</span>,<span class="ch">';'</span>))))) <span class="op">$</span>  <span class="co">-- &amp;#39;</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a>    condB (\c <span class="ot">-&gt;</span> c <span class="op">&gt;=</span> <span class="ch">' '</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\t'</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\n'</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\r'</span>)</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a>          (P.liftFixedToBounded P.char7) <span class="op">$</span></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true"></a>    P.emptyB</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true"></a>    <span class="ot">{-# INLINE fixed4 #-}</span></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true"></a>    fixed4 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true"></a></span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true"></a>    <span class="ot">{-# INLINE fixed5 #-}</span></span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true"></a>    fixed5 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true"></a></span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true"></a>    <span class="ot">{-# INLINE fixed6 #-}</span></span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true"></a>    fixed6 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ot">charUtf8HtmlEscaped ::</span> <span class="dt">P.BoundedPrim</span> <span class="dt">Char</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>charUtf8HtmlEscaped <span class="ot">=</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    condB (<span class="op">&gt;</span>  <span class="ch">'&gt;'</span> ) (condB (<span class="op">==</span> <span class="ch">'\DEL'</span>) P.emptyB P.charUtf8) <span class="op">$</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    condB (<span class="op">==</span> <span class="ch">'&lt;'</span> ) (fixed4 (<span class="ch">'&amp;'</span>,(<span class="ch">'l'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))) <span class="op">$</span>        <span class="co">-- &amp;lt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    condB (<span class="op">==</span> <span class="ch">'&gt;'</span> ) (fixed4 (<span class="ch">'&amp;'</span>,(<span class="ch">'g'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))) <span class="op">$</span>        <span class="co">-- &amp;gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    condB (<span class="op">==</span> <span class="ch">'&amp;'</span> ) (fixed5 (<span class="ch">'&amp;'</span>,(<span class="ch">'a'</span>,(<span class="ch">'m'</span>,(<span class="ch">'p'</span>,<span class="ch">';'</span>))))) <span class="op">$</span>  <span class="co">-- &amp;amp;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    condB (<span class="op">==</span> <span class="ch">'&quot;'</span> ) (fixed6 (<span class="ch">'&amp;'</span>,(<span class="ch">'q'</span>,(<span class="ch">'u'</span>,(<span class="ch">'o'</span>,(<span class="ch">'t'</span>,<span class="ch">';'</span>)))))) <span class="op">$</span>  <span class="co">-- &amp;#quot;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    condB (<span class="op">==</span> <span class="ch">'\''</span>) (fixed5 (<span class="ch">'&amp;'</span>,(<span class="ch">'#'</span>,(<span class="ch">'3'</span>,(<span class="ch">'9'</span>,<span class="ch">';'</span>))))) <span class="op">$</span>  <span class="co">-- &amp;#39;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    condB (\c <span class="ot">-&gt;</span> c <span class="op">&gt;=</span> <span class="ch">' '</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\t'</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\n'</span> <span class="op">||</span> c <span class="op">==</span> <span class="ch">'\r'</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>          (P.liftFixedToBounded P.char7) <span class="op">$</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    P.emptyB</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="ot">{-# INLINE fixed4 #-}</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    fixed4 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="ot">{-# INLINE fixed5 #-}</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    fixed5 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="ot">{-# INLINE fixed6 #-}</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    fixed6 x <span class="ot">=</span> P.liftFixedToBounded <span class="op">$</span> <span class="fu">const</span> x <span class="op">&gt;$&lt;</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7 <span class="op">&gt;*&lt;</span> P.char7</span></code></pre></div>
 <p>つまり、この関数内で実際のエスケープ処理が走っていることがわかります。</p>
 <h2 id="まとめ">まとめ</h2>
 <ul>

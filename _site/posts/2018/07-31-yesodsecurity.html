@@ -234,118 +234,118 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <p>今回はその内容について紹介したいと思います。(セキュリティの専門家ではないので間違いがあればご指摘ください)</p>
 <!--more-->
 <h2 id="脆弱性のあるコード">脆弱性のあるコード</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="co">-- stack script --resolver lts-12.4</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>|]</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>  [whamlet|</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>    <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a>      <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('#{name}')&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>    <span class="kw">$nothing</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a>      パラメータが設定されていません。</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>  |]</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a>  toWidget [julius|</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>    <span class="kw">function</span> <span class="fu">init</span>(text) {</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>      <span class="co">// 何かしらの処理</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a>    }</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a>  |]</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- stack script --resolver lts-12.4</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings     #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes           #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell       #-}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies          #-}</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  [whamlet|</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('#{name}')&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">$nothing</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      パラメータが設定されていません。</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  |]</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  toWidget [julius|</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">function</span> <span class="fu">init</span>(text) {</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>      <span class="co">// 何かしらの処理</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  |]</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p>このコードには脆弱性があります。</p>
 <p><strong>Yesod</strong> の変数展開 <code>#{..}</code> は、このような <strong>JavaScript</strong> の動的生成でも大丈夫だろうと思っていたのですが、そうではありませんでした。</p>
 <h3 id="正常系">正常系</h3>
 <p>期待する動作として、例えば <code>http://localhost/?name=bigmoon</code> いう形式の <strong>URL</strong> にアクセスすると、以下のような URL が組み立てられます。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('bigmoon')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('bigmoon')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 <p>これは予定通りです。</p>
 <h3 id="異常系">異常系</h3>
 <p><strong>URL</strong> の形式を <code>http://localhost/?name=%27),alert(XSS)//</code> とするとインジェクションが発生します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('%27),alert(XSS)//')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('%27),alert(XSS)//')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 <p>読みやすさのため、パーセントエンコーディングを元に戻します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(''),alert(XSS)//')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(''),alert(XSS)//')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 <p><code>alert</code> が出てきてしまいましたね・・・。</p>
 <p>余談ですが <strong>Yesod</strong> ではパラメータ中に出現する <code>;</code> をパラメータの区切り文字として認識するようです。そのため <code>http://localhost/?name=%27);alert(XSS)//</code> ではインジェクションは発生しません。</p>
 <h2 id="原因">原因</h2>
 <p>問題はどこにあるのでしょうか？</p>
 <p>パラメータを取得しているコードはこの部分です。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mname <span class="ot">&lt;-</span> lookupGetParam <span class="st">&quot;name&quot;</span></span></code></pre></div>
 <p><a href="https://www.stackage.org/haddock/lts-12.4/yesod-core-1.6.6/Yesod-Core-Handler.html#v:lookupGetParam">lookupGetParam</a> の型は以下の通りです。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="ot">lookupGetParam ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Maybe</span> <span class="dt">Text</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">lookupGetParam ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Maybe</span> <span class="dt">Text</span>)</span></code></pre></div>
 <p>つまり、<code>mname :: Maybe Text</code> 型となってしまいます。ここが問題の原因です。</p>
 <p>ただの <strong>Text</strong> 型なので変数展開時に <strong>HTMLのエスケープ処理</strong> が行われます。本来ならば <strong>JavaScript</strong> 用のエスケープ処理が必要なのです。</p>
 <h2 id="展開部分を改良してみる">展開部分を改良してみる</h2>
 <p>では <strong>Javascript</strong> 型に変換すれば問題は解決するのでしょうか？</p>
 <p>試しに以下のようにコードを変更してみました。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="op">&lt;</span>img onload<span class="ot">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ name}')&quot;</span> src<span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>img onload<span class="ot">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ name}')&quot;</span> src<span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="op">&gt;</span></span></code></pre></div>
 <p>ですが、やはり結果は同じです。</p>
 <h2 id="エスケープ処理">エスケープ処理</h2>
 <p>ソースコードを追いかけてみるとどうやら <strong>Value</strong> の値については <a href="https://www.stackage.org/haddock/lts-12.4/shakespeare-2.0.15/src/Text.Julius.html#string">string</a> というサニタイザーが適用されるようです。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ot">string ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>string s <span class="ot">=</span> <span class="ot">{-# SCC &quot;string&quot; #-}</span> singleton <span class="ch">'&quot;'</span> <span class="op">&lt;&gt;</span> quote s <span class="op">&lt;&gt;</span> singleton <span class="ch">'&quot;'</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>    quote q <span class="ot">=</span> <span class="kw">case</span> T.uncons t <span class="kw">of</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>                <span class="dt">Nothing</span>      <span class="ot">-&gt;</span> fromText h</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>                <span class="dt">Just</span> (<span class="op">!</span>c,t') <span class="ot">-&gt;</span> fromText h <span class="op">&lt;&gt;</span> escape c <span class="op">&lt;&gt;</span> quote t'</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>        <span class="kw">where</span> (h,t) <span class="ot">=</span> <span class="ot">{-# SCC &quot;break&quot; #-}</span> T.break isEscape q</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>    isEscape c <span class="ot">=</span> c <span class="op">==</span> <span class="ch">'\&quot;'</span> <span class="op">||</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>                 c <span class="op">==</span> <span class="ch">'\\'</span> <span class="op">||</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>                 c <span class="op">==</span> <span class="ch">'&lt;'</span>  <span class="op">||</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>                 c <span class="op">==</span> <span class="ch">'&gt;'</span>  <span class="op">||</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>                 c <span class="op">==</span> <span class="ch">'&amp;'</span>  <span class="op">||</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>                 c <span class="op">&lt;</span> <span class="ch">'\x20'</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>    escape <span class="ch">'\&quot;'</span> <span class="ot">=</span> <span class="st">&quot;\\\&quot;&quot;</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>    escape <span class="ch">'\\'</span> <span class="ot">=</span> <span class="st">&quot;\\\\&quot;</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>    escape <span class="ch">'\n'</span> <span class="ot">=</span> <span class="st">&quot;\\n&quot;</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a>    escape <span class="ch">'\r'</span> <span class="ot">=</span> <span class="st">&quot;\\r&quot;</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>    escape <span class="ch">'\t'</span> <span class="ot">=</span> <span class="st">&quot;\\t&quot;</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a>    escape <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003c&quot;</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a>    escape <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003e&quot;</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a>    escape <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;\\u0026&quot;</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true"></a>    escape c</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true"></a>        <span class="op">|</span> c <span class="op">&lt;</span> <span class="ch">'\x20'</span> <span class="ot">=</span> fromString <span class="op">$</span> <span class="st">&quot;\\u&quot;</span> <span class="op">++</span> <span class="fu">replicate</span> (<span class="dv">4</span> <span class="op">-</span> <span class="fu">length</span> h) <span class="ch">'0'</span> <span class="op">++</span> h</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true"></a>        <span class="op">|</span> <span class="fu">otherwise</span>  <span class="ot">=</span> singleton c</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true"></a>        <span class="kw">where</span> h <span class="ot">=</span> showHex (<span class="fu">fromEnum</span> c) <span class="st">&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">string ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">Builder</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>string s <span class="ot">=</span> <span class="ot">{-# SCC &quot;string&quot; #-}</span> singleton <span class="ch">'&quot;'</span> <span class="op">&lt;&gt;</span> quote s <span class="op">&lt;&gt;</span> singleton <span class="ch">'&quot;'</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    quote q <span class="ot">=</span> <span class="kw">case</span> T.uncons t <span class="kw">of</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Nothing</span>      <span class="ot">-&gt;</span> fromText h</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                <span class="dt">Just</span> (<span class="op">!</span>c,t') <span class="ot">-&gt;</span> fromText h <span class="op">&lt;&gt;</span> escape c <span class="op">&lt;&gt;</span> quote t'</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span> (h,t) <span class="ot">=</span> <span class="ot">{-# SCC &quot;break&quot; #-}</span> T.break isEscape q</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    isEscape c <span class="ot">=</span> c <span class="op">==</span> <span class="ch">'\&quot;'</span> <span class="op">||</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                 c <span class="op">==</span> <span class="ch">'\\'</span> <span class="op">||</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                 c <span class="op">==</span> <span class="ch">'&lt;'</span>  <span class="op">||</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                 c <span class="op">==</span> <span class="ch">'&gt;'</span>  <span class="op">||</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                 c <span class="op">==</span> <span class="ch">'&amp;'</span>  <span class="op">||</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                 c <span class="op">&lt;</span> <span class="ch">'\x20'</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'\&quot;'</span> <span class="ot">=</span> <span class="st">&quot;\\\&quot;&quot;</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'\\'</span> <span class="ot">=</span> <span class="st">&quot;\\\\&quot;</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'\n'</span> <span class="ot">=</span> <span class="st">&quot;\\n&quot;</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'\r'</span> <span class="ot">=</span> <span class="st">&quot;\\r&quot;</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'\t'</span> <span class="ot">=</span> <span class="st">&quot;\\t&quot;</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003c&quot;</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003e&quot;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    escape <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;\\u0026&quot;</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    escape c</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> c <span class="op">&lt;</span> <span class="ch">'\x20'</span> <span class="ot">=</span> fromString <span class="op">$</span> <span class="st">&quot;\\u&quot;</span> <span class="op">++</span> <span class="fu">replicate</span> (<span class="dv">4</span> <span class="op">-</span> <span class="fu">length</span> h) <span class="ch">'0'</span> <span class="op">++</span> h</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> <span class="fu">otherwise</span>  <span class="ot">=</span> singleton c</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        <span class="kw">where</span> h <span class="ot">=</span> showHex (<span class="fu">fromEnum</span> c) <span class="st">&quot;&quot;</span></span></code></pre></div>
 <p>なので、先程のコードを少し修正してこの <code>string</code> を適用してみました。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="op">&lt;</span>img onload<span class="ot">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ string $ name}')&quot;</span> src<span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>img onload<span class="ot">=</span><span class="st">&quot;init('#{renderJavascript $ toJavascript $ rawJS $ string $ name}')&quot;</span> src<span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="op">&gt;</span></span></code></pre></div>
 <p>しかし、これでもやっぱりだめです。なぜなら <code>'</code> に対してはサニタイズしていないからだと思います。</p>
 <h3 id="string-関数の修正">string 関数の修正</h3>
 <p>以下のように <code>'</code> のエスケープ処理を追加したところ、インジェクションが発生しなくなりました。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>isEscape c <span class="ot">=</span> c <span class="op">==</span> <span class="ch">'\&quot;'</span> <span class="op">||</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>             c <span class="op">==</span> <span class="ch">'\\'</span> <span class="op">||</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>             c <span class="op">==</span> <span class="ch">'&lt;'</span>  <span class="op">||</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>             c <span class="op">==</span> <span class="ch">'&gt;'</span>  <span class="op">||</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>             c <span class="op">==</span> <span class="ch">'&amp;'</span>  <span class="op">||</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>             c <span class="op">==</span> <span class="ch">'\''</span> <span class="op">||</span> <span class="co">-- 追記</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>             c <span class="op">&lt;</span> <span class="ch">'\x20'</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a>escape <span class="ch">'\&quot;'</span> <span class="ot">=</span> <span class="st">&quot;\\\&quot;&quot;</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>escape <span class="ch">'\\'</span> <span class="ot">=</span> <span class="st">&quot;\\\\&quot;</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>escape <span class="ch">'\n'</span> <span class="ot">=</span> <span class="st">&quot;\\n&quot;</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>escape <span class="ch">'\r'</span> <span class="ot">=</span> <span class="st">&quot;\\r&quot;</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>escape <span class="ch">'\t'</span> <span class="ot">=</span> <span class="st">&quot;\\t&quot;</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>escape <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003c&quot;</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a>escape <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003e&quot;</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a>escape <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;\\u0026&quot;</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a><span class="co">-- 追記</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a>escape <span class="ch">'\''</span> <span class="ot">=</span> <span class="st">&quot;\\\'&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>isEscape c <span class="ot">=</span> c <span class="op">==</span> <span class="ch">'\&quot;'</span> <span class="op">||</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>             c <span class="op">==</span> <span class="ch">'\\'</span> <span class="op">||</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>             c <span class="op">==</span> <span class="ch">'&lt;'</span>  <span class="op">||</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>             c <span class="op">==</span> <span class="ch">'&gt;'</span>  <span class="op">||</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>             c <span class="op">==</span> <span class="ch">'&amp;'</span>  <span class="op">||</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>             c <span class="op">==</span> <span class="ch">'\''</span> <span class="op">||</span> <span class="co">-- 追記</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>             c <span class="op">&lt;</span> <span class="ch">'\x20'</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'\&quot;'</span> <span class="ot">=</span> <span class="st">&quot;\\\&quot;&quot;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'\\'</span> <span class="ot">=</span> <span class="st">&quot;\\\\&quot;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'\n'</span> <span class="ot">=</span> <span class="st">&quot;\\n&quot;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'\r'</span> <span class="ot">=</span> <span class="st">&quot;\\r&quot;</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'\t'</span> <span class="ot">=</span> <span class="st">&quot;\\t&quot;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'&lt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003c&quot;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'&gt;'</span> <span class="ot">=</span> <span class="st">&quot;\\u003e&quot;</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'&amp;'</span> <span class="ot">=</span> <span class="st">&quot;\\u0026&quot;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">-- 追記</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>escape <span class="ch">'\''</span> <span class="ot">=</span> <span class="st">&quot;\\\'&quot;</span></span></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <ul>
 <li><strong>JavaScript</strong> を動的に組み立てない</li>

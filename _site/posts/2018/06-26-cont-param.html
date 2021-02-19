@@ -231,37 +231,37 @@ Continuation (継続) について全く勉強したことが無いので Contro
 <h2 id="問題のコード">問題のコード</h2>
 <p><strong>Yesod</strong> の <strong>Handler</strong> ではパラメータの取得するために <a href="https://www.stackage.org/haddock/lts-11.15/yesod-core-1.6.5/Yesod-Core-Handler.html#v:lookupGetParam">lookupGetParam</a> や <a href="https://www.stackage.org/haddock/lts-11.15/yesod-core-1.6.5/Yesod-Core-Handler.html#v:lookupPostParam">lookupPostParam</a> を利用すると思います。</p>
 <p>実際にはこんな感じでパラメータを取得していくつか処理を行います。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">deleteTestR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>deleteTestR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  mParam <span class="ot">&lt;-</span> lookupPostParam <span class="st">&quot;key&quot;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  <span class="kw">case</span> mParam <span class="kw">of</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;パラメータが不正です。&quot;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>    <span class="dt">Just</span> param <span class="ot">-&gt;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>      <span class="kw">case</span> textToSqlKey param <span class="kw">of</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;キーが見つかりませんでした。&quot;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>        <span class="dt">Just</span> key <span class="ot">-&gt;</span> <span class="kw">do</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>          mRecord <span class="ot">&lt;-</span> runDB <span class="op">$</span> get key</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>          <span class="kw">case</span> mRecord <span class="kw">of</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;削除対象のデータが見つかりませんでした。&quot;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>            <span class="dt">Just</span> _  <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;success&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">deleteTestR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>deleteTestR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  mParam <span class="ot">&lt;-</span> lookupPostParam <span class="st">&quot;key&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">case</span> mParam <span class="kw">of</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;パラメータが不正です。&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Just</span> param <span class="ot">-&gt;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="kw">case</span> textToSqlKey param <span class="kw">of</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;キーが見つかりませんでした。&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Just</span> key <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>          mRecord <span class="ot">&lt;-</span> runDB <span class="op">$</span> get key</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>          <span class="kw">case</span> mRecord <span class="kw">of</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;削除対象のデータが見つかりませんでした。&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Just</span> _  <span class="ot">-&gt;</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;success&quot;</span></span></code></pre></div>
 <p>このコード、どう考えても嫌な感じですよね・・・。ネストやばいし。</p>
 <p><strong>do</strong> で書くと <strong>Maybe</strong> 型なので値を返せないし、ベースに <strong>Handler</strong> モナドがあるので <strong>Either</strong> で置き換えるのも良くわかんないな・・・。と思って、結構放置してました。</p>
 <h2 id="contt-を使ってリファクタリング">ContT を使ってリファクタリング！</h2>
 <p>先程のプログラムを <a href="https://www.stackage.org/haddock/lts-11.15/mtl-2.2.2/Control-Monad-Cont.html#t:ContT">ContT</a> で置き換えるとこうなります。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">deleteTestR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>deleteTestR <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>  mParam <span class="ot">&lt;-</span> lookupPostParam <span class="st">&quot;key&quot;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>  evalContT <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>    param <span class="ot">&lt;-</span> mParam <span class="op">!?</span> <span class="st">&quot;パラメータが不正です。&quot;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    key <span class="ot">&lt;-</span> textToSqlKey param <span class="op">!?</span> <span class="st">&quot;キーが見つかりませんでした。&quot;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>    mRecord <span class="ot">&lt;-</span> lift <span class="op">$</span> runDB <span class="op">$</span> get key</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    deletedBrand <span class="ot">&lt;-</span> mRecord <span class="op">!?</span> <span class="st">&quot;削除対象のデータが見つかりませんでした。&quot;</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>    lift <span class="op">$</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;success&quot;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>    <span class="dt">Nothing</span> <span class="op">!?</span> e <span class="ot">=</span> <span class="dt">ContT</span> <span class="op">$</span> <span class="fu">const</span> <span class="op">$</span> returnJson <span class="op">$</span> <span class="dt">String</span> e</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>    <span class="dt">Just</span> a  <span class="op">!?</span> _ <span class="ot">=</span> <span class="dt">ContT</span> (<span class="op">$</span> a)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">deleteTestR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>deleteTestR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  mParam <span class="ot">&lt;-</span> lookupPostParam <span class="st">&quot;key&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  evalContT <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    param <span class="ot">&lt;-</span> mParam <span class="op">!?</span> <span class="st">&quot;パラメータが不正です。&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    key <span class="ot">&lt;-</span> textToSqlKey param <span class="op">!?</span> <span class="st">&quot;キーが見つかりませんでした。&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    mRecord <span class="ot">&lt;-</span> lift <span class="op">$</span> runDB <span class="op">$</span> get key</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    deletedBrand <span class="ot">&lt;-</span> mRecord <span class="op">!?</span> <span class="st">&quot;削除対象のデータが見つかりませんでした。&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    lift <span class="op">$</span> returnJson <span class="op">$</span> <span class="dt">String</span> <span class="st">&quot;success&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Nothing</span> <span class="op">!?</span> e <span class="ot">=</span> <span class="dt">ContT</span> <span class="op">$</span> <span class="fu">const</span> <span class="op">$</span> returnJson <span class="op">$</span> <span class="dt">String</span> e</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Just</span> a  <span class="op">!?</span> _ <span class="ot">=</span> <span class="dt">ContT</span> (<span class="op">$</span> a)</span></code></pre></div>
 <p>感動しましたね。継続すごいな！って。</p>
 <h2 id="まとめ">まとめ</h2>
 <p>継続勉強しよ。</p>

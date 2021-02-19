@@ -231,78 +231,78 @@ data Person = Person Text String
         <h2 id="はじめに">はじめに</h2>
 <p>今回は <a href="https://www.stackage.org/package/prettyprinter">prettyprinter</a> を使ってみました。</p>
 <p>使おうと思ったモチベーションとしては、以下のようなデータ型をデバッグ表示させる際に <code>prettyprinter</code> 系パッケージを使って良い感じに表示してみようかな？という感じです。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span> <span class="dt">Text</span> <span class="dt">String</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span> <span class="dt">Text</span> <span class="dt">String</span></span></code></pre></div>
 <p>表示をカスタマイズするために <code>Show</code> クラスのインスタンスを書き換えることは、経験上嫌なことしか起きないです・・。</p>
 <p>自分でそれっぽい型クラスを作っても良いのですが、普通は素直に <code>prettyprinter</code> 系のパッケージを使った方が良いと思います！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>$ <span class="ex">stack</span> repl --package text</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="ex">Prelude</span><span class="op">&gt;</span> import Data.Text</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> data Person = Person Text String deriving Show</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> :set -XOverloadedStrings</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> Person <span class="st">&quot;はすける&quot;</span> <span class="st">&quot;らむだ&quot;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="ex">Person</span> <span class="st">&quot;\12399\12377\12369\12427&quot;</span> <span class="st">&quot;\12425\12416\12384&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack repl <span class="at">--package</span> text</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Prelude</span><span class="op">&gt;</span> import Data.Text</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> data Person = Person Text String deriving Show</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> :set <span class="at">-XOverloadedStrings</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Prelude</span> Data.Text<span class="op">&gt;</span> Person <span class="st">&quot;はすける&quot;</span> <span class="st">&quot;らむだ&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Person</span> <span class="st">&quot;\12399\12377\12369\12427&quot;</span> <span class="st">&quot;\12425\12416\12384&quot;</span></span></code></pre></div>
 <!--more-->
 <h2 id="パッケージの選定理由">パッケージの選定理由</h2>
 <p>ぐぐって一番始めに出てきたのは <a href="https://github.com/haskell/pretty">pretty</a> というパッケージだったんですが <code>String</code> にしか対応してない感じだったので見送りました。</p>
 <p><code>prettyprinter</code> は <strong>A modern, easy to use, well-documented, extensible prettyprinter.</strong> というコメント通り、とても使いやすいです。</p>
 <h2 id="使ってみました">使ってみました</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="co">-- stack --resolver lts-11.2 script</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text.Prettyprint.Doc</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text.Prettyprint.Doc.Render.Text</span> (putDoc)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">A</span> <span class="ot">=</span> <span class="dt">A</span> <span class="dt">Text</span> <span class="dt">String</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>  <span class="kw">deriving</span> <span class="dt">Show</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">B</span> <span class="ot">=</span> <span class="dt">B</span> <span class="dt">Text</span> <span class="dt">String</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> <span class="st">&quot;B&quot;</span> <span class="op">&lt;+&gt;</span> pretty l <span class="op">&lt;+&gt;</span> pretty r</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a>  <span class="fu">print</span> <span class="op">$</span> <span class="dt">A</span> <span class="st">&quot;あ&quot;</span> <span class="st">&quot;a&quot;</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a>  putDoc <span class="op">$</span> pretty <span class="op">$</span> <span class="dt">B</span> <span class="st">&quot;あ&quot;</span> <span class="st">&quot;a&quot;</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;&quot;</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>$ <span class="fu">chmod</span> u+x Pretty.hs</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>$ <span class="ex">./Pretty.hs</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="ex">B</span> あ a</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- stack --resolver lts-11.2 script</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text.Prettyprint.Doc</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text.Prettyprint.Doc.Render.Text</span> (putDoc)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">A</span> <span class="ot">=</span> <span class="dt">A</span> <span class="dt">Text</span> <span class="dt">String</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">deriving</span> <span class="dt">Show</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">B</span> <span class="ot">=</span> <span class="dt">B</span> <span class="dt">Text</span> <span class="dt">String</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> <span class="st">&quot;B&quot;</span> <span class="op">&lt;+&gt;</span> pretty l <span class="op">&lt;+&gt;</span> pretty r</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span> <span class="op">$</span> <span class="dt">A</span> <span class="st">&quot;あ&quot;</span> <span class="st">&quot;a&quot;</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  putDoc <span class="op">$</span> pretty <span class="op">$</span> <span class="dt">B</span> <span class="st">&quot;あ&quot;</span> <span class="st">&quot;a&quot;</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> chmod u+x Pretty.hs</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./Pretty.hs</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> あ a</span></code></pre></div>
 <p><a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#t:Pretty">Pretty</a> 型クラスのインスタンスを普通に定義するだけです。</p>
 <p>適当に改行したい場合は <a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:line">line</a> を追加するだけです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> <span class="st">&quot;B&quot;</span> <span class="op">&lt;&gt;</span> line</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>                <span class="op">&lt;+&gt;</span> pretty l <span class="op">&lt;&gt;</span> line</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>                <span class="op">&lt;+&gt;</span> pretty r</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>$ <span class="ex">./test.hs</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="ex">B</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a> あ</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a> <span class="ex">a</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> <span class="st">&quot;B&quot;</span> <span class="op">&lt;&gt;</span> line</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;+&gt;</span> pretty l <span class="op">&lt;&gt;</span> line</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;+&gt;</span> pretty r</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./test.hs</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">あ</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a> <span class="ex">a</span></span></code></pre></div>
 <p>区切りの空白が不要な場合は <a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--43--62-">&lt;+&gt;</a> を <a href="https://www.stackage.org/haddock/lts-11.2/prettyprinter-1.2.0.1/Data-Text-Prettyprint-Doc.html#v:-60--62-">&lt;&gt;</a> にするだけです。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> <span class="st">&quot;B&quot;</span> <span class="op">&lt;&gt;</span> line</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>                <span class="op">&lt;&gt;</span> pretty l <span class="op">&lt;&gt;</span> line</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>                <span class="op">&lt;&gt;</span> pretty r</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>$ <span class="ex">./test.hs</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="ex">B</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>あ</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="ex">a</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> <span class="st">&quot;B&quot;</span> <span class="op">&lt;&gt;</span> line</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;&gt;</span> pretty l <span class="op">&lt;&gt;</span> line</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;&gt;</span> pretty r</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./test.hs</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">あ</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">a</span></span></code></pre></div>
 <p>適当にネストさせたい場合も簡単です。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> nest <span class="dv">4</span> (<span class="st">&quot;B&quot;</span> <span class="op">&lt;&gt;</span> line</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>                <span class="op">&lt;&gt;</span> pretty l <span class="op">&lt;&gt;</span> line</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>                <span class="op">&lt;&gt;</span> pretty r)</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>$ <span class="ex">./test.hs</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="ex">B</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>    あ</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>    <span class="ex">a</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Pretty</span> <span class="dt">B</span> <span class="kw">where</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  pretty (<span class="dt">B</span> l r) <span class="ot">=</span> nest <span class="dv">4</span> (<span class="st">&quot;B&quot;</span> <span class="op">&lt;&gt;</span> line</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;&gt;</span> pretty l <span class="op">&lt;&gt;</span> line</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;&gt;</span> pretty r)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./test.hs</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">A</span> <span class="st">&quot;\12354&quot;</span> <span class="st">&quot;a&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">あ</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">a</span></span></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <p>めちゃめちゃ簡単だったので、使ってみると楽しいですよー。ドキュメントが充実しているのが良いですね。</p>
 <p>今回は短めでした。</p>

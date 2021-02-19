@@ -183,69 +183,69 @@
 <p>実際のところ、単一ページを作成するのであれば、かなりよく機能します。なぜなら、構造 (HTML)、スタイル (CSS)、ロジック (Javascript) を分離できるからです。しかし、簡単に合成できるモジュラなコードを書こうと思うと、これら構成要素を別々に調節しなければならないので悩ましく思います。ウィジェットは、この問題に対する Yesod の解決策です。それは、jQuery のようなライブラリを確実に1度だけ読み込みたいという問題も解決できます。</p>
 <p>Yesod の4つのテンプレート言語 Hamlet、Cassius、Lucius、Julius は何らかの出力を作るための低レベルなツールです。ウィジェットは、それらのテンプレート言語を相互を合成するための接着剤のようなものです。</p>
 <h2 id="概要">概要</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>|]</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>    setTitle <span class="st">&quot;My Page Title&quot;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>    toWidget [lucius| h1 { color: green; } |]</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>    addScriptRemote <span class="st">&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js&quot;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>    toWidget</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>        [julius|</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>            <span class="fu">$</span>(<span class="kw">function</span>() {</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>                <span class="fu">$</span>(<span class="st">&quot;h1&quot;</span>)<span class="op">.</span><span class="fu">click</span>(<span class="kw">function</span>(){</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>                    <span class="fu">alert</span>(<span class="st">&quot;You clicked on the heading!&quot;</span>)<span class="op">;</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>                })<span class="op">;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a>            })<span class="op">;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>        |]</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a>    toWidgetHead</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>        [hamlet|</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>            <span class="kw">&lt;meta</span><span class="ot"> name=</span><span class="st">keywords</span><span class="ot"> content=</span><span class="st">&quot;some sample keywords&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a>        |]</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>    toWidget</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>        [hamlet|</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a>            <span class="kw">&lt;h1&gt;</span>Here's one way of including content</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a>        |]</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a>    [whamlet|<span class="kw">&lt;h2&gt;</span>Here's another |]</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a>    toWidgetBody</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a>        [julius|</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a>            <span class="fu">alert</span>(<span class="st">&quot;This is included in the body itself&quot;</span>)<span class="op">;</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a>        |]</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    setTitle <span class="st">&quot;My Page Title&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    toWidget [lucius| h1 { color: green; } |]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    addScriptRemote <span class="st">&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    toWidget</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        [julius|</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            <span class="fu">$</span>(<span class="kw">function</span>() {</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                <span class="fu">$</span>(<span class="st">&quot;h1&quot;</span>)<span class="op">.</span><span class="fu">click</span>(<span class="kw">function</span>(){</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">alert</span>(<span class="st">&quot;You clicked on the heading!&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                })<span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            })<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    toWidgetHead</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        [hamlet|</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;meta</span><span class="ot"> name=</span><span class="st">keywords</span><span class="ot"> content=</span><span class="st">&quot;some sample keywords&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    toWidget</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        [hamlet|</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;h1&gt;</span>Here's one way of including content</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    [whamlet|<span class="kw">&lt;h2&gt;</span>Here's another |]</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    toWidgetBody</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        [julius|</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>            <span class="fu">alert</span>(<span class="st">&quot;This is included in the body itself&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p>上記のプログラムは、以下の HTML を生成します (読みやすいようにインデントを追加しています)。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>  <span class="kw">&lt;head&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>    <span class="kw">&lt;title&gt;</span>My Page Title<span class="kw">&lt;/title&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>    <span class="kw">&lt;meta</span><span class="ot"> name=</span><span class="st">&quot;keywords&quot;</span><span class="ot"> content=</span><span class="st">&quot;some sample keywords&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>    <span class="kw">&lt;style&gt;</span>h1{<span class="kw">color</span>:<span class="cn">green</span>}<span class="kw">&lt;/style&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>  <span class="kw">&lt;/head&gt;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>  <span class="kw">&lt;body&gt;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    <span class="kw">&lt;h1&gt;</span>Here's one way of including content<span class="kw">&lt;/h1&gt;</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>    <span class="kw">&lt;h2&gt;</span>Here's another<span class="kw">&lt;/h2&gt;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>    <span class="kw">&lt;script&gt;</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>      <span class="fu">alert</span>(<span class="st">&quot;This is included in the body itself&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>    <span class="kw">&lt;/script&gt;</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>    <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>    <span class="kw">&lt;/script&gt;&lt;script&gt;</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>      <span class="fu">$</span>(<span class="kw">function</span>() {</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>        <span class="fu">$</span>(<span class="st">'h1'</span>)<span class="op">.</span><span class="fu">click</span>(<span class="kw">function</span>() {</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>          <span class="fu">alert</span>(<span class="st">&quot;You clicked on the heading!&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>        })<span class="op">;</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>      })<span class="op">;</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>    <span class="kw">&lt;/script&gt;</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>  <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;head&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;title&gt;</span>My Page Title<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;meta</span><span class="ot"> name=</span><span class="st">&quot;keywords&quot;</span><span class="ot"> content=</span><span class="st">&quot;some sample keywords&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;style&gt;</span>h1{<span class="kw">color</span>:<span class="cn">green</span>}<span class="kw">&lt;/style&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;body&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;h1&gt;</span>Here's one way of including content<span class="kw">&lt;/h1&gt;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;h2&gt;</span>Here's another<span class="kw">&lt;/h2&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;script&gt;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">alert</span>(<span class="st">&quot;This is included in the body itself&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/script&gt;&lt;script&gt;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">$</span>(<span class="kw">function</span>() {</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">$</span>(<span class="st">'h1'</span>)<span class="op">.</span><span class="fu">click</span>(<span class="kw">function</span>() {</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>          <span class="fu">alert</span>(<span class="st">&quot;You clicked on the heading!&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      })<span class="op">;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 <h2 id="ウィジェットとは何だろう">ウィジェットとは何だろう？</h2>
 <p>考え方によっては HTML 文書は単にネストされたタグの塊と捉えることもできるでしょう。多くの HTML 生成ツールのアプローチはタグの階層を定義して進めます。ここで、関数を適切なタイミングで呼び出し、ナビゲーションバーが階層の適切な部分に挿入されるような “プラグ&amp;プレイ” で動作するナビゲーションバーを表示するページコンポーネントを記述することを考えてみてください。</p>
 <p>これは、表面的な HTML 生成ツールで対処できない問題です。ナビゲーションバーは HTML に加え、複数の CSS と Javascript で構成されているでしょう。ナビゲーションバーを生成する関数を呼び出すタイミングでは既に <code>&lt;head&gt;</code> タグがレンダリングされているため、CSS 宣言のために <code>&lt;style&gt;</code> タグを新たに追加するには遅すぎます。通常の方法では、ナビゲーションバーを HTML、CSS、Javascript の3つの部分に分解し、さらに常にこれら3つ全てを呼び出していることを確認する必要があります。</p>
@@ -267,30 +267,30 @@
 <p>実際にはデフォルトの動作を上書き可能なので、スクリプトとスタイルコードを別ファイルに保存することもできます。scaffolded サイトでは自動的にこの機能が有効になります。</p>
 </div>
 <p>しかし <code>head</code> に現れる必要のある <code>&lt;meta&gt;</code> タグを追加したい場合はどうでしょうか？また Javascript を <code>head</code> の代わりに <code>body</code> に現れて欲しい場合はどうしますか？この問題を解決するために Yesod は2つの型クラス <code>ToWidgetHead</code> と <code>ToWidgetBody</code> を用意しています。以下は <code>&lt;script&gt;</code> タグを最終的にどこに挿入するか、きめ細かに制御するための例です。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>/      HomeR  GET</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>|]</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>    setTitle <span class="st">&quot;toWidgetHead and toWidgetBody&quot;</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a>    toWidgetBody</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>        [hamlet|<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">/included-in-body.js</span><span class="kw">&gt;</span>|]</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a>    toWidgetHead</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a>        [hamlet|<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">/included-in-head.js</span><span class="kw">&gt;</span>|]</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>/      HomeR  GET</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    setTitle <span class="st">&quot;toWidgetHead and toWidgetBody&quot;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    toWidgetBody</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        [hamlet|<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">/included-in-body.js</span><span class="kw">&gt;</span>|]</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    toWidgetHead</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        [hamlet|<span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">/included-in-head.js</span><span class="kw">&gt;</span>|]</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p><code>toWidgetHead</code> は <code>toWidgetBody</code> の後に呼ばれていますが、 <code>&lt;script src=/included-in-head.js&gt;</code> タグは生成される HTML の最初に現れることに注意してください。</p>
 <p>さらに、特定の種類のウィジェットを作るための関数がいくつもあります。</p>
 <h3 id="settitle">setTitle</h3>
@@ -307,62 +307,62 @@
 <p><code>addScript</code> と同じですが、通常の URL を利用します。Google の jQuery のような CDN にホストされたファイルを参照するために利用されます。</p>
 <h2 id="ウィジェットを組み合わせる">ウィジェットを組み合わせる</h2>
 <p>ウィジェットの全体的なアイデアは構成性を高めることです。HTML、CSS、Javascript の個々をより複雑なものに組み合わせ、これら大きな実体を組み合わせることで完全なページを作り上げます。これらは <code>Widget</code> の <code>Monad</code> インスタンスを用いれば自然に機能します。つまり、それぞれを1つにまとめ上げるために do 記法を使います。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>myWidget1 <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>    toWidget [hamlet|<span class="kw">&lt;h1&gt;</span>My Title|]</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>    toWidget [lucius|h1 { color: green } |]</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>myWidget2 <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    setTitle <span class="st">&quot;My Page Title&quot;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    addScriptRemote <span class="st">&quot;http://www.example.com/script.js&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>myWidget <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>    myWidget1</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>    myWidget2</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="co">-- or, if you want</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>myWidget' <span class="ot">=</span> myWidget1 <span class="op">&gt;&gt;</span> myWidget2</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>myWidget1 <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    toWidget [hamlet|<span class="kw">&lt;h1&gt;</span>My Title|]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    toWidget [lucius|h1 { color: green } |]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>myWidget2 <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    setTitle <span class="st">&quot;My Page Title&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    addScriptRemote <span class="st">&quot;http://www.example.com/script.js&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>myWidget <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    myWidget1</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    myWidget2</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- or, if you want</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>myWidget' <span class="ot">=</span> myWidget1 <span class="op">&gt;&gt;</span> myWidget2</span></code></pre></div>
 <div class="yesod-book-notice">
 <p><code>Widget</code> の <code>Monoid</code> インスタンスが定義されてるので、<code>mconcat</code> や <code>Writer</code> モナドを利用することも可能です。経験上、単に do 記法を使うことが最も簡単かつ自然です。</p>
 </div>
 <h2 id="id-の生成">ID の生成</h2>
 <p>もし、本当にコードの再利用を行うとすると、名前衝突の問題に悩まされるでしょう。スタイリングに影響を与える “foo” という同一のクラス名が2つの補助的なライブラリがあったらどうしますか？このような可能性を避けるためには <code>newIdent</code> 関数を利用しましょう。この関数はハンドラの中でユニークな識別子を生成します。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>getRootR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>    headerClass <span class="ot">&lt;-</span> newIdent</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    toWidget [hamlet|<span class="kw">&lt;h1 </span><span class="er">.#{headerClass}</span><span class="kw">&gt;</span>My Header|]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>    toWidget [lucius| .#{headerClass} { color: green; } |]</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>getRootR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    headerClass <span class="ot">&lt;-</span> newIdent</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    toWidget [hamlet|<span class="kw">&lt;h1 </span><span class="er">.#{headerClass}</span><span class="kw">&gt;</span>My Header|]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    toWidget [lucius| .#{headerClass} { color: green; } |]</span></code></pre></div>
 <h2 id="whamlet">whamlet</h2>
 <p>以下のコードは、フッターとなる Hamlet テンプレートを埋め込んだ、Hamlet テンプレートの例です。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>page =</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>    [hamlet|</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span>This is my page. I hope you enjoyed it.</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>        <span class="kw">^{</span>footer<span class="kw">}</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>    |]</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>footer =</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>    [hamlet|</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>        <span class="kw">&lt;footer&gt;</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>            <span class="kw">&lt;p&gt;</span>That's all folks!</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>    |]</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hamlet"><code class="sourceCode hamlet"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>page =</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    [hamlet|</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span>This is my page. I hope you enjoyed it.</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">^{</span>footer<span class="kw">}</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>footer =</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    [hamlet|</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;footer&gt;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;</span>That's all folks!</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    |]</span></code></pre></div>
 <p>これは、フッターがただの HTML であれば機能しますが、何らかのスタイルを適用したい場合はどうなるでしょうか？そういう時は、 Hamlet をウィジェットに変換することで簡単にフッターをカスタマイズできます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>footer <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>    toWidget</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>        [lucius|</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>            footer {</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>                font-weight: bold;</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>                text-align: center</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>            }</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>        |]</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>    toWidget</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>        [hamlet|</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>            <span class="kw">&lt;footer&gt;</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a>                <span class="kw">&lt;p&gt;</span>That's all folks!</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a>        |]</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>footer <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    toWidget</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        [lucius|</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            footer {</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                font-weight: bold;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                text-align: center</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    toWidget</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        [hamlet|</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;footer&gt;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span>That's all folks!</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        |]</span></code></pre></div>
 <p>しかし、ここで Hamlet テンプレートは Hamlet テンプレートしか埋め込みできないという問題が発生します。すなわち Hamlet はウィジェットについては何も知らないのです。この問題を解決するためには <code>whamlet</code> を利用します。whamlet は通常の Hamlet と同じく変数展開 (<code>#{...}</code>)、型安全URL (<code>@{...}</code>) などの構文を持ちます。しかし、埋め込み (<code>^{...}</code>) は <code>Widget</code> を取り、最終的な結果も <code>Widget</code> になります。whamlet を使うためには単に次のようにします。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>page <span class="ot">=</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span>This is my page. I hope you enjoyed it.</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>        <span class="kw">^{</span>footer<span class="kw">}</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>    |]</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>page <span class="ot">=</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span>This is my page. I hope you enjoyed it.</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">^{</span>footer<span class="kw">}</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    |]</span></code></pre></div>
 <p>別のファイルにテンプレートを保存しておきたい場合は <code>whamletFile</code> を使います。</p>
 <div class="yesod-book-notice">
 <p>scaffolded サイトではさらに便利な関数 <code>widgetFile</code> があります。これは Lucius、Cassius、Julius ファイルを自動的にインクルードできます。この関数の詳細については、scaffolding の章で説明します。</p>
@@ -371,80 +371,80 @@
 <p>これまで型注釈を避けてきたことに気付いたかもしれません。それぞれのウィジェットは <code>Widget</code> 型です。しかし Yesod ライブラリを見渡しても <code>Widget</code> 型の定義はどこにも見当りません。一体それは何なのでしょうか？</p>
 <p>Yesod は <code>Widget</code> に非常に類似した型 <code>data WidgetT site m a</code> を定義します。このデータ型は、モナドトランスフォーマー (<strong><em>monad transformer</em></strong>) です。最後2つの引数は、それぞれ下地のモナドとモナド値であり、<code>site</code> パラメータはそれぞれのアプリケーションで定義されるファウンデーション型です。ファウンデーション型はアプリケーション毎に異なるため、ライブラリがあらゆるアプリケーションで機能するような <code>Widget</code> 型は定義できないのです。</p>
 <p>その代わりに、Template Haskell を使って <code>mkYesod</code> 関数が型シノニムを生成します。ファウンデーションデータ型が <code>MyApp</code> なら <code>Widget</code> シノニムは次のように定義されるでしょう。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Widget</span> <span class="ot">=</span> <span class="dt">WidgetT</span> <span class="dt">MyApp</span> <span class="dt">IO</span> ()</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Widget</span> <span class="ot">=</span> <span class="dt">WidgetT</span> <span class="dt">MyApp</span> <span class="dt">IO</span> ()</span></code></pre></div>
 <p>モナド値が <code>()</code> となっているのがわかります。それは、ウィジェット値が最終的には捨て去られてしまうからです。<code>IO</code> は標準的なベースモナドであり、たいていの場合はこのモナドが使われます、唯一の例外はサブサイト (<strong><em>subsite</em></strong>) を記述する場合ですが、サブサイトはより発展的な話題なので、後の章で説明します。</p>
 <p>一度 <code>Widget</code> 型を理解してしまえば、前のコード例に型注釈を追加するのは簡単です。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">footer ::</span> <span class="dt">Widget</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>footer <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>    toWidget</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>        [lucius|</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>            footer {</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>                font-weight: bold;</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>                text-align: center</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>            }</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a>        |]</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>    toWidget</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>        [hamlet|</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>            <span class="kw">&lt;footer&gt;</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>                <span class="kw">&lt;p&gt;</span>That's all folks!</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>        |]</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a><span class="ot">page ::</span> <span class="dt">Widget</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a>page <span class="ot">=</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span>This is my page. I hope you enjoyed it.</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true"></a>        <span class="kw">^{</span>footer<span class="kw">}</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true"></a>    |]</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">footer ::</span> <span class="dt">Widget</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>footer <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    toWidget</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        [lucius|</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            footer {</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                font-weight: bold;</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                text-align: center</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    toWidget</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        [hamlet|</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;footer&gt;</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span>That's all folks!</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="ot">page ::</span> <span class="dt">Widget</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>page <span class="ot">=</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span>This is my page. I hope you enjoyed it.</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="kw">^{</span>footer<span class="kw">}</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    |]</span></code></pre></div>
 <p>ハンドラ関数により深く踏み込む時に <code>HandlerT</code> と <code>Handler</code> 型について、同じような状況に出くわすと思います。</p>
 <h2 id="ウィジェットを使う">ウィジェットを使う</h2>
 <p>これらの素晴らしいウィジェット型を手に入れたのは良いのですが、どのようにそれらをユーザが相互作用できるものにするのでしょうか？最も一般的に使用されている関数は <code>defaultLayout</code> です。この関数の型は、基本的には <code>Widget -&gt; Handler Html</code> となるでしょう。</p>
 <p><code>defaultLayout</code> は実際には型クラスのメソッドであり、それぞれのアプリケーション毎に上書きできます。defaultLayout 関数によって Yesod アプリケーションのレイアウトを作ります。しかし、 <code>defaultLayout</code> の内部で、どのように <code>Widget</code> をアンラップすれば良いのか？という疑問が残ります。答えは <code>widgetToPageContent</code> にあるので (単純化された) 型を見てみましょう。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">PageContent</span> url <span class="ot">=</span> <span class="dt">PageContent</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a>    {<span class="ot"> pageTitle ::</span> <span class="dt">Html</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a>    ,<span class="ot"> pageHead  ::</span> <span class="dt">HtmlUrl</span> url</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a>    ,<span class="ot"> pageBody  ::</span> <span class="dt">HtmlUrl</span> url</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>    }</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a><span class="ot">widgetToPageContent ::</span> <span class="dt">Widget</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="dt">PageContent</span> url)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">PageContent</span> url <span class="ot">=</span> <span class="dt">PageContent</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> pageTitle ::</span> <span class="dt">Html</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> pageHead  ::</span> <span class="dt">HtmlUrl</span> url</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> pageBody  ::</span> <span class="dt">HtmlUrl</span> url</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ot">widgetToPageContent ::</span> <span class="dt">Widget</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="dt">PageContent</span> url)</span></code></pre></div>
 <p>これは必要なものに近づきつつあります。今や title、head、body を構成する HTML への直接アクセスが可能です。この時点で Hamlet を使ってサイトのレイアウトとともにそれら全てを組み合わせて単一のドキュメントを作成できます。そして、ユーザに表示するため <code>withUrlRenderer</code> 関数を使って Hamlet の結果を HTML ファイルに変換します。次の例で、この処理を確認してみましょう。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a>|]</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a><span class="ot">myLayout ::</span> <span class="dt">Widget</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a>myLayout widget <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a>    pc <span class="ot">&lt;-</span> widgetToPageContent widget</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a>    withUrlRenderer</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a>        [hamlet|</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a>            <span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true"></a>            <span class="kw">&lt;html&gt;</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true"></a>                <span class="kw">&lt;head&gt;</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true"></a>                    <span class="kw">&lt;title&gt;#{</span>pageTitle pc<span class="kw">}</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true"></a>                    <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">utf-8</span><span class="kw">&gt;</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true"></a>                    <span class="kw">&lt;style&gt;</span>body { font-family: verdana }</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true"></a>                    <span class="kw">^{</span>pageHead pc<span class="kw">}</span></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true"></a>                <span class="kw">&lt;body&gt;</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true"></a>                    <span class="kw">&lt;article&gt;</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true"></a>                        <span class="kw">^{</span>pageBody pc<span class="kw">}</span></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true"></a>        |]</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true"></a></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true"></a>    defaultLayout <span class="ot">=</span> myLayout</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true"></a></span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span>Hello World!</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true"></a>    |]</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true"></a></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="ot">myLayout ::</span> <span class="dt">Widget</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>myLayout widget <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    pc <span class="ot">&lt;-</span> widgetToPageContent widget</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    withUrlRenderer</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        [hamlet|</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;html&gt;</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;head&gt;</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;title&gt;#{</span>pageTitle pc<span class="kw">}</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">utf-8</span><span class="kw">&gt;</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;style&gt;</span>body { font-family: verdana }</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>pageHead pc<span class="kw">}</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;body&gt;</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;article&gt;</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">^{</span>pageBody pc<span class="kw">}</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="ot">=</span> myLayout</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span>Hello World!</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <p>まだ悩ましい <code>style</code> タグの問題が残っているので、それに関する問題をいくつか列挙します。</p>
 <ul>
 <li>Lucius や Cassius とは違い、正しさについてコンパイル時チェックを行いません。</li>
@@ -452,49 +452,49 @@
 <li>今回は1つではなく、2つの style タグがあります。一方は <code>myLayout</code> により生成され、もう一方はウィジェット中のスタイルセットに基づいて <code>pageHead</code> で生成されます</li>
 </ul>
 <p>この問題に対処するためのもうひとつのトリックとして <code>widgetToPageContent</code> を呼び出す前に最終調整を行うというやり方があります。実際にはかなり単純で、単に do 記法を再度使うだけです。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a>/ HomeR GET</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a>|]</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a><span class="ot">myLayout ::</span> <span class="dt">Widget</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a>myLayout widget <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a>    pc <span class="ot">&lt;-</span> widgetToPageContent <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a>        widget</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a>        toWidget [lucius| body { font-family: verdana } |]</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true"></a>    withUrlRenderer</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true"></a>        [hamlet|</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true"></a>            <span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true"></a>            <span class="kw">&lt;html&gt;</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true"></a>                <span class="kw">&lt;head&gt;</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true"></a>                    <span class="kw">&lt;title&gt;#{</span>pageTitle pc<span class="kw">}</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true"></a>                    <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">utf-8</span><span class="kw">&gt;</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true"></a>                    <span class="kw">^{</span>pageHead pc<span class="kw">}</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true"></a>                <span class="kw">&lt;body&gt;</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true"></a>                    <span class="kw">&lt;article&gt;</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true"></a>                        <span class="kw">^{</span>pageBody pc<span class="kw">}</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true"></a>        |]</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true"></a></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true"></a>    defaultLayout <span class="ot">=</span> myLayout</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true"></a></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true"></a>    [whamlet|</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true"></a>        <span class="kw">&lt;p&gt;</span>Hello World!</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true"></a>    |]</span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true"></a></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE QuasiQuotes       #-}</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell   #-}</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TypeFamilies      #-}</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Yesod</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">App</span> <span class="ot">=</span> <span class="dt">App</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;App&quot;</span> [parseRoutes|</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>/ HomeR GET</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="ot">myLayout ::</span> <span class="dt">Widget</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>myLayout widget <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    pc <span class="ot">&lt;-</span> widgetToPageContent <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        widget</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        toWidget [lucius| body { font-family: verdana } |]</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    withUrlRenderer</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        [hamlet|</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;html&gt;</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;head&gt;</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;title&gt;#{</span>pageTitle pc<span class="kw">}</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">utf-8</span><span class="kw">&gt;</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>pageHead pc<span class="kw">}</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;body&gt;</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;article&gt;</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">^{</span>pageBody pc<span class="kw">}</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>        |]</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">App</span> <span class="kw">where</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="ot">=</span> myLayout</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;p&gt;</span>Hello World!</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>    |]</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> warp <span class="dv">3000</span> <span class="dt">App</span></span></code></pre></div>
 <h2 id="ハンドラ関数を使う">ハンドラ関数を使う</h2>
 <p>ハンドラについてはまだあまり説明できていません。しかし、少し考えるとウィジェットの中でハンドラ関数をどのように使えば良いのだろうか？という疑問が浮かびます。例えば、ウィジェットが <code>lookupGetParem</code> を用いてクエリ文字列パラメータを探す必要がある場合はどうでしょう？最初の答えは <code>handlerToWidget</code> 関数であり、これは <code>Handler</code> アクションを <code>Widget</code> 変換できますが、多くの場合これは不要です。<code>lookupGetParem</code> の型注釈を考えてみましょう。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="ot">lookupGetParam ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Maybe</span> <span class="dt">Text</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">lookupGetParam ::</span> <span class="dt">MonadHandler</span> m <span class="ot">=&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> m (<span class="dt">Maybe</span> <span class="dt">Text</span>)</span></code></pre></div>
 <p>この関数は <code>MonadHandler</code> の<strong>任意の</strong>インスタンスで適切に動作します。便利なことに <code>Widget</code> は <code>MonadHandler</code> のインスタンスとして定義されているので、 多くのコードが <code>Handler</code> でも <code>Widget</code> でも実行可能なことを意味します。そして、もし明確に <code>Handler</code> から <code>Widget</code> に変換する必要がある場合にだけ <code>handlerToWidget</code> を利用すれば良いでしょう。</p>
 <div class="yesod-book-notice">
 <p>この点が Yesod バージョン1.1とそれ以前のものを比べた際の重大な躍進です。以前は <code>MondHandler</code> 型クラスが全くありませんでした。そのため、全ての関数を <code>handlerToWidget</code> ではなく、明示的に <code>lift</code> を使って変換する必要があったのです。新システムは使い易さだけなく、かつて採用されていたあらゆる奇怪なモナド変換のトリックを避けることができます。</p>

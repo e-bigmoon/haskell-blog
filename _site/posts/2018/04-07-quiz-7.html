@@ -237,26 +237,26 @@ myTakeWhileC :: Monad m" />
         <h2 id="haskell-quiz-no.7">Haskell Quiz No.7</h2>
 <p>難易度: λλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="co">-- stack script --resolver lts-11.3</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>myTakeWhileC f <span class="ot">=</span> loop</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>    loop <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>      mx <span class="ot">&lt;-</span> await</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>      <span class="kw">case</span> mx <span class="kw">of</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>        <span class="dt">Just</span> x</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>          <span class="op">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="op">&gt;&gt;</span> loop</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>          <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> runConduitPure <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> <span class="kw">do</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="op">&lt;=</span> <span class="dv">5</span>) <span class="op">.|</span> sinkList</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>  y <span class="ot">&lt;-</span> sinkList</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>  <span class="fu">return</span> (x, y)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- stack script --resolver lts-11.3</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ot">myTakeWhileC ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (i <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i i m ()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>myTakeWhileC f <span class="ot">=</span> loop</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    loop <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      mx <span class="ot">&lt;-</span> await</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      <span class="kw">case</span> mx <span class="kw">of</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Just</span> x</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>          <span class="op">|</span> f x       <span class="ot">-&gt;</span> yield x <span class="op">&gt;&gt;</span> loop</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>          <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> <span class="fu">return</span> ()</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="fu">print</span> <span class="op">$</span> runConduitPure <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> <span class="kw">do</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> myTakeWhileC (<span class="op">&lt;=</span> <span class="dv">5</span>) <span class="op">.|</span> sinkList</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> sinkList</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (x, y)</span></code></pre></div>
 <p>答えは<a href="04-08-quiz-8.html">次回</a>。</p>
 <!--more-->
 <h2 id="はじめに">はじめに</h2>
@@ -264,17 +264,17 @@ myTakeWhileC :: Monad m" />
 <h3 id="問題">問題</h3>
 <p>難易度: λλ</p>
 <p>以下の <code>Conduit</code> を使ったコードの実行結果を予想してみてください！</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co">-- stack script --resolver lts-11.2</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>trans <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>  takeC <span class="dv">5</span> <span class="op">.|</span> mapC (<span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>  mapC (<span class="op">*</span> <span class="dv">2</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>main <span class="ot">=</span> runConduit <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> trans <span class="op">.|</span> mapM_C <span class="fu">print</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- stack script --resolver lts-11.2</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Conduit</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>trans <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  takeC <span class="dv">5</span> <span class="op">.|</span> mapC (<span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  mapC (<span class="op">*</span> <span class="dv">2</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> runConduit <span class="op">$</span> yieldMany [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>] <span class="op">.|</span> trans <span class="op">.|</span> mapM_C <span class="fu">print</span></span></code></pre></div>
 <h3 id="こたえ">こたえ</h3>
 <p>実際に実行してみましょう！</p>
 <pre class="shell"><code>$ ./Quiz6.hs
@@ -290,25 +290,25 @@ myTakeWhileC :: Monad m" />
 20</code></pre>
 <h2 id="haskell-quiz-no.6-の解説">Haskell Quiz No.6 の解説</h2>
 <p>この問題で重要なのは <code>trans</code> 関数です。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>trans <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  takeC <span class="dv">5</span> <span class="op">.|</span> mapC (<span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>  mapC (<span class="op">*</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">trans ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ConduitM</span> <span class="dt">Int</span> <span class="dt">Int</span> m ()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>trans <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  takeC <span class="dv">5</span> <span class="op">.|</span> mapC (<span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  mapC (<span class="op">*</span> <span class="dv">2</span>)</span></code></pre></div>
 <ul>
 <li>1つめのパイプ <code>takeC 5 .| mapC (+ 1)</code> によって <code>[1..10]</code> のうち <code>[1..5]</code> が <code>mapC (+ 1)</code> によって処理されます。</li>
 <li>2つめのパイプ <code>mapC (* 2)</code> によって残りの <code>[6..10]</code> が <code>mapC (* 2)</code> によって処理されます。</li>
 </ul>
 <p>そのため、結果として以下のような出力となりました。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="dv">2</span>  <span class="co">-- 1+1</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="dv">3</span>  <span class="co">-- 2+1</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="dv">4</span>  <span class="co">-- 3+1</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="dv">5</span>  <span class="co">-- 4+1</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="dv">6</span>  <span class="co">-- 5+1</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="dv">12</span> <span class="co">-- 6*2</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="dv">14</span> <span class="co">-- 7*2</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a><span class="dv">16</span> <span class="co">-- 8*2</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="dv">18</span> <span class="co">-- 9*2</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a><span class="dv">20</span> <span class="co">-- 10*2</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>  <span class="co">-- 1+1</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>  <span class="co">-- 2+1</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>  <span class="co">-- 3+1</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span>  <span class="co">-- 4+1</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span>  <span class="co">-- 5+1</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="dv">12</span> <span class="co">-- 6*2</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="dv">14</span> <span class="co">-- 7*2</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="dv">16</span> <span class="co">-- 8*2</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="dv">18</span> <span class="co">-- 9*2</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="dv">20</span> <span class="co">-- 10*2</span></span></code></pre></div>
 <p>大前提として、このパイプにデータが流れるのは <code>mapM_C print</code> によって上流のデータが無くなるまでデータを要求するという操作があるためです。</p>
 <p>そのため、 <code>mapM_C print</code> を <code>sinkNull</code> にすると何も表示されなくなります。</p>
 <h2 id="まとめ">まとめ</h2>

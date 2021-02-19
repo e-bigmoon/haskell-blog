@@ -233,16 +233,16 @@ data P" />
         <h2 id="はじめに">はじめに</h2>
 <p><code>Twitter</code> で <code>RecordWildCards</code> の話が流れて来たので <code>Reader</code> モナドと組み合わせた例を1つご紹介します。</p>
 <p>この書き方は <span class="citation" data-cites="fumieval">@fumieval</span> さんが使っていてカッコイイ書き方だなぁと思った記憶があります。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  {<span class="ot"> personName ::</span> <span class="dt">String</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>  }</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="ot">func ::</span> <span class="dt">Reader</span> <span class="dt">Person</span> ()</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>func <span class="ot">=</span> ask <span class="op">&gt;&gt;=</span> \<span class="dt">Person</span> {<span class="op">..</span>} <span class="ot">-&gt;</span> <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>  <span class="op">...</span> <span class="co">-- personName, personAge という名前でそのまま値を利用できる</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> personName ::</span> <span class="dt">String</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">func ::</span> <span class="dt">Reader</span> <span class="dt">Person</span> ()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>func <span class="ot">=</span> ask <span class="op">&gt;&gt;=</span> \<span class="dt">Person</span> {<span class="op">..</span>} <span class="ot">-&gt;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="co">-- personName, personAge という名前でそのまま値を利用できる</span></span></code></pre></div>
 <p><code>RecordWildCards</code> に関しては既に色んな方が記事にしてくれているので、そちらをご参照ください。</p>
 <ul>
 <li><a href="https://haskell.jp/blog/posts/2018/about-ghc-exts-1.html">GHC拡張ノック(Part 1)</a></li>
@@ -253,44 +253,44 @@ data P" />
 <!--more-->
 <h2 id="具体例">具体例</h2>
 <p>あまり良い例が思いつかなかったのですが、 <code>Env</code> に必要な情報を持たせておけば任意のタイミングで利用できて便利です。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="pp">#!/usr/bin/env stack</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co">-- stack script --resolver lts-12.7</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Trans.Reader</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Data.Time.LocalTime</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="kw">import</span>           <span class="dt">Path</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Env</span> <span class="ot">=</span> <span class="dt">Env</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>  {<span class="ot"> envCounter  ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>  ,<span class="ot"> envLogPath  ::</span> <span class="dt">Path</span> <span class="dt">Rel</span> <span class="dt">File</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>  ,<span class="ot"> envUserName ::</span> <span class="dt">String</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>  }</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>  counter <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>  <span class="kw">let</span> env <span class="ot">=</span> <span class="dt">Env</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>        { envCounter  <span class="ot">=</span> counter</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>        , envLogPath  <span class="ot">=</span> <span class="op">$</span>(mkRelFile <span class="st">&quot;./output.log&quot;</span>)</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a>        , envUserName <span class="ot">=</span> <span class="st">&quot;wado&quot;</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a>        }</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>  runReaderT (access <span class="op">&gt;&gt;</span> access <span class="op">&gt;&gt;</span> access) env</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a>  n <span class="ot">&lt;-</span> readIORef counter</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">mconcat</span> [<span class="st">&quot;counter = &quot;</span>, <span class="fu">show</span> n]</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a><span class="ot">access ::</span> <span class="dt">ReaderT</span> <span class="dt">Env</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a>access <span class="ot">=</span> ask <span class="op">&gt;&gt;=</span> \<span class="dt">Env</span> {<span class="op">..</span>} <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a>  modifyIORef envCounter (<span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true"></a>  now <span class="ot">&lt;-</span> getZonedTime</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true"></a>  <span class="fu">appendFile</span> (toFilePath envLogPath)</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true"></a>    <span class="op">$</span> <span class="fu">mconcat</span> [envUserName, <span class="st">&quot;: &quot;</span>, <span class="st">&quot;access&quot;</span>, <span class="st">&quot; (&quot;</span>, <span class="fu">show</span> now, <span class="st">&quot;)&quot;</span>, <span class="st">&quot;\n&quot;</span>]</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true"></a>  <span class="fu">return</span> ()</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#!/usr/bin/env stack</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- stack script --resolver lts-12.7</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.IO.Class</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Control.Monad.Trans.Reader</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.IORef</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Time.LocalTime</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Path</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Env</span> <span class="ot">=</span> <span class="dt">Env</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> envCounter  ::</span> <span class="dt">IORef</span> <span class="dt">Int</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  ,<span class="ot"> envLogPath  ::</span> <span class="dt">Path</span> <span class="dt">Rel</span> <span class="dt">File</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  ,<span class="ot"> envUserName ::</span> <span class="dt">String</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  counter <span class="ot">&lt;-</span> newIORef <span class="dv">0</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> env <span class="ot">=</span> <span class="dt">Env</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        { envCounter  <span class="ot">=</span> counter</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        , envLogPath  <span class="ot">=</span> <span class="op">$</span>(mkRelFile <span class="st">&quot;./output.log&quot;</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        , envUserName <span class="ot">=</span> <span class="st">&quot;wado&quot;</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  runReaderT (access <span class="op">&gt;&gt;</span> access <span class="op">&gt;&gt;</span> access) env</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> readIORef counter</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="op">$</span> <span class="fu">mconcat</span> [<span class="st">&quot;counter = &quot;</span>, <span class="fu">show</span> n]</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="ot">access ::</span> <span class="dt">ReaderT</span> <span class="dt">Env</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>access <span class="ot">=</span> ask <span class="op">&gt;&gt;=</span> \<span class="dt">Env</span> {<span class="op">..</span>} <span class="ot">-&gt;</span> liftIO <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  modifyIORef envCounter (<span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  now <span class="ot">&lt;-</span> getZonedTime</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">appendFile</span> (toFilePath envLogPath)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">$</span> <span class="fu">mconcat</span> [envUserName, <span class="st">&quot;: &quot;</span>, <span class="st">&quot;access&quot;</span>, <span class="st">&quot; (&quot;</span>, <span class="fu">show</span> now, <span class="st">&quot;)&quot;</span>, <span class="st">&quot;\n&quot;</span>]</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> ()</span></code></pre></div>
 <h3 id="実行結果">実行結果</h3>
 <pre class="shell"><code>$ ./Sample.hs
 counter = 3
@@ -300,37 +300,37 @@ wado: access (2018-08-26 14:04:07.132813451 JST)
 wado: access (2018-08-26 14:04:07.133330363 JST)
 wado: access (2018-08-26 14:04:07.133389916 JST)</code></pre>
 <h2 id="missing-fields-警告">missing-fields 警告</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>  {<span class="ot"> personName ::</span> <span class="dt">String</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>  } <span class="kw">deriving</span> <span class="dt">Show</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Person</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>f <span class="ot">=</span> <span class="dt">Person</span> { <span class="op">..</span> }</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>  <span class="kw">where</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>    personName <span class="ot">=</span> <span class="st">&quot;bigmoon&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE RecordWildCards #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> personName ::</span> <span class="dt">String</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  } <span class="kw">deriving</span> <span class="dt">Show</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">f ::</span> <span class="dt">Person</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="dt">Person</span> { <span class="op">..</span> }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    personName <span class="ot">=</span> <span class="st">&quot;bigmoon&quot;</span></span></code></pre></div>
 <p>上記のようにフィールドが全て初期化されていないコードはコンパイル時に <code>missing-fields</code> 警告が出ます。</p>
 <p>この警告を無視すると実行時エラーになる可能性があります。無視せずにしっかり修正しましょう。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>warning<span class="op">:</span> [<span class="op">-</span><span class="dt">Wmissing</span><span class="op">-</span>fields]</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>    • <span class="dt">Fields</span> <span class="kw">of</span> ‘<span class="dt">Person</span>’ <span class="fu">not</span> initialised<span class="op">:</span> personAge</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    • <span class="dt">In</span> the expression<span class="op">:</span> <span class="dt">Person</span> {<span class="op">..</span>}</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>      <span class="dt">In</span> an equation for ‘f’<span class="op">:</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>          f <span class="ot">=</span> <span class="dt">Person</span> {<span class="op">..</span>}</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>            <span class="kw">where</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>                personName <span class="ot">=</span> <span class="st">&quot;bigmoon&quot;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>   <span class="op">|</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="dv">46</span> <span class="op">|</span> f <span class="ot">=</span> <span class="dt">Person</span> { <span class="op">..</span> }</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>   <span class="op">|</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>warning<span class="op">:</span> [<span class="op">-</span><span class="dt">Wmissing</span><span class="op">-</span>fields]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    • <span class="dt">Fields</span> <span class="kw">of</span> ‘<span class="dt">Person</span>’ <span class="fu">not</span> initialised<span class="op">:</span> personAge</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    • <span class="dt">In</span> the expression<span class="op">:</span> <span class="dt">Person</span> {<span class="op">..</span>}</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">In</span> an equation for ‘f’<span class="op">:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>          f <span class="ot">=</span> <span class="dt">Person</span> {<span class="op">..</span>}</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="kw">where</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                personName <span class="ot">=</span> <span class="st">&quot;bigmoon&quot;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>   <span class="op">|</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="dv">46</span> <span class="op">|</span> f <span class="ot">=</span> <span class="dt">Person</span> { <span class="op">..</span> }</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>   <span class="op">|</span></span></code></pre></div>
 <p>ちなみに、通常のレコード構文でもフィールドが部分的にしか初期化されていない場合は、同様の警告がでます。(<span class="citation" data-cites="fumieval">@fumieval</span> さん、ご指摘ありがとうございます)</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>  {<span class="ot"> personName ::</span> <span class="dt">String</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>  } <span class="kw">deriving</span> <span class="dt">Show</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="ot">f ::</span> <span class="dt">Person</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>f <span class="ot">=</span> <span class="dt">Person</span> { personName <span class="ot">=</span> <span class="st">&quot;bigmoon&quot;</span> }</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span> <span class="dt">Person</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> personName ::</span> <span class="dt">String</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  ,<span class="ot"> personAge  ::</span> <span class="dt">Int</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  } <span class="kw">deriving</span> <span class="dt">Show</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ot">f ::</span> <span class="dt">Person</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="dt">Person</span> { personName <span class="ot">=</span> <span class="st">&quot;bigmoon&quot;</span> }</span></code></pre></div>
 <ul>
 <li><a href="https://ghc.haskell.org/trac/ghc/ticket/5334">record wildcards: field not initialised reported as type error</a></li>
 </ul>

@@ -274,95 +274,95 @@ Haskell プロジェクトの多くは Travis CI を使って CI を回してい
 </ul>
 <h3 id="config.yml">config.yml</h3>
 <p>完全な <strong>config.yml</strong> は以下になります。これをコピペでプロジェクトの <strong>.circleci/config.yml</strong> に保存すればすぐに動きます！</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="fu">aliases</span><span class="kw">:</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;default_env</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">      </span><span class="fu">CACHE_KEY</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="at">      </span><span class="fu">STACK_VERSION</span><span class="kw">:</span><span class="at"> </span><span class="fl">1.7.1</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;create_cache_key_file</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create cache control key file</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="at">      </span><span class="fu">command</span><span class="kw">:</span><span class="at"> echo $CACHE_KEY &gt; cache_key</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;restore_build_results</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="at">    </span><span class="fu">restore_cache</span><span class="kw">:</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a><span class="at">      </span><span class="fu">keys</span><span class="kw">:</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;save_build_results</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="at">      </span><span class="fu">save_cache</span><span class="kw">:</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="at">        </span><span class="fu">key</span><span class="kw">:</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="at">        </span><span class="fu">paths</span><span class="kw">:</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.stack</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.local/bin</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> .stack-work</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;display_stack_version</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Display stack version</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a><span class="fu">      command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>        stack upgrade --binary-version=$STACK_VERSION</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>        stack --version</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*default_env</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*create_cache_key_file</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*restore_build_results</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*display_stack_version</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test -j 1 --only-dependencies --no-terminal --no-run-tests</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true"></a><span class="at">          </span><span class="fu">no_output_timeout</span><span class="kw">:</span><span class="at"> 120m</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test --fast</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test --pedantic</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true"></a>            stack clean</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true"></a>            stack test --pedantic --fast --no-run-tests</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run HLint</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version</span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stylish-haskell</span></span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true"></a>            # TODO: https://github.com/jaspervdj/stylish-haskell/pull/218</span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true"></a>            curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name &quot;*hs&quot; -not -path '.git' -not -path '*.stack-work*')</span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true"></a>            git --no-pager diff --exit-code</span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*save_build_results</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">aliases</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;default_env</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">CACHE_KEY</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">STACK_VERSION</span><span class="kw">:</span><span class="at"> </span><span class="fl">1.7.1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;create_cache_key_file</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create cache control key file</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">command</span><span class="kw">:</span><span class="at"> echo $CACHE_KEY &gt; cache_key</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;restore_build_results</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restore_cache</span><span class="kw">:</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">keys</span><span class="kw">:</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;save_build_results</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">save_cache</span><span class="kw">:</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">key</span><span class="kw">:</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">paths</span><span class="kw">:</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.stack</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.local/bin</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> .stack-work</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;display_stack_version</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Display stack version</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">      command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        stack upgrade --binary-version=$STACK_VERSION</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        stack --version</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*default_env</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*create_cache_key_file</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*restore_build_results</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*display_stack_version</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test -j 1 --only-dependencies --no-terminal --no-run-tests</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">no_output_timeout</span><span class="kw">:</span><span class="at"> 120m</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test --fast</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test --pedantic</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>            stack clean</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>            stack test --pedantic --fast --no-run-tests</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run HLint</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stylish-haskell</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>            # TODO: https://github.com/jaspervdj/stylish-haskell/pull/218</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.githubusercontent.com/waddlaw/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name &quot;*hs&quot; -not -path '.git' -not -path '*.stack-work*')</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>            git --no-pager diff --exit-code</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*save_build_results</span></span></code></pre></div>
 <p>それぞれの内容について個別に説明します。</p>
 <h4 id="default_env">default_env</h4>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">aliases</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;default_env</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="at">      </span><span class="fu">CACHE_KEY</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="at">      </span><span class="fu">STACK_VERSION</span><span class="kw">:</span><span class="at"> </span><span class="fl">1.7.1</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aliases</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;default_env</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">CACHE_KEY</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">STACK_VERSION</span><span class="kw">:</span><span class="at"> </span><span class="fl">1.7.1</span></span></code></pre></div>
 <p><strong>Circle CI</strong> のキャッシュは不変なので一度作られると上書きできません。また、<strong>travis</strong> のようにキャッシュのクリアボタンもありません。</p>
 <p>そのため、キャッシュキーの指定に <strong>Circle CI</strong> の環境変数を利用するというやり方がよく用いられます。個人的には管理画面でいちいち変更するのは面倒なので <strong>config.yml</strong> に含めてしまえば良いかなと思います。</p>
 <p>なので <strong>CACHE_KEY</strong> は、明示的にキャッシュをクリアする際に利用します。</p>
 <p><strong>STACK_VERSION</strong> は利用する <strong>stack</strong> のバージョンを指定するためにあります。基本的に最新版を指定しておけば良いのですが、更新された直後など、古いバージョンを指定したい場合があるので環境変数として用意しています。</p>
 <h4 id="create_cache_key_file">create_cache_key_file</h4>
-<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;create_cache_key_file</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create cache control key file</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="at">      </span><span class="fu">command</span><span class="kw">:</span><span class="at"> echo $CACHE_KEY &gt; cache_key</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;create_cache_key_file</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create cache control key file</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">command</span><span class="kw">:</span><span class="at"> echo $CACHE_KEY &gt; cache_key</span></span></code></pre></div>
 <p>このやり方は <a href="https://github.com/haskell/haskell-ide-engine/blob/master/.circleci/config.yml">haskell/haskell-ide-engine</a> を参考にしました。</p>
 <p>キャッシュキーに直接環境変数を指定できれば良いのですが、そのような方法が無いためこのように一度ファイルに書き出しています。</p>
 <h4 id="restore_build_results">restore_build_results</h4>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;restore_build_results</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="at">    </span><span class="fu">restore_cache</span><span class="kw">:</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="at">      </span><span class="fu">keys</span><span class="kw">:</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;restore_build_results</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restore_cache</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">keys</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}</span></span></code></pre></div>
 <p>キャッシュの復元部分です。よくあるイディオムですが</p>
 <ol type="1">
 <li>cache_key</li>
@@ -372,28 +372,28 @@ Haskell プロジェクトの多くは Travis CI を使って CI を回してい
 <p>の順番でキャッシュが残るようにしています。</p>
 <p>また <code>stack-{{ checksum "cache_key" }}-{{ checksum "stack.yaml" }}-{{ checksum "package.yaml" }}</code> だけの設定ですと、<strong>package.yaml</strong> を更新した際にキャッシュがヒットしないため、依存関係のインストールから再度始めることになってしまいます。</p>
 <h4 id="save_build_results">save_build_results</h4>
-<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;save_build_results</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="at">      </span><span class="fu">save_cache</span><span class="kw">:</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="at">        </span><span class="fu">key</span><span class="kw">:</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="at">        </span><span class="fu">paths</span><span class="kw">:</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.stack</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.local/bin</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> .stack-work</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;save_build_results</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">save_cache</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">key</span><span class="kw">:</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">paths</span><span class="kw">:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.stack</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.local/bin</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> .stack-work</span></span></code></pre></div>
 <p>ここがキャッシュを保存している部分です。依存関係を毎回インストールしなくても良いように <code>~/.stack</code> と <code>.stack-work</code> を指定しています。</p>
 <p><code>~/.local/bin</code> はどちらでも良いような気がします。</p>
 <h4 id="display_stack_version">display_stack_version</h4>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;display_stack_version</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Display stack version</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="fu">      command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>        stack upgrade --binary-version=$STACK_VERSION</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>        stack --version</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;display_stack_version</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Display stack version</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">      command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        stack upgrade --binary-version=$STACK_VERSION</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        stack --version</span></code></pre></div>
 <p><strong>stack</strong> のバージョンを強制的に <code>$STACK_VERSION</code> にします。</p>
 <p>また、ちゃんと期待しているバージョンが利用されているか確認するためにバージョンを表示しています。</p>
 <h4 id="build-image">build image</h4>
-<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span></code></pre></div>
 <p>どのイメージを利用するかは人それぞれです。<strong>fpco/stack-build:lts</strong> でも良いですが、イメージの pull に3分かかるのでお勧めしません。</p>
 <p>そのため、ここでは <strong>quay.io/haskell_works/stack-build-minimal</strong> を利用しています。hie でも利用しているので問題無いでしょう。</p>
 <p>Docker ファイルの内容については以下のリポジトリで確認ができます。</p>
@@ -401,10 +401,10 @@ Haskell プロジェクトの多くは Travis CI を使って CI を回してい
 <li><a href="https://github.com/haskell-works/stack-build">haskell-works/stack-build</a></li>
 </ul>
 <h4 id="依存関係のインストール">依存関係のインストール</h4>
-<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test -j 1 --only-dependencies --no-terminal --no-run-tests</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="at">          </span><span class="fu">no_output_timeout</span><span class="kw">:</span><span class="at"> 120m</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test -j 1 --only-dependencies --no-terminal --no-run-tests</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">no_output_timeout</span><span class="kw">:</span><span class="at"> 120m</span></span></code></pre></div>
 <p>コマンドのオプションはそれぞれ以下のために利用しています。</p>
 <ul>
 <li><code>-j 1</code>: ビルド時のメモリ不足エラーを回避するため</li>
@@ -414,32 +414,32 @@ Haskell プロジェクトの多くは Travis CI を使って CI を回してい
 </ul>
 <p>また <code>no_output_timeout: 120m</code> はデフォルトのビルド制限時間 (20分) を回避するために追加しています。</p>
 <h4 id="stack-test">stack test</h4>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test --fast</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test --fast</span></span></code></pre></div>
 <p>単純にテストを実行します。なんとなく <code>--fast</code> をつけています。</p>
 <h4 id="pedantic">pedantic</h4>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test --pedantic</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>            stack clean</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>            stack test --pedantic --fast --no-run-tests</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test --pedantic</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            stack clean</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            stack test --pedantic --fast --no-run-tests</span></code></pre></div>
 <p><code>stack test --pedantic --fast</code> としておけばテストと両方できて良いんじゃないの？と思われるかもしれませんが、おすすめしません。実際にやってみればわかりますが、めっちゃイライラします。</p>
 <p><strong>pedantic</strong> は必ずテストと分離した方が良いです。<code>--no-run-tests</code> オプションを付けているので、テストの実行は行われません。</p>
 <p>また、ビルドのキャッシュが残っていると <strong>pedantic</strong> の警告がスルーされることがあるので <strong>stack clean</strong> を事前に行っておいた方が良いでしょう。</p>
 <h4 id="hlint">hlint</h4>
-<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run HLint</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run HLint</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span></code></pre></div>
 <p><strong>hint</strong> はバージョンによって動作が結構違うので、バージョンを表示させておくと便利です。</p>
 <h4 id="stylish-haskell">stylish-haskell</h4>
-<div class="sourceCode" id="cb12"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stylish-haskell</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>            curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name &quot;*hs&quot; -not -path '.git' -not -path '*.stack-work*')</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>            git --no-pager diff --exit-code</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stylish-haskell</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name &quot;*hs&quot; -not -path '.git' -not -path '*.stack-work*')</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            git --no-pager diff --exit-code</span></code></pre></div>
 <p><strong>stylish-haskell</strong> もチェックしたい人向けです。必要なければ削除しましょう。</p>
 <p>スクリプトがバグってたので修正しました。やっていることとしては、</p>
 <ol type="1">
@@ -452,93 +452,93 @@ Haskell プロジェクトの多くは Travis CI を使って CI を回してい
 <li><a href="https://github.com/waddlaw/circleci-sandobx/blob/simple-fast-workflows/.circleci/config.yml">config.yml</a></li>
 </ul>
 <p>個人的にはワークフローにしておく方が好きなので、ワークフローバージョンも掲載しておきます。シンプルバージョンと内容は同じです。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="fu">aliases</span><span class="kw">:</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;default_env</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="at">      </span><span class="fu">CACHE_KEY</span><span class="kw">:</span><span class="at"> </span><span class="dv">7</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="at">      </span><span class="fu">STACK_VERSION</span><span class="kw">:</span><span class="at"> </span><span class="fl">1.7.1</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;create_cache_key_file</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create cache control key file</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a><span class="at">      </span><span class="fu">command</span><span class="kw">:</span><span class="at"> echo $CACHE_KEY &gt; cache_key</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;restore_build_results</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a><span class="at">    </span><span class="fu">restore_cache</span><span class="kw">:</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a><span class="at">      </span><span class="fu">keys</span><span class="kw">:</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;save_build_results</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true"></a><span class="at">      </span><span class="fu">save_cache</span><span class="kw">:</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true"></a><span class="at">        </span><span class="fu">key</span><span class="kw">:</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true"></a><span class="at">        </span><span class="fu">paths</span><span class="kw">:</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.stack</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.local/bin</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true"></a><span class="at">          </span><span class="kw">-</span><span class="at"> .stack-work</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;display_stack_version</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Display stack version</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true"></a><span class="fu">      command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true"></a>        stack upgrade --binary-version=$STACK_VERSION</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true"></a>        stack --version</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*default_env</span></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*create_cache_key_file</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*restore_build_results</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*display_stack_version</span></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test -j 1 --only-dependencies --no-terminal --no-run-tests</span></span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true"></a><span class="at">          </span><span class="fu">no_output_timeout</span><span class="kw">:</span><span class="at"> 120m</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test --fast</span></span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*save_build_results</span></span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true"></a></span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true"></a><span class="at">  </span><span class="fu">pedantic</span><span class="kw">:</span></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*default_env</span></span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*create_cache_key_file</span></span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*restore_build_results</span></span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*display_stack_version</span></span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test --pedantic</span></span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true"></a>            stack clean</span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true"></a>            stack test --pedantic --fast --no-run-tests</span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true"></a><span class="at">  </span><span class="fu">check</span><span class="kw">:</span></span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb13-70"><a href="#cb13-70" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run HLint</span></span>
-<span id="cb13-71"><a href="#cb13-71" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb13-72"><a href="#cb13-72" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version</span>
-<span id="cb13-73"><a href="#cb13-73" aria-hidden="true"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
-<span id="cb13-74"><a href="#cb13-74" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
-<span id="cb13-75"><a href="#cb13-75" aria-hidden="true"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stylish-haskell</span></span>
-<span id="cb13-76"><a href="#cb13-76" aria-hidden="true"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb13-77"><a href="#cb13-77" aria-hidden="true"></a>            curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name &quot;*hs&quot; -not -path '.git' -not -path '*.stack-work*')</span>
-<span id="cb13-78"><a href="#cb13-78" aria-hidden="true"></a>            git --no-pager diff --exit-code</span>
-<span id="cb13-79"><a href="#cb13-79" aria-hidden="true"></a><span class="fu">workflows</span><span class="kw">:</span></span>
-<span id="cb13-80"><a href="#cb13-80" aria-hidden="true"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb13-81"><a href="#cb13-81" aria-hidden="true"></a><span class="at">  </span><span class="fu">test-check</span><span class="kw">:</span></span>
-<span id="cb13-82"><a href="#cb13-82" aria-hidden="true"></a><span class="at">    </span><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb13-83"><a href="#cb13-83" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> build</span></span>
-<span id="cb13-84"><a href="#cb13-84" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">pedantic</span><span class="kw">:</span></span>
-<span id="cb13-85"><a href="#cb13-85" aria-hidden="true"></a><span class="at">          </span><span class="fu">requires</span><span class="kw">:</span></span>
-<span id="cb13-86"><a href="#cb13-86" aria-hidden="true"></a><span class="at">            </span><span class="kw">-</span><span class="at"> build</span></span>
-<span id="cb13-87"><a href="#cb13-87" aria-hidden="true"></a><span class="at">      </span><span class="kw">-</span><span class="at"> check</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">aliases</span><span class="kw">:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;default_env</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">CACHE_KEY</span><span class="kw">:</span><span class="at"> </span><span class="dv">7</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">STACK_VERSION</span><span class="kw">:</span><span class="at"> </span><span class="fl">1.7.1</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;create_cache_key_file</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create cache control key file</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">command</span><span class="kw">:</span><span class="at"> echo $CACHE_KEY &gt; cache_key</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;restore_build_results</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restore_cache</span><span class="kw">:</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">keys</span><span class="kw">:</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;save_build_results</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">save_cache</span><span class="kw">:</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">key</span><span class="kw">:</span><span class="at"> stack-{{ checksum &quot;cache_key&quot; }}-{{ checksum &quot;stack.yaml&quot; }}-{{ checksum &quot;package.yaml&quot; }}</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">paths</span><span class="kw">:</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.stack</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> ~/.local/bin</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> .stack-work</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="ot">&amp;display_stack_version</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Display stack version</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="fu">      command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        stack upgrade --binary-version=$STACK_VERSION</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>        stack --version</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*default_env</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*create_cache_key_file</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*restore_build_results</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*display_stack_version</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test -j 1 --only-dependencies --no-terminal --no-run-tests</span></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">no_output_timeout</span><span class="kw">:</span><span class="at"> 120m</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test</span></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> stack test --fast</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*save_build_results</span></span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pedantic</span><span class="kw">:</span></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*default_env</span></span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*create_cache_key_file</span></span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*restore_build_results</span></span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="ot">*display_stack_version</span></span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stack test --pedantic</span></span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>            stack clean</span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a>            stack test --pedantic --fast --no-run-tests</span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">check</span><span class="kw">:</span></span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> quay.io/haskell_works/stack-build-minimal</span></span>
+<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> checkout</span></span>
+<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run HLint</span></span>
+<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s -- --version</span>
+<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .</span>
+<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run stylish-haskell</span></span>
+<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a><span class="fu">          command</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a>            curl -sL https://raw.githubusercontent.com/jaspervdj/stylish-haskell/master/scripts/latest.sh | sh -s -- -i $(find . -type f -name &quot;*hs&quot; -not -path '.git' -not -path '*.stack-work*')</span>
+<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a>            git --no-pager diff --exit-code</span>
+<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a><span class="fu">workflows</span><span class="kw">:</span></span>
+<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">test-check</span><span class="kw">:</span></span>
+<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> build</span></span>
+<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">pedantic</span><span class="kw">:</span></span>
+<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">requires</span><span class="kw">:</span></span>
+<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> build</span></span>
+<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> check</span></span></code></pre></div>
 <h2 id="まとめ">まとめ</h2>
 <p>Circle CI めっちゃ便利です。</p>
 <p><strong>docker-compose</strong> と連携させればデータベースと接続してテストすることもできたりするので良いですよ。</p>
