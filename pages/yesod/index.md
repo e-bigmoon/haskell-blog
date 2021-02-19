@@ -1,7 +1,7 @@
 ---
 title: Haskell Yesod
 published: 2018/03/18
-updated: 2020/12/21
+updated: 2021/02/19
 ---
 
 ## Yesod クイックスタートガイド
@@ -95,7 +95,7 @@ $ sudo apt-get install -y libpq-dev
 - [Cloning FluxBB](https://siskam.link/2018-04-14-cloning-fluxbb.html) (Yesod と Esqueleto を使ってフォーラムを作るというブログ記事です)
 - [Yesod tutorial](http://yannesposito.com/Scratch/en/blog/Yesod-tutorial-for-newbies/) (これは少し古くなっています。書籍ではより最新の内容に更新されています)
 
-## Yesod ブック (@3cc14a4503a7e0fd8f543a62346da8fa3cfe0267)
+## Yesod ブック (@7099b853c48f12c4e8c05e2b4a7931095f3f0754)
 
 - [Yesod Web Framework Book- Version 1.6](http://www.yesodweb.com/book)
 - [yesodweb/yesodweb.com-content](https://github.com/yesodweb/yesodweb.com-content)

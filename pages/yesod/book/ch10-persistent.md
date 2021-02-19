@@ -1,7 +1,7 @@
 ---
 title: Persistent
 published: 2018/03/18
-updated: 2018/08/29
+updated: 2021/02/19
 ---
 
 ## Persistent
@@ -147,11 +147,11 @@ data PersistValue
     -- specific to a particular backend
 ```
 
+`PersistField` は SQL データベースのカラムに対応します。先ほどの "人間" の例で具体例を確認すると、名前と年齢はそれぞれ `PersistValue` になります。
+
 それぞれの Persistent のバックエンドは、関連する値をデータベースが理解出来る何らかの値へ翻訳する方法を知らなければなりません。
 しかし、データ全てを単にこれらの基本的な型で表現しなくてはならないことはばかげています。
-次のレイヤは `PersistField` 型クラスで、これは任意の Haskell データ型と `PersistValue` との相互変換について定義します。
-`PersistField` は SQL データベースのカラムに対応します。
-先ほどの "人間" の例で具体例を確認すると、名前と年齢はそれぞれ `PersistField` になります。
+次のレイヤは `PersistField` 型クラスで、これは任意の Haskell データ型を `PersistValue` と相互変換できます。
 
 最後の型クラスはユーザー側のコードを結びつけるための `PersistEntity` です。
 `PersistEntity` のインスタンスは SQL データベースのテーブルに対応します。
