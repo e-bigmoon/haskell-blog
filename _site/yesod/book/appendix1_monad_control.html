@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>monad-control</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/book/appendix1_monad_control.html">
+  <link rel="alternate" type="application/atom+xml" title="monad-control" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="monad-control" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/book/appendix1_monad_control.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="monad-control" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="white-text">
+        <i class="mdi mdi-book-open left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-book-open left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <div style="float: right;">
+          
+          <span>記事公開日: 2021/02/21</span><br>
+          
+          
+        </div>
+        <h1 class="post-title">monad-control</h1>
+      </div>
+
+      <article class="page-content">
+        <p>monad-controlはYesodにおいていくつかの場所で用いられ, 主にPersistentにおける適切な例外処理を保証している. これは一般的にも用いられるパッケージであり, モナドトランスフォーマにおける標準的な機能を拡張する.</p>
+<h2 id="概要">概要</h2>
+<p>最も強力で, 時に混乱してしまうようなHaskellの特徴の1つはモナドトランスフォーマである. それらにより, 可変状態, エラー処理や, ロギングのような異なる機能を容易に付与したり, 組み合わせたりできる. 私はモナドに関するチュートリアルを書こうとは思わないが, ここでは無理やりな例えを用いる: モナドは玉ねぎのようである. (モナドはケーキのようではない.) これにより, 層を意味する.</p>
+<p>コアモナドと呼ばれる最も内側あるいは底辺になるモナドが存在する. このコアの頂上に層を重ね, それぞれが新しい特徴を付け加え, 外側あるいは上側に広がっていく. 動機付けのための例として, <code>ErrorT</code>トランスフォーマをIOモナドの上に積み重ねよう.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">ErrorT</span> e m a <span class="ot">=</span> <span class="dt">ErrorT</span> {<span class="ot"> runErrorT ::</span> m (<span class="dt">Either</span> e a) }</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">MyStack</span> <span class="ot">=</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span></span></code></pre></div>
+<p>ここで注意してください: ErrorTはただの単純なEitherをモナドでラップしたnewtypeである. newtypeを除去すると, 次のようになる.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">ErrorTUnwrapped</span> e m a <span class="ot">=</span> m (<span class="dt">Either</span> e a)</span></code></pre></div>
+<p>ある時点において, 実際にMyStackにおいてIOをおこなう必要がある. もしラップしない方法を用いると, 単純である. なぜならば, ErrorTコンストラクタが途中にないためである. しかし, ここでは深入りしないが(これはモナドトタンスフォーマのチュートリアルではない), newtypeラッパは様々な型推論のために必要なのである. そこで解決策はMonadTrans型クラスである.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">MonadTrans</span> t <span class="kw">where</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    lift ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> t m a</span></code></pre></div>
+<p>始めてこの型注釈を見た時, 反応は混乱のため唖然としたのと, それが実際に何を意味するかについての疑念であった. しかしインスタンスを見ることが非常に役立った:</p>
+<p>instance (Error e) =&gt; MonadTrans (ErrorT e) where lift m = ErrorT $ do a &lt;- m return (Right a)</p>
+<p>行なっていることはIOの中身をRight値でラップし, newtypeラッパを適応しているだけである. これにより, IOにあるアクションを取り出し, それを外あるいは上にあるモナドに“リフト”することができる.</p>
+<p>しかし今, 要点を整理してみる. これは単純な関数において非常によく機能する. 例えば,</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sayHi ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sayHi <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">sayHiError ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>sayHiError <span class="ot">=</span> lift <span class="op">$</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello&quot;</span></span></code></pre></div>
+<p>しかし, コールバックのような何か少しもっと複雑なものを取り上げてみよう:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">withMyFile ::</span> (<span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>withMyFile <span class="ot">=</span> withFile <span class="st">&quot;test.txt&quot;</span> <span class="dt">WriteMode</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ot">sayHi ::</span> <span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>sayHi handle <span class="ot">=</span> hPutStrLn handle <span class="st">&quot;Hi there&quot;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFile ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>useMyFile <span class="ot">=</span> withMyFile sayHi</span></code></pre></div>
+<p>今までのところ問題はないですね? 今例えばError monadにアクセスできるsayHiがあるとしよう:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sayHiError ::</span> <span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sayHiError handle <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    lift <span class="op">$</span> hPutStrLn handle <span class="st">&quot;Hi there, error!&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    throwError <span class="dt">MyError</span></span></code></pre></div>
+<p>withMyFileとsayHiErrorを組み合わせた関数を書きたい. 残念なことにGHCはこれをあまり好まない:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileErrorBad ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>useMyFileErrorBad <span class="ot">=</span> withMyFile sayHiError</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Couldn't</span> match expected <span class="kw">type</span> <span class="ot">`ErrorT MyError IO ()'</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">                with actual type `</span><span class="dt">IO</span> ()<span class="ch">'</span></span></code></pre></div>
+<p>これがなぜ起こるのでしょうか, またどのようにしてこれに対処できるのでしょうか?</p>
+<h2 id="直感">直感</h2>
+<p>ここで何が起こっているかについて外部的な直感を働かせてみよう. <code>ErrorT</code>モナドトランスフォーマはIOモナドに対し追加的な機能を与える. その追加的機能をIOモナドに加えるための方法を定義した: Rightコンストラクタを追加し, それら全てをErrorTでラップした. Rightでのラップはここでは“うまく行っているよ”ということであり, このアクションに何も問題はなかったことを意味する.</p>
+<p>今やこれは直感的に意味を成す: IOモナドは何かうまく行かなかった際にMyErrorを返すという概念を持たないため, 常にリフティングにおいて成功する. (注意: これは実行時例外とは何の関係もない, それについては考えないでください.) 一方向性的に, モナドスタックを登ることを保証されただけである.</p>
+<p>他の例を見てみよう: Readerモナドである. Readerは周囲にあるいくつかの追加データにアクセス可能である. 内部モナドで実行されているものはその追加情報についてはわからない. したがって, どのようにliftを行えばよいのか? 単にその余剰情報を無視すればよいのである. Writerモナドについてはどうであろうか? 何も書かない. Stateについてはどうか? 何も変更しない. ここではそのパターンを見ている.</p>
+<p>しかし今度は反対方向を試してみよう: Readerの何かを持っており, それをベースモナド(例えばIO)で実行したいとする. ええ, それは機能しませんよね? 追加情報が必要であり, またそれに依存しているが, それは存在しないのである. 追加的な値を与えずに反対方向に行くことはできないのである.</p>
+<p>またはどこかにあるのであろうか? 覚えているでしょうか, 最初にErrorTは内部モナドの単なるラッパであると指摘した. 言い換えると, もし<code>errorValue :: ErrorT MyError IO MyValue</code>があれば, <code>runErrorT</code>を適用し<code>IO (Either MyError MyValue)</code>型の値を得ることができる. これはちゃんと両方向性の変換ではないでしょうか?</p>
+<p>完全にはそうではない. もともと<code>ErrorT MyError IO monad</code>と, <code>MyValue</code>型の値が存在した. 今<code>Either MyError MyValue</code>のついた<code>IO</code>型のモナドが存在する. したがって, このプロセスは実際に値を変えたが, リフトプロセスは同じ状態に保った.</p>
+<p>しかし, 少し変わった方法を用いてErrorTをアンラップし, 処理をいくつか行い, 再びラップして戻すことができる.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileError1 ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>useMyFileError1 <span class="ot">=</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span><span class="ot"> unwrapped ::</span> <span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Either</span> <span class="dt">MyError</span> ())</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        unwrapped handle <span class="ot">=</span> runErrorT <span class="op">$</span> sayHiError handle</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ot">        applied ::</span> <span class="dt">IO</span> (<span class="dt">Either</span> <span class="dt">MyError</span> ())</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        applied <span class="ot">=</span> withMyFile unwrapped</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ot">        rewrapped ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        rewrapped <span class="ot">=</span> <span class="dt">ErrorT</span> applied</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>     <span class="kw">in</span> rewrapped</span></code></pre></div>
+<p>これはこの章全体で重要な点であるので, しっかり見てみよう. 最初にモナドをアンラップする. これは外の世界に対して, 単にプレーンなIO値であることを意味する. 内部的にはErrorTトランスフォーマから全ての情報を格納した. 今やプレーンなIOを持っているため, 容易にwithMyFileに渡すことができる. withMyFileは内部状態を取り, 変更せずに元に戻す. 最後に, 全てをもとのErrorTにラップして戻す.</p>
+<p>これはmonad-controlにおける全体的なパターンである: モナドトランスフォーマの追加的な情報を値の中に埋め込む. 一度値の中に入れば, 型システムはそれを無視し内部モナドに焦点を当てる. その内部モナドで処理を行った後に, 状態を戻し, 元のモナドスタックを再構築できる.</p>
+<h2 id="型">型</h2>
+<p>意図的にErrorTトランスフォーマから始めた. なぜならばそれは反転メカニズムが最も簡単なものの1つであるためである. 残念なことに, 他のものはもう少し複雑である. 例えばReaderTを取ってみよう. これは<code>newtype ReaderT r m a = ReaderT { runReaderT :: r -&gt; m a }</code>で定義される. <code>runReaderT</code>を適用するとき, モナド値を返す関数を得る. したがって, それら全てを扱うための追加的機能が必要になる. これはKansasを後にする時である.</p>
+<p>これらの問題を解決するための方法が少し存在する. 過去にはどのパッケージにもないが, タイプファミリを用いた方法を実装した. Anders Kaseorgはずっと直接的な方法をmonad-peelを用いて実装した. そして効率化のため, monad-controlにおいて, Bas van DijkはCPS(継続渡しスタイル)と存在型を用いた.</p>
+<div class="yesod-book-notice">
+<p>monad-controlから取ってきたコードは実際にはバージョン0.2に適応される. 0.3では少し変更され, ステートを関連型を用いて明確にし, <code>MonadControlIO</code>を<code>MonadBaseControl</code>に一般化している. しかし, 概念としては同じである.</p>
+</div>
+<p>まず見る型を次のようになる:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Run</span> t <span class="ot">=</span> <span class="kw">forall</span> n o b<span class="op">.</span> (<span class="dt">Monad</span> n, <span class="dt">Monad</span> o, <span class="dt">Monad</span> (t o)) <span class="ot">=&gt;</span> t n b <span class="ot">-&gt;</span> n (t o b)</span></code></pre></div>
+<p>これは非常に密度の濃いものであるので, 取り出してみよう. これに対する唯一の“入力”はモナドトランスフォーマtである. Runはどのn, oとbの組み合わせに対しても機能する(これはforallの意味するところである). nとoは両者ともモナドであり, bはそれらに含まれる値である.</p>
+<p>Run関数の左側であるt n bはモナドトランスフォーマであり, nモナドをラップし, b値を持つ. よって例えば, それはMyTrans FirstMonad MyValueのようであったりする. そしてトランスフォーマは内部に“ポップ”され, 全く新しいモナドがコアに来る. 言い換えれば, FirstMonad (MyTrans NewMonad MyValue)のようになる.</p>
+<p>一見するとかなり怖いように見えるが, しかし実際には思うほどよそよそしいものではない: これは本質的にはErrorTで行ったものと同じである. ErrorTが外側にありIOをラップしたものから始まり, Eitherを含んでいるIOで終わった. 推測してみてください: Eitherを表現するための他の方法が<code>ErrorT MyError Identity</code>である. よって本質的には, IOを内部に持ってきてIdentityはその場に留めているだけである. Runにおいても同じことを行なっている: FirstMoandを外側に持っていき, それをNewMonadで置き換える.</p>
+<div class="yesod-book-notice">
+<p>さあビールを飲むのにちょうど良いときである.</p>
+</div>
+<p>さあ, きっとどこかにたどり着いてることでしょう. もしそれらRun関数の1つにでもアクセス可能であれば, それを使ってsayHello関数のErrorTを剥がし, withMyFileに渡すことができる. undefinedの奇術により, 次のようなことを試すことができる.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">errorRun ::</span> <span class="dt">Run</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>errorRun <span class="ot">=</span> <span class="fu">undefined</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileError2 ::</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">Identity</span> ())</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>useMyFileError2 <span class="ot">=</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span><span class="ot"> afterRun ::</span> <span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">Identity</span> ())</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        afterRun handle <span class="ot">=</span> errorRun <span class="op">$</span> sayHiError handle</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ot">        applied ::</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">Identity</span> ())</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        applied <span class="ot">=</span> withMyFile afterRun</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>     <span class="kw">in</span> applied</span></code></pre></div>
+<p>これは非常に前の例と類似している. 実際にerrorRunはrunErrorTとほとんど同様に機能している. しかし, まだ2つの問題がある. どこからerrorRun値を得るのかわからないし, その後に, まだもとのErrorTを再構築する必要がある.</p>
+<h2 id="monadtranscontrol">MonadTransControl</h2>
+<p>明らかに前の例のように特別な場合, ErrorTトランスフォーマの知識を用いて, 型を打ち独自のRun関数を作ることができる. しかし, 本当にしたいことは多くのトランスフォーマに対する一般的な解決策である. この点において, 型クラスが必要であることがわかるであろう.</p>
+<p>そこで, 必要なものについて整理しましょう: Run関数へのアクセスと, その後にもとのトランスフォーマを再構築するための方法. その結果, MonadTransControlが誕生し, これはliftControlという1つのメソッドを持つ.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">MonadTrans</span> t <span class="ot">=&gt;</span> <span class="dt">MonadTransControl</span> t <span class="kw">where</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    liftControl ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (<span class="dt">Run</span> t <span class="ot">-&gt;</span> m a) <span class="ot">-&gt;</span> t m a</span></code></pre></div>
+<p>これについて詳しく見てみよう. liftControlは関数(今書く予定の関数)を引数に取る. その関数はRun関数を与えられ, あるモナド(m)の値で返される必要がある. liftControlはその関数の結果を取り, 元のトランスフォーマをトップレベルに戻す.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileError3 ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> m ())</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>useMyFileError3 <span class="ot">=</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    liftControl inside</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    inside ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">Run</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span>) <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> m ())</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    inside run <span class="ot">=</span> withMyFile <span class="op">$</span> helper run</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    helper ::</span> <span class="dt">Monad</span> m</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>           <span class="ot">=&gt;</span> <span class="dt">Run</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span>) <span class="ot">-&gt;</span> <span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> m ())</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    helper run handle <span class="ot">=</span> run (sayHiError<span class="ot"> handle ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ())</span></code></pre></div>
+<p>近いが, 本当に思ったものではない. 2重モナドは何でしょうか? ええ, 最後の部分から始めましょう: sayHello handleはErrorT MyError IO ()型の値を返す. これはすでに既知のものであり. 驚くに値しない. 少し驚くべきことは(少なくとも私にとっては), 次の2ステップである.</p>
+<p>始めにrunをその値に適用する. 前に論じたように, 結果としてIO内部モナドは外に出され, 他の任意のモナドに置き換えられる(ここではmで表す). IO (ErrorT MyError m())を取得することになる. オーケーです. そしてwithMyFileを適用後, 同じ結果を得ることになる. 驚くに値しない.</p>
+<p>最後のステップは, 正しく理解するのに長い時間がかかった. 元のトランスフォーマを再構築すると言ったのを覚えているだろうか? ええ, 実際にそうします: ちょうど今持っている全ての上に置きます. その結果, 前の型 IO (ErrorT MyError m ())に対しErrorrT MyErrorが手前に来る.</p>
+<p>ええ, それは全く意味のないように見えませんか? ええ, ほとんどそうです. しかし, “m”はIOを含めどんなモナドにもなれることを忘れてはいけない. もし, そのように考えれば, <code>ErrorT MyErrorT IO (ErrorT MyErrorT IO ())</code>を得る. これはかなり<code>m (m a)</code>に近い. そして, 実際にはプレーンな<code>m a</code>を得たいのである. 幸い, 運が良い:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileError4 ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>useMyFileError4 <span class="ot">=</span> join useMyFileError3</span></code></pre></div>
+<p>そして, この方法は一般的であり, Basは情け深いことにヘルパ関数を定義してくれた.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">control ::</span> (<span class="dt">Monad</span> m, <span class="dt">Monad</span> (t m), <span class="dt">MonadTransControl</span> t)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        <span class="ot">=&gt;</span> (<span class="dt">Run</span> t <span class="ot">-&gt;</span> m (t m a)) <span class="ot">-&gt;</span> t m a</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>control <span class="ot">=</span> join <span class="op">.</span> liftControl</span></code></pre></div>
+<p>そこて書く必要のあるのは:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileError5 ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>useMyFileError5 <span class="ot">=</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    control inside</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    inside ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> <span class="dt">Run</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span>) <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> m ())</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    inside run <span class="ot">=</span> withMyFile <span class="op">$</span> helper run</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    helper ::</span> <span class="dt">Monad</span> m</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>           <span class="ot">=&gt;</span> <span class="dt">Run</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span>) <span class="ot">-&gt;</span> <span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> m ())</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    helper run handle <span class="ot">=</span> run (sayHiError<span class="ot"> handle ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ())</span></code></pre></div>
+<p>これを少し短くすると:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileError6 ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>useMyFileError6 <span class="ot">=</span> control <span class="op">$</span> \run <span class="ot">-&gt;</span> withMyFile <span class="op">$</span> run <span class="op">.</span> sayHiError</span></code></pre></div>
+<h2 id="monadcontrolio">MonadControlIO</h2>
+<p>MonadTransクラスはliftメソッドを与え, これによりモナドのスタックにおいてアクションを1レベル上げることができる. また, MonadIOクラスが存在し, これはliftIOを与え, これによりIOアクションがスタックにおいて望むだけ外に持ち上げることができる. monad-controlにも同じブレークダウンが存在する. しかし最初にRunのための系が必要である:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">RunInBase</span> m base <span class="ot">=</span> <span class="kw">forall</span> b<span class="op">.</span> m b <span class="ot">-&gt;</span> base (m b)</span></code></pre></div>
+<p>トランスフォーマを扱う代わりに2つのモナドを扱っている. baseは下層モナドであり, mははその上にあるスタックである. RunInBaseはスタック全体の値を取り, そのベースを取り出し, 外側に置く関数である. Run型と異なり, それを任意モナドと置き換えないが, もとのモナドと置き換える. より具体的な型を扱うために:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="dt">RunInBase</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span>) <span class="dt">IO</span> <span class="ot">=</span> <span class="kw">forall</span> b<span class="op">.</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> b <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> b)</span></code></pre></div>
+<p>これはこれまでに見てきたものとかなり似通っており, 唯一の違いは特別な内部モナドを扱いたいことである. MonadControlIOクラスは実際にMonadControlTransのRunInBaseを用いた拡張に過ぎない.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">MonadIO</span> m <span class="ot">=&gt;</span> <span class="dt">MonadControlIO</span> m <span class="kw">where</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    liftControlIO ::</span> (<span class="dt">RunInBase</span> m <span class="dt">IO</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> a) <span class="ot">-&gt;</span> m a</span></code></pre></div>
+<p>簡単に言うと, liftControllIOはRunInBaseを受け取る関数を取る. RunInBaseはモナドを剥がしたただのIOにするために使われ, liftControlIOは再び全てを構築し直す. MonadControlTransと同様に, それはヘルパ関数とともに来る.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ot">controlIO ::</span> <span class="dt">MonadControlIO</span> m <span class="ot">=&gt;</span> (<span class="dt">RunInBase</span> m <span class="dt">IO</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (m a)) <span class="ot">-&gt;</span> m a</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>controlIO <span class="ot">=</span> join <span class="op">.</span> liftControlIO</span></code></pre></div>
+<p>これを用い, 容易に前の例を書き直せる:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileError7 ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>useMyFileError7 <span class="ot">=</span> controlIO <span class="op">$</span> \run <span class="ot">-&gt;</span> withMyFile <span class="op">$</span> run <span class="op">.</span> sayHiError</span></code></pre></div>
+<p>利点として, これは容易に複数のトランスフォーマにスケールされる:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sayHiCrazy ::</span> <span class="dt">Handle</span> <span class="ot">-&gt;</span> <span class="dt">ReaderT</span> <span class="dt">Int</span> (<span class="dt">StateT</span> <span class="dt">Double</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span>)) ()</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sayHiCrazy handle <span class="ot">=</span> liftIO <span class="op">$</span> hPutStrLn handle <span class="st">&quot;Madness!&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ot">useMyFileCrazy ::</span> <span class="dt">ReaderT</span> <span class="dt">Int</span> (<span class="dt">StateT</span> <span class="dt">Double</span> (<span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span>)) ()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>useMyFileCrazy <span class="ot">=</span> controlIO <span class="op">$</span> \run <span class="ot">-&gt;</span> withMyFile <span class="op">$</span> run <span class="op">.</span> sayHiCrazy</span></code></pre></div>
+<h2 id="real-life-example">Real Life Example</h2>
+<p>このコードで何か現実世界の問題を解いてみよう. おそらく最も大きな動機づけとなる使い方は, トランスフォーマスタックにおける例外処理であろう. 例えば, 例外が投げられた時, 自動的にクリーンアップコードを実行したいとしよう. もし, これが通常のIOコードであれば, 次を使うであろう:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ot">onException ::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> b <span class="ot">-&gt;</span> <span class="dt">IO</span> a</span></code></pre></div>
+<p>しかし, もしErrorTモナドにいる場合, アクションを渡したりクリーンアップすることができない. そこで, controlIOが救助のために駆けつける:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ot">onExceptionError ::</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> a</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                 <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> b</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                 <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> a</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>onExceptionError action after <span class="ot">=</span> controlIO <span class="op">$</span> \run <span class="ot">-&gt;</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    run action <span class="ot">`onException`</span> run after</span></code></pre></div>
+<p>Doubleを保存するためのメモリを割り当てたいとしよう. IO monadにおいては, alloca関数を用いればよかった. 再度, 今回の解決策も単純である:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ot">allocaError ::</span> (<span class="dt">Ptr</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> b)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>            <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> b</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>allocaError f <span class="ot">=</span> controlIO <span class="op">$</span> \run <span class="ot">-&gt;</span> alloca <span class="op">$</span> run <span class="op">.</span> f</span></code></pre></div>
+<h2 id="lost-state">Lost State</h2>
+<p>少しonExceptionErrorに巻き戻りましょう. これはonExceptionを水面下で用いており, 次のような型注釈を持つ : <code>IO a -&gt; IO b -&gt; IO a</code> 質問させてください: 出力においてbはどうなったのか? ええ, それは完全に無視されている. しかし, これは少し問題を生じる. 結局, トランスフォーマの状態に関する情報は内部モナドの中に保存しているのである. もし, それが無視されれば, 本質的にモナド副作用を同様に無視していることになる!</p>
+<p>そして答えとしては, ええ, これはmonad-controlで起こっている. ある関数はモナド副作用を捨てている. これはBasによって, 関連する関数についてのコメントでよく言い表されている: [引用]</p>
+<p>“開放”計算においてmのどんなモナド副作用も無視されることに注意せよ; それはIOにおいて副作用のためだけに実行される.</p>
+<p>実践的には, monad-controlはたいてい正しいことをしてくれるでろうが, 消えてしまう副作用もあることに注意せよ.</p>
+<h2 id="more-complicated-cases">More Complicated Cases</h2>
+<p>今までのところトリックを機能させるために, 値を操作するための完全なアクセスを与えるための関数が必要であった. 時々, このようでない場合もある. 例えば:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ot">addMVarFinalizer ::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span></code></pre></div>
+<p>この場合, 終了関数に値を持つ必要がない. 直感的には, 最初に注意すべき点としては, モナド副作用をとらえる方法がないということである. そこでどのようにこのようなものをコンパイルすればよいのであろうか? ええ, それが持っている全ての状態に関する情報を捨てるように明確に伝える必要がある.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ot">addMVarFinalizerError ::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> () <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> ()</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>addMVarFinalizerError mvar f <span class="ot">=</span> controlIO <span class="op">$</span> \run <span class="ot">-&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> <span class="op">$</span> liftIO <span class="op">$</span> addMVarFinalizer mvar (run f <span class="op">&gt;&gt;</span> <span class="fu">return</span> ())</span></code></pre></div>
+<p>同じモジュール他の例としては:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ot">modifyMVar ::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> (a, b)) <span class="ot">-&gt;</span> <span class="dt">IO</span> b</span></code></pre></div>
+<p>ここでは, 2つ目の引数に対する戻り値の制限がある: それはその関数に渡される引数と, 最後の戻り値の3つ組である必要がある. 残念なことに, modyfyMVarをErrorTで使えるようにするための簡単なラッパを書く方法を見つけられない. 代わりに, この場合, modyfyMVarの定義をコピーし, 次のように変更した:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ot">modifyMVar ::</span> <span class="dt">MVar</span> a</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>           <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> (a, b))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>           <span class="ot">-&gt;</span> <span class="dt">ErrorT</span> <span class="dt">MyError</span> <span class="dt">IO</span> b</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>modifyMVar m io <span class="ot">=</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  Control.Exception.Control.mask <span class="op">$</span> \restore <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    a      <span class="ot">&lt;-</span> liftIO <span class="op">$</span> takeMVar m</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    (a',b) <span class="ot">&lt;-</span> restore (io a) <span class="ot">`onExceptionError`</span> liftIO (putMVar m a)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    liftIO <span class="op">$</span> putMVar m a'</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> b</span></code></pre></div>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=monad-control&url=https://haskell.e-bigmoon.com/yesod/book/appendix1_monad_control.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/appendix1_monad_control.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+  <div class="footer-copyright">
+    <div class="container">
+      © 2017-2020 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+  </div>
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
