@@ -230,10 +230,10 @@ $ sudo apt-get install -y libpq-dev
 
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
-[monad-control][en-ap01] | monad-control
-[Web Application Interface][en-ap02] | Web Application Interface
-[Settings Types][en-ap03] | Settings Types
-[http-conduit][en-ap04] | http-conduit
+[monad-control][en-ap01] | [monad-control][ja-ap01]
+[Web Application Interface][en-ap02] | [ウェブアプリケーションインターフェイス][ja-ap02]
+[Settings Types][en-ap03] | [Settings Types][ja-ap03]
+[http-conduit][en-ap04] | [http-conduit][ja-ap04]
 [xml-conduit][en-ap05] | xml-conduit
 
 [en-ap01]:https://www.yesodweb.com/book/monad-control
@@ -241,6 +241,11 @@ $ sudo apt-get install -y libpq-dev
 [en-ap03]:https://www.yesodweb.com/book/settings-types
 [en-ap04]:https://www.yesodweb.com/book/http-conduit
 [en-ap05]:https://www.yesodweb.com/book/xml
+
+[ja-ap01]:book/appendices-monad-control.html
+[ja-ap02]:book/appendices-web-application-interface.html
+[ja-ap03]:book/appendices-settings-types.html
+[ja-ap04]:book/appendices-http-conduit.html
 
 ## Yesod Tips
 
