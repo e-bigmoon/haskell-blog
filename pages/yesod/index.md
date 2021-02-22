@@ -231,7 +231,7 @@ $ sudo apt-get install -y libpq-dev
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
 [monad-control][en-ap01] | [monad-control][ja-ap01]
-[Web Application Interface][en-ap02] | [ウェブアプリケーションインターフェイス][ja-ap01]
+[Web Application Interface][en-ap02] | [ウェブアプリケーションインターフェイス][ja-ap02]
 [Settings Types][en-ap03] | [Settings Types][ja-ap03]
 [http-conduit][en-ap04] | [http-conduit][ja-ap04]
 [xml-conduit][en-ap05] | xml-conduit
