@@ -195,7 +195,7 @@ $ sudo apt-get install -y libpq-dev
 原文 | 日本語訳 | 補足資料
 -----|----------|---------
 [Initializing data in the foundation datatype][en-ex01] | [ファウンデーション型の初期化][ja-ex01] | [スライド][slide-ex01]
-[Blog: i18n, authentication, authorization, and database][en-ex02] | Blog: i18n, authentication, authorization, and database
+[Blog: i18n, authentication, authorization, and database][en-ex02] | [Blog: i18n, authentication, authorization, and database][ja-ex02]
 [Wiki: markdown, chat subsite, event source][en-ex03] | [Wiki:markdown, chat subsite, event source][ja-ex03]
 [JSON Web Service][en-ex04] | [JSON Web Service][ja-ex04]
 [Case Study: Sphinx-based Search][en-ex05] | [ケーススタディ: Sphinxでの検索][ja-ex05]
@@ -235,7 +235,7 @@ $ sudo apt-get install -y libpq-dev
 [Web Application Interface][en-ap02] | [ウェブアプリケーションインターフェイス][ja-ap02]
 [Settings Types][en-ap03] | [Settings Types][ja-ap03]
 [http-conduit][en-ap04] | [http-conduit][ja-ap04]
-[xml-conduit][en-ap05] | xml-conduit
+[xml-conduit][en-ap05] | [xml-conduit][ja-ap05]
 
 [en-ap01]:https://www.yesodweb.com/book/monad-control
 [en-ap02]:https://www.yesodweb.com/book/web-application-interface
