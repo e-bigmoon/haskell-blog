@@ -215,6 +215,7 @@ $ sudo apt-get install -y libpq-dev
 [en-ex09]:https://www.yesodweb.com/book/route-attributes
 
 [ja-ex01]:book/examples-initializing-foundation-data.html
+[ja-ex02]:book/examples-blog-example-advanced
 [ja-ex03]:book/examples-wiki-chat-example
 [ja-ex04]:book/examples-json-web-service
 [ja-ex05]:book/examples-case-study-sphinx
@@ -246,6 +247,7 @@ $ sudo apt-get install -y libpq-dev
 [ja-ap02]:book/appendices-web-application-interface.html
 [ja-ap03]:book/appendices-settings-types.html
 [ja-ap04]:book/appendices-http-conduit.html
+[ja-ap05]:book/appendices-xml.html
 
 ## Yesod Tips
 
