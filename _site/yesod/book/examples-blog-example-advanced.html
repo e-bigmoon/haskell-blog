@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <!-- MUST in hex format, may the same as header-color. This color is for android chrome browser. -->
+  <meta name="theme-color" content="#5c6bc0">
+
+  <!-- Metadata. -->
+  <meta name="keywords" content="haskell,blog,bigmoon" />
+  <title>Blog: i18n, authentication, authorization, and database</title>
+  <meta name="description" content="BIG MOON">
+  <link rel="canonical" href="../../yesod/book/examples-blog-example-advanced.html">
+  <link rel="alternate" type="application/atom+xml" title="Blog: i18n, authentication, authorization, and database" href="../../feed.xml" />
+  <link rel="shortcut icon" href="../../images/favicon.ico" />
+  <meta name="google-site-verification" content="X2YNboLvzw3_bclXLMvohyJDqj68D06_hPDMukRbgTs" />
+
+  <!-- Stylesheets. -->
+  <link rel="stylesheet" href="../../lib/materialize/css/materialize.min.css" />
+  <link rel="stylesheet" href="../../css/main.css" />
+  <link media="all" rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.3.92/css/materialdesignicons.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../lib/material-scrolltop/material-scrolltop.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/agate.min.css" />
+  
+
+  <!-- OGP -->
+  <meta property="og:title" content="Blog: i18n, authentication, authorization, and database" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="/yesod/book/examples-blog-example-advanced.html" />
+  <!-- <meta property="og:image" content=" サムネイル画像の URL" /> -->
+  <meta property="og:site_name" content="Blog: i18n, authentication, authorization, and database" />
+  <meta property="og:description" content="BIG MOON" />
+
+  <meta name="twitter:card" content="summary" />
+  <!-- <meta name="twitter:site" content="@[ Twitter ID]" /> -->
+  <!-- <meta name="twitter:player" content="@[ Twitter ID]" /> -->
+
+  <noscript>
+  <div class="notice-warning noscript">You don't have javascript enabled. Good luck! :(</div>
+</noscript>
+
+<!--[if IE]>
+  <div class="notice-warning">Oh, you are using Internet Explorer! Good luck... :(</div>
+<![endif]-->
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+      <nav class="nav-extended indigo lighten-1">
+        <div class="nav-wrapper">
+  <a href="../../"><span class="site-title">BIGMOON Haskeller's BLOG</span></a>
+  <a href="#" data-activates="mobile-navbar" class="button-collapse">
+    <i class="mdi mdi-menu white-text"></i>
+  </a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li>
+      <a href="../../" class="white-text">
+        <i class="mdi mdi-home left indigo-text text-lighten-3"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="white-text">
+        <i class="mdi mdi-account-circle left indigo-text text-lighten-3"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="white-text">
+        <i class="mdi mdi-book-open left indigo-text text-lighten-3"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="white-text">
+        <i class="mdi mdi-wrench left indigo-text text-lighten-3"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="white-text">
+        <i class="mdi mdi-comment-question-outline left indigo-text text-lighten-3"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="white-text">
+        <i class="mdi mdi-package-variant left indigo-text text-lighten-3"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="white-text">
+        <i class="mdi mdi-earth left indigo-text text-lighten-3"></i>
+        Yesod
+      </a>
+    </li>
+    <li>
+      <a href="../../feed.xml" class="white-text">
+        <i class="mdi mdi-rss left indigo-text text-lighten-3"></i>
+        Feed
+      </a>
+    </li>
+  </ul>
+
+  <ul class="side-nav" id="mobile-navbar">
+    <li>
+      <a href="../../" class="waves-effect waves-teal black-text">
+        <i class="mdi mdi-home left green-text"></i>
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="../../about.html" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-account-circle left blue-text"></i>
+        About
+      </a>
+    </li>
+    <li>
+      <a href="../../books/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-book-open left blue-text"></i>
+        Books
+      </a>
+    </li>
+    <li>
+      <a href="../../stack/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-wrench left blue-text"></i>
+        Development
+      </a>
+    </li>
+    <li>
+      <a href="../../quiz/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-comment-question-outline left blue-text"></i>
+        Quiz
+      </a>
+    </li>
+    <li>
+      <a href="../../libraries/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-package-variant left blue-text"></i>
+        Libraries
+      </a>
+    </li>
+    <li>
+      <a href="../../yesod/" class="navbar-text-colour-mobile">
+        <i class="mdi mdi-earth left blue-text"></i>
+        Yesod
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </nav>
+    </header>
+
+    <div class="site-container" id="tab-main">
+      <div class="wrapper">
+        <div class="post-ribbon"></div>
+
+<div class="container page-container">
+  <div class="post-page card-panel z-depth-2">
+    <div class="post-section">
+      <div class="post-heading">
+        <div style="float: right;">
+          
+          <span>記事公開日: 2021/02/28</span><br>
+          
+          
+        </div>
+        <h1 class="post-title">Blog: i18n, authentication, authorization, and database</h1>
+      </div>
+
+      <article class="page-content">
+        <h1 id="blog-i18n-authentication-authorization-and-database">Blog: i18n, authentication, authorization, and database</h1>
+<p>これは単純なブログアプリである. 管理者がリッチテキストエディタ(nicedit)を用いてブログポストを追加したり, ログインしたユーザがコメントしたりすることが可能で, 完全にi18nをサポートしている. これはまた, Persistentデータベースを用いたり, Yesodの認可システムやテンプレートを活用する良い例である.</p>
+<p>一般的にはテンプレート, Persistエンティティの定義, そして, ルーティングは別々のファイルに置くことを推奨しているが, ここでは利便性のため全てを1つのファイルにまとめている. 下の例で見る1つの例外はi18nメッセージである.</p>
+<p>まず言語拡張から始める. scaffoldedコードにおいては, 言語拡張はcabalファイルで指定されるため, 以下を個々のHaskellファイルに書く必要はない.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings, TypeFamilies, QuasiQuotes,</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">             TemplateHaskell, GADTs, FlexibleContexts,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">             MultiParamTypeClasses, DeriveDataTypeable,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ot">             GeneralizedNewtypeDeriving, ViewPatterns #-}</span></span></code></pre></div>
+<p>インポートは以下のようになる.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Yesod</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Yesod.Auth</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Yesod.Form.Nic</span> (<span class="dt">YesodNic</span>, nicHtmlField)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Yesod.Auth.OpenId</span> (<span class="dt">IdentifierType</span>(..), authOpenId)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Text</span> (<span class="dt">Text</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Network.HTTP.Client.TLS</span> (tlsManagerSettings)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Network.HTTP.Conduit</span> (<span class="dt">Manager</span>, newManager)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Database.Persist.Sqlite</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    ( <span class="dt">ConnectionPool</span>, <span class="dt">SqlBackend</span>, runSqlPool, runMigration</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    , createSqlitePool, runSqlPersistMPool</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Time</span> (<span class="dt">UTCTime</span>, getCurrentTime)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Applicative</span> ((&lt;$&gt;), (&lt;*&gt;), pure)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Typeable</span> (<span class="dt">Typeable</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad.Logger</span> (runStdoutLoggingT)</span></code></pre></div>
+<p>最初にPersistentエンティティをセットアップする. データ型(mkPersistを用いて)とmigration関数の両方を作るが, これにより自動的にSQLスキーマが作られ更新される. もしMongoDBバックエンドを用いていれば, migrationは不要である.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>share [mkPersist sqlSettings, mkMigrate <span class="st">&quot;migrateAll&quot;</span>] [persistLowerCase|</span></code></pre></div>
+<p>ユーザを追跡する. より堅牢なアプリケーションでは, アカウント作成日時, 表示名などを保存します.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">User</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>   email <span class="dt">Text</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">UniqueUser</span> email</span></code></pre></div>
+<p>Yesod-authのキャッシングと連携するために, <code>User</code>型は<code>Typable</code>のインスタンスである必要がある.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">deriving</span> <span class="dt">Typeable</span></span></code></pre></div>
+<p>個々のブログエントリ(リクエストメソッドのPOSTとの混乱のため, “ポスト”という言葉を使うのを避けた).</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Entry</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>   title <span class="dt">Text</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>   posted <span class="dt">UTCTime</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>   content <span class="dt">Html</span></span></code></pre></div>
+<p>次にブログポストのコメント.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Comment</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>   entry <span class="dt">EntryId</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>   posted <span class="dt">UTCTime</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>   user <span class="dt">UserId</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>   name <span class="dt">Text</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>   text <span class="dt">Textarea</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="op">|</span>]</span></code></pre></div>
+<p>各サイトはファウンデーションデータ型を持つ. この値はアプリケーションを立ち上げる前に初期化され, 全体で利用される. データベースのコネクションプールとHTTPコネクションマネージャを格納する. このファイルの最後の部分に, それらがどのように初期化されるかが示されている.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Blog</span> <span class="ot">=</span> <span class="dt">Blog</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>   {<span class="ot"> connPool    ::</span> <span class="dt">ConnectionPool</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>   ,<span class="ot"> httpManager ::</span> <span class="dt">Manager</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>   }</span></code></pre></div>
+<p>i18nを容易で翻訳しやすくするために, 翻訳されるメッセージのための特別なファイル形式を用意する. 各言語ごとに1つのファイルが存在し, それぞれのファイルは言語コード(例えば, en, es, de-DE)に基づき命名され, フォルダに格納される. メイン言語ファイル(ここでは“en”)も指定する.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mkMessage <span class="st">&quot;Blog&quot;</span> <span class="st">&quot;blog-messages&quot;</span> <span class="st">&quot;en&quot;</span></span></code></pre></div>
+<p><code>blog-messages/en.msg</code>は次のコンテンツを含んでいる.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- @blog-messages/en.msg</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="dt">NotAnAdmin</span><span class="op">:</span> <span class="dt">You</span> must be an administrator to access this page<span class="op">.</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="dt">WelcomeHomepage</span><span class="op">:</span> <span class="dt">Welcome</span> to the homepage</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="dt">SeeArchive</span><span class="op">:</span> <span class="dt">See</span> the archive</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="dt">NoEntries</span><span class="op">:</span> <span class="dt">There</span> are no entries <span class="kw">in</span> the blog</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="dt">LoginToPost</span><span class="op">:</span> <span class="dt">Admins</span> can login to post</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="dt">NewEntry</span><span class="op">:</span> <span class="dt">Post</span> to blog</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="dt">NewEntryTitle</span><span class="op">:</span> <span class="dt">Title</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="dt">NewEntryContent</span><span class="op">:</span> <span class="dt">Content</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="dt">PleaseCorrectEntry</span><span class="op">:</span> <span class="dt">Your</span> submitted entry had some errors, please correct <span class="fu">and</span> try again<span class="op">.</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="dt">EntryCreated</span> title<span class="op">@</span><span class="dt">Text</span><span class="op">:</span> <span class="dt">Your</span> new blog post, <span class="op">#</span>{title}, has been created</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="dt">EntryTitle</span> title<span class="op">@</span><span class="dt">Text</span><span class="op">:</span> <span class="dt">Blog</span> post<span class="op">:</span> <span class="op">#</span>{title}</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="dt">CommentsHeading</span><span class="op">:</span> <span class="dt">Comments</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="dt">NoComments</span><span class="op">:</span> <span class="dt">There</span> are no comments</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="dt">AddCommentHeading</span><span class="op">:</span> <span class="dt">Add</span> a <span class="dt">Comment</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="dt">LoginToComment</span><span class="op">:</span> <span class="dt">You</span> must be logged <span class="kw">in</span> to comment</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="dt">AddCommentButton</span><span class="op">:</span> <span class="dt">Add</span> comment</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="dt">CommentName</span><span class="op">:</span> <span class="dt">Your</span> display name</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="dt">CommentText</span><span class="op">:</span> <span class="dt">Comment</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="dt">CommentAdded</span><span class="op">:</span> <span class="dt">Your</span> comment has been added</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="dt">PleaseCorrectComment</span><span class="op">:</span> <span class="dt">Your</span> submitted comment had some errors, please correct <span class="fu">and</span> try again<span class="op">.</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="dt">HomepageTitle</span><span class="op">:</span> <span class="dt">Yesod</span> <span class="dt">Blog</span> <span class="dt">Demo</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="dt">BlogArchiveTitle</span><span class="op">:</span> <span class="dt">Blog</span> <span class="dt">Archive</span></span></code></pre></div>
+<p>さあ, ルーティングテーブルをセットアップしよう. 4つのエントリがある: ホームページ, エントリリストページ(<code>BlogR</code>), 個々のエントリページ(<code>EntryR</code>), そして, 認証サブサイト. <code>BlogR</code>と<code>EntryR</code>の両者はGETとPOSTメソッドを許容することに注意せよ. POSTメソッドはそれぞれ新しいブログを追加したり, 新しいコメントを追加したりするためにある.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mkYesod <span class="st">&quot;Blog&quot;</span> [parseRoutes|</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>/              HomeR  GET</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>/blog          BlogR  GET POST</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>/blog/#EntryId EntryR GET POST</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>/auth          AuthR  Auth getAuth</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
+<p>各ファウンデーションはYesod型クラスのインスタンスである必要がある. これは様々な設定を構成する場所である.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Yesod</span> <span class="dt">Blog</span> <span class="kw">where</span></span></code></pre></div>
+<p>アプリケーションの最大の利点. BrowserIDが適切に機能するようにするために, これは有効なURLである必要がある.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>approot <span class="ot">=</span> <span class="dt">ApprootStatic</span> <span class="st">&quot;http://localhost:3000&quot;</span></span></code></pre></div>
+<p>認可スキーム. 次のような規則を持ちたい.</p>
+<ul>
+<li><p>管理者のみが新しいエントリを追加できる.</p></li>
+<li><p>ログインしたたユーザのみが新しいコメントを追加できる.</p></li>
+<li><p>他の全てのページは誰でもアクセスできる.</p></li>
+</ul>
+<p>ルートをRESTfulな方法でセットアップする. ここでは, 変更を加える操作は常に<code>POST</code>メソッドを用いている. その結果, 2つめのフィールドの<code>True</code>により, リクエストがwriteリクエストかどうかを簡単に確認できる.</p>
+<p>まず, 新しいエントリを追加するために, リクエストを認可する.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    isAuthorized <span class="dt">BlogR</span> <span class="dt">True</span> <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        mauth <span class="ot">&lt;-</span> maybeAuth</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> mauth <span class="kw">of</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">AuthenticationRequired</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Just</span> (<span class="dt">Entity</span> _ user)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span> isAdmin user <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Authorized</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span> <span class="fu">otherwise</span>    <span class="ot">-&gt;</span> unauthorizedI <span class="dt">MsgNotAnAdmin</span></span></code></pre></div>
+<p>また, , 新しいコメントを追加するために, リクエストを認可する.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    isAuthorized (<span class="dt">EntryR</span> _) <span class="dt">True</span> <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        mauth <span class="ot">&lt;-</span> maybeAuth</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">case</span> mauth <span class="kw">of</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">AuthenticationRequired</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">Just</span> _  <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Authorized</span></span></code></pre></div>
+<p>そして他の全てのリクエストでは, 結果は常に認可される.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    isAuthorized _ _ <span class="ot">=</span> <span class="fu">return</span> <span class="dt">Authorized</span></span></code></pre></div>
+<p>もしユーザがAuthenticationRequiredを受け取った場合, リダイレクトされる.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>    authRoute _ <span class="ot">=</span> <span class="dt">Just</span> (<span class="dt">AuthR</span> <span class="dt">LoginR</span>)</span></code></pre></div>
+<p>これはサイトの見た感じを定義する場所である. 関数は個々のページのコンテンツを与えられ, 標準テンプレートによりラップされる.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>    defaultLayout inside <span class="ot">=</span> <span class="kw">do</span></span></code></pre></div>
+<p>Yesodはget-following-postパターンを推奨し, ここではPOSTの後に他のページにリダイレクトされる. POSTページがユーザにフィードバックを与えられるようにするために, <code>getMessage</code>や<code>setMessage</code>関数がある. defaultLayout関数で常にペンディングのメッセージを確認することはよいアイデアである.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>mmsg <span class="ot">&lt;-</span> getMessage</span></code></pre></div>
+<p>HTML, CSS, そしてJavascriptを共に合成するために, widgetを用います. 最終的には, それら全てをアンラップし, 単純なHTMLにする必要がある. そのために<code>widgetToPageContent</code>が存在する. それに対し, 個々のページ(内部の)から受け取ったコンテンツと, 全てのページに対する標準CSSから成るwidgetを与える. Luciusテンプレート言語を用いて後者を作る.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>        pc <span class="ot">&lt;-</span> widgetToPageContent <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>            toWidget [lucius|</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>body {</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    width: 760px;</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    margin: 1em auto;</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    font-family: sans-serif;</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>textarea {</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    width: 400px;</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    height: 200px;</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>#message {</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  color: #900;</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>|]</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>            inside</span></code></pre></div>
+<p>そして, 最終的に新しいHamletテンプレートを用いて, 個々のコンポーネント(タイトル, ヘッドデータ, そしてボディデータ)をラップし最終的な出力に変換する.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>        withUrlRenderer [hamlet|</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">$</span><span class="er">doctype</span> <span class="er">5</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;head&gt;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;title&gt;#{</span>pageTitle pc<span class="kw">}</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">^{</span>pageHead pc<span class="kw">}</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;body&gt;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">$maybe</span> msg <span class="ot">&lt;-</span> mmsg</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;div </span><span class="er">#message</span><span class="kw">&gt;#{</span>msg<span class="kw">}</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">^{</span>pageBody pc<span class="kw">}</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
+<p>これはユーザが管理者かどうかを確認するための単純な関数である. 実際のアプリケーションにおいては, 管理者のビットをデータベース自身に格納するか, 何らかの外部ファイルで確認する傾向がある. 今回は, 自分のeメールアドレスを単にハードコードした.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ot">isAdmin ::</span> <span class="dt">User</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>isAdmin user <span class="ot">=</span> userEmail user <span class="op">==</span> <span class="st">&quot;michael@snoyman.com&quot;</span></span></code></pre></div>
+<p>データベースにアクセスするために, YesodPersistインスタンスを作る必要があり, そこではどのバックエンドを使い, どのようにアクションを実行するかを宣言する.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodPersist</span> <span class="dt">Blog</span> <span class="kw">where</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>   <span class="kw">type</span> <span class="dt">YesodPersistBackend</span> <span class="dt">Blog</span> <span class="ot">=</span> <span class="dt">SqlBackend</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>   runDB f <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>       master <span class="ot">&lt;-</span> getYesod</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>       <span class="kw">let</span> pool <span class="ot">=</span> connPool master</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>       runSqlPool f pool</span></code></pre></div>
+<p>これは利便性のための同義語であり, scaffoldedサイトで自動的に定義される.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Form</span> x <span class="ot">=</span> <span class="dt">Html</span> <span class="ot">-&gt;</span> <span class="dt">MForm</span> <span class="dt">Handler</span> (<span class="dt">FormResult</span> x, <span class="dt">Widget</span>)</span></code></pre></div>
+<p>yesod-formとyesod-authを使うために, FormMessageのためにRenderMessageのインスタンスが必要になる. これにより, 個々のフォームメッセージにおけるi18nを制御することが可能になる.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">RenderMessage</span> <span class="dt">Blog</span> <span class="dt">FormMessage</span> <span class="kw">where</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    renderMessage _ _ <span class="ot">=</span> defaultFormMessage</span></code></pre></div>
+<p>組み込みのnic HTMLエディタを用いるために, このインスタンスが必要になる. デフォルト値だけを取ればよく, これはNicのCDNでホストされたバージョンを用いる.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodNic</span> <span class="dt">Blog</span></span></code></pre></div>
+<p>yesod-authを用いるために, YesodAuthインスタンスが必要である.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodAuth</span> <span class="dt">Blog</span> <span class="kw">where</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span> <span class="dt">AuthId</span> <span class="dt">Blog</span> <span class="ot">=</span> <span class="dt">UserId</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    loginDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    logoutDest _ <span class="ot">=</span> <span class="dt">HomeR</span></span></code></pre></div>
+<p>外部のOpenIDプロバイダを用いてユーザを認証し, eメールアドレスをユーザidとして用いるようにリクエストする. これにより将来, 局所的に認証されたeメールアドレス(これもまたyesod-authに含まれている)のように, 他システムに切り替えることが容易になる.</p>
+<p>この関数はログインクレデンシャル(eメールアドレスを含む)を取り, UserIdを返す.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>    getAuthId creds <span class="ot">=</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>      <span class="co">-- Key name for email value may vary between providers</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span> emailKey <span class="ot">=</span> <span class="st">&quot;openid.ax.value.email&quot;</span> <span class="kw">in</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">case</span> <span class="fu">lookup</span> emailKey (credsExtra creds) <span class="kw">of</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>          <span class="dt">Just</span> email <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>              res <span class="ot">&lt;-</span> liftHandler <span class="op">$</span> runDB <span class="op">$</span> insertBy (<span class="dt">User</span> email)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>              <span class="fu">return</span> <span class="op">$</span> <span class="dt">Just</span> <span class="op">$</span> <span class="fu">either</span> entityKey <span class="fu">id</span> res</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>また, Persistentと連携するために<code>YesodAuthPersist</code>インスタンスを与える必要がある.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">YesodAuthPersist</span> <span class="dt">Blog</span></span></code></pre></div>
+<p>ホームページのハンドラ. ここでの重要な詳細は<code>setTitleI</code>の使い方であり, i18nメッセージをタイトルに用いることが可能になる. またこのメッセージをHamletにおいて<code>_{Msg...}</code>展開で用いる.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getHomeR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>getHomeR <span class="ot">=</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    setTitleI <span class="dt">MsgHomepageTitle</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;p&gt;_{</span><span class="dt">MsgWelcomeHomepage</span><span class="kw">}</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;p&gt;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span><span class="kw">}&gt;_{</span><span class="dt">MsgSeeArchive</span><span class="kw">}</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
+<p>新しいエントリを追加するためにフォームを定義しよう. ユーザにタイトルとコンテンツを提供してもらい, ポスト日時を<code>getCurrentTime</code>を通し自動的に埋めてもらいたい.</p>
+<p>少し奇妙な<code>lift (liftIO getCurrentTime)</code>による<code>IO</code>アクションを実行する方法に注意せよ. 理由としてはapplicative formはモナドでないためであり, そのため<code>MonadIO</code>のインスタンスになれないためである. 代わりに, <code>lift</code>を用いて基盤にある<code>Handler</code>モナドでアクションを実行し, <code>liftIO</code>を用いて<code>IO</code>アクションを<code>Handler</code>アクションに変換する.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ot">entryForm ::</span> <span class="dt">Form</span> <span class="dt">Entry</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>entryForm <span class="ot">=</span> renderDivs <span class="op">$</span> <span class="dt">Entry</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;$&gt;</span> areq textField (fieldSettingsLabel <span class="dt">MsgNewEntryTitle</span>) <span class="dt">Nothing</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> lift (liftIO getCurrentTime)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> areq nicHtmlField (fieldSettingsLabel <span class="dt">MsgNewEntryContent</span>) <span class="dt">Nothing</span></span></code></pre></div>
+<p>ブログエントリのリストを取得し, 管理者にフォームで提出し, 新しいエントリを作る.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getBlogR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>getBlogR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    muser <span class="ot">&lt;-</span> maybeAuth</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    entries <span class="ot">&lt;-</span> runDB <span class="op">$</span> selectList [] [<span class="dt">Desc</span> <span class="dt">EntryPosted</span>]</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    (entryWidget, enctype) <span class="ot">&lt;-</span> generateFormPost entryForm</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>        setTitleI <span class="dt">MsgBlogArchiveTitle</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="kw">$if</span> <span class="fu">null</span> entries</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;p&gt;_{</span><span class="dt">MsgNoEntries</span><span class="kw">}</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="kw">$else</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;ul&gt;</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">$forall</span> <span class="dt">Entity</span> entryId entry <span class="ot">&lt;-</span> entries</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;li&gt;</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">EntryR</span> entryId<span class="kw">}&gt;#{</span>entryTitle entry<span class="kw">}</span></span></code></pre></div>
+<p>3通りの可能性がある: ユーザが管理者としてログインしている, ユーザがログインしているが管理者ではない, ユーザはログインしていない. 最初の場合, エントリフォームを表示すべきである. 2つ目の場合, 何もしない. 3つ目の場合, ログインリンクを与える.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="op">$</span>maybe <span class="dt">Entity</span> _ user <span class="ot">&lt;-</span> muser</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">$</span>if isAdmin user</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">&lt;</span>form method<span class="ot">=</span>post enctype<span class="op">=#</span>{enctype}<span class="op">&gt;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>            <span class="op">^</span>{entryWidget}</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>            <span class="op">&lt;</span><span class="fu">div</span><span class="op">&gt;</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                <span class="op">&lt;</span>input <span class="kw">type</span><span class="ot">=</span>submit value<span class="ot">=</span>_{<span class="dt">MsgNewEntry</span>}<span class="op">&gt;</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="op">$</span>nothing</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;</span>p<span class="op">&gt;</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">&lt;</span>a href<span class="op">=@</span>{<span class="dt">AuthR</span> <span class="dt">LoginR</span>}<span class="op">&gt;</span>_{<span class="dt">MsgLoginToPost</span>}</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="op">|</span>]</span></code></pre></div>
+<p>入ってくるエントリ追加の処理をする. パーミッションの確認は全く行わなくてよい, なぜならば<code>isAuthorized</code>がそれを処理するためである. もしフォームの提出が有効であれば, エントリをデータベースに追加し, 新しいエントリにリダイレクトする. そうでなければ, ユーザに再度行うように求める.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ot">postBlogR ::</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>postBlogR <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    ((res, entryWidget), enctype) <span class="ot">&lt;-</span> runFormPost entryForm</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">FormSuccess</span> entry <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>            entryId <span class="ot">&lt;-</span> runDB <span class="op">$</span> insert entry</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>            setMessageI <span class="op">$</span> <span class="dt">MsgEntryCreated</span> <span class="op">$</span> entryTitle entry</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>            redirect <span class="op">$</span> <span class="dt">EntryR</span> entryId</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>        _ <span class="ot">-&gt;</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>            setTitleI <span class="dt">MsgPleaseCorrectEntry</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>            [whamlet|</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> enctype=</span><span class="kw">#{</span>enctype<span class="kw">}&gt;</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">^{</span>entryWidget<span class="kw">}</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;div&gt;</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgNewEntry}</span><span class="kw">&gt;</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
+<p>コメントのためのフォーム, 上の<code>entryForm</code>とかなり類似している. これはコメントが紐づいているエントリの<code>EntryId</code>を取る. pureを用いることで, この値を結果のComment出力に埋め込み, 生成されたHTMLに現れないようにする.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ot">commentForm ::</span> <span class="dt">EntryId</span> <span class="ot">-&gt;</span> <span class="dt">Form</span> <span class="dt">Comment</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>commentForm entryId <span class="ot">=</span> renderDivs <span class="op">$</span> <span class="dt">Comment</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;$&gt;</span> <span class="fu">pure</span> entryId</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> lift (liftIO getCurrentTime)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> lift requireAuthId</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> areq textField (fieldSettingsLabel <span class="dt">MsgCommentName</span>) <span class="dt">Nothing</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">&lt;*&gt;</span> areq textareaField (fieldSettingsLabel <span class="dt">MsgCommentText</span>) <span class="dt">Nothing</span></span></code></pre></div>
+<p>個々のエントリ, コメントを示し, ユーザがログインしていればコメントフォームを追加する.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ot">getEntryR ::</span> <span class="dt">EntryId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>getEntryR entryId <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    (entry, comments) <span class="ot">&lt;-</span> runDB <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>        entry <span class="ot">&lt;-</span> get404 entryId</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>        comments <span class="ot">&lt;-</span> selectList [<span class="dt">CommentEntry</span> <span class="op">==.</span> entryId] [<span class="dt">Asc</span> <span class="dt">CommentPosted</span>]</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> (entry, <span class="fu">map</span> entityVal comments)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    muser <span class="ot">&lt;-</span> maybeAuth</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    (commentWidget, enctype) <span class="ot">&lt;-</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>        generateFormPost (commentForm entryId)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>        setTitleI <span class="op">$</span> <span class="dt">MsgEntryTitle</span> <span class="op">$</span> entryTitle entry</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>        [whamlet|</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;h1&gt;#{</span>entryTitle entry<span class="kw">}</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;article&gt;#{</span>entryContent entry<span class="kw">}</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;section </span><span class="st">.comments</span><span class="kw">&gt;</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;h1&gt;_{</span><span class="dt">MsgCommentsHeading</span><span class="kw">}</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>        <span class="kw">$if</span> <span class="fu">null</span> comments</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;p&gt;_{</span><span class="dt">MsgNoComments</span><span class="kw">}</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>        <span class="kw">$else</span></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$forall</span> <span class="dt">Comment</span> _entry posted _user name text <span class="ot">&lt;-</span> comments</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;div </span><span class="st">.comment</span><span class="kw">&gt;</span></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;span </span><span class="st">.by</span><span class="kw">&gt;#{</span>name<span class="kw">}</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;span </span><span class="st">.at</span><span class="kw">&gt;#{</span><span class="fu">show</span> posted<span class="kw">}</span></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;div </span><span class="st">.content</span><span class="kw">&gt;#{</span>text<span class="kw">}</span></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;section&gt;</span></span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;h1&gt;_{</span><span class="dt">MsgAddCommentHeading</span><span class="kw">}</span></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> muser</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> enctype=</span><span class="kw">#{</span>enctype<span class="kw">}&gt;</span></span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>commentWidget<span class="kw">}</span></span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;div&gt;</span></span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgAddCommentButton}</span><span class="kw">&gt;</span></span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$nothing</span></span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;_{</span><span class="dt">MsgLoginToComment</span><span class="kw">}</span></span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
+<p>入ってくるコメント提出を受け取る.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ot">postEntryR ::</span> <span class="dt">EntryId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>postEntryR entryId <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    ((res, commentWidget), enctype) <span class="ot">&lt;-</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>        runFormPost (commentForm entryId)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> res <span class="kw">of</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">FormSuccess</span> comment <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>            _ <span class="ot">&lt;-</span> runDB <span class="op">$</span> insert comment</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>            setMessageI <span class="dt">MsgCommentAdded</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>            redirect <span class="op">$</span> <span class="dt">EntryR</span> entryId</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>        _ <span class="ot">-&gt;</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>            setTitleI <span class="dt">MsgPleaseCorrectComment</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>            [whamlet|</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> enctype=</span><span class="kw">#{</span>enctype<span class="kw">}&gt;</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">^{</span>commentWidget<span class="kw">}</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;div&gt;</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgAddCommentButton}</span><span class="kw">&gt;</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
+<p>最後にmain関数を書く.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    pool <span class="ot">&lt;-</span> runStdoutLoggingT <span class="op">$</span> createSqlitePool <span class="st">&quot;blog.db3&quot;</span> <span class="dv">10</span> <span class="co">-- create a new pool</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- perform any necessary migration</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    runSqlPersistMPool (runMigration migrateAll) pool</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    manager <span class="ot">&lt;-</span> newManager tlsManagerSettings <span class="co">-- create a new HTTP manager</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    warp <span class="dv">3000</span> <span class="op">$</span> <span class="dt">Blog</span> pool manager <span class="co">-- start our server</span></span></code></pre></div>
+      </article>
+
+      <div class="pager">
+      
+      
+      </div>
+
+      <div class="row">
+        <div class="col s6 offset-s6" style="position: relative; height: 100px;">
+          <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; right: 24px;">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">share</i>
+  </a>
+  <ul>
+    <li>
+      <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Twitter" href="https://twitter.com/intent/tweet?text=Blog: i18n, authentication, authorization, and database&url=https://haskell.e-bigmoon.com/yesod/book/examples-blog-example-advanced.html"><i class="mdi mdi-twitter white-text"></i></a>
+    </li>
+    <li>
+      <a class="btn-floating waves-effect waves-light indigo tooltipped" data-position="bottom" data-delay="20" data-tooltip="Share on Facebook" href="https://facebook.com/sharer.php?u=https://haskell.e-bigmoon.com/yesod/book/examples-blog-example-advanced.html"><i class="mdi mdi-facebook white-text"></i></a>
+    </li>
+  </ul>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="page-footer indigo lighten-1">
+  <div class="footer-copyright">
+    <div class="container">
+      © 2017-2020 BIGMOON&nbsp;
+      Site proudly generated by <a class="red-text text-accent-1" href="http://jaspervdj.be/hakyll">Hakyll</a>,&nbsp;
+      original Jekyll theme by <a class="red-text text-accent-1" href="https://github.com/mumuxme/materialize-jekyll">mumuxme</a>.
+    </div>
+  </div>
+</footer>
+
+
+    <!-- scrolltop button -->
+    <button class="material-scrolltop waves-effect waves-light hide-on-small-only" type="button">
+      <i class="mdi mdi-arrow-up-bold small white-text"></i>
+    </button>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19322672-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-19322672-9');
+    </script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="../../lib/jquery-min.js"></script>
+    <!-- materialize -->
+    <script src="../../lib/materialize/js/materialize.min.js"></script>
+    <!-- <\!-- Material ScrollTop plugin -\-> -->
+    <script src="../../lib/material-scrolltop/material-scrolltop.js"></script>
+    <!-- main -->
+    <script src="../../js/init.js"></script>
+    <script src="../../js/main.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/haskell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/shell.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>
