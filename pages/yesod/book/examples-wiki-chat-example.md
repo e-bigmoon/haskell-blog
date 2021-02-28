@@ -1,6 +1,6 @@
 ---
 title: 'Wiki: markdown, chat subsite, event source'
-published: 2021/02/14
+published: 2021/02/28
 ---
 
 この例では, いくつかの異なる例をつなぎ合わせる. まずチャットサブサイトから始める. これによりチャットWidgetをあらゆるページに埋め込むことが可能になる. HTML 5イベントソースAPIを用いて, サーバからクライアントへのイベントの送信を扱う. 
