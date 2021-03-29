@@ -256,7 +256,7 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  [whamlet|</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">$maybe</span> name <span class="ot">&lt;-</span> mname</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      <span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('#{name}')&quot;</span><span class="ot"> src=</span><span class="st">&quot;https://www.yesodweb.com/static/logo-home2-no-esod-smaller2.png&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      <span class="kw">&lt;img </span><span class="er">onload=&quot;init('#{name}')&quot;</span><span class="kw"> </span><span class="er">src=&quot;https://www</span><span class="st">.yesodweb.com</span><span class="er">/static/logo-home2-no-esod-smaller2</span><span class="st">.png</span><span class="er">&quot;</span><span class="kw">&gt;</span></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">$nothing</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      パラメータが設定されていません。</span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  |]</span>
@@ -273,13 +273,13 @@ WordPress や Drupal と違って、セキュリティはかなり万全です�
 <p><strong>Yesod</strong> の変数展開 <code>#{..}</code> は、このような <strong>JavaScript</strong> の動的生成でも大丈夫だろうと思っていたのですが、そうではありませんでした。</p>
 <h3 id="正常系">正常系</h3>
 <p>期待する動作として、例えば <code>http://localhost/?name=bigmoon</code> いう形式の <strong>URL</strong> にアクセスすると、以下のような URL が組み立てられます。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('bigmoon')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span> <span class="er">onload</span><span class="ot">=</span><span class="st">&quot;init('bigmoon')&quot;</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 <p>これは予定通りです。</p>
 <h3 id="異常系">異常系</h3>
 <p><strong>URL</strong> の形式を <code>http://localhost/?name=%27),alert(XSS)//</code> とするとインジェクションが発生します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init('%27),alert(XSS)//')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span> <span class="er">onload</span><span class="ot">=</span><span class="st">&quot;init('%27),alert(XSS)//')&quot;</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 <p>読みやすさのため、パーセントエンコーディングを元に戻します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span><span class="ot"> onload=</span><span class="st">&quot;init(''),alert(XSS)//')&quot;</span><span class="ot"> src=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;img</span> <span class="er">onload</span><span class="ot">=</span><span class="st">&quot;init(''),alert(XSS)//')&quot;</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;...&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 <p><code>alert</code> が出てきてしまいましたね・・・。</p>
 <p>余談ですが <strong>Yesod</strong> ではパラメータ中に出現する <code>;</code> をパラメータの区切り文字として認識するようです。そのため <code>http://localhost/?name=%27);alert(XSS)//</code> ではインジェクションは発生しません。</p>
 <h2 id="原因">原因</h2>

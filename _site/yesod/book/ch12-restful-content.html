@@ -214,10 +214,10 @@
 <p>また、JSON で表現すれば以下のようになります。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;name&quot;</span><span class="fu">:</span><span class="st">&quot;Michael&quot;</span><span class="fu">,</span><span class="dt">&quot;age&quot;</span><span class="fu">:</span><span class="dv">25</span><span class="fu">}</span></span></code></pre></div>
 <p>さらに XML ではこうなります。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;person&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;name&gt;</span>Michael<span class="kw">&lt;/name&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;age&gt;</span>25<span class="kw">&lt;/age&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/person&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">person</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">name</span>&gt;Michael&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">age</span>&gt;25&lt;/<span class="kw">age</span>&gt;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">person</span>&gt;</span></code></pre></div>
 <p>たまにですが、Web アプリケーションは上記のそれぞれの表現を提供するために、それぞれ別のURLを利用する場合があります。たいていは <code>/person/michael.html</code> や <code>/person/michael.json</code> などになるでしょう。Yesod は RESTful 原則に従って、すべてのリソースを1つのURLで提供します。そのため、Yesod では <code>/person/michael</code> にアクセスすれば全ての表現を取得できます。</p>
 <p>ここで気になるのは、<strong>どの</strong>表現かの決定方法をどうするかということです。答えは、HTTP <code>ACccept</code> ヘッダです。このヘッダに、クライアントが期待するコンテンツタイプの優先度付きリストを指定します。Yesod は関数のペアを持つことで、直接ヘッダーをパーズせず、より高レベルの表現で扱うことができます。最後の文章をコードでより具体化してみましょう。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>

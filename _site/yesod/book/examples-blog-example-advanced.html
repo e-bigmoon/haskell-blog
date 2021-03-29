@@ -369,7 +369,7 @@
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    [whamlet|</span>
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;p&gt;_{</span><span class="dt">MsgWelcomeHomepage</span><span class="kw">}</span></span>
 <span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;p&gt;</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">BlogR</span><span class="kw">}&gt;_{</span><span class="dt">MsgSeeArchive</span><span class="kw">}</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;a </span><span class="er">href=@{BlogR}</span><span class="kw">&gt;_{</span><span class="dt">MsgSeeArchive</span><span class="kw">}</span></span>
 <span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
 <p>新しいエントリを追加するためにフォームを定義しよう. ユーザにタイトルとコンテンツを提供してもらい, ポスト日時を<code>getCurrentTime</code>を通し自動的に埋めてもらいたい.</p>
 <p>少し奇妙な<code>lift (liftIO getCurrentTime)</code>による<code>IO</code>アクションを実行する方法に注意せよ. 理由としてはapplicative formはモナドでないためであり, そのため<code>MonadIO</code>のインスタンスになれないためである. 代わりに, <code>lift</code>を用いて基盤にある<code>Handler</code>モナドでアクションを実行し, <code>liftIO</code>を用いて<code>IO</code>アクションを<code>Handler</code>アクションに変換する.</p>
@@ -393,7 +393,7 @@
 <span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;ul&gt;</span></span>
 <span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">$forall</span> <span class="dt">Entity</span> entryId entry <span class="ot">&lt;-</span> entries</span>
 <span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;li&gt;</span></span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">EntryR</span> entryId<span class="kw">}&gt;#{</span>entryTitle entry<span class="kw">}</span></span></code></pre></div>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;a </span><span class="er">href=@{EntryR</span><span class="kw"> </span><span class="er">entryId}</span><span class="kw">&gt;#{</span>entryTitle entry<span class="kw">}</span></span></code></pre></div>
 <p>3通りの可能性がある: ユーザが管理者としてログインしている, ユーザがログインしているが管理者ではない, ユーザはログインしていない. 最初の場合, エントリフォームを表示すべきである. 2つ目の場合, 何もしない. 3つ目の場合, ログインリンクを与える.</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="op">$</span>maybe <span class="dt">Entity</span> _ user <span class="ot">&lt;-</span> muser</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">$</span>if isAdmin user</span>
@@ -417,10 +417,10 @@
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>        _ <span class="ot">-&gt;</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
 <span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>            setTitleI <span class="dt">MsgPleaseCorrectEntry</span></span>
 <span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>            [whamlet|</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> enctype=</span><span class="kw">#{</span>enctype<span class="kw">}&gt;</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;form </span><span class="er">method=post</span><span class="kw"> </span><span class="er">enctype=#{enctype}</span><span class="kw">&gt;</span></span>
 <span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">^{</span>entryWidget<span class="kw">}</span></span>
 <span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;div&gt;</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgNewEntry}</span><span class="kw">&gt;</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;input </span><span class="er">type=submit</span><span class="kw"> </span><span class="er">value=_{MsgNewEntry}</span><span class="kw">&gt;</span></span>
 <span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
 <p>コメントのためのフォーム, 上の<code>entryForm</code>とかなり類似している. これはコメントが紐づいているエントリの<code>EntryId</code>を取る. pureを用いることで, この値を結果のComment出力に埋め込み, 生成されたHTMLに現れないようにする.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ot">commentForm ::</span> <span class="dt">EntryId</span> <span class="ot">-&gt;</span> <span class="dt">Form</span> <span class="dt">Comment</span></span>
@@ -458,13 +458,13 @@
 <span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;section&gt;</span></span>
 <span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>            <span class="kw">&lt;h1&gt;_{</span><span class="dt">MsgAddCommentHeading</span><span class="kw">}</span></span>
 <span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$maybe</span> _ <span class="ot">&lt;-</span> muser</span>
-<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> enctype=</span><span class="kw">#{</span>enctype<span class="kw">}&gt;</span></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;form </span><span class="er">method=post</span><span class="kw"> </span><span class="er">enctype=#{enctype}</span><span class="kw">&gt;</span></span>
 <span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">^{</span>commentWidget<span class="kw">}</span></span>
 <span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;div&gt;</span></span>
-<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgAddCommentButton}</span><span class="kw">&gt;</span></span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">&lt;input </span><span class="er">type=submit</span><span class="kw"> </span><span class="er">value=_{MsgAddCommentButton}</span><span class="kw">&gt;</span></span>
 <span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>            <span class="kw">$nothing</span></span>
 <span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>                <span class="kw">&lt;p&gt;</span></span>
-<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a</span><span class="ot"> href=</span><span class="kw">@{</span><span class="dt">AuthR</span> <span class="dt">LoginR</span><span class="kw">}&gt;_{</span><span class="dt">MsgLoginToComment</span><span class="kw">}</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">&lt;a </span><span class="er">href=@{AuthR</span><span class="kw"> </span><span class="er">LoginR}</span><span class="kw">&gt;_{</span><span class="dt">MsgLoginToComment</span><span class="kw">}</span></span>
 <span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
 <p>入ってくるコメント提出を受け取る.</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ot">postEntryR ::</span> <span class="dt">EntryId</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> <span class="dt">Html</span></span>
@@ -479,10 +479,10 @@
 <span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>        _ <span class="ot">-&gt;</span> defaultLayout <span class="op">$</span> <span class="kw">do</span></span>
 <span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>            setTitleI <span class="dt">MsgPleaseCorrectComment</span></span>
 <span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>            [whamlet|</span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;form</span><span class="ot"> method=</span><span class="st">post</span><span class="ot"> enctype=</span><span class="kw">#{</span>enctype<span class="kw">}&gt;</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;form </span><span class="er">method=post</span><span class="kw"> </span><span class="er">enctype=#{enctype}</span><span class="kw">&gt;</span></span>
 <span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">^{</span>commentWidget<span class="kw">}</span></span>
 <span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;div&gt;</span></span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">submit</span><span class="ot"> value=</span><span class="st">_{MsgAddCommentButton}</span><span class="kw">&gt;</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;input </span><span class="er">type=submit</span><span class="kw"> </span><span class="er">value=_{MsgAddCommentButton}</span><span class="kw">&gt;</span></span>
 <span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>|]</span></code></pre></div>
 <p>最後にmain関数を書く.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
