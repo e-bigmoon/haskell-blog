@@ -1,14 +1,12 @@
 ---
 title: About
 published: 2017/10/22
-updated: 2020/10/20
+updated: 2021/03/26
 ---
 
 Name | github | twitter
 -----|--------|-------
 Shinya Yamaguchi | [waddlaw](https://github.com/waddlaw) | [waddlaw](https://twitter.com/waddlaw)
-Hiroki Asano | [asanoH](https://github.com/asanoH)
-Wataru Yamada | [wataru86](https://github.com/wataru86)
 Isao Takeji | [isao-takejib](https://github.com/isao-takejib)
 
 ---
