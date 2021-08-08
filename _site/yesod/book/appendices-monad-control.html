@@ -190,7 +190,7 @@
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">    lift ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> t m a</span></code></pre></div>
 <p>始めてこの型注釈を見た時, 反応は混乱のため唖然としたのと, それが実際に何を意味するかについての疑念であった. しかしインスタンスを見ることが非常に役立った:</p>
 <p>instance (Error e) =&gt; MonadTrans (ErrorT e) where lift m = ErrorT $ do a &lt;- m return (Right a)</p>
-<p>行なっていることはIOの中身をRight値でラップし, newtypeラッパを適応しているだけである. これにより, IOにあるアクションを取り出し, それを外あるいは上にあるモナドに“リフト”することができる.</p>
+<p>行なっていることはIOの中身をRight値でラップし, newtypeラッパを適応しているだけである. これにより, IOにあるアクションを取り出し, それを外あるいは上にあるモナドに”リフト”することができる.</p>
 <p>しかし今, 要点を整理してみる. これは単純な関数において非常によく機能する. 例えば,</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sayHi ::</span> <span class="dt">IO</span> ()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sayHi <span class="ot">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello&quot;</span></span>
@@ -219,7 +219,7 @@
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ot">                with actual type `</span><span class="dt">IO</span> ()'</span></code></pre></div>
 <p>これがなぜ起こるのでしょうか, またどのようにしてこれに対処できるのでしょうか?</p>
 <h2 id="直感">直感</h2>
-<p>ここで何が起こっているかについて外部的な直感を働かせてみよう. <code>ErrorT</code>モナドトランスフォーマはIOモナドに対し追加的な機能を与える. その追加的機能をIOモナドに加えるための方法を定義した: Rightコンストラクタを追加し, それら全てをErrorTでラップした. Rightでのラップはここでは“うまく行っているよ”ということであり, このアクションに何も問題はなかったことを意味する.</p>
+<p>ここで何が起こっているかについて外部的な直感を働かせてみよう. <code>ErrorT</code>モナドトランスフォーマはIOモナドに対し追加的な機能を与える. その追加的機能をIOモナドに加えるための方法を定義した: Rightコンストラクタを追加し, それら全てをErrorTでラップした. Rightでのラップはここでは”うまく行っているよ”ということであり, このアクションに何も問題はなかったことを意味する.</p>
 <p>今やこれは直感的に意味を成す: IOモナドは何かうまく行かなかった際にMyErrorを返すという概念を持たないため, 常にリフティングにおいて成功する. (注意: これは実行時例外とは何の関係もない, それについては考えないでください.) 一方向性的に, モナドスタックを登ることを保証されただけである.</p>
 <p>他の例を見てみよう: Readerモナドである. Readerは周囲にあるいくつかの追加データにアクセス可能である. 内部モナドで実行されているものはその追加情報についてはわからない. したがって, どのようにliftを行えばよいのか? 単にその余剰情報を無視すればよいのである. Writerモナドについてはどうであろうか? 何も書かない. Stateについてはどうか? 何も変更しない. ここではそのパターンを見ている.</p>
 <p>しかし今度は反対方向を試してみよう: Readerの何かを持っており, それをベースモナド(例えばIO)で実行したいとする. ええ, それは機能しませんよね? 追加情報が必要であり, またそれに依存しているが, それは存在しないのである. 追加的な値を与えずに反対方向に行くことはできないのである.</p>
@@ -245,8 +245,8 @@
 </div>
 <p>まず見る型を次のようになる:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Run</span> t <span class="ot">=</span> <span class="kw">forall</span> n o b<span class="op">.</span> (<span class="dt">Monad</span> n, <span class="dt">Monad</span> o, <span class="dt">Monad</span> (t o)) <span class="ot">=&gt;</span> t n b <span class="ot">-&gt;</span> n (t o b)</span></code></pre></div>
-<p>これは非常に密度の濃いものであるので, 取り出してみよう. これに対する唯一の“入力”はモナドトランスフォーマtである. Runはどのn, oとbの組み合わせに対しても機能する(これはforallの意味するところである). nとoは両者ともモナドであり, bはそれらに含まれる値である.</p>
-<p>Run関数の左側であるt n bはモナドトランスフォーマであり, nモナドをラップし, b値を持つ. よって例えば, それはMyTrans FirstMonad MyValueのようであったりする. そしてトランスフォーマは内部に“ポップ”され, 全く新しいモナドがコアに来る. 言い換えれば, FirstMonad (MyTrans NewMonad MyValue)のようになる.</p>
+<p>これは非常に密度の濃いものであるので, 取り出してみよう. これに対する唯一の”入力”はモナドトランスフォーマtである. Runはどのn, oとbの組み合わせに対しても機能する(これはforallの意味するところである). nとoは両者ともモナドであり, bはそれらに含まれる値である.</p>
+<p>Run関数の左側であるt n bはモナドトランスフォーマであり, nモナドをラップし, b値を持つ. よって例えば, それはMyTrans FirstMonad MyValueのようであったりする. そしてトランスフォーマは内部に”ポップ”され, 全く新しいモナドがコアに来る. 言い換えれば, FirstMonad (MyTrans NewMonad MyValue)のようになる.</p>
 <p>一見するとかなり怖いように見えるが, しかし実際には思うほどよそよそしいものではない: これは本質的にはErrorTで行ったものと同じである. ErrorTが外側にありIOをラップしたものから始まり, Eitherを含んでいるIOで終わった. 推測してみてください: Eitherを表現するための他の方法が<code>ErrorT MyError Identity</code>である. よって本質的には, IOを内部に持ってきてIdentityはその場に留めているだけである. Runにおいても同じことを行なっている: FirstMoandを外側に持っていき, それをNewMonadで置き換える.</p>
 <div class="yesod-book-notice">
 <p>さあビールを飲むのにちょうど良いときである.</p>

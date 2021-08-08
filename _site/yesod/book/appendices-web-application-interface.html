@@ -200,7 +200,7 @@
 <p>これは少し奇妙に見えるが, 使い方は非常に単純であり, それを以下に示す.</p>
 <h2 id="response-body">Response Body</h2>
 <p>Haskellはlazy bytestringとして知られるデータ型を持つ. 遅延性を利用することでメモリを浪費せずに大きな値を作ることができる. 遅延I/Oを用いることで, ファイルコンテンツ全体を表すが, 小さなメモリ領域しか占領しない. 理論的に, lazy bytestringはレスポンスボディのために必要な唯一の表現である.</p>
-<p>実践的には, lazy bytestringは“純粋”な値を生成するのには有用で, ファイルを読むのに必要な遅延I/Oはプログラムに対し, ある非決定性を導入する. 1秒で数千のファイルを扱うために, 制限となるのはメモリではなく, ファイルハンドルである. 遅延I/Oを用いることでファイルハンドルはすぐには開放されず, リソース浪費になる. これに対処するために, WAIは独自のストリーミングデータインターフェースを与える.</p>
+<p>実践的には, lazy bytestringは”純粋”な値を生成するのには有用で, ファイルを読むのに必要な遅延I/Oはプログラムに対し, ある非決定性を導入する. 1秒で数千のファイルを扱うために, 制限となるのはメモリではなく, ファイルハンドルである. 遅延I/Oを用いることでファイルハンドルはすぐには開放されず, リソース浪費になる. これに対処するために, WAIは独自のストリーミングデータインターフェースを与える.</p>
 <p>このストリーミングインターフェースの中心は<code>Builder</code>である. <code>Builder</code>はバッファを<code>data</code>のバイトで満たすアクションを表現する. これは単純に<code>ByteString</code>を受け渡すよりも効率的である. なぜならば, データの複数コピーを避けられるためである. 多くの場合, アプリケーションは単一の<code>Builder</code>値を与える必要がある. そしてその単純な場合, <code>ResponseBuilder</code>コンストラクタがある.</p>
 <p>しかし, <code>Application</code>がクライアントへのデータを生成するIOアクションを交互に挟む必要のある場合がある. その場合, <code>ResponseStream</code>を用いる. <code>ResponseStream</code>では, 関数を与える. この関数は2つのアクションを取る: “より多くのデータを生成する”アクションと, “バッファをフラッシュする”アクションである. これによりデータを生成し, IOアクションを行い, フラッシュすることを必要な回数だけ行い, 交互に挟む操作も必要なだけ持たせることができる.</p>
 <p>1つさらに最適化することができる: 多くのオペレーティングシステムはsendfileシステムコールがあり, これはファイルを直接ソケットに送り, より一般的なI/Oシステムコールに特有のメモリコピーを多く迂回する. この場合, <code>ResponseFile</code>を用いる.</p>
@@ -221,7 +221,7 @@
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> run <span class="dv">3000</span> application</span></code></pre></div>
 <p>2行目から4行目ではインポートを行っている. Warpはwarpパッケージにより与えられ, 主要なWAIバックエンドである. WAIはまた, http-typesパッケージのトップにあり, 多くのデータ型と<code>status 200</code>を含む便利な値を含む.</p>
-<p>最初にアプリケーションを定義する. 特定のリクエストパラメータには関心がないため, 関数の最初の引数は無視する. これは, リクエスト値を含む. 2つ目の引数は“レスポンスを送る”関数であり, すぐに使うことになる. 送信するレスポンス値はlazy ByteString(よって respondLBS)で作られ, ステータスコード200(“OK”), text/plainコンテンツタイプ, そして“Hello World”を含むボディを持つ. 非常に単純である.</p>
+<p>最初にアプリケーションを定義する. 特定のリクエストパラメータには関心がないため, 関数の最初の引数は無視する. これは, リクエスト値を含む. 2つ目の引数は”レスポンスを送る”関数であり, すぐに使うことになる. 送信するレスポンス値はlazy ByteString(よって respondLBS)で作られ, ステータスコード200(“OK”), text/plainコンテンツタイプ, そして”Hello World”を含むボディを持つ. 非常に単純である.</p>
 <h2 id="resource-allocation">Resource allocation</h2>
 <p>これをもう少し面白いものにして, レスポンスに対しリソースを割り当ててみよう. <code>MVar</code>を<code>main</code>関数に作りリクエスト数を追跡し, その<code>MVar</code>を各レスポンスを送る際に所持する.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedStrings #-}</span></span>
@@ -266,7 +266,7 @@
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        send <span class="op">$</span> fromByteString <span class="st">&quot;All done!\n&quot;</span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> run <span class="dv">3000</span> application</span></code></pre></div>
-<p><code>responseStream</code>を用い, 3番目の引数は“ビルダを送信する”, そして“バッファをフラッシュする”関数である. クライアントがすぐにデータを見れるようにするために, 最初のデータチャンクの後にどのようにデータをフラッシュするかについて注意せよ. しかし, レスポンスの最後にフラッシュする必要はない. WAIはハンドラが自動的にストリームの最後でフラッシュすることを要求する.</p>
+<p><code>responseStream</code>を用い, 3番目の引数は”ビルダを送信する”, そして”バッファをフラッシュする”関数である. クライアントがすぐにデータを見れるようにするために, 最初のデータチャンクの後にどのようにデータをフラッシュするかについて注意せよ. しかし, レスポンスの最後にフラッシュする必要はない. WAIはハンドラが自動的にストリームの最後でフラッシュすることを要求する.</p>
 <h2 id="middleware">Middleware</h2>
 <p>アプリケーションをコードの変更なしに複数のバックエンドで実行することを可能にすることの他に, WAIには他の利点がある: ミドルウェア. ミドルウェアは本質的にはアプリケーショントランスフォーマであり, あるアプリケーションを取り, 他のを返す.</p>
 <p>ミドルウェアのコンポーネントは多くのサービスを提供するために使われる: URLの整理, 認証, キャッシュ, JSON-Pリクエスト. しかしおそらくもっとも有益で直感的なミドルウェアはgzip圧縮である. ミドルウェアは非常に単純に機能する: リクエストヘッダをパースし, クライアントが圧縮をサポートするか決定し, もしそうならばレスポンスボディを圧縮し, 適切なレスポンスヘッダを付け加える.</p>

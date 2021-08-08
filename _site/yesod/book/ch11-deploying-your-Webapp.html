@@ -347,14 +347,14 @@ fastcgi_param  SERVER_NAME        $server_name;</code></pre>
 <div class="yesod-book-notice">
 <p>実際にstaticファイルを直接実行ファイルに埋め込むためのサポートも存在する. 詳細については, yesod-static文書を見てください.</p>
 </div>
-<p>QtWebkitライブラリを必要としない同様の方法は, wai-handler-launchであり, これはWarpサーバを立ち上げ, そしてユーザのデフォルトウェブブラウザを起動する. ここでは多少のトリックがある: ユーザがまだサイトを用いていることを知るために, <code>wai-handler-launch</code>は“ping” Javascriptコードを与えられる全てのHTMLページに挿入する. もし<code>wai-handler-launch</code>がpingを2分間受け取らなかった場合, シャットダウンする.</p>
+<p>QtWebkitライブラリを必要としない同様の方法は, wai-handler-launchであり, これはWarpサーバを立ち上げ, そしてユーザのデフォルトウェブブラウザを起動する. ここでは多少のトリックがある: ユーザがまだサイトを用いていることを知るために, <code>wai-handler-launch</code>は”ping” Javascriptコードを与えられる全てのHTMLページに挿入する. もし<code>wai-handler-launch</code>がpingを2分間受け取らなかった場合, シャットダウンする.</p>
 <h2 id="apache上でのcgi">Apache上でのCGI</h2>
 <p>CGIとFastCGIはApache上でほとんど同じように機能する. よって, この設定になるように変換することは非常に単純である. 本質的には2つの目標を達成する必要はある.</p>
 <ol type="1">
 <li><p>サーバにファイルを(Fast)CGIとして与えさせる.</p></li>
 <li><p>サイトへの全てのリクエストをリライトし, (Fast)CGI実行ファイルを経由するようにする.</p></li>
 </ol>
-<p>ここではブログアプリケーションを与えるための設定ファイルを挙げる. 実行ファイルは“bloggy.cgi”という名前であり, ドキュメントルートの“blog”という名前のサブフォルダにある. この例は<code>/f5/snoyman/public/blog</code>のパスにあるアプリケーションから取られる.</p>
+<p>ここではブログアプリケーションを与えるための設定ファイルを挙げる. 実行ファイルは”bloggy.cgi”という名前であり, ドキュメントルートの”blog”という名前のサブフォルダにある. この例は<code>/f5/snoyman/public/blog</code>のパスにあるアプリケーションから取られる.</p>
 <pre><code>Options +ExecCGI
 AddHandler cgi-script .cgi
 Options +FollowSymlinks
@@ -366,8 +366,8 @@ RewriteCond $1 !^static/
 RewriteRule ^(.*) bloggy.cgi/$1 [L]</code></pre>
 <p>最初のRewriteRuleはサブフォルダを扱うためである. 特に, これは<code>/blog</code>へのリクエストを<code>/blog/</code>へリダイレクトする. 最初のRewriteCondは直接実行ファイルにリクエストするのを防ぎ, 2つ目はApacheがstaticファイルを与えるのを許可する. そして最後の行で実際のリライトを行う.</p>
 <h2 id="lighttpd上でのfastcgi">lighttpd上でのFastCGI</h2>
-<p>この例では, いくつかのmime-typeのような基本的なFastCGI設定は省略する. また, 製品版においてより複雑なファイルがあり, 存在しない場合“<span>www</span>.”を先頭に追加し異なるドメインからstaticファイルを与える. しかし, これは基本を知るのに役立つであろう.</p>
-<p>ここでは, “/home/michael/fastcgi”はfastcgiアプリケーションである. アイデアとしては“/app”で始まる全てのリクエストをリライトし, “/app”で始まる全てのページをFastCGI実行ファイルを経由して与えることである.</p>
+<p>この例では, いくつかのmime-typeのような基本的なFastCGI設定は省略する. また, 製品版においてより複雑なファイルがあり, 存在しない場合”<span>www</span>.”を先頭に追加し異なるドメインからstaticファイルを与える. しかし, これは基本を知るのに役立つであろう.</p>
+<p>ここでは, “/home/michael/fastcgi”はfastcgiアプリケーションである. アイデアとしては”/app”で始まる全てのリクエストをリライトし, “/app”で始まる全てのページをFastCGI実行ファイルを経由して与えることである.</p>
 <pre><code>server.port = 3000
 server.document-root = &quot;/home/michael&quot;
 server.modules = (&quot;mod_fastcgi&quot;, &quot;mod_rewrite&quot;)
@@ -387,7 +387,7 @@ fastcgi.server = (
     ))
 )</code></pre>
 <h2 id="lighttpd上でのcgi">lighttpd上でのCGI</h2>
-<p>これは基本的にはFastCGI版と同じである. しかし, lighttpdに“.cgi”で終わるファイルをCGI実行ファイルとして実行するように指示する. この場合, ファイルは“/home/michael/myapp.cgi”にある.</p>
+<p>これは基本的にはFastCGI版と同じである. しかし, lighttpdに”.cgi”で終わるファイルをCGI実行ファイルとして実行するように指示する. この場合, ファイルは”/home/michael/myapp.cgi”にある.</p>
 <pre><code>server.port = 3000
 server.document-root = &quot;/home/michael&quot;
 server.modules = (&quot;mod_cgi&quot;, &quot;mod_rewrite&quot;)
